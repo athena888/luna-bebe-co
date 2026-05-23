@@ -1,0 +1,346 @@
+'use client'
+
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
+import Image from 'next/image'
+import { ChevronLeft, ChevronRight, X, ShoppingBag } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import type { Product } from '@/types'
+import { CATEGORY_LABELS } from '@/lib/products'
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+const CLONES = 3
+
+// Phase 0: carousel-specific override → phase 1: product photo → phase 2: emoji
+function getImgSrc(p: Product, phase: number): string | null {
+  if (p.image) return p.image
+  if (!SUPABASE_URL) return null
+  if (phase === 0) return `${SUPABASE_URL}/storage/v1/object/public/home-images/carousel-${p.id}.jpg`
+  if (phase === 1) return `${SUPABASE_URL}/storage/v1/object/public/product-images/${p.id}.jpg`
+  return null
+}
+
+function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
+
+// ─── Modal ────────────────────────────────────────────────────────────────────
+
+function ProductModal({ product, onClose }: { product: Product; onClose: () => void }) {
+  const router = useRouter()
+  const [imgPhase, setImgPhase] = useState(0)
+  const src = getImgSrc(product, imgPhase)
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
+
+  function handleAddToBox() {
+    sessionStorage.setItem('luna_pending_add', product.id)
+    onClose()
+    router.push('/build')
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 sm:p-8"
+      onClick={onClose}
+    >
+      <div
+        className="bg-cream-50 w-full max-w-2xl flex flex-col sm:flex-row overflow-hidden max-h-[90vh] shadow-2xl"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="relative w-full sm:w-[45%] shrink-0 bg-cream-100" style={{ aspectRatio: '3/4' }}>
+          {src ? (
+            <Image src={src} alt={product.name} fill className="object-cover" unoptimized onError={() => setImgPhase(p => p + 1)} />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center" style={{ fontSize: '6rem' }}>
+              {product.imageEmoji}
+            </div>
+          )}
+          {product.tag && (
+            <div className="absolute top-3 left-3">
+              <span className="bg-white/90 text-bark-600 font-sans text-[9px] tracking-[0.2em] uppercase px-2.5 py-1">
+                {product.tag}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col overflow-y-auto p-6 sm:p-8 flex-1">
+          <div className="flex items-start justify-between mb-1">
+            <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-gold-400">
+              {CATEGORY_LABELS[product.category]}
+            </p>
+            <button onClick={onClose} className="text-bark-400 hover:text-bark-600 transition-colors shrink-0 ml-4 -mt-1">
+              <X size={18} />
+            </button>
+          </div>
+          <h2 className="font-sans text-2xl text-bark-600 leading-tight mb-1">{product.name}</h2>
+          <p className="font-sans text-base text-bark-400 mb-5">{formatPrice(product.price)}</p>
+          <p className="font-sans text-sm text-bark-500 leading-relaxed mb-5">{product.description}</p>
+          {product.ingredients && (
+            <div className="border-t border-cream-300 pt-4 mb-5">
+              <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-1">Materials</p>
+              <p className="font-sans text-xs text-bark-500">{product.ingredients}</p>
+            </div>
+          )}
+          <div className="mt-auto pt-4 space-y-2.5">
+            <button
+              onClick={handleAddToBox}
+              className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-bark-700 transition-colors flex items-center justify-center gap-2"
+            >
+              <ShoppingBag size={14} />
+              Add to Box
+            </button>
+            <button
+              onClick={onClose}
+              className="w-full border border-cream-300 text-bark-400 font-sans text-[11px] tracking-[0.2em] uppercase py-3 hover:border-bark-400 hover:text-bark-600 transition-colors"
+            >
+              Keep Browsing
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Carousel ────────────────────────────────────────────────────────────────
+
+export function ProductCarousel({ products }: { products: Product[] }) {
+  const n = products.length
+  const cloneN = n >= 2 ? CLONES : 0
+
+  const allItems = useMemo(() => {
+    if (cloneN === 0) return products
+    return [...products.slice(-cloneN), ...products, ...products.slice(0, cloneN)]
+  }, [products, cloneN])
+
+  const [centeredIdx, setCenteredIdx] = useState(cloneN)
+  const centeredIdxRef = useRef(cloneN)
+  const [modal, setModal] = useState<Product | null>(null)
+  // imgPhase: 0=try carousel override, 1=try product photo, 2=show emoji
+  const [imgPhase, setImgPhase] = useState<Record<string, number>>({})
+
+  const containerRef = useRef<HTMLDivElement>(null)
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([])
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
+  const scrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isJumping = useRef(false)
+
+  function setIdx(i: number) {
+    centeredIdxRef.current = i
+    setCenteredIdx(i)
+  }
+
+  function scrollToNow(idx: number) {
+    const container = containerRef.current
+    const el = itemRefs.current[idx]
+    if (!container || !el) return
+    const target = el.offsetLeft - (container.clientWidth - el.offsetWidth) / 2
+    container.scrollLeft = Math.max(0, target)
+  }
+
+  function scrollTo(idx: number) {
+    const container = containerRef.current
+    const el = itemRefs.current[idx]
+    if (!container || !el) return
+    const target = el.offsetLeft - (container.clientWidth - el.offsetWidth) / 2
+    container.scrollTo({ left: Math.max(0, target), behavior: 'smooth' })
+  }
+
+  const updateCentered = useCallback(() => {
+    if (isJumping.current) return
+    const container = containerRef.current
+    if (!container) return
+    const mid = container.scrollLeft + container.clientWidth / 2
+    let best = 0, bestDist = Infinity
+    itemRefs.current.forEach((el, i) => {
+      if (!el) return
+      const dist = Math.abs(el.offsetLeft + el.offsetWidth / 2 - mid)
+      if (dist < bestDist) { bestDist = dist; best = i }
+    })
+    setIdx(best)
+  }, [])
+
+  function handleScroll() {
+    if (isJumping.current) return
+    updateCentered()
+    if (scrollTimer.current) clearTimeout(scrollTimer.current)
+    scrollTimer.current = setTimeout(() => {
+      const cur = centeredIdxRef.current
+      const realEnd = cloneN + n - 1
+      if (cloneN === 0) return
+      if (cur < cloneN) {
+        const target = cloneN + n - (cloneN - cur)
+        isJumping.current = true
+        scrollToNow(target)
+        setIdx(target)
+        requestAnimationFrame(() => { isJumping.current = false })
+      } else if (cur > realEnd) {
+        const target = cloneN + (cur - realEnd - 1)
+        isJumping.current = true
+        scrollToNow(target)
+        setIdx(target)
+        requestAnimationFrame(() => { isJumping.current = false })
+      }
+    }, 150)
+  }
+
+  useEffect(() => {
+    videoRefs.current.forEach((v, i) => {
+      if (!v) return
+      if (i === centeredIdx) v.play().catch(() => {})
+      else { v.pause(); v.currentTime = 0 }
+    })
+  }, [centeredIdx])
+
+  useEffect(() => {
+    setTimeout(() => { scrollToNow(cloneN); setIdx(cloneN) }, 80)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  function goNext() { scrollTo(centeredIdxRef.current + 1) }
+  function goPrev() { scrollTo(centeredIdxRef.current - 1) }
+
+  const dotIdx = cloneN > 0 ? ((centeredIdx - cloneN) % n + n) % n : centeredIdx
+
+  return (
+    <>
+      <div className="relative select-none">
+        <button
+          onClick={goPrev}
+          className="absolute left-2 sm:left-4 top-[40%] -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white/90 shadow-md flex items-center justify-center text-bark-600 hover:bg-white transition-all"
+        >
+          <ChevronLeft size={18} />
+        </button>
+
+        <div
+          ref={containerRef}
+          onScroll={handleScroll}
+          className="flex overflow-x-auto pb-2"
+          style={{
+            gap: '12px',
+            scrollSnapType: 'x mandatory',
+            WebkitOverflowScrolling: 'touch',
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
+            // Centers first/last items properly at all viewport widths
+            paddingLeft: 'max(8px, calc(50vw - min(36vw, 155px)))',
+            paddingRight: 'max(8px, calc(50vw - min(36vw, 155px)))',
+          }}
+        >
+          {allItems.map((product, idx) => {
+            const isCenter = idx === centeredIdx
+            const phaseKey = `${product.id}_${idx}`
+            const phase = imgPhase[phaseKey] ?? 0
+            const src = getImgSrc(product, phase)
+
+            return (
+              <div
+                key={idx}
+                ref={el => { itemRefs.current[idx] = el }}
+                style={{
+                  scrollSnapAlign: 'center',
+                  width: 'min(72vw, 310px)',
+                  flexShrink: 0,
+                  transition: 'transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.4s ease',
+                  transform: isCenter ? 'scale(1)' : 'scale(0.86)',
+                  opacity: isCenter ? 1 : 0.5,
+                }}
+                onClick={() => isCenter ? setModal(product) : scrollTo(idx)}
+                className="cursor-pointer"
+              >
+                <div className="relative w-full overflow-hidden rounded-sm" style={{ aspectRatio: '3/4' }}>
+                  {product.hoverVideo ? (
+                    <video
+                      ref={el => { videoRefs.current[idx] = el }}
+                      src={product.hoverVideo}
+                      muted loop playsInline
+                      className="w-full h-full object-cover"
+                    />
+                  ) : src ? (
+                    <div className="w-full h-full relative overflow-hidden">
+                      <Image
+                        src={src}
+                        alt={product.name}
+                        fill
+                        className={`object-cover transition-transform duration-[8000ms] ease-in-out ${isCenter ? 'scale-110' : 'scale-100'}`}
+                        unoptimized
+                        onError={() => setImgPhase(p => ({ ...p, [phaseKey]: (p[phaseKey] ?? 0) + 1 }))}
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className="w-full h-full bg-cream-100 flex items-center justify-center"
+                      style={{ fontSize: 'clamp(3rem,12vw,5rem)' }}
+                    >
+                      {product.imageEmoji}
+                    </div>
+                  )}
+
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent pointer-events-none" />
+
+                  {isCenter && (
+                    <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-black/25 backdrop-blur-sm px-2 py-1 rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                      <span className="font-sans text-[9px] text-white/80 uppercase tracking-[0.15em]">Live</span>
+                    </div>
+                  )}
+
+                  {product.tag && (
+                    <div className="absolute top-3 left-3">
+                      <span className="font-sans text-[9px] tracking-[0.15em] uppercase bg-gold-400/30 backdrop-blur-sm text-gold-100 px-2 py-0.5">
+                        {product.tag}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="absolute bottom-0 inset-x-0 p-4 pointer-events-none">
+                    <p className="font-sans text-sm font-medium text-white leading-snug drop-shadow">{product.name}</p>
+                    <p className="font-sans text-xs text-white/65">{formatPrice(product.price)}</p>
+                  </div>
+                </div>
+
+                <div className={`text-center mt-2 transition-opacity duration-300 ${isCenter ? 'opacity-100' : 'opacity-0'}`}>
+                  <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400">
+                    Tap to view details
+                  </p>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        <button
+          onClick={goNext}
+          className="absolute right-2 sm:right-4 top-[40%] -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white/90 shadow-md flex items-center justify-center text-bark-600 hover:bg-white transition-all"
+        >
+          <ChevronRight size={18} />
+        </button>
+
+        {/* Small gray dots */}
+        <div className="flex justify-center gap-1.5 mt-4">
+          {products.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => scrollTo(cloneN + i)}
+              className={`rounded-full transition-all duration-300 ${
+                i === dotIdx
+                  ? 'w-2 h-2 bg-bark-400'
+                  : 'w-1.5 h-1.5 bg-bark-200 hover:bg-bark-300'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {modal && <ProductModal product={modal} onClose={() => setModal(null)} />}
+    </>
+  )
+}

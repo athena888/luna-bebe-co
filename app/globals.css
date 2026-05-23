@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@theme {
+  /* Backgrounds — Noralee exact (atlas-background-main: #faf9f8) */
+  --color-cream-50: #FAF9F8;
+  --color-cream-100: #F4F2EF;
+  --color-cream-200: #F7F7F7;
+  --color-cream-300: #E4DFD8;
+
+  /* Announcement bar / interactive surfaces (#e8ded8 from smart-search buttons) */
+  --color-terra-100: #E8DED8;
+  --color-terra-200: #DDD7CF;
+  --color-terra-300: #C9C0B6;
+  --color-terra-400: #A8998A;
+  --color-terra-500: #7A6C60;
+
+  /* Blush */
+  --color-rose-100: #EDE8E3;
+  --color-rose-200: #D8D0C8;
+  --color-rose-300: #C0B4AA;
+  --color-rose-400: #A09488;
+
+  /* Sage */
+  --color-sage-100: #E0E4DE;
+  --color-sage-200: #BFCCBC;
+  --color-sage-300: #90A88C;
+  --color-sage-400: #6E8868;
+  --color-sage-500: #4E6848;
+
+  /* Brand accent — Noralee exact: #BBA99A */
+  --color-gold-100: #EDE9E4;
+  --color-gold-200: #DDD7CF;
+  --color-gold-300: #CDB9AC;
+  --color-gold-400: #BBA99A;
+  --color-gold-500: #9E8D7E;
+
+  /* Text — Noralee exact values */
+  --color-bark-50: #F7F7F7;
+  --color-bark-100: #EEECE8;
+  --color-bark-400: #939393;
+  --color-bark-600: #383734;
+  --color-bark-700: #262523;
+  --color-bark-800: #181716;
+
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-cormorant: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Brandon Grotesque", "Jost", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-script: "Dancing Script", cursive;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes floatMark {
+  0%   { transform: translateY(0px)   rotate(-4deg); }
+  25%  { transform: translateY(-3px)  rotate(-1deg); }
+  50%  { transform: translateY(-5px)  rotate(4deg);  }
+  75%  { transform: translateY(-2px)  rotate(1deg);  }
+  100% { transform: translateY(0px)   rotate(-4deg); }
+}
+.logo-mark { animation: floatMark 5s ease-in-out infinite; transform-origin: center bottom; }
+
+
+* { box-sizing: border-box; }
+
+body {
+  background-color: #FFFFFF;
+  color: #383734;
+  font-family: "Jost", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+/* Prevent any child from causing horizontal scroll */
+main { overflow-x: hidden; }
+
+/* Noralee uses Cormorant as their body serif and Delores (≈ Playfair) as display */
+h1, h2, h3, h4 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 300; }
+p, li, blockquote { font-family: "Cormorant Garamond", Georgia, serif; }
+.font-cormorant { font-family: "Cormorant Garamond", Georgia, serif; }
+.font-script { font-family: "Dancing Script", cursive; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #FAF9F8; }
+::-webkit-scrollbar-thumb { background: #BBA99A; border-radius: 2px; }
+::selection { background: #DDD7CF; color: #383734; }
+html { scroll-behavior: smooth; }
+
+@keyframes ribbonPull {
+  0% { transform: scaleY(1); }
+  50% { transform: scaleY(0.2) scaleX(1.1); }
+  100% { transform: scaleY(0) scaleX(0); opacity: 0; }
+}
+.ribbon-pull { animation: ribbonPull 1.2s ease-in-out forwards; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }

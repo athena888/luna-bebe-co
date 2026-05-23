@@ -1,0 +1,99 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
+import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
+import { Button } from '@/components/ui/Button'
+import { CheckCircle, Package, Pen, Truck, Phone } from 'lucide-react'
+
+const NEXT_STEPS = [
+  { icon: <Package size={20} className="text-gold-400" />, title: 'Box Assembly', body: 'Our team begins handpicking and assembling your items within 24 hours of your order.' },
+  { icon: <Pen size={20} className="text-gold-400" />, title: 'Letter Writing', body: 'Your personal letter is carefully handwritten on premium linen card stock using archival ink.' },
+  { icon: <Truck size={20} className="text-gold-400" />, title: 'Shipped with Care', body: 'Your box is packed with dried lavender, sealed with wax, and sent via your chosen shipping method.' },
+]
+
+export default function ConfirmationPage() {
+  const searchParams = useSearchParams()
+  const sessionId = searchParams.get('session_id')
+  const [orderId, setOrderId] = useState<string | null>(null)
+
+  useEffect(() => {
+    // Clear session storage after successful order
+    sessionStorage.removeItem('luna_box_selection')
+    sessionStorage.removeItem('luna_letter')
+    sessionStorage.removeItem('luna_recommended')
+
+    // Could fetch order details from sessionId if needed
+    if (sessionId) {
+      setOrderId(sessionId.slice(-8).toUpperCase())
+    }
+  }, [sessionId])
+
+  return (
+    <>
+      <Header />
+      <main className="min-h-screen bg-cream-100 py-16 px-4 sm:px-6">
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-sage-100 mb-6">
+            <CheckCircle size={40} className="text-sage-500" />
+          </div>
+
+          <p className="text-xs font-sans font-semibold uppercase tracking-widest text-gold-400 mb-3">Order Confirmed</p>
+          <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-4">
+            Your box is on its way to being <span className="font-script text-gold-400" style={{ fontSize: '1.1em' }}>unforgettable.</span>
+          </h1>
+          <p className="font-sans text-bark-400 mb-3 leading-relaxed">
+            Thank you for your order! You&apos;ll receive a confirmation email shortly with tracking information once your box ships.
+          </p>
+          {orderId && (
+            <p className="font-sans text-xs text-bark-400 mb-10">
+              Order reference: <span className="font-medium text-bark-600">#{orderId}</span>
+            </p>
+          )}
+
+          <div className="bg-cream-50 rounded-2xl border border-cream-200 p-6 sm:p-8 text-left mb-8">
+            <h2 className="font-serif text-xl text-bark-600 mb-6 text-center">What Happens Next</h2>
+            <div className="space-y-6">
+              {NEXT_STEPS.map(({ icon, title, body }, i) => (
+                <div key={title} className="flex gap-4">
+                  <div className="shrink-0 w-10 h-10 rounded-full bg-gold-100 flex items-center justify-center">
+                    {icon}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-bark-400">Step {i + 1}</span>
+                    </div>
+                    <h3 className="font-serif text-lg text-bark-600 mb-1">{title}</h3>
+                    <p className="font-sans text-sm text-bark-400 leading-relaxed">{body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-bark-600 rounded-2xl p-6 sm:p-8 mb-8 text-left flex flex-col sm:flex-row items-center gap-4">
+            <div className="shrink-0 w-12 h-12 rounded-full bg-gold-400/20 flex items-center justify-center">
+              <Phone size={22} className="text-gold-300" />
+            </div>
+            <div className="flex-1 text-center sm:text-left">
+              <p className="font-serif text-lg text-cream-100">Questions about your order?</p>
+              <p className="font-sans text-sm text-cream-300/80 mt-1">Our AI phone assistant is available 24/7. Call us anytime and we&apos;ll make it right.</p>
+            </div>
+            <a href="tel:+18005862269" className="shrink-0">
+              <Button variant="gold" size="sm">Call Us</Button>
+            </a>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/"><Button variant="outline" size="md">Back to Home</Button></Link>
+            <Link href="/track"><Button variant="outline" size="md">Track Order</Button></Link>
+            <Link href="/build"><Button variant="gold" size="md">Build Another Box</Button></Link>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </>
+  )
+}
