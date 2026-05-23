@@ -7,8 +7,8 @@ export function BuyButton({ selection }: { selection: BoxSelection }) {
   const router = useRouter()
 
   function handleBuy() {
-    sessionStorage.setItem('luna_box_selection', JSON.stringify(selection))
-    sessionStorage.removeItem('luna_letter')
+    sessionStorage.setItem('lal_box_selection', JSON.stringify(selection))
+    sessionStorage.removeItem('lal_letter')
     router.push('/checkout')
   }
 

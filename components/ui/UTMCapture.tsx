@@ -17,9 +17,9 @@ export function UTMCapture() {
 
     // Only write if we have at least one UTM param and nothing stored yet
     if (source || medium || campaign) {
-      const existing = sessionStorage.getItem('luna_utm')
+      const existing = sessionStorage.getItem('lal_utm')
       if (!existing) {
-        sessionStorage.setItem('luna_utm', JSON.stringify({ source, medium, campaign, content, term }))
+        sessionStorage.setItem('lal_utm', JSON.stringify({ source, medium, campaign, content, term }))
       }
     }
   }, [searchParams])

@@ -27,7 +27,7 @@ export default function LetterPage() {
   const [showPreview, setShowPreview] = useState(false)
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('luna_box_selection')
+    const stored = sessionStorage.getItem('lal_box_selection')
     if (stored) {
       try { setBoxSelection(JSON.parse(stored)) } catch { /* ignore */ }
     }
@@ -52,7 +52,7 @@ export default function LetterPage() {
   }
 
   function handleContinue() {
-    sessionStorage.setItem('luna_letter', letterContent)
+    sessionStorage.setItem('lal_letter', letterContent)
     router.push('/checkout')
   }
 

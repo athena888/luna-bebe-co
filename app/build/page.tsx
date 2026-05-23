@@ -176,11 +176,11 @@ export default function BuildPage() {
   useEffect(() => {
     fetch('/api/inventory').then(r => r.json()).then(d => setInventory(d.inventory ?? {}))
     fetch('/api/products/hover').then(r => r.json()).then(d => setHoverMedia(d.hover ?? {}))
-    const pendingId = sessionStorage.getItem('luna_pending_add')
+    const pendingId = sessionStorage.getItem('lal_pending_add')
     if (pendingId) {
       const found = getAllProducts().find(p => p.id === pendingId)
       if (found) setSelected(prev => { const next = new Map(prev); next.set(found.id, found); return next })
-      sessionStorage.removeItem('luna_pending_add')
+      sessionStorage.removeItem('lal_pending_add')
     }
   }, [])
 
@@ -249,7 +249,7 @@ export default function BuildPage() {
     : null
 
   function handleCheckout() {
-    sessionStorage.setItem('luna_box_selection', JSON.stringify(selectedList))
+    sessionStorage.setItem('lal_box_selection', JSON.stringify(selectedList))
     router.push('/letter')
   }
 

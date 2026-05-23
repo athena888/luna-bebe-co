@@ -39,8 +39,8 @@ export default function CheckoutPage() {
   const [chosenStyle, setChosenStyle] = useState<StyleOption | null>(null)
 
   useEffect(() => {
-    const storedBox = sessionStorage.getItem('luna_box_selection')
-    const storedLetter = sessionStorage.getItem('luna_letter')
+    const storedBox = sessionStorage.getItem('lal_box_selection')
+    const storedLetter = sessionStorage.getItem('lal_letter')
     if (storedBox) {
       try {
         const parsed = JSON.parse(storedBox)
@@ -120,7 +120,7 @@ export default function CheckoutPage() {
       // Read first-touch UTM attribution stored at landing
       let utm: Record<string, string | null> = {}
       try {
-        const raw = sessionStorage.getItem('luna_utm')
+        const raw = sessionStorage.getItem('lal_utm')
         if (raw) utm = JSON.parse(raw)
       } catch { /* ignore */ }
 

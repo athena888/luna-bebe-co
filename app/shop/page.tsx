@@ -13,7 +13,7 @@ function formatPrice(cents: number) {
 }
 
 function shopThisBox(selection: BoxSelection) {
-  sessionStorage.setItem('luna_box_selection', JSON.stringify(selection))
+  sessionStorage.setItem('lal_box_selection', JSON.stringify(selection))
 }
 
 export default function ShopPage() {

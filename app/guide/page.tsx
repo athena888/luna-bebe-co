@@ -53,7 +53,7 @@ export default function GuidePage() {
   }
 
   function handleBuildWithRecs() {
-    if (recommendation?.products) sessionStorage.setItem('luna_recommended', JSON.stringify(recommendation.products))
+    if (recommendation?.products) sessionStorage.setItem('lal_recommended', JSON.stringify(recommendation.products))
     router.push('/build')
   }
 

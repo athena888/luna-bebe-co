@@ -21,9 +21,9 @@ export default function ConfirmationPage() {
 
   useEffect(() => {
     // Clear session storage after successful order
-    sessionStorage.removeItem('luna_box_selection')
-    sessionStorage.removeItem('luna_letter')
-    sessionStorage.removeItem('luna_recommended')
+    sessionStorage.removeItem('lal_box_selection')
+    sessionStorage.removeItem('lal_letter')
+    sessionStorage.removeItem('lal_recommended')
 
     // Could fetch order details from sessionId if needed
     if (sessionId) {

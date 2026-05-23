@@ -40,7 +40,7 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
   }, [])
 
   function handleAddToBox() {
-    sessionStorage.setItem('luna_pending_add', product.id)
+    sessionStorage.setItem('lal_pending_add', product.id)
     onClose()
     router.push('/build')
   }
