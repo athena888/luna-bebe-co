@@ -1,7 +1,3 @@
-import OpenAI from 'openai'
-
-export const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! })
-
 export function buildBoxPreviewPrompt(itemNames: string[]): string {
   return buildBoxStylePrompts(itemNames)[0]
 }

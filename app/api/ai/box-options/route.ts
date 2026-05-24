@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { openai, buildBoxStylePrompts } from '@/lib/openai'
+import { buildBoxStylePrompts } from '@/lib/openai'
+import { generateImage } from '@/lib/gemini'
 import { supabaseAdmin } from '@/lib/supabase'
 import { getAllProducts } from '@/lib/products'
 
@@ -36,19 +37,7 @@ async function getCached(key: string): Promise<string | null> {
 }
 
 async function generateAndStore(prompt: string, key: string): Promise<string> {
-  const response = await openai.images.generate({
-    model: 'dall-e-3',
-    prompt,
-    n: 1,
-    size: '1024x1024',
-    quality: 'standard',
-  })
-
-  const tempUrl = response.data[0]?.url!
-
-  // Download and store permanently
-  const imgRes = await fetch(tempUrl)
-  const imgBuffer = await imgRes.arrayBuffer()
+  const imgBuffer = await generateImage(prompt)
   const fileName = `${key}.png`
 
   const { error } = await supabaseAdmin.storage

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { openai } from '@/lib/openai'
+import { anthropic } from '@/lib/anthropic'
 
 const SYSTEM_PROMPT = `You are the friendly customer service assistant for La Lumière Collective, a luxury organic baby gift box company. You are warm, knowledgeable, and speak with a refined but approachable tone.
 
@@ -17,15 +17,14 @@ Products (5 categories):
 - Keepsake & Toy: wooden rattles, cotton bunnies, name blocks, fingerprint kits, moon night lights ($24–$56)
 - Mama's Gift: lavender kits, tea collections, postpartum bundles, memory journals, silk scarves ($26–$46)
 
-Pre-curated boxes available at /shop: Baby Girl Box, Baby Boy Box, Newborn Neutral Box
-Or customers can build their own at /build
+Pre-curated boxes available at /boxes. Customers can build their own at /build.
 
 Returns: We accept returns within 14 days of delivery for unopened items. Email us to initiate.
 Orders: Customers can track at /track using their email and order reference.
 Accounts: Customers can create an account and view order history at /account
 Gift cards: Available at /gift-cards ($50, $100, $150, $200)
 
-Keep responses concise and helpful. If you don't know something specific, say so honestly and suggest emailing hello@lalumiercollective.com or offer to have a human follow up. Never make up prices, policies, or product details that aren't listed above. If a question is about a specific order (status, tracking, issue), direct them to /track or hello@lalumiercollective.com.`
+Keep responses concise and helpful. If you don't know something specific, say so honestly and suggest emailing hello@lalumiercollective.com. Never make up prices, policies, or product details not listed above.`
 
 // Simple rate limit: 20 messages per IP per hour
 const RATE_WINDOW_MS = 60 * 60 * 1000
@@ -56,20 +55,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No messages' }, { status: 400 })
     }
 
-    // Only allow last 10 messages to keep context bounded
     const recent = messages.slice(-10).map((m: { role: string; content: string }) => ({
       role: m.role as 'user' | 'assistant',
-      content: String(m.content).slice(0, 1000), // truncate very long messages
+      content: String(m.content).slice(0, 1000),
     }))
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...recent],
+    const message = await anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 300,
-      temperature: 0.7,
+      system: SYSTEM_PROMPT,
+      messages: recent,
     })
 
-    const reply = completion.choices[0]?.message?.content ?? "I'm sorry, I couldn't process that. Please email us at hello@lalumiercollective.com"
+    const reply = message.content[0].type === 'text'
+      ? message.content[0].text
+      : "I'm sorry, I couldn't process that. Please email us at hello@lalumiercollective.com"
+
     return NextResponse.json({ reply })
   } catch (error) {
     console.error('Chat error:', error)
