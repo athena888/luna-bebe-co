@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
-import { sendOrderConfirmationEmail } from '@/lib/resend'
+import { sendOrderConfirmationEmail, sendGiftCardEmail } from '@/lib/resend'
 import type Stripe from 'stripe'
 import type { Order } from '@/types'
 
@@ -27,6 +27,35 @@ export async function POST(req: NextRequest) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         const orderId = session.metadata?.order_id
+
+        // Gift card purchase — create a Stripe promo code and email the recipient
+        if (session.metadata?.type === 'gift_card') {
+          const { recipient_email, recipient_name, sender_name, message, amount } = session.metadata
+          const amountCents = parseInt(amount)
+
+          const coupon = await stripe.coupons.create({
+            amount_off: amountCents,
+            currency: 'usd',
+            duration: 'once',
+            name: `Gift Card — $${(amountCents / 100).toFixed(0)} from ${sender_name}`,
+          })
+
+          const promoCode = await stripe.promotionCodes.create({
+            coupon: coupon.id,
+            max_redemptions: 1,
+          })
+
+          await sendGiftCardEmail({
+            recipientName: recipient_name,
+            recipientEmail: recipient_email,
+            senderName: sender_name,
+            message: message || undefined,
+            amount: amountCents,
+            code: promoCode.code,
+          }).catch(err => console.error('Gift card email error:', err))
+
+          break
+        }
 
         if (orderId) {
           const { data: orderData } = await supabaseAdmin

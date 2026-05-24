@@ -137,6 +137,61 @@ export async function sendAbandonedCartEmail({
   })
 }
 
+export async function sendGiftCardEmail({
+  recipientName,
+  recipientEmail,
+  senderName,
+  message,
+  amount,
+  code,
+}: {
+  recipientName: string
+  recipientEmail: string
+  senderName: string
+  message?: string
+  amount: number
+  code: string
+}) {
+  const formatted = `$${(amount / 100).toFixed(0)}`
+  return resend.emails.send({
+    from: FROM,
+    to: recipientEmail,
+    subject: `${senderName} sent you a La Lumière gift card 🎀`,
+    html: `
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+        ${brandHeader}
+        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 8px;">You've received a gift</h1>
+        <p style="font-family:sans-serif;font-size:14px;text-align:center;color:#9c7c5a;margin:0 0 32px;">From ${senderName}, with love</p>
+        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+            Hi ${recipientName},
+          </p>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
+            ${senderName} has gifted you a <strong>${formatted} La Lumière gift card</strong>. Use the code below to build your own luxury baby gift box.
+          </p>
+          ${message ? `
+          <div style="border-left:3px solid #c9a84c;padding:12px 16px;margin-bottom:24px;">
+            <p style="font-family:Georgia,serif;font-size:15px;font-style:italic;color:#5a3e28;margin:0;">"${message}"</p>
+          </div>
+          ` : ''}
+          <div style="background:#fff;border:2px dashed #c9a84c;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
+            <p style="font-family:sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#9c7c5a;margin:0 0 8px;">Your Gift Code</p>
+            <p style="font-family:monospace;font-size:28px;font-weight:bold;color:#3d2c1e;letter-spacing:4px;margin:0;">${code}</p>
+            <p style="font-family:sans-serif;font-size:12px;color:#9c7c5a;margin:8px 0 0;">Worth ${formatted} · Valid forever</p>
+          </div>
+          <div style="text-align:center;">
+            <a href="${BASE_URL}/build" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+              Build Your Box
+            </a>
+          </div>
+        </div>
+        <p style="font-family:sans-serif;font-size:12px;text-align:center;color:#9c7c5a;margin:0 0 4px;">Enter your code at checkout to redeem it.</p>
+        ${brandFooter}
+      </div>
+    `,
+  })
+}
+
 export async function sendOrderConfirmationEmail({
   customerName,
   customerEmail,
