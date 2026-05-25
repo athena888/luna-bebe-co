@@ -15,7 +15,8 @@ export async function GET() {
   const result: Record<string, { image?: string; video?: string }> = {}
 
   // Group gallery images by product_id, pick the first non-primary image as hover
-  const byProduct = new Map<string, typeof galleryRes.data>()
+  type GalleryRow = NonNullable<typeof galleryRes.data>[number]
+  const byProduct = new Map<string, GalleryRow[]>()
   for (const row of galleryRes.data ?? []) {
     if (!byProduct.has(row.product_id)) byProduct.set(row.product_id, [])
     byProduct.get(row.product_id)!.push(row)

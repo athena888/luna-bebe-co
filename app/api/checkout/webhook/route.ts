@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
 import { sendOrderConfirmationEmail, sendGiftCardEmail } from '@/lib/resend'
+import { calculateCommission } from '@/lib/affiliate'
 import type Stripe from 'stripe'
-import type { Order } from '@/types'
+import type { Order, Affiliate } from '@/types'
 
 export async function POST(req: NextRequest) {
   const body = await req.text()
@@ -28,6 +29,20 @@ export async function POST(req: NextRequest) {
         const session = event.data.object as Stripe.Checkout.Session
         const orderId = session.metadata?.order_id
 
+        // Wholesale prepay order
+        if (session.metadata?.type === 'wholesale_order' && session.metadata?.wholesale_order_id) {
+          await supabaseAdmin
+            .from('wholesale_orders')
+            .update({
+              payment_status: 'paid',
+              status: 'processing',
+              stripe_payment_intent: session.payment_intent as string,
+              paid_at: new Date().toISOString(),
+            })
+            .eq('id', session.metadata.wholesale_order_id)
+          break
+        }
+
         // Gift card purchase — create a Stripe promo code and email the recipient
         if (session.metadata?.type === 'gift_card') {
           const { recipient_email, recipient_name, sender_name, message, amount } = session.metadata
@@ -41,7 +56,7 @@ export async function POST(req: NextRequest) {
           })
 
           const promoCode = await stripe.promotionCodes.create({
-            coupon: coupon.id,
+            promotion: { type: 'coupon', coupon: coupon.id },
             max_redemptions: 1,
           })
 
@@ -88,6 +103,30 @@ export async function POST(req: NextRequest) {
               recipientName: order.recipient_name,
               total: order.total_amount,
             }).catch(err => console.error('Confirmation email error:', err))
+
+            // Record affiliate conversion if order tagged with a code
+            const orderRow = order as Order & { affiliate_code?: string | null }
+            if (orderRow.affiliate_code) {
+              const { data: affRow } = await supabaseAdmin
+                .from('affiliates')
+                .select('id, commission_rate, status')
+                .eq('code', orderRow.affiliate_code)
+                .maybeSingle()
+              const aff = affRow as Pick<Affiliate, 'id' | 'commission_rate' | 'status'> | null
+              if (aff && aff.status === 'approved') {
+                const commission = calculateCommission(orderRow.total_amount, aff.commission_rate)
+                await supabaseAdmin.from('affiliate_conversions').insert({
+                  affiliate_id: aff.id,
+                  order_id: orderRow.id,
+                  order_total: orderRow.total_amount,
+                  commission_amount: commission,
+                  commission_rate: aff.commission_rate,
+                  status: 'pending',
+                }).then(({ error }) => {
+                  if (error && error.code !== '23505') console.error('Affiliate conversion error:', error)
+                })
+              }
+            }
           }
         }
         break
@@ -100,6 +139,17 @@ export async function POST(req: NextRequest) {
         break
       }
 
+      case 'invoice.paid': {
+        const invoice = event.data.object as Stripe.Invoice
+        if (invoice.id) {
+          await supabaseAdmin
+            .from('wholesale_orders')
+            .update({ payment_status: 'paid', paid_at: new Date().toISOString() })
+            .eq('stripe_invoice_id', invoice.id)
+        }
+        break
+      }
+
       default:
         console.log(`Unhandled event type: ${event.type}`)
     }
@@ -109,10 +159,4 @@ export async function POST(req: NextRequest) {
     console.error('Webhook handler error:', error)
     return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 })
   }
-}
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
 }

@@ -70,21 +70,17 @@ export async function POST(req: NextRequest) {
         upsert: true,
       })
 
-    let permanentUrl = tempUrl // fallback to temp URL if upload fails
+    if (uploadError) throw uploadError
 
-    if (!uploadError) {
-      const { data: publicUrlData } = supabaseAdmin.storage
-        .from('box-previews')
-        .getPublicUrl(fileName)
-      permanentUrl = publicUrlData.publicUrl
-    }
+    const { data: publicUrlData } = supabaseAdmin.storage
+      .from('box-previews')
+      .getPublicUrl(fileName)
+    const permanentUrl = publicUrlData.publicUrl
 
     // Save to cache table
     await supabaseAdmin
       .from('box_image_cache')
-      .insert({ cache_key: cacheKey, image_url: permanentUrl })
-      .onConflict('cache_key')
-      .ignore()
+      .upsert({ cache_key: cacheKey, image_url: permanentUrl }, { onConflict: 'cache_key', ignoreDuplicates: true })
 
     return NextResponse.json({ imageUrl: permanentUrl, cached: false })
   } catch (error) {

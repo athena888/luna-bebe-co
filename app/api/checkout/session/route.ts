@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
 import { BOX_BASE_PRICE, SHIPPING } from '@/lib/products'
+import { AFFILIATE_COOKIE } from '@/lib/affiliate'
 import type { Product, ShippingType } from '@/types'
 
 export async function POST(req: NextRequest) {
@@ -79,6 +80,8 @@ export async function POST(req: NextRequest) {
       },
     ]
 
+    const affiliateCode = req.cookies.get(AFFILIATE_COOKIE)?.value || null
+
     // Save order to database first (pending)
     const { data: order, error: orderError } = await supabaseAdmin
       .from('orders')
@@ -99,6 +102,7 @@ export async function POST(req: NextRequest) {
         utm_medium:   utmMedium   || null,
         utm_campaign: utmCampaign || null,
         utm_content:  utmContent  || null,
+        affiliate_code: affiliateCode,
       })
       .select()
       .single()
