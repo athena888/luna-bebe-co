@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { ExternalLink, ChevronDown } from 'lucide-react'
 import { ShipButton } from './ShipButton'
 import type { Order } from '@/types'
@@ -56,9 +56,8 @@ export function OrdersTable({ orders: initial }: { orders: ExtendedOrder[] }) {
               <tr><td colSpan={11} className="px-4 py-12 text-center font-sans text-sm text-bark-400">No orders yet.</td></tr>
             )}
             {orders.map((order) => (
-              <>
+              <React.Fragment key={order.id}>
                 <tr
-                  key={order.id}
                   className="border-b border-cream-200 hover:bg-cream-100 transition-colors cursor-pointer"
                   onClick={() => toggleExpand(order.id)}
                 >
@@ -111,7 +110,7 @@ export function OrdersTable({ orders: initial }: { orders: ExtendedOrder[] }) {
 
                 {/* Expanded detail row */}
                 {expanded === order.id && (
-                  <tr key={`${order.id}-detail`} className="border-b border-cream-200 bg-cream-50">
+                  <tr className="border-b border-cream-200 bg-cream-50">
                     <td colSpan={11} className="px-6 py-6">
                       <div className="flex gap-8 items-start">
 
@@ -177,7 +176,7 @@ export function OrdersTable({ orders: initial }: { orders: ExtendedOrder[] }) {
                     </td>
                   </tr>
                 )}
-              </>
+              </React.Fragment>
             ))}
           </tbody>
         </table>

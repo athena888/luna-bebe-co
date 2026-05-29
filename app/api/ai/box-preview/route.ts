@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     }
 
     const prompt = buildBoxPreviewPrompt(itemNames)
-    const imgBuffer = await generateImage(prompt)
+    const [imgBuffer] = await generateImage(prompt)
 
     // Upload to Supabase Storage for permanent storage
     const fileName = `${cacheKey}.png`

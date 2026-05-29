@@ -37,7 +37,7 @@ async function getCached(key: string): Promise<string | null> {
 }
 
 async function generateAndStore(prompt: string, key: string): Promise<string> {
-  const imgBuffer = await generateImage(prompt)
+  const [imgBuffer] = await generateImage(prompt)
   const fileName = `${key}.png`
 
   const { error } = await supabaseAdmin.storage

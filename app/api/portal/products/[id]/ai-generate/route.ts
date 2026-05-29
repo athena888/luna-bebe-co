@@ -50,7 +50,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const imageRef = visionDescription ? `\n\nBase image reference: ${visionDescription}` : ''
     const geminiPrompt = `${baseContext}${userIntent}${imageRef}\n\nNo text, no logos, no people. High-end lifestyle product photography.`
 
-    const imgBuffer = await generateImage(geminiPrompt)
+    const [imgBuffer] = await generateImage(geminiPrompt)
 
     // Upload to Supabase Storage
     const fileName = `${id}-ai-${Date.now()}.png`

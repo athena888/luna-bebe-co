@@ -1,6 +1,6 @@
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY!
 
-export async function generateImage(prompt: string): Promise<Buffer> {
+export async function generateImage(prompt: string, count = 1): Promise<Buffer[]> {
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${GEMINI_API_KEY}`,
     {
@@ -8,7 +8,7 @@ export async function generateImage(prompt: string): Promise<Buffer> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         instances: [{ prompt }],
-        parameters: { sampleCount: 1 },
+        parameters: { sampleCount: Math.min(count, 4) }, // max 4 per request
       }),
     }
   )
@@ -19,7 +19,7 @@ export async function generateImage(prompt: string): Promise<Buffer> {
   }
 
   const data = await res.json()
-  const b64 = data.predictions?.[0]?.bytesBase64Encoded
-  if (!b64) throw new Error('No image returned from Gemini')
-  return Buffer.from(b64, 'base64')
+  const predictions = data.predictions ?? []
+  if (!predictions.length) throw new Error('No images returned from Gemini')
+  return predictions.map((p: { bytesBase64Encoded: string }) => Buffer.from(p.bytesBase64Encoded, 'base64'))
 }
