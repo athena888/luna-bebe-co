@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
@@ -14,7 +14,7 @@ const NEXT_STEPS = [
   { icon: <Truck size={20} className="text-gold-400" />, title: 'Shipped with Care', body: 'Your box is packed with dried lavender, sealed with wax, and sent via your chosen shipping method.' },
 ]
 
-export default function ConfirmationPage() {
+function ConfirmationInner() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
   const [orderId, setOrderId] = useState<string | null>(null)
@@ -95,5 +95,13 @@ export default function ConfirmationPage() {
       </main>
       <Footer />
     </>
+  )
+}
+
+export default function ConfirmationPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-cream-100" />}>
+      <ConfirmationInner />
+    </Suspense>
   )
 }

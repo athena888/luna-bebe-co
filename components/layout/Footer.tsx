@@ -73,6 +73,8 @@ export function Footer() {
               <li><Link href="/gift-cards" className="text-bark-400 hover:text-bark-600 transition-colors">Gift Cards</Link></li>
               <li><Link href="/track" className="text-bark-400 hover:text-bark-600 transition-colors">Track Order</Link></li>
               <li><Link href="/account" className="text-bark-400 hover:text-bark-600 transition-colors">My Account</Link></li>
+              <li><Link href="/wholesale" className="text-bark-400 hover:text-bark-600 transition-colors">Wholesale</Link></li>
+              <li><Link href="/affiliate" className="text-bark-400 hover:text-bark-600 transition-colors">Affiliate Program</Link></li>
               <li><a href="mailto:hello@lalumiercollective.com" className="text-bark-400 hover:text-bark-600 transition-colors">hello@lalumiercollective.com</a></li>
             </ul>
           </div>

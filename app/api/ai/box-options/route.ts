@@ -44,17 +44,14 @@ async function generateAndStore(prompt: string, key: string): Promise<string> {
     .from('box-previews')
     .upload(fileName, imgBuffer, { contentType: 'image/png', upsert: true })
 
-  let permanentUrl = tempUrl
-  if (!error) {
-    const { data } = supabaseAdmin.storage.from('box-previews').getPublicUrl(fileName)
-    permanentUrl = data.publicUrl
-  }
+  if (error) throw error
+
+  const { data } = supabaseAdmin.storage.from('box-previews').getPublicUrl(fileName)
+  const permanentUrl = data.publicUrl
 
   await supabaseAdmin
     .from('box_image_cache')
-    .insert({ cache_key: key, image_url: permanentUrl })
-    .onConflict('cache_key')
-    .ignore()
+    .upsert({ cache_key: key, image_url: permanentUrl }, { onConflict: 'cache_key', ignoreDuplicates: true })
 
   return permanentUrl
 }

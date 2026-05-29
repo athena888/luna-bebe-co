@@ -9,21 +9,21 @@ export async function POST(req: NextRequest) {
     const trimmed = code.trim()
 
     // Try exact code string first, then uppercase fallback — expand coupon so it's not just an ID
-    let promos = await stripe.promotionCodes.list({ code: trimmed, limit: 1, expand: ['data.coupon'] })
+    let promos = await stripe.promotionCodes.list({ code: trimmed, limit: 1, expand: ['data.promotion.coupon'] })
     if (!promos.data[0]) {
-      promos = await stripe.promotionCodes.list({ code: trimmed.toUpperCase(), limit: 1, expand: ['data.coupon'] })
+      promos = await stripe.promotionCodes.list({ code: trimmed.toUpperCase(), limit: 1, expand: ['data.promotion.coupon'] })
     }
     const promo = promos.data[0]
 
     if (!promo) return NextResponse.json({ valid: false, error: 'Invalid or expired code' })
     if (!promo.active) return NextResponse.json({ valid: false, error: 'This code has expired' })
 
-    const coupon = typeof promo.coupon === 'string' ? null : promo.coupon
+    const coupon = typeof promo.promotion.coupon === 'string' ? null : promo.promotion.coupon
     let discount = 'Discount applied'
     if (coupon?.percent_off) discount = `${coupon.percent_off}% off`
     else if (coupon?.amount_off) discount = `$${(coupon.amount_off / 100).toFixed(0)} off`
 
-    return NextResponse.json({ valid: true, promoId: promo.id, discount, couponId: coupon.id })
+    return NextResponse.json({ valid: true, promoId: promo.id, discount, couponId: coupon?.id ?? null })
   } catch (err) {
     console.error('Validate code error:', err)
     return NextResponse.json({ error: 'Failed to validate code' }, { status: 500 })
