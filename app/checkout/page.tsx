@@ -27,7 +27,7 @@ export default function CheckoutPage() {
 
   const [contact, setContact] = useState({ name: '', email: '', phone: '' })
   const [address, setAddress] = useState({ line1: '', line2: '', city: '', state: '', zip: '' })
-  const [recipientName, setRecipientName] = useState('')
+
   const [promoCode, setPromoCode] = useState('')
   const [promoState, setPromoState] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle')
   const [promoId, setPromoId] = useState<string | null>(null)
@@ -144,7 +144,7 @@ export default function CheckoutPage() {
             state: address.state,
             zip: address.zip,
           },
-          recipientName,
+
           totalAmount: total,
           utmSource:   utm.source   || null,
           utmMedium:   utm.medium   || null,
@@ -199,10 +199,6 @@ export default function CheckoutPage() {
                     <div>
                       <label className={labelClass}>Phone (optional)</label>
                       <input type="tel" value={contact.phone} onChange={e => setContact(c => ({ ...c, phone: e.target.value }))} placeholder="+1 (555) 000-0000" className={inputClass} />
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className={labelClass}>Recipient Name (printed on box)</label>
-                      <input type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)} placeholder="Who is this gift for?" className={inputClass} />
                     </div>
                   </div>
                 </div>
