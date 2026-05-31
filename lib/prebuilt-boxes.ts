@@ -139,6 +139,65 @@ export const PREBUILT_BOXES: PrebuiltBox[] = [
       extra2:   find('bath',     'bath-oil'),            // Nourishing Baby Oil Serum
     },
   },
+
+  // ── Summer Editions ─────────────────────────────────────────────────────────
+  {
+    slug: 'douce-serenite',
+    name: 'Douce Sérénité',
+    style: 'Summer',
+    variant: 'neutral',
+    tagline: 'Quiet moments of calm, wrapped in nature\'s softest touch.',
+    description: 'Two rompers in cream and khaki, a soft blanket, mulberry silk eye mask, lavender-infused rituals, and keepsakes to treasure.',
+    aesthetic: 'Neutral · Serene · Essential',
+    featured: true,
+    selection: {
+      swaddle:  find('swaddle',  'swaddle-waffle'),      // Cream blanket (closest match)
+      garment:  find('garment',  'garment-romper'),      // Ribbed Organic Romper (khaki + cream)
+      bath:     find('bath',     'bath-calendula'),      // Bath soak + salts ritual
+      keepsake: find('keepsake', 'keepsake-bunny'),      // Cream lovey
+      mom:      find('mom',      'mom-lavender'),        // Lavender-centered self-care
+      extra1:   find('keepsake', 'keepsake-rattle'),     // Khaki teether
+      extra2:   find('bath',     'bath-botanical'),      // Bath bomb duo
+    },
+  },
+  {
+    slug: 'petit-ciel',
+    name: 'Petit Ciel',
+    style: 'Summer',
+    variant: 'neutral',
+    tagline: 'Adventure begins with the gentlest sky blue dreams.',
+    description: 'Khaki and slate blue rompers, cream blanket, silk eye mask, calming botanicals, and cherished keepsakes for his arrival.',
+    aesthetic: 'Sky Blue · Soft · Adventurous',
+    featured: true,
+    selection: {
+      swaddle:  find('swaddle',  'swaddle-waffle'),      // Cream blanket
+      garment:  find('garment',  'garment-kimono'),      // Bamboo romper in slate blue tones
+      bath:     find('bath',     'bath-botanical'),      // Botanical wash + bath ritual
+      keepsake: find('keepsake', 'keepsake-bunny'),      // Cream lovey
+      mom:      find('mom',      'mom-tea'),             // Calming herbal support
+      extra1:   find('keepsake', 'keepsake-rattle'),     // Khaki teether
+      extra2:   find('bath',     'bath-calendula'),      // Bath salts + bomb
+    },
+  },
+  {
+    slug: 'rose-tendre',
+    name: 'Rose Tendre',
+    style: 'Summer',
+    variant: 'girl',
+    tagline: 'Tender petals and soft whispers, a new world blooming.',
+    description: 'Khaki and rosy rompers, cream blanket, silk eye mask, botanical care, and gentle keepsakes to welcome your little girl.',
+    aesthetic: 'Rose · Tender · Blooming',
+    featured: true,
+    selection: {
+      swaddle:  find('swaddle',  'swaddle-waffle'),      // Cream blanket
+      garment:  find('garment',  'garment-bodysuit'),    // Rose/pink-toned essentials
+      bath:     find('bath',     'bath-botanical'),      // Botanical wash + self-care
+      keepsake: find('keepsake', 'keepsake-bunny'),      // Cream lovey
+      mom:      find('mom',      'mom-lavender'),        // Lavender self-care
+      extra1:   find('keepsake', 'keepsake-print'),      // Fingerprint kit (khaki teether substitute)
+      extra2:   find('bath',     'bath-calendula'),      // Bath ritual (salts + bomb)
+    },
+  },
 ]
 
 export function getBoxBySlug(slug: string): PrebuiltBox | undefined {

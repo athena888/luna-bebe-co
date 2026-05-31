@@ -59,12 +59,10 @@ export const SHIPPING = {
 export const FEATURED_IDS = [
   'swaddle-muslin',
   'swaddle-bamboo',
+  'garment-romper',
   'garment-kimono',
-  'garment-gown',
   'bath-botanical',
-  'keepsake-rattle',
   'keepsake-bunny',
-  'mom-lavender',
 ]
 
 export function getAllProducts(): Product[] {
