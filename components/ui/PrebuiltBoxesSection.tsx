@@ -28,7 +28,7 @@ export function PrebuiltBoxesSection() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-cream-300 border-y border-cream-300">
         {boxes.map((box) => {
           const items = Object.values(box.selection).filter(Boolean) as NonNullable<typeof box.selection.swaddle>[]
-          const total = BOX_BASE_PRICE + boxItemTotal(box.selection)
+          const total = box.customPrice ?? (BOX_BASE_PRICE + boxItemTotal(box.selection))
           return (
             <Link
               key={box.slug}

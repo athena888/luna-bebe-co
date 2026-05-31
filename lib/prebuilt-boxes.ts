@@ -17,6 +17,7 @@ export interface PrebuiltBox {
   aesthetic: string
   featured: boolean
   selection: BoxSelection   // 7 slots: 5 core + extra1 + extra2
+  customPrice?: number      // optional override for calculated price (in cents)
 }
 
 export const PREBUILT_BOXES: PrebuiltBox[] = [
@@ -150,6 +151,7 @@ export const PREBUILT_BOXES: PrebuiltBox[] = [
     description: 'Two rompers in cream and khaki, a soft blanket, mulberry silk eye mask, lavender-infused rituals, and keepsakes to treasure.',
     aesthetic: 'Neutral · Serene · Essential',
     featured: true,
+    customPrice: 16000,      // $160
     selection: {
       swaddle:  find('swaddle',  'swaddle-waffle'),      // Cream blanket (closest match)
       garment:  find('garment',  'garment-romper'),      // Ribbed Organic Romper (khaki + cream)
