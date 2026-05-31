@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { anthropic } from '@/lib/anthropic'
 
-const SYSTEM_PROMPT = `You are the friendly customer service assistant for La Lumière Collective, a luxury organic baby gift box company. You are warm, knowledgeable, and speak with a refined but approachable tone.
+const SYSTEM_PROMPT = `You are the friendly customer service assistant for Petite Lavande, a luxury organic baby gift box company. You are warm, knowledgeable, and speak with a refined but approachable tone.
 
-About La Lumière Collective:
+About Petite Lavande:
 - We create bespoke luxury baby shower gift boxes with 5 premium organic items
 - Every box comes gift-wrapped with satin ribbon, dried lavender, and a wax-sealed handwritten letter
 - We ship across the US. Standard shipping: 5–7 business days ($12). Premium rush: 1–2 business days ($28).
 - Free shipping on orders over $150
-- Email: hello@lalumiercollective.com
+- Email: hello@petitelavande.com
 
 Products (5 categories):
 - Swaddle & Blanket: organic muslin, bamboo, knit, waffle, quilted linen, velvet wraps ($28–$52)
@@ -24,7 +24,7 @@ Orders: Customers can track at /track using their email and order reference.
 Accounts: Customers can create an account and view order history at /account
 Gift cards: Available at /gift-cards ($50, $100, $150, $200)
 
-Keep responses concise and helpful. If you don't know something specific, say so honestly and suggest emailing hello@lalumiercollective.com. Never make up prices, policies, or product details not listed above.`
+Keep responses concise and helpful. If you don't know something specific, say so honestly and suggest emailing hello@petitelavande.com. Never make up prices, policies, or product details not listed above.`
 
 // Simple rate limit: 20 messages per IP per hour
 const RATE_WINDOW_MS = 60 * 60 * 1000
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
     if (!checkRateLimit(ip)) {
-      return NextResponse.json({ error: 'Too many messages. Please email us at hello@lalumiercollective.com' }, { status: 429 })
+      return NextResponse.json({ error: 'Too many messages. Please email us at hello@petitelavande.com' }, { status: 429 })
     }
 
     const { messages } = await req.json()
@@ -69,11 +69,11 @@ export async function POST(req: NextRequest) {
 
     const reply = message.content[0].type === 'text'
       ? message.content[0].text
-      : "I'm sorry, I couldn't process that. Please email us at hello@lalumiercollective.com"
+      : "I'm sorry, I couldn't process that. Please email us at hello@petitelavande.com"
 
     return NextResponse.json({ reply })
   } catch (error) {
     console.error('Chat error:', error)
-    return NextResponse.json({ reply: "I'm having trouble right now. Please email us at hello@lalumiercollective.com and we'll get back to you shortly." })
+    return NextResponse.json({ reply: "I'm having trouble right now. Please email us at hello@petitelavande.com and we'll get back to you shortly." })
   }
 }

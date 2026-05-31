@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
@@ -17,8 +17,8 @@ function InstagramIcon({ size = 24, className = '' }: { size?: number; className
 }
 
 export const metadata: Metadata = {
-  title: 'Stories & Social — La Lumière & Co.',
-  description: 'Follow along with La Lumière — behind the scenes, unboxing moments, and the families we love.',
+  title: 'Stories & Social — Petite Lavande',
+  description: 'Follow along with Petite Lavande — behind the scenes, unboxing moments, and the families we love.',
 }
 
 interface SocialPost {
@@ -53,7 +53,7 @@ function PostCard({ post }: { post: SocialPost }) {
         <div className="relative w-full">
           <Image
             src={post.media_url}
-            alt={post.caption || 'La Lumière'}
+            alt={post.caption || 'Petite Lavande'}
             width={600}
             height={600}
             className="w-full h-auto object-cover"
@@ -171,7 +171,7 @@ export default async function SocialPage() {
           <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-4">Tag Us</p>
           <h2 className="font-serif text-2xl sm:text-3xl text-bark-600 mb-4">Share your unboxing moment</h2>
           <p className="font-cormorant text-lg text-bark-400 max-w-md mx-auto mb-8">
-            Tag <span className="font-medium text-bark-600">@lalumierecollective</span> and we might feature your moment here.
+            Tag <span className="font-medium text-bark-600">@petitelavande</span> and we might feature your moment here.
           </p>
           <Link
             href="/build"

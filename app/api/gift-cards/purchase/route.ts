@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
 
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
         price_data: {
           currency: 'usd',
           product_data: {
-            name: `La Lumière Gift Card — $${(amount / 100).toFixed(0)}`,
+            name: `Petite Lavande Gift Card — $${(amount / 100).toFixed(0)}`,
             description: `For ${recipientName} from ${senderName}`,
           },
           unit_amount: amount,

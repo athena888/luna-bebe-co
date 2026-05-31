@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Dancing_Script, Cormorant_Garamond, Jost } from "next/font/google";
 import Script from "next/script";
 import { Suspense } from "react";
@@ -11,22 +11,22 @@ const dancing = Dancing_Script({ subsets: ["latin"], variable: "--font-dancing",
 const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["300", "400", "500"], style: ["normal", "italic"], variable: "--font-cormorant", display: "swap" });
 const jost = Jost({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-jost", display: "swap" });
 
-const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://lalumiereco.com'
+const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE),
-  title: { default: "La Lumière & Co. — Luxury Curated Baby Gift Boxes", template: "%s | La Lumière & Co." },
+  title: { default: "Petite Lavande — Luxury Curated Baby Gift Boxes", template: "%s | Petite Lavande" },
   description: "Build a bespoke luxury baby shower gift box. Choose 5 premium organic items, add a handwritten letter, and deliver an unforgettable unboxing experience.",
   keywords: ["baby gift box", "luxury baby shower gift", "organic baby gifts", "newborn gift basket", "custom baby box"],
   openGraph: {
     type: "website",
-    siteName: "La Lumière & Co.",
-    title: "La Lumière & Co. — Luxury Curated Baby Gift Boxes",
+    siteName: "Petite Lavande",
+    title: "Petite Lavande — Luxury Curated Baby Gift Boxes",
     description: "Build a bespoke luxury baby shower gift box. Premium organic items, handwritten letter, unforgettable unboxing.",
     url: BASE,
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "La Lumière & Co. gift box" }],
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Petite Lavande gift box" }],
   },
-  twitter: { card: "summary_large_image", title: "La Lumière & Co.", description: "Luxury curated organic baby gift boxes." },
+  twitter: { card: "summary_large_image", title: "Petite Lavande", description: "Luxury curated organic baby gift boxes." },
   robots: { index: true, follow: true },
 };
 
@@ -40,7 +40,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {/* PWA / iOS home screen */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="La Lumière" />
+        <meta name="apple-mobile-web-app-title" content="Petite Lavande" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#383734" />

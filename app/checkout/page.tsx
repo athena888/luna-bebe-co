@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -39,8 +39,8 @@ export default function CheckoutPage() {
   const [chosenStyle, setChosenStyle] = useState<StyleOption | null>(null)
 
   useEffect(() => {
-    const storedBox = sessionStorage.getItem('lal_box_selection')
-    const storedLetter = sessionStorage.getItem('lal_letter')
+    const storedBox = sessionStorage.getItem('pl_box_selection')
+    const storedLetter = sessionStorage.getItem('pl_letter')
     if (storedBox) {
       try {
         const parsed = JSON.parse(storedBox)
@@ -120,7 +120,7 @@ export default function CheckoutPage() {
       // Read first-touch UTM attribution stored at landing
       let utm: Record<string, string | null> = {}
       try {
-        const raw = sessionStorage.getItem('lal_utm')
+        const raw = sessionStorage.getItem('pl_utm')
         if (raw) utm = JSON.parse(raw)
       } catch { /* ignore */ }
 
@@ -280,7 +280,7 @@ export default function CheckoutPage() {
                     {!stylesLoading && styleOptions.length === 0 && (
                       <div className="aspect-square w-full bg-cream-100 relative flex flex-col items-center justify-center gap-3">
                         <div className="w-8 h-px bg-gold-400" />
-                        <p className="font-script text-2xl text-bark-400">La Lumière</p>
+                        <p className="font-script text-2xl text-bark-400">Petite Lavande</p>
                         <div className="w-8 h-px bg-gold-400" />
                       </div>
                     )}

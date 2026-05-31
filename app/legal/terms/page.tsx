@@ -1,8 +1,8 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
-  description: 'Terms and conditions for purchasing from La Lumière & Co.',
+  description: 'Terms and conditions for purchasing from Petite Lavande',
 }
 
 export default function TermsPage() {
@@ -13,7 +13,7 @@ export default function TermsPage() {
       <p className="text-bark-400 text-sm mb-10">Last updated: May 2025</p>
 
       <Section title="1. Overview">
-        By placing an order with La Lumière &amp; Co. (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;), you agree to these Terms of Service. Please read them carefully before completing your purchase.
+        By placing an order with Petite Lavande &amp; Co. (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;), you agree to these Terms of Service. Please read them carefully before completing your purchase.
       </Section>
 
       <Section title="2. Products">
@@ -41,11 +41,11 @@ export default function TermsPage() {
       </Section>
 
       <Section title="8. Intellectual Property">
-        All content on this website — including imagery, copy, and brand design — is the property of La Lumière &amp; Co. and may not be reproduced without written permission.
+        All content on this website — including imagery, copy, and brand design — is the property of Petite Lavande &amp; Co. and may not be reproduced without written permission.
       </Section>
 
       <Section title="9. Limitation of Liability">
-        To the extent permitted by law, La Lumière &amp; Co. is not liable for any indirect, incidental, or consequential damages arising from your use of our site or products.
+        To the extent permitted by law, Petite Lavande &amp; Co. is not liable for any indirect, incidental, or consequential damages arising from your use of our site or products.
       </Section>
 
       <Section title="10. Governing Law">
@@ -53,7 +53,7 @@ export default function TermsPage() {
       </Section>
 
       <Section title="11. Contact">
-        Questions about these terms? Email us at <a href="mailto:hello@lalumiercollective.com" className="text-bark-600 underline underline-offset-2">hello@lalumiercollective.com</a>.
+        Questions about these terms? Email us at <a href="mailto:hello@petitelavande.com" className="text-bark-600 underline underline-offset-2">hello@petitelavande.com</a>.
       </Section>
     </article>
   )

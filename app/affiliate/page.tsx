@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { COMMISSION_RATES } from '@/lib/affiliate'
 
@@ -16,7 +16,7 @@ export default function AffiliateLanding() {
         <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">Partner With Us</p>
         <h1 className="font-serif text-5xl text-bark-600 mb-6">Affiliate Program</h1>
         <p className="font-sans text-base text-bark-400 max-w-xl mx-auto leading-relaxed">
-          Share La Lumière with the families in your community. Earn {Math.round(COMMISSION_RATES.standard * 100)}% commission on every order placed through your unique code.
+          Share Petite Lavande with the families in your community. Earn {Math.round(COMMISSION_RATES.standard * 100)}% commission on every order placed through your unique code.
         </p>
         <div className="mt-10 flex gap-4 justify-center">
           <Link href="/affiliate/apply"><Button variant="gold" size="lg">Apply Now</Button></Link>

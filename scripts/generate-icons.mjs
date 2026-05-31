@@ -1,11 +1,11 @@
-import sharp from 'sharp'
+﻿import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 import path from 'path'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const publicDir = path.join(__dirname, '..', 'public')
 
-// La Lumière Collective icon — dark background, gold circle, bold "L" mark
+// Petite Lavande icon — dark background, gold circle, bold "L" mark
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <!-- Background -->
   <rect width="100" height="100" fill="#383734"/>

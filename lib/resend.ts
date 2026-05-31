@@ -1,13 +1,13 @@
-import { Resend } from 'resend'
+﻿import { Resend } from 'resend'
 
 export const resend = new Resend(process.env.RESEND_API_KEY!)
 
-const FROM = 'La Lumière & Co. <hello@lalumiercollective.com>'
+const FROM = 'Petite Lavande <hello@petitelavande.com>'
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
 const brandHeader = `
   <div style="text-align:center;padding:40px 0 24px;">
-    <p style="font-family:sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c9a84c;margin:0 0 8px;">La Lumière & Co.</p>
+    <p style="font-family:sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c9a84c;margin:0 0 8px;">Petite Lavande</p>
   </div>
 `
 const brandFooter = `
@@ -33,14 +33,14 @@ export async function sendWelcomeEmail({
   return resend.emails.send({
     from: FROM,
     to: customerEmail,
-    subject: 'Welcome to La Lumière & Co. ✨',
+    subject: 'Welcome to Petite Lavande ✨',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
         ${brandHeader}
         <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">Welcome, ${customerName}</h1>
         <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
-            We're so glad you're here. La Lumière was born out of a love for new life — every box we create is handcrafted with organic materials, curated with intention, and packed with dried lavender and a wax seal because every detail matters.
+            We're so glad you're here. Petite Lavande was born out of a love for new life — every box we create is handcrafted with organic materials, curated with intention, and packed with dried lavender and a wax seal because every detail matters.
           </p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
             Use code <strong>WELCOME10</strong> for 10% off your first order.
@@ -75,14 +75,14 @@ export async function sendReviewRequestEmail({
   return resend.emails.send({
     from: FROM,
     to: customerEmail,
-    subject: 'How was your La Lumière box? 🌿',
+    subject: 'How was your Petite Lavande box? 🌿',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
         ${brandHeader}
         <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">We'd love your thoughts</h1>
         <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
-            Hi ${customerName}, we hope your La Lumière box arrived beautifully and brought a little joy. Your review helps other families discover these products — it would mean the world to us.
+            Hi ${customerName}, we hope your Petite Lavande box arrived beautifully and brought a little joy. Your review helps other families discover these products — it would mean the world to us.
           </p>
           ${selectedItems.length > 0 ? `<ul style="padding-left:20px;margin:0 0 24px;">${itemLinks}</ul>` : ''}
           <div style="text-align:center;">
@@ -109,11 +109,11 @@ export async function sendAbandonedCartEmail({
   return resend.emails.send({
     from: FROM,
     to: customerEmail,
-    subject: 'Your La Lumière box is waiting ✨',
+    subject: 'Your Petite Lavande box is waiting ✨',
     html: `
       <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; color: #3d2c1e;">
         <div style="text-align: center; padding: 40px 0 24px;">
-          <p style="font-family: sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #c9a84c; margin: 0 0 8px;">La Lumière & Co.</p>
+          <p style="font-family: sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #c9a84c; margin: 0 0 8px;">Petite Lavande</p>
           <h1 style="font-size: 28px; font-weight: normal; margin: 0;">Your box is waiting</h1>
         </div>
         <div style="background: #faf7f2; border-radius: 16px; padding: 32px; margin-bottom: 24px;">
@@ -156,7 +156,7 @@ export async function sendGiftCardEmail({
   return resend.emails.send({
     from: FROM,
     to: recipientEmail,
-    subject: `${senderName} sent you a La Lumière gift card 🎀`,
+    subject: `${senderName} sent you a Petite Lavande gift card 🎀`,
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
         ${brandHeader}
@@ -167,7 +167,7 @@ export async function sendGiftCardEmail({
             Hi ${recipientName},
           </p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
-            ${senderName} has gifted you a <strong>${formatted} La Lumière gift card</strong>. Use the code below to build your own luxury baby gift box.
+            ${senderName} has gifted you a <strong>${formatted} Petite Lavande gift card</strong>. Use the code below to build your own luxury baby gift box.
           </p>
           ${message ? `
           <div style="border-left:3px solid #c9a84c;padding:12px 16px;margin-bottom:24px;">
@@ -214,11 +214,11 @@ export async function sendOrderConfirmationEmail({
   return resend.emails.send({
     from: FROM,
     to: customerEmail,
-    subject: 'Your La Lumière box is on its way 🎀',
+    subject: 'Your Petite Lavande box is on its way 🎀',
     html: `
       <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; color: #3d2c1e;">
         <div style="text-align: center; padding: 40px 0 24px;">
-          <p style="font-family: sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #c9a84c; margin: 0 0 8px;">La Lumière & Co.</p>
+          <p style="font-family: sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #c9a84c; margin: 0 0 8px;">Petite Lavande</p>
           <h1 style="font-size: 28px; font-weight: normal; margin: 0;">Order Confirmed</h1>
         </div>
         <div style="background: #faf7f2; border-radius: 16px; padding: 32px; margin-bottom: 24px;">
@@ -226,7 +226,7 @@ export async function sendOrderConfirmationEmail({
             Hi ${customerName},
           </p>
           <p style="font-family: sans-serif; font-size: 14px; line-height: 1.7; color: #5a3e28; margin: 0 0 8px;">
-            Thank you for your order${recipientName ? ` for ${recipientName}` : ''}. We're carefully assembling your La Lumière box and it will be on its way soon.
+            Thank you for your order${recipientName ? ` for ${recipientName}` : ''}. We're carefully assembling your Petite Lavande box and it will be on its way soon.
           </p>
           <div style="border-top: 1px solid #e8ddd0; margin: 24px 0; padding-top: 16px;">
             <p style="font-family: sans-serif; font-size: 12px; color: #9c7c5a; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 1px;">Order Total</p>

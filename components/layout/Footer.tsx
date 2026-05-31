@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { useState } from 'react'
@@ -14,11 +14,22 @@ const TRUST_BADGES = [
 function EmailSignup() {
   const [email, setEmail] = useState('')
   const [done, setDone] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!email) return
-    setDone(true)
+    if (!email || loading) return
+    setLoading(true)
+    try {
+      await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+    } finally {
+      setLoading(false)
+      setDone(true)
+    }
   }
 
   if (done) {
@@ -63,7 +74,7 @@ export function Footer() {
 
           {/* Brand + links */}
           <div className="flex flex-col items-start md:items-center">
-            <div className="font-serif text-xl tracking-[0.22em] uppercase text-bark-600 mb-0.5">La Lumière</div>
+            <div className="font-serif text-xl tracking-[0.22em] uppercase text-bark-600 mb-0.5">Petite Lavande</div>
             <div className="text-[8px] tracking-[0.45em] text-gold-400 uppercase font-sans mb-6">Collective</div>
             <ul className="space-y-2.5 text-xs font-sans text-center">
               <li><Link href="/shop" className="text-bark-400 hover:text-bark-600 transition-colors">Shop Gift Boxes</Link></li>
@@ -75,7 +86,7 @@ export function Footer() {
               <li><Link href="/account" className="text-bark-400 hover:text-bark-600 transition-colors">My Account</Link></li>
               <li><Link href="/wholesale" className="text-bark-400 hover:text-bark-600 transition-colors">Wholesale</Link></li>
               <li><Link href="/affiliate" className="text-bark-400 hover:text-bark-600 transition-colors">Affiliate Program</Link></li>
-              <li><a href="mailto:hello@lalumiercollective.com" className="text-bark-400 hover:text-bark-600 transition-colors">hello@lalumiercollective.com</a></li>
+              <li><a href="mailto:hello@petitelavande.com" className="text-bark-400 hover:text-bark-600 transition-colors">hello@petitelavande.com</a></li>
             </ul>
           </div>
 
@@ -101,12 +112,12 @@ export function Footer() {
       {/* Bottom bar */}
       <div className="bg-cream-100 border-t border-cream-300 py-5 px-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="font-sans text-[10px] text-bark-400/50">© {new Date().getFullYear()} La Lumière & Co. All rights reserved.</p>
+          <p className="font-sans text-[10px] text-bark-400/50">© {new Date().getFullYear()} Petite Lavande. All rights reserved.</p>
           <div className="flex items-center gap-6 font-sans text-[10px] text-bark-400/50">
             <Link href="/legal/privacy" className="hover:text-bark-400 transition-colors">Privacy</Link>
             <Link href="/legal/terms" className="hover:text-bark-400 transition-colors">Terms</Link>
             <Link href="/legal/returns" className="hover:text-bark-400 transition-colors">Returns</Link>
-            <a href="mailto:hello@lalumiercollective.com" className="hover:text-bark-400 transition-colors">Contact</a>
+            <a href="mailto:hello@petitelavande.com" className="hover:text-bark-400 transition-colors">Contact</a>
           </div>
         </div>
       </div>

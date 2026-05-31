@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -77,7 +77,7 @@ export default function AffiliateApplyPage() {
         </div>
         <div>
           <label className="block font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">Tell us about your audience</label>
-          <textarea rows={4} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} placeholder="Who follows you and why might they love La Lumière?" className={inputClass} />
+          <textarea rows={4} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} placeholder="Who follows you and why might they love Petite Lavande?" className={inputClass} />
         </div>
         {error && <p className="font-sans text-xs text-red-500">{error}</p>}
         <button

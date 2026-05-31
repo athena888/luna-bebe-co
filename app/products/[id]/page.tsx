@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
@@ -79,7 +79,7 @@ export default function ProductDetailPage() {
 
   useEffect(() => {
     try {
-      const raw = sessionStorage.getItem('lal_box_selection')
+      const raw = sessionStorage.getItem('pl_box_selection')
       if (!raw) return
       const items: Product[] = JSON.parse(raw)
       setInBox(items.some(p => p.id === id))
@@ -100,7 +100,7 @@ export default function ProductDetailPage() {
 
   function handleAddToBox() {
     if (!product) return
-    sessionStorage.setItem('lal_pending_add', product.id)
+    sessionStorage.setItem('pl_pending_add', product.id)
     router.push('/build')
   }
 

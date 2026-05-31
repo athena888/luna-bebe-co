@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { PREBUILT_BOXES, boxItemTotal } from '@/lib/prebuilt-boxes'
@@ -9,7 +9,7 @@ function fmt(cents: number) {
 }
 
 export const metadata = {
-  title: 'Shop by Aesthetic — La Lumière Collective',
+  title: 'Shop by Aesthetic — Petite Lavande',
   description: 'Curated-style baby gift boxes — Boho, Garden, and Classique, each in neutral and girl editions. 7 items per box, every detail chosen.',
 }
 

@@ -1,11 +1,12 @@
-import Link from 'next/link'
-import { LayoutDashboard, ShoppingBag, Phone, ImagePlus, Home, BarChart2, Target, Camera, TrendingUp, Users, Briefcase, Webhook } from 'lucide-react'
+﻿import Link from 'next/link'
+import { LayoutDashboard, ShoppingBag, Phone, ImagePlus, Home, BarChart2, Target, Camera, TrendingUp, Users, Briefcase, Webhook, PackageSearch } from 'lucide-react'
 
 const NAV = [
   { href: '/portal', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
   { href: '/portal/orders', label: 'Orders', icon: <ShoppingBag size={16} /> },
   { href: '/portal/issues', label: 'Phone Issues', icon: <Phone size={16} /> },
   { href: '/portal/products', label: 'Products', icon: <ImagePlus size={16} /> },
+  { href: '/portal/inventory', label: 'Inventory', icon: <PackageSearch size={16} /> },
   { href: '/portal/affiliates', label: 'Affiliates', icon: <Users size={16} /> },
   { href: '/portal/wholesale', label: 'Wholesale', icon: <Briefcase size={16} /> },
   { href: '/portal/webhooks', label: 'Webhooks', icon: <Webhook size={16} /> },
@@ -24,7 +25,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     <div className="flex min-h-screen bg-bark-700">
       <aside className="w-56 shrink-0 bg-bark-800 border-r border-bark-600/40 flex flex-col py-8 px-4">
         <div className="mb-8 px-2">
-          <div className="font-serif text-sm tracking-[0.2em] uppercase text-gold-300">La Lumière</div>
+          <div className="font-serif text-sm tracking-[0.2em] uppercase text-gold-300">Petite Lavande</div>
           <div className="font-sans text-[9px] uppercase tracking-[0.35em] text-gold-400/60 mt-0.5">Collective — Portal</div>
         </div>
         <nav className="flex flex-col gap-1">
@@ -58,7 +59,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         </div>
         <div className="mt-auto px-2">
           <div className="text-[10px] font-sans text-bark-400 leading-relaxed">
-            La Lumière Collective<br />Internal Portal
+            Petite Lavande<br />Internal Portal
           </div>
         </div>
       </aside>

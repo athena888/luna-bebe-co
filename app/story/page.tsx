@@ -1,11 +1,11 @@
-import { Header } from '@/components/layout/Header'
+﻿import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Our Story',
-  description: 'The story behind La Lumière Collective — why we believe every new baby deserves a gift as extraordinary as they are.',
+  description: 'The story behind Petite Lavande — why we believe every new baby deserves a gift as extraordinary as they are.',
 }
 
 export default function StoryPage() {
@@ -42,7 +42,7 @@ export default function StoryPage() {
               I wanted something different. Something that felt like it was made with intention — organic, artisan, beautiful. Something the mother would open and feel, for a moment, that she was being celebrated too. I couldn't find it. So I built it.
             </p>
             <p className="font-sans text-sm text-bark-500 leading-relaxed">
-              La Lumière Collective started at my kitchen table, sourcing directly from makers who share our values: no shortcuts, no synthetics, no compromises on what touches a newborn's skin. Every item in every box is something I would give my own child.
+              Petite Lavande started at my kitchen table, sourcing directly from makers who share our values: no shortcuts, no synthetics, no compromises on what touches a newborn's skin. Every item in every box is something I would give my own child.
             </p>
             <p className="font-sans text-sm text-bark-500 leading-relaxed">
               We seal every box with our signature wax stamp, wrap every letter by hand, and ship every order with the care it deserves. Because a birth is not just a delivery — it's a beginning. And beginnings deserve to be luminous.
@@ -139,13 +139,13 @@ export default function StoryPage() {
               className="text-3xl text-bark-600 mb-4"
               style={{ fontFamily: 'var(--font-cormorant)' }}
             >
-              @lalumiercollective
+              @petitelavande
             </h2>
             <p className="font-sans text-sm text-bark-400 mb-6 leading-relaxed">
               Behind-the-scenes of our packing process, sneak peeks of new products, and the most beautiful baby unboxings you've ever seen.
             </p>
             <a
-              href="https://instagram.com/lalumiercollective"
+              href="https://instagram.com/petitelavande"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block border border-bark-400 text-bark-600 font-sans text-[11px] tracking-[0.2em] uppercase px-8 py-3.5 hover:bg-bark-600 hover:text-cream-50 transition-colors"

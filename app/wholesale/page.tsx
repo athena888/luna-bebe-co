@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { TIER_DISCOUNTS, TIER_MIN_ORDER_CENTS, TIER_LABELS } from '@/lib/wholesale'
 
@@ -13,7 +13,7 @@ export default function WholesaleLanding() {
   return (
     <div className="max-w-4xl mx-auto px-6 py-20">
       <div className="text-center mb-16">
-        <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">Stock La Lumière</p>
+        <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">Stock Petite Lavande</p>
         <h1 className="font-serif text-5xl text-bark-600 mb-6">Wholesale</h1>
         <p className="font-sans text-base text-bark-400 max-w-xl mx-auto leading-relaxed">
           Bring our handcrafted, organic baby gifting to your storefront. Apply for a wholesale account to access trade pricing and dedicated support.

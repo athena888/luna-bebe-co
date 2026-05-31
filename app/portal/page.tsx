@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabase'
+﻿import { supabaseAdmin } from '@/lib/supabase'
 import { DollarSign, ShoppingBag, Clock, AlertCircle } from 'lucide-react'
 
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
@@ -34,7 +34,7 @@ export default async function PortalDashboard() {
     <div className="p-8">
       <div className="mb-8">
         <h1 className="font-serif text-3xl text-bark-600">Dashboard</h1>
-        <p className="font-sans text-sm text-bark-400 mt-1">Welcome back. Here&apos;s what&apos;s happening with La Lumiere.</p>
+        <p className="font-sans text-sm text-bark-400 mt-1">Welcome back. Here&apos;s what&apos;s happening with Petite Lavande.</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">

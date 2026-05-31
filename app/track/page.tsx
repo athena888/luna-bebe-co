@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Header } from '@/components/layout/Header'
@@ -71,7 +71,7 @@ export default function TrackPage() {
         <div className="border-b border-cream-300 px-6 py-12 text-center bg-cream-50">
           <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">Order Status</p>
           <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-2">Track Your Order</h1>
-          <p className="font-sans text-xs text-bark-400 tracking-wide">Enter your email to find your La Lumiere order.</p>
+          <p className="font-sans text-xs text-bark-400 tracking-wide">Enter your email to find your Petite Lavande order.</p>
         </div>
 
         <div className="max-w-xl mx-auto px-6 py-14">
@@ -157,7 +157,7 @@ export default function TrackPage() {
                       <div className="px-6 py-4">
                         <p className="font-sans text-xs text-bark-400">
                           Tracking information will appear here once your box ships. Questions? Email{' '}
-                          <a href="mailto:hello@lalumiercollective.com" className="text-bark-600 underline underline-offset-2">hello@lalumiercollective.com</a>
+                          <a href="mailto:hello@petitelavande.com" className="text-bark-600 underline underline-offset-2">hello@petitelavande.com</a>
                         </p>
                       </div>
                     )}

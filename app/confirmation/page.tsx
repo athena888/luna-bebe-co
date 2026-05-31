@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
@@ -21,9 +21,9 @@ function ConfirmationInner() {
 
   useEffect(() => {
     // Clear session storage after successful order
-    sessionStorage.removeItem('lal_box_selection')
-    sessionStorage.removeItem('lal_letter')
-    sessionStorage.removeItem('lal_recommended')
+    sessionStorage.removeItem('pl_box_selection')
+    sessionStorage.removeItem('pl_letter')
+    sessionStorage.removeItem('pl_recommended')
 
     // Could fetch order details from sessionId if needed
     if (sessionId) {

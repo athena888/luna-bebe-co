@@ -1,4 +1,4 @@
-const SHIPPO_API = 'https://api.goshippo.com'
+﻿const SHIPPO_API = 'https://api.goshippo.com'
 const SHIPPO_KEY = () => process.env.SHIPPO_API_KEY!
 
 function shippoFetch(path: string, body: unknown) {
@@ -39,7 +39,7 @@ export async function createShippingLabel({
   isPremium: boolean
 }): Promise<ShippoLabel> {
   const fromAddress = {
-    name: process.env.SHIPPO_FROM_NAME || 'La Lumiere & Co.',
+    name: process.env.SHIPPO_FROM_NAME || 'Petite Lavande',
     street1: process.env.SHIPPO_FROM_STREET1 || '123 Your Street',
     city: process.env.SHIPPO_FROM_CITY || 'Your City',
     state: process.env.SHIPPO_FROM_STATE || 'NY',

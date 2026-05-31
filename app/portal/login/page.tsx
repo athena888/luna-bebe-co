@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -65,7 +65,7 @@ export default function PortalLoginPage() {
   return (
     <div className="min-h-screen bg-bark-800 flex flex-col items-center justify-center px-6">
       <div className="mb-10 text-center">
-        <div className="font-serif text-2xl tracking-[0.2em] uppercase text-gold-300 mb-1">La Lumiere</div>
+        <div className="font-serif text-2xl tracking-[0.2em] uppercase text-gold-300 mb-1">Petite Lavande</div>
         <div className="font-sans text-[10px] uppercase tracking-[0.35em] text-gold-400/60">& Co. — Internal Portal</div>
       </div>
       <Suspense>

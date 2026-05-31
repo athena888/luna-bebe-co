@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import Image from 'next/image'
@@ -40,7 +40,7 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
   }, [])
 
   function handleAddToBox() {
-    sessionStorage.setItem('lal_pending_add', product.id)
+    sessionStorage.setItem('pl_pending_add', product.id)
     onClose()
     router.push('/build')
   }

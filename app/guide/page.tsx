@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -53,7 +53,7 @@ export default function GuidePage() {
   }
 
   function handleBuildWithRecs() {
-    if (recommendation?.products) sessionStorage.setItem('lal_recommended', JSON.stringify(recommendation.products))
+    if (recommendation?.products) sessionStorage.setItem('pl_recommended', JSON.stringify(recommendation.products))
     router.push('/build')
   }
 

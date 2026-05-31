@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Header } from '@/components/layout/Header'
@@ -11,9 +11,9 @@ import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
 
 export const metadata: Metadata = {
-  title: 'La Lumière & Co. — Luxury Curated Baby Gift Boxes',
+  title: 'Petite Lavande — Luxury Curated Baby Gift Boxes',
   description: 'Build a bespoke luxury baby shower gift box. Choose 5 premium organic items, add a handwritten letter, and deliver an unforgettable unboxing experience.',
-  openGraph: { title: 'La Lumière & Co.', description: 'Luxury curated organic baby gift boxes — built item by item, shipped with love.' },
+  openGraph: { title: 'Petite Lavande', description: 'Luxury curated organic baby gift boxes — built item by item, shipped with love.' },
 }
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
@@ -43,7 +43,7 @@ export default function HomePage() {
         <section className="relative w-full min-h-[85vh] sm:min-h-[92vh] bg-cream-200 flex items-end overflow-hidden">
           <Image
             src={homeImg('hero')}
-            alt="La Lumière — Timeless Moments, Made With Love"
+            alt="Petite Lavande — Timeless Moments, Made With Love"
             fill
             className="object-cover object-center"
             priority
@@ -136,7 +136,7 @@ export default function HomePage() {
             <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[60vh] order-1">
               <Image
                 src={homeImg('brand')}
-                alt="La Lumière brand story"
+                alt="Petite Lavande brand story"
                 fill
                 className="object-cover object-center"
                 unoptimized
@@ -149,7 +149,7 @@ export default function HomePage() {
                   Organic Cotton,<br />Ethically Sourced
                 </h2>
                 <p className="font-cormorant text-lg text-bark-400 leading-loose mb-10">
-                  Every item in every La Lumière box is made from certified organic cotton and natural
+                  Every item in every Petite Lavande box is made from certified organic cotton and natural
                   botanicals — safe from the very first day of life. No compromise, ever.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -180,7 +180,7 @@ export default function HomePage() {
                   A moment they&apos;ll<br />never forget.
                 </h2>
                 <p className="font-cormorant text-lg text-bark-400 leading-loose mb-4">
-                  Every La Lumière box is filled with curated organic items, hand-tied ribbon, dried lavender, and a personal letter written just for them.
+                  Every Petite Lavande box is filled with curated organic items, hand-tied ribbon, dried lavender, and a personal letter written just for them.
                 </p>
                 <ul className="space-y-2.5">
                   {['5 curated organic items', 'Hand-written personal letter', 'Dried lavender & wax seal', 'Satin ribbon & gift-ready box'].map(item => (
@@ -196,7 +196,7 @@ export default function HomePage() {
             <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[65vh] order-1 md:order-2">
               <Image
                 src={homeImg('inside')}
-                alt="What's inside a La Lumière box"
+                alt="What's inside a Petite Lavande box"
                 fill
                 className="object-cover object-center"
                 unoptimized
@@ -209,7 +209,7 @@ export default function HomePage() {
         {/* ── 6c. The Box — photo gallery scroll ── */}
         <section className="border-t border-cream-300 py-16">
           <div className="pl-6 sm:pl-9 pr-6 mb-8">
-            <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">La Lumière</p>
+            <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Petite Lavande</p>
             <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">The Box</h2>
             <p className="font-serif italic text-bark-400 text-base mt-1">Every detail, made with love.</p>
           </div>
@@ -222,7 +222,7 @@ export default function HomePage() {
               >
                 <Image
                   src={homeImg(slot)}
-                  alt="La Lumière box"
+                  alt="Petite Lavande box"
                   fill
                   className="object-cover object-center"
                   unoptimized
@@ -285,7 +285,7 @@ export default function HomePage() {
         <section className="relative py-24 sm:py-40 px-6 text-center overflow-hidden bg-bark-600">
           <Image
             src={homeImg('box')}
-            alt="La Lumière gift box"
+            alt="Petite Lavande gift box"
             fill
             className="object-cover object-center opacity-40"
             unoptimized

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef, useEffect } from 'react'
 import { MessageCircle, X, Send, Loader2 } from 'lucide-react'
@@ -10,7 +10,7 @@ interface Message {
 
 const GREETING: Message = {
   role: 'assistant',
-  content: "Hi! I'm here to help with anything about La Lumière Collective — products, shipping, orders, or gift ideas. What can I help you with?",
+  content: "Hi! I'm here to help with anything about Petite Lavande — products, shipping, orders, or gift ideas. What can I help you with?",
 }
 
 export function ChatWidget() {
@@ -47,7 +47,7 @@ export function ChatWidget() {
       const data = await res.json()
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply ?? data.error ?? 'Something went wrong.' }])
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Connection error. Please email hello@lalumiercollective.com' }])
+      setMessages(prev => [...prev, { role: 'assistant', content: 'Connection error. Please email hello@petitelavande.com' }])
     } finally {
       setLoading(false)
     }
@@ -64,7 +64,7 @@ export function ChatWidget() {
           {/* Header */}
           <div className="bg-bark-600 px-4 py-3.5 flex items-center justify-between shrink-0">
             <div>
-              <p className="font-sans text-sm font-medium text-cream-100">La Lumière Assistant</p>
+              <p className="font-sans text-sm font-medium text-cream-100">Petite Lavande Assistant</p>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-sage-400" />
                 <p className="font-sans text-[10px] text-cream-300">Online now</p>
@@ -103,7 +103,7 @@ export function ChatWidget() {
           {/* Human handoff */}
           <div className="px-4 py-2 border-t border-cream-200 bg-white shrink-0">
             <a
-              href="mailto:hello@lalumiercollective.com"
+              href="mailto:hello@petitelavande.com"
               className="font-sans text-[10px] text-bark-400 hover:text-bark-600 transition-colors"
             >
               Prefer to talk to a person? Email us →

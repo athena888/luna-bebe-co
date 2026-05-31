@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -27,7 +27,7 @@ export default function LetterPage() {
   const [showPreview, setShowPreview] = useState(false)
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('lal_box_selection')
+    const stored = sessionStorage.getItem('pl_box_selection')
     if (stored) {
       try { setBoxSelection(JSON.parse(stored)) } catch { /* ignore */ }
     }
@@ -52,7 +52,7 @@ export default function LetterPage() {
   }
 
   function handleContinue() {
-    sessionStorage.setItem('lal_letter', letterContent)
+    sessionStorage.setItem('pl_letter', letterContent)
     router.push('/checkout')
   }
 

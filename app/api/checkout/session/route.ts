@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
 import { BOX_BASE_PRICE, SHIPPING } from '@/lib/products'
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
       {
         price_data: {
           currency: 'usd',
-          product_data: { name: 'La Lumière Box Experience', description: 'Premium magnetic box, satin ribbon, wax seal, dried lavender, handwritten letter' },
+          product_data: { name: 'Petite Lavande Box Experience', description: 'Premium magnetic box, satin ribbon, wax seal, dried lavender, handwritten letter' },
           unit_amount: BOX_BASE_PRICE,
         },
         quantity: 1,

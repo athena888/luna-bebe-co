@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
@@ -17,9 +17,9 @@ export function UTMCapture() {
 
     // Only write if we have at least one UTM param and nothing stored yet
     if (source || medium || campaign) {
-      const existing = sessionStorage.getItem('lal_utm')
+      const existing = sessionStorage.getItem('pl_utm')
       if (!existing) {
-        sessionStorage.setItem('lal_utm', JSON.stringify({ source, medium, campaign, content, term }))
+        sessionStorage.setItem('pl_utm', JSON.stringify({ source, medium, campaign, content, term }))
       }
     }
   }, [searchParams])

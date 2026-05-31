@@ -1,8 +1,8 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'How La Lumière & Co. collects, uses, and protects your personal information.',
+  description: 'How Petite Lavande collects, uses, and protects your personal information.',
 }
 
 export default function PrivacyPage() {
@@ -52,7 +52,7 @@ export default function PrivacyPage() {
       </Section>
 
       <Section title="9. Contact">
-        For privacy-related requests, email <a href="mailto:hello@lalumiercollective.com" className="text-bark-600 underline underline-offset-2">hello@lalumiercollective.com</a>.
+        For privacy-related requests, email <a href="mailto:hello@petitelavande.com" className="text-bark-600 underline underline-offset-2">hello@petitelavande.com</a>.
       </Section>
     </article>
   )

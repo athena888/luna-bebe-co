@@ -1,8 +1,8 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Returns & Refund Policy',
-  description: 'La Lumière & Co. return, exchange, and refund policy.',
+  description: 'Petite Lavande return, exchange, and refund policy.',
 }
 
 export default function ReturnsPage() {
@@ -13,7 +13,7 @@ export default function ReturnsPage() {
       <p className="text-bark-400 text-sm mb-10">Last updated: May 2025</p>
 
       <Section title="Our Commitment">
-        Every La Lumière box is handcrafted with care. If something isn&apos;t right, we want to make it right.
+        Every Petite Lavande box is handcrafted with care. If something isn&apos;t right, we want to make it right.
       </Section>
 
       <Section title="Damaged or Incorrect Items">
@@ -25,7 +25,7 @@ export default function ReturnsPage() {
       </Section>
 
       <Section title="Gift Orders">
-        If you received a La Lumière box as a gift and there&apos;s an issue with any item, please contact us with your order reference number (included in the box) and we&apos;ll assist you directly.
+        If you received a Petite Lavande box as a gift and there&apos;s an issue with any item, please contact us with your order reference number (included in the box) and we&apos;ll assist you directly.
       </Section>
 
       <Section title="Refund Timeline">
@@ -37,7 +37,7 @@ export default function ReturnsPage() {
       </Section>
 
       <Section title="How to Contact Us">
-        Email <a href="mailto:hello@lalumiercollective.com" className="text-bark-600 underline underline-offset-2">hello@lalumiercollective.com</a> with your order number and a description of the issue. We aim to respond within 24 hours.
+        Email <a href="mailto:hello@petitelavande.com" className="text-bark-600 underline underline-offset-2">hello@petitelavande.com</a> with your order number and a description of the issue. We aim to respond within 24 hours.
       </Section>
     </article>
   )

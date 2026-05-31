@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Image from 'next/image'
@@ -15,7 +15,7 @@ export function EditorialStrip() {
       {/* Always-visible image fallback behind video */}
       <Image
         src={imgSrc}
-        alt="La Lumière — handcrafted with care"
+        alt="Petite Lavande — handcrafted with care"
         fill
         className="object-cover object-center"
         unoptimized

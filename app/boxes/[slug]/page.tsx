@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+﻿import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
@@ -99,7 +99,7 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ slug
 
               <div className="space-y-3 pb-5 mb-5 border-b border-cream-200">
                 <div className="flex justify-between">
-                  <span className="font-sans text-xs text-bark-400">La Lumière Box</span>
+                  <span className="font-sans text-xs text-bark-400">Petite Lavande Box</span>
                   <span className="font-sans text-xs text-bark-600">{fmt(BOX_BASE_PRICE)}</span>
                 </div>
                 {items.map(item => (

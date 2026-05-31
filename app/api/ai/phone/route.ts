@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { anthropic, LUNA_SYSTEM_PROMPT } from '@/lib/anthropic'
 import { supabaseAdmin } from '@/lib/supabase'
 
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     if (!speechResult) {
       const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Say voice="alice">Hello, and thank you for calling La Lumiere and Company. I'm your personal gift assistant. How can I help you today? Please speak after the tone.</Say>
+  <Say voice="alice">Hello, and thank you for calling Petite Lavande. I'm your personal gift assistant. How can I help you today? Please speak after the tone.</Say>
   <Record maxLength="60" transcribe="false" action="/api/ai/phone" playBeep="true" />
 </Response>`
       return new NextResponse(twiml, {
@@ -64,7 +64,7 @@ You are responding to a phone call. Keep responses SHORT (2-3 sentences max) sin
     await supabaseAdmin.from('customer_issues').insert({
       caller_phone: callerPhone,
       issue_summary: issueSummary,
-      full_transcript: `Caller: ${speechResult}\n\nLa Lumiere: ${spokenResponse}`,
+      full_transcript: `Caller: ${speechResult}\n\nPetite Lavande: ${spokenResponse}`,
       status: 'open',
     })
 
@@ -83,7 +83,7 @@ You are responding to a phone call. Keep responses SHORT (2-3 sentences max) sin
 
     const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Say voice="alice">Thank you for calling La Lumiere. We're experiencing a brief technical issue. Please call back shortly or visit us online at la lumiere dot com. Goodbye!</Say>
+  <Say voice="alice">Thank you for calling Petite Lavande. We're experiencing a brief technical issue. Please call back shortly or visit us online at Petite Lavande dot com. Goodbye!</Say>
   <Hangup />
 </Response>`
 

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -13,7 +13,7 @@ function formatPrice(cents: number) {
 }
 
 function shopThisBox(selection: BoxSelection) {
-  sessionStorage.setItem('lal_box_selection', JSON.stringify(selection))
+  sessionStorage.setItem('pl_box_selection', JSON.stringify(selection))
 }
 
 export default function ShopPage() {

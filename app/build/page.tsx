@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
@@ -176,11 +176,11 @@ export default function BuildPage() {
   useEffect(() => {
     fetch('/api/inventory').then(r => r.json()).then(d => setInventory(d.inventory ?? {}))
     fetch('/api/products/hover').then(r => r.json()).then(d => setHoverMedia(d.hover ?? {}))
-    const pendingId = sessionStorage.getItem('lal_pending_add')
+    const pendingId = sessionStorage.getItem('pl_pending_add')
     if (pendingId) {
       const found = getAllProducts().find(p => p.id === pendingId)
       if (found) setSelected(prev => { const next = new Map(prev); next.set(found.id, found); return next })
-      sessionStorage.removeItem('lal_pending_add')
+      sessionStorage.removeItem('pl_pending_add')
     }
   }, [])
 
@@ -249,7 +249,7 @@ export default function BuildPage() {
     : null
 
   function handleCheckout() {
-    sessionStorage.setItem('lal_box_selection', JSON.stringify(selectedList))
+    sessionStorage.setItem('pl_box_selection', JSON.stringify(selectedList))
     router.push('/letter')
   }
 
@@ -384,7 +384,7 @@ export default function BuildPage() {
                     }
                   </div>
                   <div className="flex-1 min-w-0 pt-1">
-                    <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mb-0.5">La Lumiere</p>
+                    <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mb-0.5">Petite Lavande</p>
                     <p className="font-sans text-sm text-bark-700 leading-snug mb-1.5">{product.name}</p>
                     <p className="font-sans text-sm text-bark-500 mb-3">{formatPrice(product.price)}</p>
                     <button

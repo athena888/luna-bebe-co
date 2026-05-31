@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import Link from 'next/link'
 import { useState } from 'react'
 import { Menu, X, User, Heart } from 'lucide-react'
@@ -27,7 +27,7 @@ export function Header() {
                 transformOrigin: 'left center',
               }}
             >
-              La Lumière
+              Petite Lavande
             </span>
             <span
               className="uppercase tracking-[0.45em] font-sans"

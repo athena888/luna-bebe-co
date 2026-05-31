@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Header } from '@/components/layout/Header'
@@ -56,7 +56,7 @@ export default function GiftCardsPage() {
           <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">The Perfect Gift</p>
           <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-2">Gift Cards</h1>
           <p className="font-sans text-sm text-bark-400 max-w-md mx-auto leading-relaxed">
-            Can't decide? Give the gift of choice. Your recipient builds their own La Lumière box with your love.
+            Can't decide? Give the gift of choice. Your recipient builds their own Petite Lavande box with your love.
           </p>
         </div>
 
@@ -137,7 +137,7 @@ export default function GiftCardsPage() {
             <div className="lg:col-span-2">
               <div className="sticky top-24 bg-bark-700 p-8 text-center">
                 <Gift size={32} className="text-gold-300 mx-auto mb-4" />
-                <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-gold-400 mb-2">La Lumière & Co.</p>
+                <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-gold-400 mb-2">Petite Lavande</p>
                 <p className="font-serif text-4xl text-cream-100 mb-1">${(amount / 100).toFixed(0)}</p>
                 <p className="font-sans text-sm text-cream-400 mb-6">Gift Card</p>
                 {recipientName && (
