@@ -52,7 +52,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     )
 
     const promoCode = await stripe.promotionCodes.create(
-      { promotion: { type: 'coupon', coupon: coupon.id }, max_redemptions: 1 },
+      { coupon: coupon.id, max_redemptions: 1 },
       { idempotencyKey: `giftcard-promo-${session.id}` }
     )
 
