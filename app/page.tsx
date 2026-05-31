@@ -51,12 +51,12 @@ export default function HomePage() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-bark-800/40 via-transparent to-transparent" />
           <div className="relative z-10 w-full px-6 sm:px-12 pb-10 sm:pb-14 flex justify-end">
-            <div className="w-full max-w-[260px] sm:max-w-xs text-right">
-              <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-cream-200/80 mb-3">New Season</p>
-              <h1 className="font-serif text-[2.25rem] sm:text-[5rem] text-cream-50 leading-[1.05] mb-2">
-                A Gift She Will<br />Remember.
+            <div className="w-full max-w-[300px] sm:max-w-sm text-right">
+              <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-cream-200/80 mb-3">Petite Lavande</p>
+              <h1 className="font-serif text-[2.25rem] sm:text-[4.5rem] text-cream-50 leading-[1.05] mb-3">
+                A New Chapter,<br />Wrapped in Care.
               </h1>
-              <p className="font-script text-xl sm:text-2xl text-gold-300 mb-6 sm:mb-8">forever.</p>
+              <p className="font-serif italic text-cream-200/80 text-sm sm:text-base leading-relaxed mb-6 sm:mb-8">This is the moment Petite Lavande was made for.</p>
               <div className="flex flex-col gap-2 items-end">
                 <Link
                   href="/guide"
@@ -144,13 +144,12 @@ export default function HomePage() {
             </div>
             <div className="bg-cream-100 flex items-center justify-center px-8 sm:px-16 py-16 sm:py-24 order-2">
               <div className="max-w-sm">
-                <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-6">Our Promise</p>
+                <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-6">For the Giver</p>
                 <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600 leading-[1.05] mb-6">
-                  Organic Cotton,<br />Ethically Sourced
+                  Not a gift basket.<br />Something for her.
                 </h2>
                 <p className="font-cormorant text-lg text-bark-400 leading-loose mb-10">
-                  Every item in every Petite Lavande box is made from certified organic cotton and natural
-                  botanicals — safe from the very first day of life. No compromise, ever.
+                  You&apos;re here because someone you love is becoming a mother. You want to send something that says <em>I see you. I see how much love you carry.</em> Every box we send is built around one question: what would the most thoughtful person in her life choose?
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link
@@ -175,12 +174,12 @@ export default function HomePage() {
             {/* Text — always renders first in DOM for mobile, shown left on desktop */}
             <div className="bg-cream-100 flex items-center justify-center px-8 sm:px-16 py-16 sm:py-24 order-2 md:order-1">
               <div className="max-w-sm">
-                <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-6">What&apos;s Inside</p>
+                <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-6">Traced to the Source</p>
                 <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600 leading-[1.05] mb-6">
-                  A moment they&apos;ll<br />never forget.
+                  We don&apos;t curate.<br />We trace.
                 </h2>
                 <p className="font-cormorant text-lg text-bark-400 leading-loose mb-4">
-                  Every Petite Lavande box is filled with curated organic items, hand-tied ribbon, dried lavender, and a personal letter written just for them.
+                  Every ingredient, every material — traced to its origin. Provence lavender fields. Pacific Northwest farms. Small American makers. Everything chosen the way a daughter would choose for her own mother.
                 </p>
                 <ul className="space-y-2.5">
                   {['5 curated organic items', 'Hand-written personal letter', 'Dried lavender & wax seal', 'Satin ribbon & gift-ready box'].map(item => (

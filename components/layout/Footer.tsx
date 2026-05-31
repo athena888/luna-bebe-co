@@ -112,7 +112,10 @@ export function Footer() {
       {/* Bottom bar */}
       <div className="bg-cream-100 border-t border-cream-300 py-5 px-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="font-sans text-[10px] text-bark-400/50">© {new Date().getFullYear()} Petite Lavande. All rights reserved.</p>
+          <div>
+            <p className="font-serif italic text-bark-500 text-sm mb-1">Fait avec amour, pour vous.</p>
+            <p className="font-sans text-[10px] text-bark-400/50">© {new Date().getFullYear()} Petite Lavande. Made in Seattle. Sent with love.</p>
+          </div>
           <div className="flex items-center gap-6 font-sans text-[10px] text-bark-400/50">
             <Link href="/legal/privacy" className="hover:text-bark-400 transition-colors">Privacy</Link>
             <Link href="/legal/terms" className="hover:text-bark-400 transition-colors">Terms</Link>
