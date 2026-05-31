@@ -10,10 +10,10 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-white">
       {/* Nav bar */}
       <div className="border-b border-cream-300">
-        <div className="w-full pl-4 sm:pl-9 pr-2 sm:pr-6 h-[68px] grid grid-cols-[1fr_auto_1fr] items-center">
+        <div className="relative w-full pl-4 sm:pl-9 pr-2 sm:pr-6 h-[68px] flex items-center justify-between">
 
           {/* Logo — left */}
-          <Link href="/" className="flex flex-col leading-none justify-self-start">
+          <Link href="/" className="flex flex-col leading-none shrink-0">
             <span
               className="uppercase inline-block"
               style={{
@@ -29,16 +29,10 @@ export function Header() {
             >
               Petite Lavande
             </span>
-            <span
-              className="uppercase tracking-[0.45em] font-sans"
-              style={{ fontSize: '0.42rem', color: '#d4b97a', letterSpacing: '0.45em', marginTop: '3px' }}
-            >
-              Collective
-            </span>
           </Link>
 
           {/* Nav — center */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
             <Link href="/shop" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400 hover:text-bark-600 transition-colors">Shop</Link>
             <Link href="/boxes" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400 hover:text-bark-600 transition-colors">Ready-Made</Link>
             <Link href="/build" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400 hover:text-bark-600 transition-colors">Build a Box</Link>
