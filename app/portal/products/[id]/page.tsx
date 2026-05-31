@@ -61,6 +61,13 @@ export default function ProductDetailPage() {
   const [aiGenerating, setAiGenerating] = useState(false)
   const [aiResult, setAiResult] = useState<string | null>(null)
 
+  // Lifestyle photo state
+  const [lifestyleMode, setLifestyleMode] = useState(false)
+  const [babyImage, setBabyImage] = useState<File | null>(null)
+  const [babyImagePreview, setBabyImagePreview] = useState<string | null>(null)
+  const [clothingImage, setClothingImage] = useState<File | null>(null)
+  const [clothingImagePreview, setClothingImagePreview] = useState<string | null>(null)
+
   const load = useCallback(async () => {
     setLoading(true)
     const res = await fetch(`/api/portal/products/${id}`)
@@ -125,19 +132,39 @@ export default function ProductDetailPage() {
   }
 
   async function handleAiGenerate() {
-    if (!aiPrompt && !aiBaseFile) return
-    setAiGenerating(true)
-    setAiResult(null)
-    const form = new FormData()
-    form.append('prompt', aiPrompt)
-    if (aiBaseFile) form.append('image', aiBaseFile)
-    const res = await fetch(`/api/portal/products/${id}/ai-generate`, { method: 'POST', body: form })
-    const data = await res.json()
-    if (data.imageUrl) {
-      setAiResult(data.imageUrl)
-      await load() // reload gallery to show new image
+    if (lifestyleMode) {
+      if (!clothingImage) return
+      setAiGenerating(true)
+      setAiResult(null)
+      const form = new FormData()
+      form.append('isLifestyle', 'true')
+      form.append('image', clothingImage)
+      if (babyImage) form.append('babyImage', babyImage)
+      const res = await fetch(`/api/portal/products/${id}/ai-generate`, { method: 'POST', body: form })
+      const data = await res.json()
+      if (data.imageUrl) {
+        setAiResult(data.imageUrl)
+        await load()
+        // Discard baby image after generation
+        setBabyImage(null)
+        setBabyImagePreview(null)
+      }
+      setAiGenerating(false)
+    } else {
+      if (!aiPrompt && !aiBaseFile) return
+      setAiGenerating(true)
+      setAiResult(null)
+      const form = new FormData()
+      form.append('prompt', aiPrompt)
+      if (aiBaseFile) form.append('image', aiBaseFile)
+      const res = await fetch(`/api/portal/products/${id}/ai-generate`, { method: 'POST', body: form })
+      const data = await res.json()
+      if (data.imageUrl) {
+        setAiResult(data.imageUrl)
+        await load()
+      }
+      setAiGenerating(false)
     }
-    setAiGenerating(false)
   }
 
   function handleAiBaseSelect(file: File) {
@@ -362,9 +389,29 @@ export default function ProductDetailPage() {
 
           {/* AI Photo Generation */}
           <div className="bg-white border border-cream-300 rounded-xl p-6">
-            <div className="flex items-center gap-2 mb-5">
-              <Sparkles size={14} className="text-gold-400" />
-              <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">AI Photo Generation</p>
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <Sparkles size={14} className="text-gold-400" />
+                <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">AI Photo Generation</p>
+              </div>
+              <div className="flex items-center border border-cream-300 rounded bg-cream-50">
+                <button
+                  onClick={() => { setLifestyleMode(false); setAiResult(null) }}
+                  className={`px-3 py-1.5 font-sans text-[9px] tracking-[0.15em] uppercase transition-colors ${
+                    !lifestyleMode ? 'bg-bark-600 text-white' : 'text-bark-400 hover:text-bark-600'
+                  }`}
+                >
+                  Standard
+                </button>
+                <button
+                  onClick={() => { setLifestyleMode(true); setAiResult(null) }}
+                  className={`px-3 py-1.5 font-sans text-[9px] tracking-[0.15em] uppercase transition-colors border-l border-cream-300 ${
+                    lifestyleMode ? 'bg-bark-600 text-white' : 'text-bark-400 hover:text-bark-600'
+                  }`}
+                >
+                  Lifestyle
+                </button>
+              </div>
             </div>
 
             {/* AI result preview */}
@@ -384,66 +431,138 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            <div className="mb-4">
-              <label className={labelCls}>Prompt</label>
-              <div
-                className="relative"
-                onDragOver={e => e.preventDefault()}
-                onDrop={e => {
-                  e.preventDefault()
-                  const file = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/'))
-                  if (file) handleAiBaseSelect(file)
-                }}
-              >
-                <textarea
-                  value={aiPrompt}
-                  onChange={e => setAiPrompt(e.target.value)}
-                  onPaste={e => {
-                    const items = Array.from(e.clipboardData.items)
-                    const imageItem = items.find(item => item.type.startsWith('image/'))
-                    if (imageItem) {
-                      e.preventDefault()
-                      const file = imageItem.getAsFile()
-                      if (file) handleAiBaseSelect(file)
-                    }
+            {/* Standard mode */}
+            {!lifestyleMode && (
+              <div className="mb-4">
+                <label className={labelCls}>Prompt</label>
+                <div
+                  className="relative"
+                  onDragOver={e => e.preventDefault()}
+                  onDrop={e => {
+                    e.preventDefault()
+                    const file = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/'))
+                    if (file) handleAiBaseSelect(file)
                   }}
-                  placeholder="e.g. soft cream background, natural morning light, product on linen fabric…  Paste or drop a photo here to use as reference"
-                  rows={3}
-                  className={inputCls + ' resize-none'}
-                />
-              </div>
-
-              {/* Attached image chip */}
-              {aiBaseFile && (
-                <div className="mt-2 flex items-center gap-2">
-                  <div className="relative w-10 h-10 rounded overflow-hidden border border-cream-300 shrink-0">
-                    {aiBasePreview && <Image src={aiBasePreview} alt="reference" fill className="object-cover" unoptimized />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-sans text-[10px] text-bark-600 truncate">{aiBaseFile.name}</p>
-                    <p className="font-sans text-[9px] text-bark-400">Reference photo attached</p>
-                  </div>
-                  <button
-                    onClick={() => { setAiBaseFile(null); setAiBasePreview(null) }}
-                    className="font-sans text-[10px] text-bark-400 hover:text-red-500 transition-colors shrink-0"
-                  >
-                    Remove
-                  </button>
+                >
+                  <textarea
+                    value={aiPrompt}
+                    onChange={e => setAiPrompt(e.target.value)}
+                    onPaste={e => {
+                      const items = Array.from(e.clipboardData.items)
+                      const imageItem = items.find(item => item.type.startsWith('image/'))
+                      if (imageItem) {
+                        e.preventDefault()
+                        const file = imageItem.getAsFile()
+                        if (file) handleAiBaseSelect(file)
+                      }
+                    }}
+                    placeholder="e.g. soft cream background, natural morning light, product on linen fabric…  Paste or drop a photo here to use as reference"
+                    rows={3}
+                    className={inputCls + ' resize-none'}
+                  />
                 </div>
-              )}
 
-              <p className="font-sans text-[9px] text-bark-400/60 mt-2">
-                Paste or drop a photo into the prompt to use as reference. Generated images are saved to gallery automatically.
-              </p>
-            </div>
+                {aiBaseFile && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <div className="relative w-10 h-10 rounded overflow-hidden border border-cream-300 shrink-0">
+                      {aiBasePreview && <Image src={aiBasePreview} alt="reference" fill className="object-cover" unoptimized />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-sans text-[10px] text-bark-600 truncate">{aiBaseFile.name}</p>
+                      <p className="font-sans text-[9px] text-bark-400">Reference photo attached</p>
+                    </div>
+                    <button
+                      onClick={() => { setAiBaseFile(null); setAiBasePreview(null) }}
+                      className="font-sans text-[10px] text-bark-400 hover:text-red-500 transition-colors shrink-0"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+
+                <p className="font-sans text-[9px] text-bark-400/60 mt-2">
+                  Paste or drop a photo to use as reference. Generated images are saved to gallery automatically.
+                </p>
+              </div>
+            )}
+
+            {/* Lifestyle mode */}
+            {lifestyleMode && (
+              <div className="space-y-4">
+                <div>
+                  <label className={labelCls}>Clothing Photo</label>
+                  <div className="relative border-2 border-dashed border-cream-300 rounded-lg p-4 flex items-center justify-center min-h-32 cursor-pointer hover:border-bark-400 transition-colors"
+                    onClick={() => document.getElementById('clothing-upload')?.click()}
+                  >
+                    {clothingImagePreview ? (
+                      <div className="relative w-full h-24">
+                        <Image src={clothingImagePreview} alt="clothing" fill className="object-contain" unoptimized />
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <Upload size={18} className="text-bark-400/50 mx-auto mb-1" />
+                        <p className="font-sans text-[9px] text-bark-400">Click to upload clothing photo</p>
+                      </div>
+                    )}
+                  </div>
+                  <input
+                    id="clothing-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={e => {
+                      const f = e.target.files?.[0]
+                      if (f) {
+                        setClothingImage(f)
+                        setClothingImagePreview(URL.createObjectURL(f))
+                      }
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelCls}>Baby Reference Photo (Optional)</label>
+                  <div className="relative border-2 border-dashed border-cream-300 rounded-lg p-4 flex items-center justify-center min-h-32 cursor-pointer hover:border-bark-400 transition-colors"
+                    onClick={() => document.getElementById('baby-upload')?.click()}
+                  >
+                    {babyImagePreview ? (
+                      <div className="relative w-full h-24">
+                        <Image src={babyImagePreview} alt="baby" fill className="object-contain" unoptimized />
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <Upload size={18} className="text-bark-400/50 mx-auto mb-1" />
+                        <p className="font-sans text-[9px] text-bark-400">Click to upload baby reference</p>
+                      </div>
+                    )}
+                  </div>
+                  <input
+                    id="baby-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={e => {
+                      const f = e.target.files?.[0]
+                      if (f) {
+                        setBabyImage(f)
+                        setBabyImagePreview(URL.createObjectURL(f))
+                      }
+                    }}
+                  />
+                  <p className="font-sans text-[9px] text-bark-400/60 mt-2">
+                    Upload a baby photo for reference. Image discarded after generation.
+                  </p>
+                </div>
+              </div>
+            )}
 
             <button
               onClick={handleAiGenerate}
-              disabled={aiGenerating || (!aiPrompt && !aiBaseFile)}
+              disabled={aiGenerating || (lifestyleMode ? !clothingImage : (!aiPrompt && !aiBaseFile))}
               className="flex items-center gap-2 bg-gold-400 text-white font-sans text-[10px] tracking-[0.2em] uppercase px-6 py-2.5 hover:bg-gold-500 transition-colors disabled:opacity-40"
             >
               <Sparkles size={12} />
-              {aiGenerating ? 'Generating…' : 'Generate Photo'}
+              {aiGenerating ? 'Generating…' : lifestyleMode ? 'Generate Lifestyle Photo' : 'Generate Photo'}
             </button>
           </div>
 
