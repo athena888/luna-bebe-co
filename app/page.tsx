@@ -176,7 +176,7 @@ export default function HomePage() {
               <div className="max-w-sm">
                 <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-6">Traced to the Source</p>
                 <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600 leading-[1.05] mb-6">
-                  We don&apos;t curate.<br />We trace.
+                  From the source,<br />to her.
                 </h2>
                 <p className="font-cormorant text-lg text-bark-400 leading-loose mb-4">
                   Every ingredient, every material — traced to its origin. Provence lavender fields. Pacific Northwest farms. Small American makers. Everything chosen the way a daughter would choose for her own mother.
