@@ -42,7 +42,7 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-white">
       {/* Nav bar */}
       <div className="border-b border-cream-300">
-        <div className="relative w-full pl-4 sm:pl-9 pr-2 sm:pr-6 h-[68px] flex items-center justify-between">
+        <div className="relative w-full pl-4 sm:pl-9 pr-16 sm:pr-6 h-[68px] flex items-center justify-between">
 
           {/* Logo — left */}
           <Link href="/" className="flex flex-col leading-none shrink-0">
