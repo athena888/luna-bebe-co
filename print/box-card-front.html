@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Petite Lavande — Inside Box Card (Front)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f5f0e8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+
+  .card {
+    width: 5in;
+    height: 7in;
+    background: #faf7f2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6in 0.65in;
+    position: relative;
+    text-align: center;
+  }
+
+  .lavender-top {
+    font-size: 2rem;
+    margin-bottom: 0.35in;
+    opacity: 0.7;
+    letter-spacing: 0.15em;
+  }
+
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10pt;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: #9b7fc7;
+    margin-bottom: 0.05in;
+  }
+
+  .tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 9pt;
+    color: #b8a0c8;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.45in;
+  }
+
+  .divider {
+    width: 1.2in;
+    height: 0.5px;
+    background: #c9b8d4;
+    margin: 0 auto 0.45in;
+  }
+
+  .opener {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 20pt;
+    color: #5c4a6e;
+    margin-bottom: 0.3in;
+    letter-spacing: 0.03em;
+  }
+
+  .body-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11.5pt;
+    color: #4a3728;
+    line-height: 1.85;
+    text-align: center;
+    margin-bottom: 0.22in;
+  }
+
+  .highlight {
+    font-weight: 600;
+    font-style: italic;
+  }
+
+  .closing-divider {
+    width: 0.8in;
+    height: 0.5px;
+    background: #c9b8d4;
+    margin: 0.3in auto 0.25in;
+  }
+
+  .closing {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 10.5pt;
+    color: #7a5c8a;
+    letter-spacing: 0.08em;
+  }
+
+  @media print {
+    body {
+      background: none;
+      margin: 0;
+    }
+    .card {
+      width: 5in;
+      height: 7in;
+      box-shadow: none;
+      page-break-after: always;
+    }
+    @page {
+      size: 5in 7in;
+      margin: 0;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <div class="lavender-top">𓆸</div>
+
+  <div class="logo">Petite Lavande</div>
+  <div class="tagline">Fait avec amour, pour vous.</div>
+
+  <div class="divider"></div>
+
+  <p class="opener">We see you.</p>
+
+  <p class="body-text">
+    You are doing one of the hardest, most loving<br>
+    things a person can do. You are running on<br>
+    broken sleep and feeding schedules and a love<br>
+    so big it doesn&rsquo;t fit in your chest.
+  </p>
+
+  <p class="body-text">
+    You deserve warm tea. You deserve ten minutes<br>
+    in a bath. You deserve a few hours of dark,<br>
+    quiet sleep with silk against your eyes.<br>
+    You deserve the small luxury of being thought of.
+  </p>
+
+  <p class="body-text">
+    This box is here to remind you:<br>
+    <span class="highlight">you are not invisible in your own story.</span>
+  </p>
+
+  <p class="body-text">
+    Welcome to this new chapter.<br>
+    We hope it starts well.
+  </p>
+
+  <div class="closing-divider"></div>
+  <div class="closing">— Petite Lavande</div>
+
+</div>
+</body>
+</html>
