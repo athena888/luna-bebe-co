@@ -51,10 +51,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
       { idempotencyKey: `giftcard-coupon-${session.id}` }
     )
 
-    const promoCode = await stripe.promotionCodes.create(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const promoCode = await (stripe.promotionCodes.create as any)(
       { coupon: coupon.id, max_redemptions: 1 },
       { idempotencyKey: `giftcard-promo-${session.id}` }
-    )
+    ) as { code: string }
 
     await sendGiftCardEmail({
       recipientName: recipient_name,
