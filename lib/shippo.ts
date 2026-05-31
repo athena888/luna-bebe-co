@@ -1,4 +1,4 @@
-﻿const SHIPPO_API = 'https://api.goshippo.com'
+const SHIPPO_API = 'https://api.goshippo.com'
 const SHIPPO_KEY = () => process.env.SHIPPO_API_KEY!
 
 function shippoFetch(path: string, body: unknown) {

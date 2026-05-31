@@ -1,4 +1,4 @@
-﻿import Link from 'next/link'
+import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { COMMISSION_RATES } from '@/lib/affiliate'
 

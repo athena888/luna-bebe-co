@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { anthropic } from '@/lib/anthropic'
 
 const SYSTEM_PROMPT = `You are the friendly customer service assistant for Petite Lavande, a luxury organic baby gift box company. You are warm, knowledgeable, and speak with a refined but approachable tone.

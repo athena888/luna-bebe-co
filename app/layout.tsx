@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Dancing_Script, Cormorant_Garamond, Jost } from "next/font/google";
 import Script from "next/script";
 import { Suspense } from "react";

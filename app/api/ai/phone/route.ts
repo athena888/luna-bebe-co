@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { anthropic, LUNA_SYSTEM_PROMPT } from '@/lib/anthropic'
 import { supabaseAdmin } from '@/lib/supabase'
 

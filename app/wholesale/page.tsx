@@ -1,4 +1,4 @@
-﻿import Link from 'next/link'
+import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { TIER_DISCOUNTS, TIER_MIN_ORDER_CENTS, TIER_LABELS } from '@/lib/wholesale'
 

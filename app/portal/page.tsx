@@ -1,4 +1,4 @@
-﻿import { supabaseAdmin } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase'
 import { DollarSign, ShoppingBag, Clock, AlertCircle } from 'lucide-react'
 
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }

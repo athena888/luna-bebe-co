@@ -1,4 +1,4 @@
-﻿import Link from 'next/link'
+import Link from 'next/link'
 import { LayoutDashboard, ShoppingBag, Phone, ImagePlus, Home, BarChart2, Target, Camera, TrendingUp, Users, Briefcase, Webhook, PackageSearch } from 'lucide-react'
 
 const NAV = [

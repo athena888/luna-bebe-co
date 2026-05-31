@@ -1,4 +1,4 @@
-﻿const KEY = 'pl_wishlist'
+const KEY = 'pl_wishlist'
 
 export function getWishlist(): string[] {
   if (typeof window === 'undefined') return []
