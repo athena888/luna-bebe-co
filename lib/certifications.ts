@@ -46,5 +46,6 @@ export const CERT_BY_KEY: Record<string, CertDef> = Object.fromEntries(
 
 export interface ProductCert {
   key: string
-  certificateUrl?: string | null   // uploaded certificate image/PDF shown in the modal
+  certificateUrl?: string | null   // uploaded certificate image/PDF shown in the tap modal
+  iconUrl?: string | null          // uploaded logo image shown in the badge (global, set once)
 }

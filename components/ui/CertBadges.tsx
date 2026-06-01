@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { X, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react'
+import Image from 'next/image'
 import { CERT_BY_KEY, type ProductCert } from '@/lib/certifications'
 
 export function CertBadges({ certs }: { certs: ProductCert[] }) {
@@ -28,7 +29,9 @@ export function CertBadges({ certs }: { certs: ProductCert[] }) {
               onClick={() => setOpenIdx(idx)}
               className="flex items-center gap-1.5 border border-cream-300 bg-cream-50 hover:border-bark-400 hover:bg-cream-100 transition-colors px-2.5 py-1.5 rounded-full group"
             >
-              <ShieldCheck size={11} className="text-gold-400 shrink-0" />
+              {cert.iconUrl
+                ? <Image src={cert.iconUrl} alt={d.label} width={14} height={14} className="object-contain shrink-0" unoptimized />
+                : <ShieldCheck size={11} className="text-gold-400 shrink-0" />}
               <span className="font-sans text-[10px] tracking-[0.1em] uppercase text-bark-500 group-hover:text-bark-700 transition-colors">{d.label}</span>
             </button>
           )
@@ -108,7 +111,12 @@ export function CertBadges({ certs }: { certs: ProductCert[] }) {
                 </div>
               )}
 
-              <h3 className="font-serif text-lg text-bark-600 mb-1">{def.full}</h3>
+              <div className="flex items-center gap-3 mb-3">
+                {opened.iconUrl && (
+                  <Image src={opened.iconUrl} alt={def.label} width={40} height={40} className="object-contain shrink-0" unoptimized />
+                )}
+                <h3 className="font-serif text-lg text-bark-600">{def.full}</h3>
+              </div>
               <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mb-3">{def.region}</p>
               <p className="font-sans text-sm text-bark-600 leading-relaxed">{def.blurb}</p>
 
