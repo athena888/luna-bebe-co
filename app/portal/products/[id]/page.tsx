@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { getAllProducts } from '@/lib/products'
 import { PRODUCT_TAGS } from '@/lib/product-tags'
-import { CERTIFICATIONS, type ProductCert } from '@/lib/certifications'
+import type { CertDef, ProductCert } from '@/lib/certifications'
 import { ArrowLeft, Upload, Trash2, Star, Loader, Sparkles, Check, Plus, Minus, Video, X, ShieldCheck } from 'lucide-react'
 
 type GalleryImage = {
@@ -56,6 +56,7 @@ export default function ProductDetailPage() {
   const [hasVariants, setHasVariants] = useState(false)
   const [variants, setVariants] = useState<Variant[]>([])
   const [certs, setCerts] = useState<ProductCert[]>([])
+  const [certLibrary, setCertLibrary] = useState<CertDef[]>([])
   const [certUploading, setCertUploading] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -107,7 +108,8 @@ export default function ProductDetailPage() {
       setCerts(data.product.certifications ?? [])
       setHoverVideo(data.product.hover_video ?? null)
     }
-    // Load variants in parallel
+    // Load cert library + variants in parallel
+    fetch('/api/portal/cert-library').then(r => r.json()).then(d => setCertLibrary(d.certs ?? [])).catch(() => {})
     const vRes = await fetch(`/api/portal/products/${id}/variants`)
     if (vRes.ok) {
       const vData = await vRes.json()
@@ -944,8 +946,13 @@ export default function ProductDetailPage() {
             <p className="font-sans text-[10px] text-bark-400/70 mb-4 leading-relaxed">
               Toggle a cert to show its badge on the storefront. Optionally upload the actual certificate image so customers can tap to view it.
             </p>
+            {certLibrary.length === 0 && (
+              <p className="font-sans text-xs text-bark-400 mb-4">
+                No certifications in the library yet. Add some in <a href="/portal/cert-icons" className="text-gold-500 underline">Cert Library</a>.
+              </p>
+            )}
             <div className="space-y-3">
-              {CERTIFICATIONS.map(cert => {
+              {certLibrary.map(cert => {
                 const active = certs.some(c => c.key === cert.key)
                 const saved = certs.find(c => c.key === cert.key)
                 const uploading = certUploading === cert.key
@@ -960,7 +967,7 @@ export default function ProductDetailPage() {
                           className="accent-bark-600 w-4 h-4"
                         />
                         <div>
-                          <span className="font-sans text-sm font-medium text-bark-600">{cert.label}</span>
+                          <span className="font-sans text-sm font-medium text-bark-600">{cert.name}</span>
                           <span className="font-sans text-[10px] text-bark-400 ml-2">({cert.region})</span>
                         </div>
                       </label>
