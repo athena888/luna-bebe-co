@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { PRODUCT_TAGS } from '@/lib/product-tags'
+import { resolveImageType } from '@/lib/media-type'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 
@@ -31,7 +32,6 @@ export async function POST(req: NextRequest) {
 
       const arrayBuffer = await file.arrayBuffer()
       const base64 = Buffer.from(arrayBuffer).toString('base64')
-
       const instruction = buildInstruction(category, keywords)
 
       if (file.type === 'application/pdf') {
@@ -40,8 +40,10 @@ export async function POST(req: NextRequest) {
           { type: 'text', text: instruction },
         ]
       } else if (file.type.startsWith('image/')) {
+        // Sniff the real format — browsers sometimes report the wrong MIME type
+        const realType = resolveImageType(arrayBuffer, file.type)
         userContent = [
-          { type: 'image', source: { type: 'base64', media_type: file.type as 'image/jpeg' | 'image/png' | 'image/webp', data: base64 } },
+          { type: 'image', source: { type: 'base64', media_type: realType, data: base64 } },
           { type: 'text', text: instruction },
         ]
       } else {

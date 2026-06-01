@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { certSlug } from '@/lib/certifications'
+import { resolveImageType } from '@/lib/media-type'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 
@@ -22,9 +23,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Please upload a PDF or image file' }, { status: 400 })
     }
 
+    // Sniff the real image format — browsers sometimes report the wrong MIME type
+    const realImageType = isImage ? resolveImageType(arrayBuffer, file.type) : null
+
     const contentBlock = isPdf
       ? { type: 'document' as const, source: { type: 'base64' as const, media_type: 'application/pdf' as const, data: base64 } }
-      : { type: 'image' as const, source: { type: 'base64' as const, media_type: file.type as 'image/jpeg' | 'image/png' | 'image/webp', data: base64 } }
+      : { type: 'image' as const, source: { type: 'base64' as const, media_type: realImageType as 'image/jpeg' | 'image/png' | 'image/webp', data: base64 } }
 
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
