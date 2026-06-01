@@ -24,11 +24,14 @@ export async function getCertLibrary(): Promise<CertDef[]> {
   const now = Date.now()
   if (_cache && now - _cacheAt < 30_000) return _cache
 
-  const { data } = await supabaseAdmin
-    .from('cert_library')
-    .select('*')
-    .order('sort_order')
-  _cache = (data ?? []) as CertDef[]
+  let data: unknown[] = []
+  try {
+    const res = await supabaseAdmin.from('cert_library').select('*').order('sort_order')
+    data = res.data ?? []
+  } catch {
+    data = []
+  }
+  _cache = data as CertDef[]
   _cacheAt = now
   return _cache
 }

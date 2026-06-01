@@ -4,7 +4,8 @@ import { invalidateCertCache } from '@/lib/certifications'
 
 export async function GET() {
   const { data, error } = await supabaseAdmin.from('cert_library').select('*').order('sort_order')
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  // If table doesn't exist yet return empty list (migration not run) instead of erroring
+  if (error) return NextResponse.json({ certs: [] })
   return NextResponse.json({ certs: data ?? [] })
 }
 

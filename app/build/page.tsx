@@ -373,7 +373,7 @@ export default function BuildPage() {
       {/* ── Bag icon — fixed over header right ── */}
       <button
         onClick={() => setBagOpen(true)}
-        className="fixed top-0 right-4 sm:right-6 z-[51] h-[68px] flex items-center gap-1 text-bark-600 hover:text-bark-800 transition-colors"
+        className="fixed top-0 right-14 sm:right-6 z-[51] h-[68px] flex items-center gap-1 text-bark-600 hover:text-bark-800 transition-colors"
         aria-label="Open your box"
       >
         <div className="relative">

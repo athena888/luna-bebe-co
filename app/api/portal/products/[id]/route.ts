@@ -43,10 +43,21 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const body = await req.json()
   const { name, description, price, tag, ingredients, inventoryQuantity, hasVariants, certifications } = body
 
+  // Save core fields first — never let certifications block a save
   try {
-    await updateProduct(id, { name, description, price, tag, ingredients, hasVariants, certifications })
+    await updateProduct(id, { name, description, price, tag, ingredients, hasVariants })
   } catch {
     return NextResponse.json({ error: 'Failed to save product details' }, { status: 500 })
+  }
+
+  // Certifications saved separately — if the column doesn't exist yet it fails
+  // silently so the rest of the save still succeeds
+  if (certifications !== undefined) {
+    try {
+      await updateProduct(id, { certifications })
+    } catch {
+      console.warn('certifications column not ready — run the SQL migration')
+    }
   }
 
   if (inventoryQuantity !== undefined) {
