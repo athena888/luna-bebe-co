@@ -27,24 +27,29 @@ export async function POST(req: NextRequest) {
           },
           {
             type: 'text',
-            text: `You are an inventory parser for a luxury baby clothing and gift box company.
+            text: `You are an inventory parser for a luxury baby clothing and gift box company. The sheet may be a supplier "buy now" / purchase sheet with prices and color swatches.
 
-Extract ALL inventory items from this PDF sheet. For each item identify:
-- item_id: the product/SKU code. If none, slugify the name (e.g. "Cloud Onesie" → "cloud-onesie").
-- name: product name as shown
-- color: color of the item (e.g. "white", "blush pink", "sage green")
+Extract ALL line items from this PDF. For each item identify:
+- item_id: the product/SKU code. If none, slugify the name (e.g. "Short-sleeve onesie" → "short-sleeve-onesie"). Keep the SAME item_id across its size/color rows.
+- name: product name as shown (drop trailing footnote markers like "*")
+- color: the color name (e.g. "white", "khaki/sand", "grey-blue", "dusty rose", "cream", "natural wood")
+- color_hex: the hex code shown near the swatch if present (e.g. "#E4DCD6"). Uppercase, include the leading "#". Use "" if none.
 - size: map to one of these exact strings: "0-3", "3-6", "6-9", "9-12", "12-18", "18-24", "one-size"
-  - NB / Newborn / 0-3m → "0-3"
-  - 3m / 3-6m → "3-6"
-  - 6m / 6-9m → "6-9"
-  - 9m / 9-12m → "9-12"
-  - 12m / 12-18m → "12-18"
-  - 18m / 18-24m / 24m → "18-24"
-  - No size / OS / one size / accessories / swaddles / non-clothing → "one-size"
-- quantity: integer count
+  - NB / Newborn / 0-3M → "0-3"
+  - 3M / 3-6M → "3-6"
+  - 6M / 6-9M → "6-9"
+  - 9M / 9-12M → "9-12"
+  - 12M / 12-18M → "12-18"
+  - 18M / 18-24M / 24M → "18-24"
+  - "-" / blank / OS / one size / blankets / lovey / teether / non-clothing → "one-size"
+- quantity: integer count (the Qty column)
+- unit_price: the per-unit price in dollars as a number (e.g. 4.30 from "$4.30"). If the price is "TBD", blank, or missing, use null.
+- status: "to_source" if the row is under a "TO SOURCE" / "confirm before ordering" section or has no price; otherwise "stock".
+
+Ignore subtotal, total, and section-summary rows. Only return real line items.
 
 Return ONLY a valid JSON array, no markdown, no explanation:
-[{"item_id":"...","name":"...","color":"...","size":"...","quantity":0}]`,
+[{"item_id":"...","name":"...","color":"...","color_hex":"...","size":"...","quantity":0,"unit_price":0,"status":"stock"}]`,
           },
         ],
       }],

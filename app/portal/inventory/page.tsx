@@ -12,8 +12,11 @@ interface ParsedItem {
   item_id: string
   name: string
   color: string
+  color_hex?: string
   size: string
   quantity: number
+  unit_price?: number | null   // dollars
+  status?: string              // 'stock' | 'to_source'
 }
 
 type Phase = 'upload' | 'parsing' | 'review' | 'saving' | 'done'
@@ -79,7 +82,7 @@ export default function InventoryPage() {
     if (file) handleFile(file)
   }, [])
 
-  function updateItem(index: number, field: keyof ParsedItem, value: string | number) {
+  function updateItem(index: number, field: keyof ParsedItem, value: string | number | null) {
     setItems(prev => prev.map((item, i) => i === index ? { ...item, [field]: value } : item))
   }
 
@@ -88,7 +91,7 @@ export default function InventoryPage() {
   }
 
   function addRow() {
-    setItems(prev => [...prev, { item_id: '', name: '', color: '', size: '0-3', quantity: 0 }])
+    setItems(prev => [...prev, { item_id: '', name: '', color: '', color_hex: '', size: '0-3', quantity: 0, unit_price: null, status: 'stock' }])
   }
 
   async function confirm() {
@@ -147,10 +150,11 @@ export default function InventoryPage() {
         <p className="font-sans text-xs font-semibold uppercase tracking-widest text-bark-400 mb-2">What your PDF should include</p>
         <ul className="font-sans text-sm text-bark-500 space-y-1 list-disc list-inside">
           <li>Item ID or product name</li>
-          <li>Color per row</li>
+          <li>Color (and hex swatch code, if shown)</li>
           <li>Size (e.g. 0-3m, 3-6m, NB, 12m)</li>
-          <li>Quantity</li>
+          <li>Quantity and unit price</li>
         </ul>
+        <p className="font-sans text-xs text-bark-400 mt-3">Works with supplier &ldquo;buy now&rdquo; purchase sheets too — prices, hex codes, and &ldquo;to source&rdquo; items are captured.</p>
       </div>
     </div>
   )
@@ -232,7 +236,7 @@ export default function InventoryPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-cream-200 bg-cream-50">
-              {['Item ID', 'Name', 'Color', 'Size', 'Qty', ''].map(h => (
+              {['Item ID', 'Name', 'Color', 'Hex', 'Size', 'Qty', 'Unit $', 'Status', ''].map(h => (
                 <th key={h} className="px-3 py-3 text-left font-sans text-[10px] font-semibold uppercase tracking-widest text-bark-400">{h}</th>
               ))}
             </tr>
@@ -248,14 +252,40 @@ export default function InventoryPage() {
                   <td className="px-1 py-1 min-w-[140px]">
                     <Cell value={item.name} onChange={v => updateItem(i, 'name', v)} />
                   </td>
-                  <td className="px-1 py-1 min-w-[120px]">
+                  <td className="px-1 py-1 min-w-[110px]">
                     <Cell value={item.color} onChange={v => updateItem(i, 'color', v)} />
+                  </td>
+                  <td className="px-1 py-1 w-24">
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        className="inline-block w-4 h-4 rounded border border-cream-300 shrink-0"
+                        style={{ backgroundColor: item.color_hex || 'transparent' }}
+                      />
+                      <Cell value={item.color_hex ?? ''} onChange={v => updateItem(i, 'color_hex', v)} />
+                    </div>
                   </td>
                   <td className="px-1 py-1 min-w-[100px]">
                     <SizeSelect value={item.size} onChange={v => updateItem(i, 'size', v)} />
                   </td>
-                  <td className="px-1 py-1 w-20">
+                  <td className="px-1 py-1 w-16">
                     <Cell value={item.quantity} onChange={v => updateItem(i, 'quantity', parseInt(v) || 0)} type="number" />
+                  </td>
+                  <td className="px-1 py-1 w-20">
+                    <Cell
+                      value={item.unit_price ?? ''}
+                      onChange={v => updateItem(i, 'unit_price', v === '' ? null : parseFloat(v))}
+                      type="number"
+                    />
+                  </td>
+                  <td className="px-1 py-1 w-24">
+                    <select
+                      value={item.status ?? 'stock'}
+                      onChange={e => updateItem(i, 'status', e.target.value)}
+                      className="w-full bg-transparent border-0 outline-none focus:bg-cream-50 px-2 py-1 rounded text-sm text-bark-700 font-sans"
+                    >
+                      <option value="stock">Stock</option>
+                      <option value="to_source">To source</option>
+                    </select>
                   </td>
                   <td className="px-2 py-1 w-10">
                     <button onClick={() => removeItem(i)} className="text-bark-300 hover:text-red-500 transition-colors">
@@ -275,8 +305,22 @@ export default function InventoryPage() {
         </div>
       </div>
 
-      <p className="font-sans text-xs text-bark-400 mt-4">
+      <div className="flex flex-wrap items-center gap-x-8 gap-y-2 mt-4">
+        <p className="font-sans text-sm text-bark-600">
+          <span className="text-bark-400">Total units:</span>{' '}
+          <strong>{items.reduce((s, it) => s + (Number(it.quantity) || 0), 0)}</strong>
+        </p>
+        <p className="font-sans text-sm text-bark-600">
+          <span className="text-bark-400">Total purchase cost:</span>{' '}
+          <strong>
+            ${items.reduce((s, it) => s + (Number(it.quantity) || 0) * (Number(it.unit_price) || 0), 0).toFixed(2)}
+          </strong>
+        </p>
+      </div>
+
+      <p className="font-sans text-xs text-bark-400 mt-3">
         Quantities are <strong>additive</strong> — if a variant already exists, the new amount is added to the current stock.
+        Hex codes and unit costs are saved with each variant. &ldquo;To source&rdquo; rows still save (set quantity to 0 if not yet ordered).
       </p>
     </div>
   )
