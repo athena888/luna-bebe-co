@@ -1,5 +1,6 @@
 import { supabaseAdmin } from '@/lib/supabase'
 import { DollarSign, ShoppingBag, Clock, AlertCircle } from 'lucide-react'
+import { RealtimeTraffic } from '@/components/portal/RealtimeTraffic'
 
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
 
@@ -31,13 +32,13 @@ export default async function PortalDashboard() {
   ]
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       <div className="mb-8">
         <h1 className="font-serif text-3xl text-bark-600">Dashboard</h1>
         <p className="font-sans text-sm text-bark-400 mt-1">Welcome back. Here&apos;s what&apos;s happening with Petite Lavande.</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
         {CARDS.map(({ label, value, icon, bg }) => (
           <div key={label} className={`${bg} rounded-2xl border border-cream-200 p-5`}>
             <div className="flex items-center justify-between mb-3">
@@ -47,6 +48,11 @@ export default async function PortalDashboard() {
             <div className="font-serif text-3xl text-bark-600">{value}</div>
           </div>
         ))}
+      </div>
+
+      {/* Live traffic from Google Analytics */}
+      <div className="mb-10">
+        <RealtimeTraffic />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
