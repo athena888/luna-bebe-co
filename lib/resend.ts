@@ -234,8 +234,8 @@ export async function sendOrderConfirmationEmail({
           </div>
           ${trackingNumber ? `
           <div style="border-top: 1px solid #e8ddd0; padding-top: 16px;">
-            <p style="font-family: sans-serif; font-size: 12px; color: #9c7c5a; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 1px;">Tracking</p>
-            <a href="${trackingUrl || '#'}" style="font-family: sans-serif; font-size: 14px; color: #c9a84c;">${trackingNumber}</a>
+            <p style="font-family: sans-serif; font-size: 12px; color: #9c7c5a; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 1px;">Tracking Number</p>
+            <p style="font-family: monospace; font-size: 14px; color: #3d2c1e; margin: 0;">${trackingNumber.slice(-8).toUpperCase()}</p>
           </div>
           ` : ''}
         </div>

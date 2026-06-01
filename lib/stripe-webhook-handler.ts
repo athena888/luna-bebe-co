@@ -109,6 +109,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
       orderId: order.id,
       recipientName: order.recipient_name,
       total: order.total_amount,
+      trackingNumber: order.tracking_number,
     }).catch(err => console.error('Confirmation email error:', err))
   }
 

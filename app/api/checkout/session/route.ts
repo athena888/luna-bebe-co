@@ -10,6 +10,7 @@ export async function POST(req: NextRequest) {
     const {
       selectedItems,
       letterContent,
+      letterVersion,
       shippingType,
       shippingAddress,
       recipientName,
@@ -24,6 +25,7 @@ export async function POST(req: NextRequest) {
     }: {
       selectedItems: Product[]
       letterContent: string
+      letterVersion?: 1 | 2
       shippingType: ShippingType
       shippingAddress: {
         name: string
@@ -82,6 +84,10 @@ export async function POST(req: NextRequest) {
 
     const affiliateCode = req.cookies.get(AFFILIATE_COOKIE)?.value || null
 
+    // Generate tracking number (UUID)
+    const crypto = await import('crypto')
+    const trackingNumber = crypto.randomUUID()
+
     // Save order to database first (pending)
     const { data: order, error: orderError } = await supabaseAdmin
       .from('orders')
@@ -92,8 +98,10 @@ export async function POST(req: NextRequest) {
         recipient_name: recipientName || null,
         selected_items: selectedItems,
         letter_content: letterContent || null,
+        letter_version: letterVersion || null,
         shipping_type: shippingType,
         shipping_address: shippingAddress,
+        tracking_number: trackingNumber,
         total_amount: totalAmount,
         status: 'pending',
         preferred_assembly_image: preferredAssemblyImage || null,
@@ -127,6 +135,7 @@ export async function POST(req: NextRequest) {
       cancel_url: `${baseUrl}/checkout`,
       metadata: {
         order_id: order.id,
+        tracking_number: trackingNumber,
         recipient_name: recipientName || '',
       },
     })

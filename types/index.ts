@@ -47,6 +47,7 @@ export interface Order {
   recipient_name?: string
   selected_items: Product[]
   letter_content?: string
+  letter_version?: 1 | 2
   shipping_type: ShippingType
   shipping_address: ShippingAddress
   total_amount: number

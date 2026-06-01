@@ -27,6 +27,8 @@ export default function CheckoutPage() {
 
   const [contact, setContact] = useState({ name: '', email: '', phone: '' })
   const [address, setAddress] = useState({ line1: '', line2: '', city: '', state: '', zip: '' })
+  const [recipientName, setRecipientName] = useState('')
+  const [letterVersion, setLetterVersion] = useState<1 | 2>(1)
 
   const [promoCode, setPromoCode] = useState('')
   const [promoState, setPromoState] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle')
@@ -41,6 +43,9 @@ export default function CheckoutPage() {
   useEffect(() => {
     const storedBox = sessionStorage.getItem('pl_box_selection')
     const storedLetter = sessionStorage.getItem('pl_letter')
+    const storedRecipient = sessionStorage.getItem('pl_recipient_name')
+    const storedVersion = sessionStorage.getItem('pl_letter_version')
+
     if (storedBox) {
       try {
         const parsed = JSON.parse(storedBox)
@@ -51,6 +56,8 @@ export default function CheckoutPage() {
       router.push('/build')
     }
     if (storedLetter) setLetter(storedLetter)
+    if (storedRecipient) setRecipientName(storedRecipient)
+    if (storedVersion) setLetterVersion(parseInt(storedVersion) as 1 | 2)
   }, [router])
 
   async function generateBoxPreview(sel: BoxSelection) {
@@ -130,10 +137,12 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           selectedItems,
           letterContent: letter,
+          letterVersion: letter ? letterVersion : undefined,
           shippingType,
           promoId: promoId || undefined,
           preferredAssemblyImage: chosenStyle?.url || null,
           preferredAssemblyStyle: chosenStyle?.label || null,
+          recipientName: recipientName || undefined,
           shippingAddress: {
             name: contact.name,
             email: contact.email,
@@ -199,6 +208,10 @@ export default function CheckoutPage() {
                     <div>
                       <label className={labelClass}>Phone (optional)</label>
                       <input type="tel" value={contact.phone} onChange={e => setContact(c => ({ ...c, phone: e.target.value }))} placeholder="+1 (555) 000-0000" className={inputClass} />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className={labelClass}>Gift Recipient Name (optional)</label>
+                      <input type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)} placeholder="Who is this gift for?" className={inputClass} />
                     </div>
                   </div>
                 </div>
