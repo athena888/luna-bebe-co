@@ -27,6 +27,18 @@ interface GalleryImage {
   id: string; image_url: string; label: string | null; is_primary: boolean; sort_order: number
 }
 
+// Products from the catalog API carry a has_variants flag
+type BuildProduct = Product & { has_variants?: boolean }
+
+interface VariantOpt { color: string; color_hex: string | null; size: string; quantity: number }
+
+// A selected line in the box — a product plus its chosen variant (if any)
+type SelectedItem = Product & { selectedColor?: string; selectedSize?: string; colorHex?: string; lineKey: string }
+
+function variantKey(id: string, color?: string, size?: string) {
+  return color && size ? `${id}:${color}:${size}` : id
+}
+
 // ── Product Card ─────────────────────────────────────────────────────────────
 const ProductCard = memo(function ProductCard({ product, selected, onToggle, onOpen, soldOut, hoverImage, hoverVideo }: {
   product: Product; selected: boolean; onToggle: () => void; onOpen: () => void; soldOut: boolean
@@ -128,13 +140,13 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
 // ── Build Page ────────────────────────────────────────────────────────────────
 export default function BuildPage() {
   const router = useRouter()
-  const [selected, setSelected] = useState<Map<string, Product>>(new Map())
+  const [selected, setSelected] = useState<Map<string, SelectedItem>>(new Map())
   const [inventory, setInventory] = useState<Record<string, number>>({})
   const [hoverMedia, setHoverMedia] = useState<Record<string, { image?: string; video?: string }>>({})
 
   // Live catalog from the database, grouped by category. Falls back to the
   // built-in static catalog until the fetch resolves.
-  const [catalog, setCatalog] = useState<Record<string, Product[]>>(() => ({ ...PRODUCTS }))
+  const [catalog, setCatalog] = useState<Record<string, BuildProduct[]>>(() => ({ ...PRODUCTS }))
   const activeCategories = useMemo(
     () => CATEGORY_ORDER.filter(cat => (catalog[cat]?.length ?? 0) > 0),
     [catalog]
@@ -162,8 +174,11 @@ export default function BuildPage() {
   }
 
   // Modal
-  const [modalProduct, setModalProduct] = useState<Product | null>(null)
+  const [modalProduct, setModalProduct] = useState<BuildProduct | null>(null)
   const [modalGallery, setModalGallery] = useState<GalleryImage[]>([])
+  const [modalVariants, setModalVariants] = useState<VariantOpt[]>([])
+  const [pickColor, setPickColor] = useState<string | null>(null)
+  const [pickSize, setPickSize] = useState<string | null>(null)
   const [modalLoading, setModalLoading] = useState(false)
   const [modalImgIdx, setModalImgIdx] = useState(0)
   const galleryCache = useRef<Record<string, GalleryImage[]>>({})
@@ -191,7 +206,7 @@ export default function BuildPage() {
     const pendingId = sessionStorage.getItem('pl_pending_add')
     if (pendingId) {
       const found = getAllProducts().find(p => p.id === pendingId)
-      if (found) setSelected(prev => { const next = new Map(prev); next.set(found.id, found); return next })
+      if (found) setSelected(prev => { const next = new Map(prev); next.set(found.id, { ...found, lineKey: found.id }); return next })
       sessionStorage.removeItem('pl_pending_add')
     }
   }, [])
@@ -215,38 +230,57 @@ export default function BuildPage() {
     return inventory[id] <= 0
   }, [inventory])
 
-  const toggle = useCallback((product: Product) => {
+  // Non-variant add/remove (key = product id)
+  const toggle = useCallback((product: BuildProduct) => {
     setSelected(prev => {
       const next = new Map(prev)
-      next.has(product.id) ? next.delete(product.id) : next.set(product.id, product)
+      if (next.has(product.id)) next.delete(product.id)
+      else next.set(product.id, { ...product, lineKey: product.id })
       return next
     })
   }, [])
 
-  const removeItem = useCallback((id: string) => {
-    setSelected(prev => { const next = new Map(prev); next.delete(id); return next })
+  // Variant add/remove (key = id:color:size)
+  const toggleVariant = useCallback((product: BuildProduct, color: string, size: string, hex?: string | null) => {
+    const key = variantKey(product.id, color, size)
+    setSelected(prev => {
+      const next = new Map(prev)
+      if (next.has(key)) next.delete(key)
+      else next.set(key, { ...product, selectedColor: color, selectedSize: size, colorHex: hex ?? undefined, lineKey: key })
+      return next
+    })
   }, [])
 
-  const openModal = useCallback(async (product: Product) => {
+  const removeItem = useCallback((key: string) => {
+    setSelected(prev => { const next = new Map(prev); next.delete(key); return next })
+  }, [])
+
+  // Is any variant (or the plain product) of this id in the box?
+  const isProductSelected = useCallback(
+    (id: string) => Array.from(selected.keys()).some(k => k === id || k.startsWith(`${id}:`)),
+    [selected]
+  )
+
+  const openModal = useCallback(async (product: BuildProduct) => {
     setModalProduct(product)
     setModalImgIdx(0)
-    if (galleryCache.current[product.id]) {
-      setModalGallery(galleryCache.current[product.id])
-      return
-    }
+    setModalVariants([])
+    setPickColor(null)
+    setPickSize(null)
     setModalLoading(true)
-    setModalGallery([])
+    setModalGallery(galleryCache.current[product.id] ?? [])
     try {
       const res = await fetch(`/api/products/${product.id}`)
       if (res.ok) {
-        const { gallery } = await res.json()
-        const sorted: GalleryImage[] = [...gallery].sort((a: GalleryImage, b: GalleryImage) => {
+        const { gallery, variants } = await res.json()
+        const sorted: GalleryImage[] = [...(gallery ?? [])].sort((a: GalleryImage, b: GalleryImage) => {
           if (a.is_primary && !b.is_primary) return -1
           if (!a.is_primary && b.is_primary) return 1
           return a.sort_order - b.sort_order
         })
         galleryCache.current[product.id] = sorted
         setModalGallery(sorted)
+        if (Array.isArray(variants)) setModalVariants(variants)
       }
     } catch {}
     setModalLoading(false)
@@ -259,6 +293,19 @@ export default function BuildPage() {
   const modalMainSrc = modalProduct
     ? modalProduct.image ?? (SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${modalProduct.id}.jpg` : null)
     : null
+
+  // Variant picker derived state
+  const modalHasVariants = !!modalProduct?.has_variants && modalVariants.length > 0
+  const modalColors = useMemo(() => {
+    const m = new Map<string, string | null>()
+    modalVariants.forEach(v => { if (!m.has(v.color)) m.set(v.color, v.color_hex) })
+    return Array.from(m.entries()).map(([color, color_hex]) => ({ color, color_hex }))
+  }, [modalVariants])
+  const sizesForColor = pickColor ? modalVariants.filter(v => v.color === pickColor) : []
+  const pickedVariant = modalVariants.find(v => v.color === pickColor && v.size === pickSize)
+  const pickInStock = !!pickedVariant && pickedVariant.quantity > 0
+  const pickedInBox = !!(modalProduct && pickColor && pickSize && selected.has(variantKey(modalProduct.id, pickColor, pickSize)))
+  const allVariantsOut = modalHasVariants && modalVariants.every(v => v.quantity <= 0)
 
   function handleCheckout() {
     sessionStorage.setItem('pl_box_selection', JSON.stringify(selectedList))
@@ -291,8 +338,8 @@ export default function BuildPage() {
                   <div key={product.id} className="shrink-0 w-[180px] sm:w-[240px]">
                     <ProductCard
                       product={product}
-                      selected={selected.has(product.id)}
-                      onToggle={() => toggle(product)}
+                      selected={isProductSelected(product.id)}
+                      onToggle={() => product.has_variants ? openModal(product) : toggle(product)}
                       onOpen={() => openModal(product)}
                       soldOut={isSoldOut(product.id)}
                       hoverImage={hoverMedia[product.id]?.image}
@@ -387,8 +434,11 @@ export default function BuildPage() {
               const src = product.image ?? (SUPABASE_URL
                 ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${product.id}.jpg`
                 : null)
+              const variantLabel = product.selectedColor && product.selectedSize
+                ? `${product.selectedColor} · ${product.selectedSize}`
+                : null
               return (
-                <div key={product.id} className="flex gap-4 items-start py-1">
+                <div key={product.lineKey} className="flex gap-4 items-start py-1">
                   <div className="w-28 h-32 bg-cream-100 relative shrink-0 overflow-hidden rounded">
                     {src
                       ? <Image src={src} alt={product.name} fill className="object-cover" sizes="112px" unoptimized />
@@ -398,9 +448,12 @@ export default function BuildPage() {
                   <div className="flex-1 min-w-0 pt-1">
                     <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mb-0.5">Petite Lavande</p>
                     <p className="font-sans text-sm text-bark-700 leading-snug mb-1.5">{product.name}</p>
+                    {variantLabel && (
+                      <p className="font-sans text-[11px] text-bark-400 capitalize mb-1">{variantLabel}</p>
+                    )}
                     <p className="font-sans text-sm text-bark-500 mb-3">{formatPrice(product.price)}</p>
                     <button
-                      onClick={() => removeItem(product.id)}
+                      onClick={() => removeItem(product.lineKey)}
                       className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-700 transition-colors"
                     >
                       Remove
@@ -510,8 +563,79 @@ export default function BuildPage() {
                   <span className="font-sans text-xs text-bark-400">{modalProduct.ingredients}</span>
                 </div>
               )}
+              {/* Variant pickers (color + size) */}
+              {modalHasVariants && !allVariantsOut && (
+                <div className="space-y-4 mb-4">
+                  <div>
+                    <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">
+                      Color{pickColor ? <span className="text-bark-600 capitalize">: {pickColor}</span> : ''}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {modalColors.map(({ color, color_hex }) => {
+                        const inStockForColor = modalVariants.some(v => v.color === color && v.quantity > 0)
+                        const active = pickColor === color
+                        return (
+                          <button
+                            key={color}
+                            onClick={() => { setPickColor(color); setPickSize(null) }}
+                            disabled={!inStockForColor}
+                            title={color}
+                            className={`w-8 h-8 rounded-full border-2 transition-all disabled:opacity-30 ${active ? 'border-bark-600 scale-110' : 'border-cream-300 hover:border-bark-400'}`}
+                            style={{ backgroundColor: color_hex || '#e5e0d8' }}
+                          />
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  {pickColor && (
+                    <div>
+                      <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">Size</p>
+                      <div className="flex flex-wrap gap-2">
+                        {sizesForColor.map(v => {
+                          const out = v.quantity <= 0
+                          const active = pickSize === v.size
+                          return (
+                            <button
+                              key={v.size}
+                              onClick={() => !out && setPickSize(v.size)}
+                              disabled={out}
+                              className={`px-3 py-2 border font-sans text-xs transition-colors ${
+                                out
+                                  ? 'border-cream-200 text-bark-300 line-through cursor-not-allowed'
+                                  : active
+                                    ? 'border-bark-600 bg-bark-600 text-cream-50'
+                                    : 'border-cream-300 text-bark-600 hover:border-bark-400'
+                              }`}
+                            >
+                              {v.size}{out ? ' · out' : ''}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="mt-auto pt-4">
-                {isSoldOut(modalProduct.id) ? (
+                {modalHasVariants ? (
+                  allVariantsOut ? (
+                    <div className="w-full border border-bark-300 text-bark-400 font-sans text-[11px] tracking-[0.2em] uppercase py-4 text-center">Sold Out</div>
+                  ) : pickedInBox ? (
+                    <button onClick={() => toggleVariant(modalProduct, pickColor!, pickSize!, pickedVariant?.color_hex)}
+                      className="w-full border border-bark-300 text-bark-400 font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:border-bark-600 hover:text-bark-600 transition-colors flex items-center justify-center gap-2">
+                      <Check size={13} /> In Your Box · Remove
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => toggleVariant(modalProduct, pickColor!, pickSize!, pickedVariant?.color_hex)}
+                      disabled={!pickInStock}
+                      className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-bark-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                      {!pickColor ? 'Choose a color' : !pickSize ? 'Choose a size' : 'Add to Box'}
+                    </button>
+                  )
+                ) : isSoldOut(modalProduct.id) ? (
                   <div className="w-full border border-bark-300 text-bark-400 font-sans text-[11px] tracking-[0.2em] uppercase py-4 text-center">Sold Out</div>
                 ) : selected.has(modalProduct.id) ? (
                   <div className="space-y-2">
