@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { getAllProducts } from '@/lib/products'
+import { PRODUCT_TAGS } from '@/lib/product-tags'
 import { ArrowLeft, Upload, Trash2, Star, Loader, Sparkles, Check, Plus, Minus, Video, X } from 'lucide-react'
 
 type GalleryImage = {
@@ -609,13 +610,16 @@ export default function ProductDetailPage() {
               </div>
               <div>
                 <label className={labelCls}>Tag / Badge</label>
-                <input
-                  type="text"
+                <select
                   value={product.tag ?? ''}
-                  onChange={e => setProduct(p => p ? { ...p, tag: e.target.value } : p)}
-                  placeholder="e.g. Bestseller"
-                  className={inputCls}
-                />
+                  onChange={e => setProduct(p => p ? { ...p, tag: e.target.value || undefined } : p)}
+                  className={inputCls + ' appearance-none cursor-pointer'}
+                >
+                  <option value="">— None —</option>
+                  {PRODUCT_TAGS.map(tag => (
+                    <option key={tag} value={tag}>{tag}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className={labelCls}>Ingredients / Materials</label>

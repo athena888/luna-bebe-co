@@ -121,11 +121,19 @@ function ProductImageCard({ productId, name }: { productId: string; name: string
 export default function ProductsPortalPage() {
   return (
     <div className="p-8">
-      <div className="mb-8">
-        <h1 className="font-serif text-3xl text-bark-600">Products</h1>
-        <p className="font-sans text-sm text-bark-400 mt-1">
-          Click a card to swap the primary photo. Use the <Settings size={12} className="inline mb-0.5" /> icon to edit details, gallery, inventory, and AI-generate images.
-        </p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="font-serif text-3xl text-bark-600">Products</h1>
+          <p className="font-sans text-sm text-bark-400 mt-1">
+            Click a card to swap the primary photo. Use the <Settings size={12} className="inline mb-0.5" /> icon to edit details, gallery, inventory, and AI-generate images.
+          </p>
+        </div>
+        <Link
+          href="/portal/products/bulk"
+          className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-600 hover:text-bark-700 border border-bark-600 px-4 py-2 rounded transition-colors whitespace-nowrap"
+        >
+          Bulk Import
+        </Link>
       </div>
 
       {CATEGORY_ORDER.map((cat: ProductCategory) => (
