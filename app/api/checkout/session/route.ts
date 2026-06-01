@@ -64,14 +64,21 @@ export async function POST(req: NextRequest) {
         },
         quantity: 1,
       },
-      ...selectedItems.map((item) => ({
-        price_data: {
-          currency: 'usd',
-          product_data: { name: item.name, description: item.description },
-          unit_amount: item.price,
-        },
-        quantity: 1,
-      })),
+      ...selectedItems.map((item) => {
+        const v = item as Product & { selectedColor?: string; selectedSize?: string }
+        const variantSuffix = v.selectedColor && v.selectedSize ? ` — ${v.selectedColor} · ${v.selectedSize}` : ''
+        return {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `${item.name}${variantSuffix}`,
+              description: item.description,
+            },
+            unit_amount: item.price,
+          },
+          quantity: 1,
+        }
+      }),
       {
         price_data: {
           currency: 'usd',

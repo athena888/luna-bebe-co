@@ -324,9 +324,14 @@ export default function CheckoutPage() {
                   <div className="px-6 py-5 border-b border-cream-300">
                     <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-4">Your Selection</p>
                     <div className="space-y-3">
-                      {Object.values(selection).filter(Boolean).map(item => item && (
-                        <div key={item.id} className="flex justify-between items-start">
-                          <p className="font-sans text-xs text-bark-600 leading-snug pr-3">{item.name}</p>
+                      {(Object.values(selection).filter(Boolean) as Array<NonNullable<typeof selection.swaddle> & { selectedColor?: string; selectedSize?: string }>).map((item, idx) => item && (
+                        <div key={`${item.id}-${idx}`} className="flex justify-between items-start">
+                          <p className="font-sans text-xs text-bark-600 leading-snug pr-3">
+                            {item.name}
+                            {item.selectedColor && item.selectedSize && (
+                              <span className="block text-[10px] text-bark-400 capitalize">{item.selectedColor} · {item.selectedSize}</span>
+                            )}
+                          </p>
                           <span className="font-sans text-xs text-bark-400 shrink-0">{formatPrice(item.price)}</span>
                         </div>
                       ))}
