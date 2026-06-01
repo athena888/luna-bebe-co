@@ -69,6 +69,13 @@ export default function ProductDetailPage() {
   const [clothingImage, setClothingImage] = useState<File | null>(null)
   const [clothingImagePreview, setClothingImagePreview] = useState<string | null>(null)
 
+  // AI Draft (description writer) state
+  const [draftKeywords, setDraftKeywords] = useState('')
+  const [draftFile, setDraftFile] = useState<File | null>(null)
+  const [drafting, setDrafting] = useState(false)
+  const [draftError, setDraftError] = useState('')
+  const draftFileRef = useRef<HTMLInputElement>(null)
+
   const load = useCallback(async () => {
     setLoading(true)
     const res = await fetch(`/api/portal/products/${id}`)
@@ -171,6 +178,46 @@ export default function ProductDetailPage() {
   function handleAiBaseSelect(file: File) {
     setAiBaseFile(file)
     setAiBasePreview(URL.createObjectURL(file))
+  }
+
+  async function handleAiDraft() {
+    if (!draftKeywords.trim() && !draftFile) return
+    setDrafting(true)
+    setDraftError('')
+    try {
+      let res: Response
+      if (draftFile) {
+        const form = new FormData()
+        form.append('file', draftFile)
+        form.append('keywords', draftKeywords)
+        form.append('category', product?.category ?? '')
+        res = await fetch('/api/portal/products/ai-describe', { method: 'POST', body: form })
+      } else {
+        res = await fetch('/api/portal/products/ai-describe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keywords: draftKeywords, category: product?.category ?? '' }),
+        })
+      }
+      const data = await res.json()
+      if (data.draft) {
+        setProduct(p => p ? {
+          ...p,
+          name: data.draft.name || p.name,
+          description: data.draft.description || p.description,
+          ingredients: data.draft.ingredients || p.ingredients,
+          tag: data.draft.tag || p.tag,
+        } : p)
+        setDraftKeywords('')
+        setDraftFile(null)
+      } else {
+        setDraftError(data.error || 'Could not generate a draft')
+      }
+    } catch {
+      setDraftError('Could not generate a draft')
+    } finally {
+      setDrafting(false)
+    }
   }
 
   if (!baseProduct) return <div className="p-8 font-sans text-bark-400">Product not found.</div>
@@ -575,6 +622,62 @@ export default function ProductDetailPage() {
           {/* Product Details */}
           <div className="bg-white border border-cream-300 rounded-xl p-6">
             <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-5">Product Details</p>
+
+            {/* AI Draft helper */}
+            <div className="mb-6 border border-gold-200 bg-gold-50/40 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles size={13} className="text-gold-400" />
+                <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500">AI Draft Writer</p>
+              </div>
+              <p className="font-sans text-[10px] text-bark-400 mb-3 leading-relaxed">
+                Type a few keywords or attach a supplier spec sheet (PDF/image). Claude drafts the name, ingredients, description &amp; tag in the brand voice. Review before saving.
+              </p>
+              <textarea
+                value={draftKeywords}
+                onChange={e => setDraftKeywords(e.target.value)}
+                placeholder="e.g. organic cotton sleep sack, GOTS certified, sage green, sizes 0-6m, TOG 1.0…"
+                rows={2}
+                className={inputCls + ' resize-none mb-2'}
+              />
+              {draftFile && (
+                <div className="flex items-center gap-2 mb-2 text-xs text-bark-500">
+                  <span className="truncate flex-1">{draftFile.name}</span>
+                  <button onClick={() => setDraftFile(null)} className="text-bark-400 hover:text-red-500 transition-colors">
+                    <X size={13} />
+                  </button>
+                </div>
+              )}
+              {draftError && <p className="font-sans text-[10px] text-red-500 mb-2">{draftError}</p>}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleAiDraft}
+                  disabled={drafting || (!draftKeywords.trim() && !draftFile)}
+                  className="flex items-center gap-1.5 bg-gold-400 text-white font-sans text-[10px] tracking-[0.15em] uppercase px-4 py-2 rounded hover:bg-gold-500 transition-colors disabled:opacity-40"
+                >
+                  {drafting ? <Loader size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                  {drafting ? 'Writing…' : 'Draft with AI'}
+                </button>
+                <button
+                  onClick={() => draftFileRef.current?.click()}
+                  disabled={drafting}
+                  className="flex items-center gap-1.5 border border-cream-300 text-bark-500 font-sans text-[10px] tracking-[0.15em] uppercase px-4 py-2 rounded hover:border-bark-400 transition-colors disabled:opacity-40"
+                >
+                  <Upload size={12} />
+                  Attach File
+                </button>
+                <input
+                  ref={draftFileRef}
+                  type="file"
+                  accept="application/pdf,image/*"
+                  className="hidden"
+                  onChange={e => {
+                    const f = e.target.files?.[0]
+                    if (f) setDraftFile(f)
+                    e.target.value = ''
+                  }}
+                />
+              </div>
+            </div>
 
             <div className="space-y-4">
               <div>
