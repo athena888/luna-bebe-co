@@ -34,6 +34,9 @@ export async function POST(req: NextRequest) {
 
     const { data } = supabaseAdmin.storage.from('product-images').getPublicUrl(fileName)
 
+    // Reflect the new primary image on the product so the storefront picks it up
+    await supabaseAdmin.from('products').update({ image: data.publicUrl }).eq('id', productId)
+
     return NextResponse.json({ url: data.publicUrl })
   } catch (err) {
     console.error('Upload route error:', err)

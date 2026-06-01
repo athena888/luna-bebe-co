@@ -1,25 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
-import { getAllProducts } from '@/lib/products'
+import { getCatalogProduct } from '@/lib/products-db'
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const base = getAllProducts().find(p => p.id === id)
-  if (!base) return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+  const product = await getCatalogProduct(id)
+  if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 })
 
-  const [overrideRes, galleryRes] = await Promise.all([
-    supabaseAdmin.from('product_overrides').select('*').eq('product_id', id).single(),
-    supabaseAdmin.from('product_gallery').select('*').eq('product_id', id).order('sort_order'),
-  ])
+  const { data: gallery } = await supabaseAdmin
+    .from('product_gallery')
+    .select('*')
+    .eq('product_id', id)
+    .order('sort_order')
 
-  const override = overrideRes.data ?? {}
-  const gallery = galleryRes.data ?? []
-
-  return NextResponse.json({
-    product: {
-      ...base,
-      ...Object.fromEntries(Object.entries(override).filter(([, v]) => v !== null)),
-    },
-    gallery,
-  })
+  return NextResponse.json({ product, gallery: gallery ?? [] })
 }

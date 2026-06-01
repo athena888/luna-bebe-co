@@ -132,6 +132,14 @@ export default function BuildPage() {
   const [inventory, setInventory] = useState<Record<string, number>>({})
   const [hoverMedia, setHoverMedia] = useState<Record<string, { image?: string; video?: string }>>({})
 
+  // Live catalog from the database, grouped by category. Falls back to the
+  // built-in static catalog until the fetch resolves.
+  const [catalog, setCatalog] = useState<Record<string, Product[]>>(() => ({ ...PRODUCTS }))
+  const activeCategories = useMemo(
+    () => CATEGORY_ORDER.filter(cat => (catalog[cat]?.length ?? 0) > 0),
+    [catalog]
+  )
+
   const [bagOpen, setBagOpen] = useState(false)
   const [activeIdxMap, setActiveIdxMap] = useState<Record<string, number>>({})
   const scrollRefs = useRef<Map<string, HTMLDivElement>>(new Map())
@@ -139,7 +147,7 @@ export default function BuildPage() {
   function handleCategoryScroll(cat: string) {
     const el = scrollRefs.current.get(cat)
     if (!el || !el.children[0]) return
-    const productCount = PRODUCTS[cat as ProductCategory].length
+    const productCount = catalog[cat]?.length ?? 0
     const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4
     const itemWidth = (el.children[0] as HTMLElement).offsetWidth + 20
     const idx = atEnd ? productCount - 1 : Math.min(Math.round(el.scrollLeft / itemWidth), productCount - 1)
@@ -176,6 +184,10 @@ export default function BuildPage() {
   useEffect(() => {
     fetch('/api/inventory').then(r => r.json()).then(d => setInventory(d.inventory ?? {}))
     fetch('/api/products/hover').then(r => r.json()).then(d => setHoverMedia(d.hover ?? {}))
+    fetch('/api/products/all')
+      .then(r => r.json())
+      .then(d => { if (d.byCategory) setCatalog(d.byCategory) })
+      .catch(() => {})
     const pendingId = sessionStorage.getItem('pl_pending_add')
     if (pendingId) {
       const found = getAllProducts().find(p => p.id === pendingId)
@@ -264,7 +276,7 @@ export default function BuildPage() {
         </div>
 
         <div className="w-full py-12 space-y-14">
-          {CATEGORY_ORDER.map((cat) => (
+          {activeCategories.map((cat) => (
             <section key={cat} id={`cat-${cat}`}>
               <div className="pl-6 sm:pl-9 pr-6 sm:pr-8 mb-8">
                 <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-1">{CATEGORY_LABELS[cat]}</p>
@@ -275,7 +287,7 @@ export default function BuildPage() {
                 onScroll={() => handleCategoryScroll(cat)}
                 className="flex overflow-x-auto scrollbar-hide gap-5 pl-6 sm:pl-9 pb-2"
               >
-                {PRODUCTS[cat].map(product => (
+                {(catalog[cat] ?? []).map(product => (
                   <div key={product.id} className="shrink-0 w-[180px] sm:w-[240px]">
                     <ProductCard
                       product={product}
@@ -292,7 +304,7 @@ export default function BuildPage() {
               </div>
               {/* Scroll dots */}
               <div className="flex items-center justify-end gap-1.5 mt-4 pr-6 sm:pr-9">
-                {PRODUCTS[cat].map((_, i) => (
+                {(catalog[cat] ?? []).map((_, i) => (
                   <button
                     key={i}
                     onClick={() => scrollCategoryTo(cat, i)}

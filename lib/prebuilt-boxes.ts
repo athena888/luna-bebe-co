@@ -84,6 +84,13 @@ export const PREBUILT_BOXES: PrebuiltBox[] = [
   },
 ]
 
+/** Product IDs referenced by any prebuilt box — never delete these. */
+export const PROTECTED_PRODUCT_IDS: Set<string> = new Set(
+  PREBUILT_BOXES.flatMap(box =>
+    Object.values(box.selection).filter(Boolean).map(p => (p as Product).id)
+  )
+)
+
 export function getBoxBySlug(slug: string): PrebuiltBox | undefined {
   return PREBUILT_BOXES.find(b => b.slug === slug)
 }

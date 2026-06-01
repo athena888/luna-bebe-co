@@ -78,11 +78,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: 'Failed to save to gallery' }, { status: 500 })
   }
 
-  // If primary, store the URL in overrides so build page picks it up immediately
+  // If primary, store the URL on the product so the storefront picks it up immediately
   if (setPrimary) {
     await supabaseAdmin
       .from('product_overrides')
       .upsert({ product_id: id, image: imageUrl }, { onConflict: 'product_id' })
+    await supabaseAdmin
+      .from('products')
+      .update({ image: imageUrl })
+      .eq('id', id)
   }
 
   return NextResponse.json({ image: inserted })
