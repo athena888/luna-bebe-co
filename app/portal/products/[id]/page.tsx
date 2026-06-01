@@ -39,6 +39,7 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<ProductData | null>(null)
   const [gallery, setGallery] = useState<GalleryImage[]>([])
   const [inventory, setInventory] = useState(0)
+  const [sales, setSales] = useState<{ units: number; revenue: number; lastOrderedAt: string | null }>({ units: 0, revenue: 0, lastOrderedAt: null })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
@@ -84,6 +85,7 @@ export default function ProductDetailPage() {
       setProduct(data.product)
       setGallery(data.gallery)
       setInventory(data.inventory.quantity)
+      if (data.sales) setSales(data.sales)
       setHoverVideo(data.product.hover_video ?? null)
     }
     setLoading(false)
@@ -735,6 +737,27 @@ export default function ProductDetailPage() {
                 />
               </div>
             </div>
+          </div>
+
+          {/* Sales */}
+          <div className="bg-white border border-cream-300 rounded-xl p-6">
+            <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-5">Sales</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="font-serif text-3xl text-bark-600">{sales.units}</p>
+                <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mt-1">Units sold</p>
+              </div>
+              <div>
+                <p className="font-serif text-3xl text-bark-600">${(sales.revenue / 100).toFixed(2)}</p>
+                <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mt-1">Revenue</p>
+              </div>
+            </div>
+            <p className="font-sans text-[10px] text-bark-400/70 mt-4">
+              {sales.lastOrderedAt
+                ? `Last ordered ${new Date(sales.lastOrderedAt).toLocaleDateString()}`
+                : 'No sales yet'}
+              {' '}· across all paid orders
+            </p>
           </div>
 
           {/* Inventory */}

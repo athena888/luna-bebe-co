@@ -7,18 +7,34 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   const product = await getCatalogProduct(id)
   if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 })
 
-  const [inventoryRes, galleryRes] = await Promise.all([
+  const [inventoryRes, galleryRes, ordersRes] = await Promise.all([
     supabaseAdmin.from('inventory').select('*').eq('product_id', id).single(),
     supabaseAdmin.from('product_gallery').select('*').eq('product_id', id).order('sort_order'),
+    supabaseAdmin.from('orders').select('selected_items, created_at, status').neq('status', 'pending'),
   ])
 
   const inventory = inventoryRes.data ?? { quantity: 0 }
   const gallery = galleryRes.data ?? []
 
+  // Aggregate units sold + revenue for this product across paid orders
+  let units = 0
+  let revenue = 0
+  let lastOrderedAt: string | null = null
+  for (const order of ordersRes.data ?? []) {
+    const items = (order.selected_items ?? []) as Array<{ id: string; price: number }>
+    const matches = items.filter(it => it?.id === id)
+    if (matches.length) {
+      units += matches.length
+      revenue += matches.reduce((s, it) => s + (it.price ?? 0), 0)
+      if (!lastOrderedAt || order.created_at > lastOrderedAt) lastOrderedAt = order.created_at
+    }
+  }
+
   return NextResponse.json({
     product,
     inventory: { quantity: inventory.quantity },
     gallery,
+    sales: { units, revenue, lastOrderedAt },
   })
 }
 
