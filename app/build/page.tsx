@@ -10,6 +10,8 @@ import { Check, X, Plus, ShoppingBag, Heart } from 'lucide-react'
 import Image from 'next/image'
 import { memo, useCallback, useMemo, useState as useLocalState } from 'react'
 import { toggleWishlist, isWishlisted } from '@/lib/wishlist'
+import { CertBadges } from '@/components/ui/CertBadges'
+import type { ProductCert } from '@/lib/certifications'
 
 const CATEGORY_SUBTITLES: Record<string, string> = {
   swaddle: 'Wrap them in softness from day one.',
@@ -74,7 +76,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
       >
         {showImage ? (
           <Image src={storageSrc} alt={product.name} fill
-            className={`object-cover transition-all duration-500 ${soldOut ? 'grayscale brightness-[0.35]' : ''}`}
+            className={`object-contain transition-all duration-500 ${soldOut ? 'grayscale brightness-[0.35]' : ''}`}
             sizes="(max-width: 640px) 176px, 208px" onError={() => setImgFailed(true)} unoptimized />
         ) : (
           <div className={`absolute inset-0 flex items-center justify-center text-5xl
@@ -177,6 +179,7 @@ export default function BuildPage() {
   const [modalProduct, setModalProduct] = useState<BuildProduct | null>(null)
   const [modalGallery, setModalGallery] = useState<GalleryImage[]>([])
   const [modalVariants, setModalVariants] = useState<VariantOpt[]>([])
+  const [modalCerts, setModalCerts] = useState<ProductCert[]>([])
   const [pickColor, setPickColor] = useState<string | null>(null)
   const [pickSize, setPickSize] = useState<string | null>(null)
   const [modalLoading, setModalLoading] = useState(false)
@@ -265,6 +268,7 @@ export default function BuildPage() {
     setModalProduct(product)
     setModalImgIdx(0)
     setModalVariants([])
+    setModalCerts([])
     setPickColor(null)
     setPickSize(null)
     setModalLoading(true)
@@ -272,7 +276,7 @@ export default function BuildPage() {
     try {
       const res = await fetch(`/api/products/${product.id}`)
       if (res.ok) {
-        const { gallery, variants } = await res.json()
+        const { gallery, variants, product: productData } = await res.json()
         const sorted: GalleryImage[] = [...(gallery ?? [])].sort((a: GalleryImage, b: GalleryImage) => {
           if (a.is_primary && !b.is_primary) return -1
           if (!a.is_primary && b.is_primary) return 1
@@ -281,6 +285,7 @@ export default function BuildPage() {
         galleryCache.current[product.id] = sorted
         setModalGallery(sorted)
         if (Array.isArray(variants)) setModalVariants(variants)
+        if (Array.isArray(productData?.certifications)) setModalCerts(productData.certifications)
       }
     } catch {}
     setModalLoading(false)
@@ -558,9 +563,14 @@ export default function BuildPage() {
                 </p>
               </div>
               {modalProduct.ingredients && (
-                <div className="mb-6">
+                <div className="mb-4">
                   <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mr-2">Materials</span>
                   <span className="font-sans text-xs text-bark-400">{modalProduct.ingredients}</span>
+                </div>
+              )}
+              {modalCerts.length > 0 && (
+                <div className="mb-4">
+                  <CertBadges certs={modalCerts} />
                 </div>
               )}
               {/* Variant pickers (color + size) */}

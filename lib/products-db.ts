@@ -1,6 +1,7 @@
 import { supabaseAdmin } from './supabase'
 import { getAllProducts } from './products'
 import { PROTECTED_PRODUCT_IDS } from './prebuilt-boxes'
+import type { ProductCert } from './certifications'
 import type { Product, ProductCategory } from '@/types'
 
 export interface DbProduct extends Product {
@@ -8,6 +9,7 @@ export interface DbProduct extends Product {
   is_custom: boolean
   sort_order: number
   has_variants: boolean
+  certifications: ProductCert[]
 }
 
 interface ProductRow {
@@ -24,6 +26,7 @@ interface ProductRow {
   is_custom: boolean
   sort_order: number
   has_variants: boolean | null
+  certifications: ProductCert[] | null
 }
 
 function rowToProduct(r: ProductRow): DbProduct {
@@ -41,6 +44,7 @@ function rowToProduct(r: ProductRow): DbProduct {
     is_custom: r.is_custom,
     sort_order: r.sort_order,
     has_variants: r.has_variants ?? false,
+    certifications: r.certifications ?? [],
   }
 }
 
@@ -172,6 +176,7 @@ export interface UpdateProductInput {
   imageEmoji?: string
   active?: boolean
   hasVariants?: boolean
+  certifications?: ProductCert[]
 }
 
 /** Updates editable fields on an existing product. */
@@ -186,6 +191,7 @@ export async function updateProduct(id: string, input: UpdateProductInput): Prom
   if (input.imageEmoji !== undefined) patch.image_emoji = input.imageEmoji
   if (input.active !== undefined) patch.active = input.active
   if (input.hasVariants !== undefined) patch.has_variants = input.hasVariants
+  if (input.certifications !== undefined) patch.certifications = input.certifications
   if (Object.keys(patch).length === 0) return
   const { error } = await supabaseAdmin.from('products').update(patch).eq('id', id)
   if (error) throw error

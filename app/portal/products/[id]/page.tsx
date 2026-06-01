@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { getAllProducts } from '@/lib/products'
 import { PRODUCT_TAGS } from '@/lib/product-tags'
-import { ArrowLeft, Upload, Trash2, Star, Loader, Sparkles, Check, Plus, Minus, Video, X } from 'lucide-react'
+import { CERTIFICATIONS, type ProductCert } from '@/lib/certifications'
+import { ArrowLeft, Upload, Trash2, Star, Loader, Sparkles, Check, Plus, Minus, Video, X, ShieldCheck } from 'lucide-react'
 
 type GalleryImage = {
   id: string
@@ -54,6 +55,8 @@ export default function ProductDetailPage() {
   const [sales, setSales] = useState<{ units: number; revenue: number; lastOrderedAt: string | null }>({ units: 0, revenue: 0, lastOrderedAt: null })
   const [hasVariants, setHasVariants] = useState(false)
   const [variants, setVariants] = useState<Variant[]>([])
+  const [certs, setCerts] = useState<ProductCert[]>([])
+  const [certUploading, setCertUploading] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
@@ -101,6 +104,7 @@ export default function ProductDetailPage() {
       setInventory(data.inventory.quantity)
       if (data.sales) setSales(data.sales)
       setHasVariants(!!data.product.has_variants)
+      setCerts(data.product.certifications ?? [])
       setHoverVideo(data.product.hover_video ?? null)
     }
     // Load variants in parallel
@@ -132,6 +136,7 @@ export default function ProductDetailPage() {
         ingredients: product.ingredients,
         inventoryQuantity: inventory,
         hasVariants,
+        certifications: certs,
       }),
     })
     // Save variants when this product uses them
@@ -155,6 +160,29 @@ export default function ProductDetailPage() {
   }
   function removeVariant(index: number) {
     setVariants(prev => prev.filter((_, i) => i !== index))
+  }
+
+  function toggleCert(key: string) {
+    setCerts(prev =>
+      prev.some(c => c.key === key)
+        ? prev.filter(c => c.key !== key)
+        : [...prev, { key, certificateUrl: null }]
+    )
+  }
+  async function uploadCertImage(key: string, file: File) {
+    setCertUploading(key)
+    try {
+      const form = new FormData()
+      form.append('file', file)
+      form.append('certKey', key)
+      const res = await fetch(`/api/portal/products/${id}/certificate`, { method: 'POST', body: form })
+      const data = await res.json()
+      if (data.url) {
+        setCerts(prev => prev.map(c => c.key === key ? { ...c, certificateUrl: data.url } : c))
+      }
+    } finally {
+      setCertUploading(null)
+    }
   }
 
   async function handleGalleryUpload(file: File, primary: boolean) {
@@ -905,6 +933,63 @@ export default function ProductDetailPage() {
                 )}
               </>
             )}
+          </div>
+
+          {/* Certifications */}
+          <div className="bg-white border border-cream-300 rounded-xl p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <ShieldCheck size={14} className="text-gold-400" />
+              <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">Certifications</p>
+            </div>
+            <p className="font-sans text-[10px] text-bark-400/70 mb-4 leading-relaxed">
+              Toggle a cert to show its badge on the storefront. Optionally upload the actual certificate image so customers can tap to view it.
+            </p>
+            <div className="space-y-3">
+              {CERTIFICATIONS.map(cert => {
+                const active = certs.some(c => c.key === cert.key)
+                const saved = certs.find(c => c.key === cert.key)
+                const uploading = certUploading === cert.key
+                return (
+                  <div key={cert.key} className={`border rounded-lg p-3 transition-colors ${active ? 'border-gold-300 bg-gold-50/30' : 'border-cream-200'}`}>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="flex items-center gap-2.5 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={active}
+                          onChange={() => toggleCert(cert.key)}
+                          className="accent-bark-600 w-4 h-4"
+                        />
+                        <div>
+                          <span className="font-sans text-sm font-medium text-bark-600">{cert.label}</span>
+                          <span className="font-sans text-[10px] text-bark-400 ml-2">({cert.region})</span>
+                        </div>
+                      </label>
+                      {active && (
+                        <label className={`flex items-center gap-1.5 cursor-pointer border border-cream-300 px-2.5 py-1 rounded text-[10px] font-sans text-bark-500 hover:border-bark-400 transition-colors ${uploading ? 'opacity-50' : ''}`}>
+                          {uploading ? <Loader size={11} className="animate-spin" /> : <Upload size={11} />}
+                          {saved?.certificateUrl ? 'Replace cert' : 'Upload cert'}
+                          <input
+                            type="file"
+                            accept="image/*,application/pdf"
+                            className="hidden"
+                            disabled={uploading}
+                            onChange={e => {
+                              const f = e.target.files?.[0]
+                              if (f) uploadCertImage(cert.key, f)
+                              e.target.value = ''
+                            }}
+                          />
+                        </label>
+                      )}
+                    </div>
+                    <p className="font-sans text-[10px] text-bark-400/70 ml-6">{cert.blurb}</p>
+                    {active && saved?.certificateUrl && (
+                      <p className="font-sans text-[10px] text-sage-500 ml-6 mt-1">✓ Certificate uploaded — customers can tap to view it</p>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           </div>
 
           {/* Save button (sticky bottom on mobile) */}
