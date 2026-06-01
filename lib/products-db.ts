@@ -7,6 +7,7 @@ export interface DbProduct extends Product {
   active: boolean
   is_custom: boolean
   sort_order: number
+  has_variants: boolean
 }
 
 interface ProductRow {
@@ -22,6 +23,7 @@ interface ProductRow {
   active: boolean
   is_custom: boolean
   sort_order: number
+  has_variants: boolean | null
 }
 
 function rowToProduct(r: ProductRow): DbProduct {
@@ -38,6 +40,7 @@ function rowToProduct(r: ProductRow): DbProduct {
     active: r.active,
     is_custom: r.is_custom,
     sort_order: r.sort_order,
+    has_variants: r.has_variants ?? false,
   }
 }
 
@@ -168,6 +171,7 @@ export interface UpdateProductInput {
   ingredients?: string | null
   imageEmoji?: string
   active?: boolean
+  hasVariants?: boolean
 }
 
 /** Updates editable fields on an existing product. */
@@ -181,6 +185,7 @@ export async function updateProduct(id: string, input: UpdateProductInput): Prom
   if (input.ingredients !== undefined) patch.ingredients = input.ingredients
   if (input.imageEmoji !== undefined) patch.image_emoji = input.imageEmoji
   if (input.active !== undefined) patch.active = input.active
+  if (input.hasVariants !== undefined) patch.has_variants = input.hasVariants
   if (Object.keys(patch).length === 0) return
   const { error } = await supabaseAdmin.from('products').update(patch).eq('id', id)
   if (error) throw error

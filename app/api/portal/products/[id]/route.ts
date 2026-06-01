@@ -41,10 +41,10 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const body = await req.json()
-  const { name, description, price, tag, ingredients, inventoryQuantity } = body
+  const { name, description, price, tag, ingredients, inventoryQuantity, hasVariants } = body
 
   try {
-    await updateProduct(id, { name, description, price, tag, ingredients })
+    await updateProduct(id, { name, description, price, tag, ingredients, hasVariants })
   } catch {
     return NextResponse.json({ error: 'Failed to save product details' }, { status: 500 })
   }

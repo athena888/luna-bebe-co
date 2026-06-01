@@ -24,7 +24,19 @@ type ProductData = {
   tag?: string
   ingredients?: string
   category: string
+  has_variants?: boolean
 }
+
+type Variant = {
+  id?: string
+  color: string
+  color_hex?: string | null
+  size: string
+  quantity: number
+  unit_price?: number | null   // dollars
+}
+
+const VARIANT_SIZES = ['0-3', '3-6', '6-9', '9-12', '12-18', '18-24', 'one-size']
 
 const inputCls = "w-full px-3 py-2.5 border border-cream-300 bg-white font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-bark-400 transition-colors rounded"
 const labelCls = "block font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-1.5"
@@ -40,6 +52,8 @@ export default function ProductDetailPage() {
   const [gallery, setGallery] = useState<GalleryImage[]>([])
   const [inventory, setInventory] = useState(0)
   const [sales, setSales] = useState<{ units: number; revenue: number; lastOrderedAt: string | null }>({ units: 0, revenue: 0, lastOrderedAt: null })
+  const [hasVariants, setHasVariants] = useState(false)
+  const [variants, setVariants] = useState<Variant[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
@@ -86,7 +100,17 @@ export default function ProductDetailPage() {
       setGallery(data.gallery)
       setInventory(data.inventory.quantity)
       if (data.sales) setSales(data.sales)
+      setHasVariants(!!data.product.has_variants)
       setHoverVideo(data.product.hover_video ?? null)
+    }
+    // Load variants in parallel
+    const vRes = await fetch(`/api/portal/products/${id}/variants`)
+    if (vRes.ok) {
+      const vData = await vRes.json()
+      setVariants((vData.variants ?? []).map((v: Variant) => ({
+        ...v,
+        unit_price: v.unit_price != null ? Number(v.unit_price) / 100 : null,
+      })))
     }
     setLoading(false)
   }, [id])
@@ -107,11 +131,30 @@ export default function ProductDetailPage() {
         tag: product.tag,
         ingredients: product.ingredients,
         inventoryQuantity: inventory,
+        hasVariants,
       }),
     })
+    // Save variants when this product uses them
+    if (hasVariants) {
+      await fetch(`/api/portal/products/${id}/variants`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ variants: variants.filter(v => v.color.trim() && v.size.trim()) }),
+      })
+    }
     setSaving(false)
     setSaveMsg(res.ok ? 'Saved' : 'Error saving')
     setTimeout(() => setSaveMsg(''), 2000)
+  }
+
+  function addVariant() {
+    setVariants(prev => [...prev, { color: '', color_hex: '', size: '0-3', quantity: 0, unit_price: null }])
+  }
+  function updateVariant(index: number, field: keyof Variant, value: string | number | null) {
+    setVariants(prev => prev.map((v, i) => i === index ? { ...v, [field]: value } : v))
+  }
+  function removeVariant(index: number) {
+    setVariants(prev => prev.filter((_, i) => i !== index))
   }
 
   async function handleGalleryUpload(file: File, primary: boolean) {
@@ -760,36 +803,107 @@ export default function ProductDetailPage() {
             </p>
           </div>
 
-          {/* Inventory */}
+          {/* Variants (sizes & colors) */}
           <div className="bg-white border border-cream-300 rounded-xl p-6">
-            <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-5">Inventory</p>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setInventory(i => Math.max(0, i - 1))}
-                className="w-9 h-9 border border-cream-300 flex items-center justify-center hover:border-bark-400 transition-colors rounded"
-              >
-                <Minus size={14} className="text-bark-600" />
-              </button>
-              <input
-                type="number"
-                min={0}
-                value={inventory}
-                onChange={e => setInventory(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-20 text-center border border-cream-300 bg-white font-sans text-lg text-bark-600 py-2 focus:outline-none focus:border-bark-400 rounded"
-              />
-              <button
-                onClick={() => setInventory(i => i + 1)}
-                className="w-9 h-9 border border-cream-300 flex items-center justify-center hover:border-bark-400 transition-colors rounded"
-              >
-                <Plus size={14} className="text-bark-600" />
-              </button>
-              <span className="font-sans text-xs text-bark-400">units in stock</span>
+            <div className="flex items-center justify-between mb-4">
+              <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">Sizes &amp; Colors</p>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <span className="font-sans text-xs text-bark-500">This item has sizes/colors</span>
+                <input
+                  type="checkbox"
+                  checked={hasVariants}
+                  onChange={e => setHasVariants(e.target.checked)}
+                  className="accent-bark-600 w-4 h-4"
+                />
+              </label>
             </div>
-            {inventory === 0 && (
-              <p className="font-sans text-[10px] text-red-400 mt-3">⚠ Out of stock — this product won't be visible to customers.</p>
-            )}
-            {inventory > 0 && inventory <= 5 && (
-              <p className="font-sans text-[10px] text-gold-500 mt-3">Low stock — consider restocking soon.</p>
+
+            {hasVariants ? (
+              <>
+                <p className="font-sans text-[10px] text-bark-400/70 mb-3">
+                  Each row is one color + size with its own stock. Customers choose from these; sizes with 0 stock show as unavailable.
+                </p>
+                <div className="space-y-2">
+                  {variants.map((v, i) => (
+                    <div key={v.id ?? i} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={v.color}
+                        onChange={e => updateVariant(i, 'color', e.target.value)}
+                        placeholder="color"
+                        className="flex-1 min-w-0 px-2 py-1.5 border border-cream-300 rounded text-sm text-bark-600 focus:outline-none focus:border-bark-400"
+                      />
+                      <input
+                        type="color"
+                        value={v.color_hex || '#cccccc'}
+                        onChange={e => updateVariant(i, 'color_hex', e.target.value)}
+                        className="w-8 h-8 rounded border border-cream-300 shrink-0 cursor-pointer"
+                        title="Swatch color"
+                      />
+                      <select
+                        value={v.size}
+                        onChange={e => updateVariant(i, 'size', e.target.value)}
+                        className="w-20 px-1 py-1.5 border border-cream-300 rounded text-sm text-bark-600 focus:outline-none focus:border-bark-400 shrink-0"
+                      >
+                        {VARIANT_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                      <input
+                        type="number"
+                        min={0}
+                        value={v.quantity}
+                        onChange={e => updateVariant(i, 'quantity', parseInt(e.target.value) || 0)}
+                        className="w-16 px-2 py-1.5 border border-cream-300 rounded text-sm text-bark-600 text-center focus:outline-none focus:border-bark-400 shrink-0"
+                        title="Quantity in stock"
+                      />
+                      <button
+                        onClick={() => removeVariant(i)}
+                        className="text-bark-300 hover:text-red-500 transition-colors shrink-0"
+                        title="Remove"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  onClick={addVariant}
+                  className="mt-3 flex items-center gap-1.5 font-sans text-xs text-gold-500 hover:text-gold-600 transition-colors"
+                >
+                  <Plus size={14} /> Add a size/color
+                </button>
+                <p className="font-sans text-[10px] text-bark-400/60 mt-3">Tip: the AI Inventory upload (Inventory page) also fills these rows from a supplier sheet.</p>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setInventory(i => Math.max(0, i - 1))}
+                    className="w-9 h-9 border border-cream-300 flex items-center justify-center hover:border-bark-400 transition-colors rounded"
+                  >
+                    <Minus size={14} className="text-bark-600" />
+                  </button>
+                  <input
+                    type="number"
+                    min={0}
+                    value={inventory}
+                    onChange={e => setInventory(Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-20 text-center border border-cream-300 bg-white font-sans text-lg text-bark-600 py-2 focus:outline-none focus:border-bark-400 rounded"
+                  />
+                  <button
+                    onClick={() => setInventory(i => i + 1)}
+                    className="w-9 h-9 border border-cream-300 flex items-center justify-center hover:border-bark-400 transition-colors rounded"
+                  >
+                    <Plus size={14} className="text-bark-600" />
+                  </button>
+                  <span className="font-sans text-xs text-bark-400">units in stock</span>
+                </div>
+                {inventory === 0 && (
+                  <p className="font-sans text-[10px] text-red-400 mt-3">⚠ Out of stock — shows as &ldquo;Sold Out&rdquo; to customers.</p>
+                )}
+                {inventory > 0 && inventory <= 5 && (
+                  <p className="font-sans text-[10px] text-gold-500 mt-3">Low stock — consider restocking soon.</p>
+                )}
+              </>
             )}
           </div>
 
