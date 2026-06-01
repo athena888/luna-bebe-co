@@ -196,11 +196,28 @@ export async function setProductImage(id: string, imageUrl: string): Promise<voi
   await supabaseAdmin.from('products').update({ image: imageUrl }).eq('id', id)
 }
 
-/** Permanently deletes a product unless it's protected by a prebuilt box. */
+/** Permanently deletes a product unless it's used by a prebuilt box. */
 export async function deleteProduct(id: string): Promise<{ ok: boolean; reason?: string }> {
-  if (PROTECTED_PRODUCT_IDS.has(id)) {
-    return { ok: false, reason: 'This product is used in a prebuilt box and cannot be deleted.' }
+  // Check the editable boxes (prebuilt_boxes table) for any slot referencing this id.
+  // Falls back to the static set if the table isn't seeded yet.
+  let usedByBoxes: string[] = []
+  try {
+    const { data } = await supabaseAdmin.from('prebuilt_boxes').select('name, selection')
+    for (const row of (data ?? []) as Array<{ name: string; selection: Record<string, { product_id?: string } | null> | null }>) {
+      const refs = Object.values(row.selection ?? {})
+      if (refs.some(r => r?.product_id === id)) usedByBoxes.push(row.name)
+    }
+  } catch {
+    if (PROTECTED_PRODUCT_IDS.has(id)) usedByBoxes = ['a prebuilt box']
   }
+
+  if (usedByBoxes.length) {
+    return {
+      ok: false,
+      reason: `Used in ${usedByBoxes.join(', ')}. Swap it out in the box editor (Portal → Boxes) first, then delete.`,
+    }
+  }
+
   const { error } = await supabaseAdmin.from('products').delete().eq('id', id)
   if (error) return { ok: false, reason: error.message }
   return { ok: true }

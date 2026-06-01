@@ -3,13 +3,14 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { LayoutDashboard, ShoppingBag, Phone, ImagePlus, Home, BarChart2, Target, Camera, TrendingUp, Users, Briefcase, Webhook, PackageSearch, Menu, X } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, Phone, ImagePlus, Home, BarChart2, Target, TrendingUp, Users, Briefcase, Webhook, PackageSearch, Menu, X, Gift, Camera } from 'lucide-react'
 
 const NAV = [
   { href: '/portal', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
   { href: '/portal/orders', label: 'Orders', icon: <ShoppingBag size={16} /> },
   { href: '/portal/issues', label: 'Phone Issues', icon: <Phone size={16} /> },
   { href: '/portal/products', label: 'Products', icon: <ImagePlus size={16} /> },
+  { href: '/portal/boxes', label: 'Prebuilt Boxes', icon: <Gift size={16} /> },
   { href: '/portal/inventory', label: 'Inventory', icon: <PackageSearch size={16} /> },
   { href: '/portal/affiliates', label: 'Affiliates', icon: <Users size={16} /> },
   { href: '/portal/wholesale', label: 'Wholesale', icon: <Briefcase size={16} /> },

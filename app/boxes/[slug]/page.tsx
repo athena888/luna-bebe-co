@@ -1,4 +1,5 @@
-import { getBoxBySlug, boxItemTotal } from '@/lib/prebuilt-boxes'
+import { boxItemTotal } from '@/lib/prebuilt-boxes'
+import { getBox } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
@@ -7,11 +8,12 @@ import Link from 'next/link'
 import { ArrowLeft, ShoppingBag } from 'lucide-react'
 import { notFound } from 'next/navigation'
 
+export const dynamic = 'force-dynamic'
 export const dynamicParams = true
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const box = getBoxBySlug(slug)
+  const box = await getBox(slug)
   return {
     title: `${box?.name} — Petite Lavande`,
     description: box?.description || 'Curated gift set from Petite Lavande',
@@ -20,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function BoxPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const box = getBoxBySlug(slug)
+  const box = await getBox(slug)
 
   if (!box) notFound()
 

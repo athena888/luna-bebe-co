@@ -2,16 +2,17 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { featuredBoxes, boxItemTotal } from '@/lib/prebuilt-boxes'
+import { boxItemTotal } from '@/lib/prebuilt-boxes'
+import type { ResolvedBox } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
 import { ChevronDown } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function fmt(cents: number) {
   return `$${(cents / 100).toFixed(0)}`
 }
 
-function BoxCard({ box }: { box: ReturnType<typeof featuredBoxes>[0] }) {
+function BoxCard({ box }: { box: ResolvedBox }) {
   const [expanded, setExpanded] = useState(false)
   const items = Object.values(box.selection).filter(Boolean) as NonNullable<typeof box.selection.swaddle>[]
   const total = box.customPrice ?? (BOX_BASE_PRICE + boxItemTotal(box.selection))
@@ -82,7 +83,13 @@ function BoxCard({ box }: { box: ReturnType<typeof featuredBoxes>[0] }) {
 }
 
 export function PrebuiltBoxesSection() {
-  const boxes = featuredBoxes()
+  const [boxes, setBoxes] = useState<ResolvedBox[]>([])
+
+  useEffect(() => {
+    fetch('/api/boxes?featured=true').then(r => r.json()).then(d => setBoxes(d.boxes ?? [])).catch(() => {})
+  }, [])
+
+  if (boxes.length === 0) return null
 
   return (
     <section className="border-t border-cream-300 py-16">

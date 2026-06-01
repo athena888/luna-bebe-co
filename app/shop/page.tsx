@@ -1,10 +1,12 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { PREBUILT_BOXES, boxItemTotal } from '@/lib/prebuilt-boxes'
+import { boxItemTotal } from '@/lib/prebuilt-boxes'
+import type { ResolvedBox } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE, CATEGORY_LABELS } from '@/lib/products'
 import type { BoxSelection } from '@/types'
 
@@ -13,11 +15,18 @@ function formatPrice(cents: number) {
 }
 
 function shopThisBox(selection: BoxSelection) {
-  sessionStorage.setItem('pl_box_selection', JSON.stringify(selection))
+  // Store only the non-empty items as an array (matches the build-page format)
+  const items = Object.values(selection).filter(Boolean)
+  sessionStorage.setItem('pl_box_selection', JSON.stringify(items))
 }
 
 export default function ShopPage() {
   const router = useRouter()
+  const [boxes, setBoxes] = useState<ResolvedBox[]>([])
+
+  useEffect(() => {
+    fetch('/api/boxes').then(r => r.json()).then(d => setBoxes(d.boxes ?? [])).catch(() => {})
+  }, [])
 
   return (
     <>
@@ -36,9 +45,9 @@ export default function ShopPage() {
         {/* Box cards */}
         <div className="max-w-5xl mx-auto px-6 py-16">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {PREBUILT_BOXES.map(box => {
+            {boxes.map(box => {
               const items = Object.values(box.selection).filter(Boolean) as NonNullable<typeof box.selection.swaddle>[]
-              const total = boxItemTotal(box.selection) + BOX_BASE_PRICE
+              const total = box.customPrice ?? (boxItemTotal(box.selection) + BOX_BASE_PRICE)
 
               return (
                 <div key={box.slug} className="flex flex-col border border-cream-200 bg-white">
@@ -47,8 +56,8 @@ export default function ShopPage() {
                   <div className="px-6 pt-7 pb-5 border-b border-cream-200">
                     <div className="flex items-center justify-between mb-3">
                       <span className="inline-block font-sans text-[9px] tracking-[0.3em] uppercase px-2.5 py-1 bg-cream-100 text-bark-400">{box.style}</span>
-                      <span className={`font-sans text-[9px] tracking-[0.15em] uppercase px-2 py-0.5 rounded-full ${box.variant === 'girl' ? 'bg-rose-100/60 text-rose-400' : 'bg-cream-200 text-bark-400'}`}>
-                        {box.variant === 'girl' ? 'Girl' : 'Neutral'}
+                      <span className={`font-sans text-[9px] tracking-[0.15em] uppercase px-2 py-0.5 rounded-full capitalize ${box.variant === 'girl' ? 'bg-rose-100/60 text-rose-400' : box.variant === 'boy' ? 'bg-sky-100/60 text-sky-500' : 'bg-cream-200 text-bark-400'}`}>
+                        {box.variant}
                       </span>
                     </div>
                     <h2 className="font-serif text-2xl text-bark-600 mb-1">{box.name}</h2>

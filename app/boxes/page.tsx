@@ -1,8 +1,11 @@
 import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { PREBUILT_BOXES, boxItemTotal } from '@/lib/prebuilt-boxes'
+import { boxItemTotal } from '@/lib/prebuilt-boxes'
+import { getBoxes } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
+
+export const dynamic = 'force-dynamic'
 
 function fmt(cents: number) {
   return `$${(cents / 100).toFixed(0)}`
@@ -10,15 +13,16 @@ function fmt(cents: number) {
 
 export const metadata = {
   title: 'Shop by Aesthetic — Petite Lavande',
-  description: 'Curated-style baby gift boxes — Boho, Garden, and Classique, each in neutral and girl editions. 7 items per box, every detail chosen.',
+  description: 'Curated baby gift boxes — each thoughtfully assembled with 7 items, every detail chosen.',
 }
 
-const STYLES = ['Bohemian', 'Botanical', 'Heirloom'] as const
-
-export default function BoxesPage() {
-  const byStyle = STYLES.map(style => ({
+export default async function BoxesPage() {
+  const boxes = await getBoxes()
+  // Group by whichever styles actually exist
+  const styles = Array.from(new Set(boxes.map(b => b.style)))
+  const byStyle = styles.map(style => ({
     style,
-    boxes: PREBUILT_BOXES.filter(b => b.style === style),
+    boxes: boxes.filter(b => b.style === style),
   }))
 
   return (
@@ -55,8 +59,8 @@ export default function BoxesPage() {
                     >
                       <div className="flex items-center justify-between mb-4">
                         <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400">{style}</p>
-                        <span className={`font-sans text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-full ${box.variant === 'girl' ? 'bg-rose-100/60 text-rose-400' : 'bg-cream-200 text-bark-400'}`}>
-                          {box.variant === 'girl' ? 'Girl' : 'Neutral'}
+                        <span className={`font-sans text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-full capitalize ${box.variant === 'girl' ? 'bg-rose-100/60 text-rose-400' : box.variant === 'boy' ? 'bg-sky-100/60 text-sky-500' : 'bg-cream-200 text-bark-400'}`}>
+                          {box.variant}
                         </span>
                       </div>
                       <h2 className="font-serif text-2xl text-bark-600 mb-1">{box.name}</h2>
