@@ -1,5 +1,9 @@
+'use client'
+
 import Link from 'next/link'
-import { LayoutDashboard, ShoppingBag, Phone, ImagePlus, Home, BarChart2, Target, Camera, TrendingUp, Users, Briefcase, Webhook, PackageSearch } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import { useState } from 'react'
+import { LayoutDashboard, ShoppingBag, Phone, ImagePlus, Home, BarChart2, Target, Camera, TrendingUp, Users, Briefcase, Webhook, PackageSearch, Menu, X } from 'lucide-react'
 
 const NAV = [
   { href: '/portal', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
@@ -12,7 +16,7 @@ const NAV = [
   { href: '/portal/webhooks', label: 'Webhooks', icon: <Webhook size={16} /> },
   { href: '/portal/home-images', label: 'Home Images', icon: <Home size={16} /> },
   { href: '/portal/social', label: 'Social Feed', icon: <Camera size={16} /> },
-  { href: '/portal/analytics', label: 'Ad Analytics', icon: <TrendingUp size={16} /> },
+  { href: '/portal/analytics', label: 'Analytics', icon: <TrendingUp size={16} /> },
 ]
 
 const ANALYTICS = [
@@ -20,50 +24,99 @@ const ANALYTICS = [
   { href: 'https://business.facebook.com', label: 'Meta Business', icon: <Target size={16} /> },
 ]
 
-export default function PortalLayout({ children }: { children: React.ReactNode }) {
+function NavContent({ onNavigate }: { onNavigate?: () => void }) {
+  const pathname = usePathname()
   return (
-    <div className="flex min-h-screen bg-bark-700">
-      <aside className="w-56 shrink-0 bg-bark-800 border-r border-bark-600/40 flex flex-col py-8 px-4">
-        <div className="mb-8 px-2">
-          <div className="font-serif text-sm tracking-[0.2em] uppercase text-gold-300">Petite Lavande</div>
-          <div className="font-sans text-[9px] uppercase tracking-[0.35em] text-gold-400/60 mt-0.5">Collective — Portal</div>
-        </div>
-        <nav className="flex flex-col gap-1">
-          {NAV.map(({ href, label, icon }) => (
+    <>
+      <div className="mb-8 px-2">
+        <div className="font-serif text-sm tracking-[0.2em] uppercase text-gold-300">Petite Lavande</div>
+        <div className="font-sans text-[9px] uppercase tracking-[0.35em] text-gold-400/60 mt-0.5">Portal</div>
+      </div>
+      <nav className="flex flex-col gap-1">
+        {NAV.map(({ href, label, icon }) => {
+          const active = pathname === href || (href !== '/portal' && pathname.startsWith(href))
+          return (
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl font-sans text-sm text-cream-300 hover:bg-bark-600/50 hover:text-cream-100 transition-colors"
+              onClick={onNavigate}
+              className={`flex items-center gap-2.5 px-3 py-3 rounded-xl font-sans text-sm transition-colors ${
+                active ? 'bg-bark-600/60 text-cream-100' : 'text-cream-300 hover:bg-bark-600/50 hover:text-cream-100'
+              }`}
             >
               <span className="text-gold-400/70">{icon}</span>
               {label}
             </Link>
+          )
+        })}
+      </nav>
+      <div className="mt-6 px-2">
+        <p className="font-sans text-[9px] uppercase tracking-[0.25em] text-bark-400 mb-2 px-1">External</p>
+        <div className="flex flex-col gap-1">
+          {ANALYTICS.map(({ href, label, icon }) => (
+            <a
+              key={href}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2.5 px-3 py-3 rounded-xl font-sans text-sm text-cream-300 hover:bg-bark-600/50 hover:text-cream-100 transition-colors"
+            >
+              <span className="text-gold-400/70">{icon}</span>
+              {label}
+            </a>
           ))}
-        </nav>
-        <div className="mt-6 px-2">
-          <p className="font-sans text-[9px] uppercase tracking-[0.25em] text-bark-400 mb-2 px-1">Analytics</p>
-          <div className="flex flex-col gap-1">
-            {ANALYTICS.map(({ href, label, icon }) => (
-              <a
-                key={href}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl font-sans text-sm text-cream-300 hover:bg-bark-600/50 hover:text-cream-100 transition-colors"
-              >
-                <span className="text-gold-400/70">{icon}</span>
-                {label}
-              </a>
-            ))}
-          </div>
         </div>
+      </div>
+    </>
+  )
+}
+
+export default function PortalLayout({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className="flex min-h-screen bg-bark-700">
+      {/* Mobile top bar */}
+      <header className="md:hidden fixed top-0 inset-x-0 z-40 h-14 bg-bark-800 border-b border-bark-600/40 flex items-center justify-between px-4">
+        <div className="font-serif text-sm tracking-[0.2em] uppercase text-gold-300">Petite Lavande</div>
+        <button
+          onClick={() => setOpen(true)}
+          className="w-10 h-10 flex items-center justify-center text-cream-200"
+          aria-label="Open menu"
+        >
+          <Menu size={22} />
+        </button>
+      </header>
+
+      {/* Mobile drawer */}
+      {open && (
+        <div className="md:hidden fixed inset-0 z-50" role="dialog" aria-modal="true">
+          <div className="absolute inset-0 bg-bark-900/60" onClick={() => setOpen(false)} />
+          <aside className="absolute left-0 top-0 bottom-0 w-72 max-w-[80vw] bg-bark-800 flex flex-col py-6 px-4 overflow-y-auto">
+            <button
+              onClick={() => setOpen(false)}
+              className="self-end w-10 h-10 flex items-center justify-center text-cream-200 mb-2"
+              aria-label="Close menu"
+            >
+              <X size={22} />
+            </button>
+            <NavContent onNavigate={() => setOpen(false)} />
+          </aside>
+        </div>
+      )}
+
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex w-56 shrink-0 bg-bark-800 border-r border-bark-600/40 flex-col py-8 px-4">
+        <NavContent />
         <div className="mt-auto px-2">
           <div className="text-[10px] font-sans text-bark-400 leading-relaxed">
             Petite Lavande<br />Internal Portal
           </div>
         </div>
       </aside>
-      <main className="flex-1 overflow-auto bg-cream-100">
+
+      {/* Content */}
+      <main className="flex-1 overflow-auto bg-cream-100 pt-14 md:pt-0">
         {children}
       </main>
     </div>

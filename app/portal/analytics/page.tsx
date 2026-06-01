@@ -84,13 +84,44 @@ async function getWeeklyRevenue() {
   return weeks
 }
 
+// ── Product sales volume (units sold per item, from paid orders) ─────────────
+
+interface ProductVolume {
+  id: string
+  name: string
+  units: number
+  revenue: number
+}
+
+async function getProductVolume(): Promise<ProductVolume[]> {
+  const { data } = await supabaseAdmin
+    .from('orders')
+    .select('selected_items, status')
+    .neq('status', 'pending')
+
+  const tally = new Map<string, ProductVolume>()
+  for (const order of data ?? []) {
+    const items = (order.selected_items ?? []) as Array<{ id: string; name: string; price: number }>
+    for (const item of items) {
+      if (!item?.id) continue
+      const row = tally.get(item.id) ?? { id: item.id, name: item.name ?? item.id, units: 0, revenue: 0 }
+      row.units += 1
+      row.revenue += item.price ?? 0
+      tally.set(item.id, row)
+    }
+  }
+
+  return Array.from(tally.values()).sort((a, b) => b.units - a.units)
+}
+
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default async function AnalyticsPage() {
-  const [analytics, weekly] = await Promise.all([getAnalytics(), getWeeklyRevenue()])
+  const [analytics, weekly, productVolume] = await Promise.all([getAnalytics(), getWeeklyRevenue(), getProductVolume()])
   const { channels, totalRevenue, totalOrders, recentRevenue, recentOrders } = analytics
 
   const maxWeek = Math.max(...weekly, 1)
+  const maxUnits = Math.max(...productVolume.map(p => p.units), 1)
 
   const SOURCE_LABELS: Record<string, string> = {
     'facebook': 'Facebook',
@@ -104,7 +135,7 @@ export default async function AnalyticsPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       <div className="mb-8">
         <h1 className="font-serif text-3xl text-bark-600">Ad Channel Analytics</h1>
         <p className="font-sans text-sm text-bark-400 mt-1">
@@ -228,6 +259,49 @@ export default async function AnalyticsPage() {
                   <td className="px-6 py-3 text-right font-sans text-xs text-bark-400">100%</td>
                 </tr>
               </tfoot>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Product sales volume */}
+      <div className="bg-cream-50 border border-cream-200 rounded-2xl overflow-hidden mb-8">
+        <div className="px-4 sm:px-6 py-4 border-b border-cream-200">
+          <h2 className="font-serif text-xl text-bark-600">Units Sold by Product</h2>
+          <p className="font-sans text-xs text-bark-400 mt-0.5">How many of each item customers have bought across all paid orders. Use this to plan restocks.</p>
+        </div>
+
+        {productVolume.length === 0 ? (
+          <div className="p-12 text-center">
+            <p className="font-serif text-lg text-bark-400">No sales yet.</p>
+            <p className="font-sans text-xs text-bark-400/70 mt-2">Once orders come in, your best-selling items will rank here.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-cream-200">
+                  <th className="text-left px-4 sm:px-6 py-3 font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400">Product</th>
+                  <th className="text-right px-4 py-3 font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400">Units</th>
+                  <th className="text-right px-4 sm:px-6 py-3 font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400">Revenue</th>
+                </tr>
+              </thead>
+              <tbody>
+                {productVolume.map((p, i) => (
+                  <tr key={p.id} className={`border-b border-cream-100 ${i % 2 === 0 ? '' : 'bg-cream-50/50'}`}>
+                    <td className="px-4 sm:px-6 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-16 sm:w-24 h-1.5 bg-cream-200 rounded-full overflow-hidden shrink-0">
+                          <div className="h-full bg-sage-400 rounded-full" style={{ width: `${Math.round((p.units / maxUnits) * 100)}%` }} />
+                        </div>
+                        <span className="font-sans text-sm text-bark-600 leading-tight">{p.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-right font-sans text-sm font-medium text-bark-600">{p.units}</td>
+                    <td className="px-4 sm:px-6 py-3 text-right font-serif text-sm text-bark-600">{fmt(p.revenue)}</td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         )}

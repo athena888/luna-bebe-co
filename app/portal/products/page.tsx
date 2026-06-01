@@ -313,15 +313,15 @@ export default function ProductsPortalPage() {
   })).filter(g => g.items.length > 0)
 
   return (
-    <div className="p-8">
-      <div className="mb-8 flex items-start justify-between gap-4">
+    <div className="p-4 sm:p-8">
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
           <h1 className="font-serif text-3xl text-bark-600">Products</h1>
           <p className="font-sans text-sm text-bark-400 mt-1">
             Click a card to swap the photo. Use <Settings size={12} className="inline mb-0.5" /> to edit details, or <Trash2 size={12} className="inline mb-0.5" /> to delete.
           </p>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
           <button
             onClick={handleCleanup}
             disabled={cleaning}
