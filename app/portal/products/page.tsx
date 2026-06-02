@@ -263,7 +263,7 @@ function BulkPhotoUploadModal({ onClose, onUploaded }: { onClose: () => void; on
 }
 
 function AddProductModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
-  const [step, setStep] = useState<'form' | 'photo'>('form')
+  const [step, setStep] = useState<'ai' | 'form' | 'photo'>('ai')
   const [name, setName] = useState('')
   const [category, setCategory] = useState<ProductCategory>('swaddle')
   const [price, setPrice] = useState('')
@@ -275,7 +275,11 @@ function AddProductModal({ onClose, onCreated }: { onClose: () => void; onCreate
   const [error, setError] = useState('')
   const [productId, setProductId] = useState('')
   const [uploadState, setUploadState] = useState<'idle' | 'uploading' | 'done'>('idle')
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiNames, setAiNames] = useState<string[]>([])
+  const [aiError, setAiError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
+  const aiInputRef = useRef<HTMLInputElement>(null)
 
   async function handleCreate() {
     if (!name.trim()) { setError('Name is required'); return }
@@ -306,6 +310,30 @@ function AddProductModal({ onClose, onCreated }: { onClose: () => void; onCreate
     }
   }
 
+  async function handleAIDraft(file: File) {
+    setAiLoading(true)
+    setAiError('')
+    const form = new FormData()
+    form.append('file', file)
+    form.append('category', category)
+    try {
+      const res = await fetch('/api/portal/products/ai-describe', { method: 'POST', body: form })
+      const data = await res.json()
+      if (data.draft) {
+        setAiNames(data.draft.names || [])
+        setDescription(data.draft.description || '')
+        setIngredients(data.draft.ingredients || '')
+        if (data.draft.tag) setTag(data.draft.tag)
+      } else {
+        setAiError(data.error || 'Failed to generate suggestions')
+      }
+    } catch {
+      setAiError('Failed to process file')
+    } finally {
+      setAiLoading(false)
+    }
+  }
+
   async function handlePhoto(file: File) {
     setUploadState('uploading')
     const form = new FormData()
@@ -329,7 +357,91 @@ function AddProductModal({ onClose, onCreated }: { onClose: () => void; onCreate
   return (
     <div className="fixed inset-0 bg-bark-600/40 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        {step === 'form' ? (
+        {step === 'ai' ? (
+          <>
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="font-serif text-xl text-bark-600 flex items-center gap-2">
+                <Sparkles size={20} />
+                AI Product Info
+              </h2>
+              <button onClick={onClose} className="text-bark-400 hover:text-bark-600"><X size={18} /></button>
+            </div>
+
+            <div className="space-y-4">
+              <p className="font-sans text-sm text-bark-600">Upload a product photo, spec sheet, or screenshot to get AI suggestions for names, description, and ingredients.</p>
+
+              <div
+                onClick={() => aiInputRef.current?.click()}
+                onDragOver={e => e.preventDefault()}
+                onDrop={e => {
+                  e.preventDefault()
+                  const file = e.dataTransfer.files[0]
+                  if (file) handleAIDraft(file)
+                }}
+                className="border-2 border-dashed border-cream-300 rounded-xl p-8 text-center cursor-pointer hover:border-bark-400 transition-colors"
+              >
+                {aiLoading ? (
+                  <>
+                    <Loader size={32} className="mx-auto text-bark-600 animate-spin mb-2" />
+                    <p className="font-sans text-sm text-bark-600">Analyzing…</p>
+                  </>
+                ) : aiNames.length > 0 ? (
+                  <>
+                    <CheckCircle size={32} className="mx-auto text-gold-400 mb-2" />
+                    <p className="font-sans text-sm text-bark-600">Ready! Select a name below.</p>
+                  </>
+                ) : (
+                  <>
+                    <ImageUp size={32} className="mx-auto text-bark-400 mb-2" />
+                    <p className="font-sans text-sm text-bark-600">Click to upload or drag & drop</p>
+                    <p className="font-sans text-xs text-bark-400 mt-1">JPG, PNG, WebP, or PDF</p>
+                  </>
+                )}
+              </div>
+
+              <input
+                ref={aiInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,application/pdf"
+                className="hidden"
+                onChange={e => {
+                  const file = e.target.files?.[0]
+                  if (file) handleAIDraft(file)
+                  e.target.value = ''
+                }}
+              />
+
+              {aiError && <p className="font-sans text-xs text-red-500">{aiError}</p>}
+
+              {aiNames.length > 0 && (
+                <div className="space-y-2">
+                  <p className="font-sans text-xs uppercase tracking-widest text-bark-400">Pick a name or skip:</p>
+                  <div className="space-y-2">
+                    {aiNames.map((nameOption, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          setName(nameOption)
+                          setStep('form')
+                        }}
+                        className="w-full text-left px-3 py-2 bg-cream-50 border border-cream-200 rounded hover:border-bark-400 hover:bg-cream-100 transition-colors font-sans text-sm text-bark-600"
+                      >
+                        {nameOption}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <button
+                onClick={() => setStep('form')}
+                className="w-full font-sans text-xs text-bark-400 hover:text-bark-600 transition-colors py-2 border-t border-cream-200"
+              >
+                Skip & Enter Manually
+              </button>
+            </div>
+          </>
+        ) : step === 'form' ? (
           <>
             <div className="flex items-center justify-between mb-5">
               <h2 className="font-serif text-xl text-bark-600">Add New Product</h2>

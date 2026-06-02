@@ -85,7 +85,7 @@ function buildInstruction(category: string, keywords: string): string {
 
 Return ONLY a valid JSON object, no markdown, no explanation:
 {
-  "name": "Product name — concise and elegant, title case",
+  "names": ["Product name option 1 — concise and elegant, title case", "Product name option 2", "Product name option 3", "Product name option 4", "Product name option 5"],
   "ingredients": "Materials or ingredients, comma-separated (e.g. '100% Organic Cotton' or 'Calendula, Colloidal Oat, Lavender')",
   "description": "1-2 short sentences in the brand voice",
   "tag": "Choose the single most fitting tag from this list, or empty string if none fit: ${PRODUCT_TAGS.join(', ')}"

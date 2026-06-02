@@ -60,7 +60,15 @@ export function RealtimeTraffic() {
     return (
       <div className="bg-cream-50 rounded-2xl border border-cream-200 p-6">
         <h2 className="font-serif text-xl text-bark-600 mb-2">Live Traffic</h2>
-        <p className="font-sans text-sm text-red-500">{data.error}</p>
+        <p className="font-sans text-sm text-bark-400 mb-4">Service account setup is in progress. View your live analytics directly:</p>
+        <a
+          href="https://analytics.google.com/analytics/web/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block px-4 py-2 bg-bark-600 text-white font-sans text-[11px] tracking-[0.2em] uppercase rounded hover:bg-bark-700 transition-colors"
+        >
+          → View in Google Analytics
+        </a>
       </div>
     )
   }
