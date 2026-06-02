@@ -456,6 +456,14 @@ export default function ProductDetailPage() {
               <p className="mb-4 font-sans text-xs text-red-500 bg-red-50 border border-red-200 rounded px-3 py-2">{uploadError}</p>
             )}
 
+            {enhanceMsg && (
+              <p className={`mb-4 font-sans text-xs rounded px-3 py-2 border ${
+                enhanceMsg.includes('Error') || enhanceMsg.includes('error')
+                  ? 'text-red-500 bg-red-50 border-red-200'
+                  : 'text-bark-600 bg-cream-50 border-cream-200'
+              }`}>{enhanceMsg}</p>
+            )}
+
             {gallery.length === 0 ? (
               <div
                 className="border-2 border-dashed border-cream-300 rounded-lg h-40 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-bark-400 transition-colors"
