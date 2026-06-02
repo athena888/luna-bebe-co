@@ -15,11 +15,26 @@ export async function generateImage(prompt: string, count = 1): Promise<Buffer[]
 
   if (!res.ok) {
     const err = await res.text()
-    throw new Error(`Gemini image generation failed: ${err}`)
+    console.error('Gemini API error response:', { status: res.status, body: err })
+    throw new Error(`Gemini API error (${res.status}): ${err}`)
   }
 
   const data = await res.json()
-  const predictions = data.predictions ?? []
-  if (!predictions.length) throw new Error('No images returned from Gemini')
-  return predictions.map((p: { bytesBase64Encoded: string }) => Buffer.from(p.bytesBase64Encoded, 'base64'))
+  console.log('Gemini response:', data)
+
+  const predictions = data.predictions ?? data.generatedImages ?? []
+  if (!predictions.length) {
+    console.error('No images in response:', data)
+    throw new Error('No images returned from Gemini - check API response format')
+  }
+
+  // Handle both prediction formats
+  return predictions.map((p: any) => {
+    const base64 = p.bytesBase64Encoded || p.imageBase64 || (p.image ? p.image.imageBase64 : null)
+    if (!base64) {
+      console.error('No base64 in prediction:', p)
+      throw new Error('Missing image data in prediction')
+    }
+    return Buffer.from(base64, 'base64')
+  })
 }
