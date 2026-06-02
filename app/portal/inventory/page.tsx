@@ -181,10 +181,13 @@ export default function InventoryPage() {
     const item = items[rowIndex]
     setDraftingRow(rowIndex)
     try {
+      // Start the draft at the recommended retail (≈3× cost), in cents
+      const rec = recommendedRetail(item.unit_price)
+      const priceCents = rec != null ? Math.round(rec * 100) : 0
       const res = await fetch('/api/portal/inventory/create-draft', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: item.name || item.item_id, item_id: item.item_id }),
+        body: JSON.stringify({ name: item.name || item.item_id, item_id: item.item_id, price: priceCents }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed')
@@ -205,7 +208,7 @@ export default function InventoryPage() {
       }
 
       // Add to the in-memory catalog so the row links + future rows can reuse it
-      setCatalog(prev => [{ id: p.id, name: p.name, category: p.category, emoji: '📦', image: draftImage, variants: [] }, ...prev])
+      setCatalog(prev => [{ id: p.id, name: p.name, category: p.category, emoji: '📦', image: draftImage, price: p.price ?? priceCents, sold90: 0, variants: [] }, ...prev])
       setItems(prev => prev.map((it, i) => i === rowIndex ? { ...it, item_id: p.id, name: p.name } : it))
     } catch (e) {
       alert(e instanceof Error ? e.message : 'Failed to create draft product')
