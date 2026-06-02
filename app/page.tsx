@@ -52,7 +52,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-t from-bark-800/40 via-transparent to-transparent" />
           <div className="relative z-10 w-full px-6 sm:px-12 pb-10 sm:pb-14 flex justify-end">
             <div className="w-full max-w-[300px] sm:max-w-sm text-right">
-              <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-cream-200/80 mb-3">Petite Lavande</p>
+              <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-cream-200/80 mb-3 pt-8 md:pt-12">Petite Lavande</p>
               <h1 className="font-serif text-[2.25rem] sm:text-[4.5rem] text-cream-50 leading-[1.05] mb-3">
                 A New Chapter,<br />Wrapped in Care.
               </h1>
