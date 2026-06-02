@@ -41,7 +41,7 @@ export default function WishlistPage() {
               <Heart size={32} className="text-cream-300 mx-auto mb-4" />
               <p className="font-serif text-2xl text-bark-400 mb-2">Nothing saved yet</p>
               <p className="font-sans text-sm text-bark-400 mb-8">Tap the heart on any product while building your box to save it here.</p>
-              <Link href="/build"><Button variant="gold" size="md">Build a Box</Button></Link>
+              <Link href="/build"><Button variant="outline" size="md">Build a Box</Button></Link>
             </div>
           ) : (
             <>
