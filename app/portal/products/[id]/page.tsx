@@ -57,6 +57,8 @@ export default function ProductDetailPage() {
   const [variants, setVariants] = useState<Variant[]>([])
   const [detectedColors, setDetectedColors] = useState<Array<{ name: string; hex: string }> | null>(null)
   const [colorDetecting, setColorDetecting] = useState(false)
+  const [enhancingPhotos, setEnhancingPhotos] = useState(false)
+  const [enhanceMsg, setEnhanceMsg] = useState('')
   const [certs, setCerts] = useState<ProductCert[]>([])
   const [certLibrary, setCertLibrary] = useState<CertDef[]>([])
   const [certUploading, setCertUploading] = useState<string | null>(null)
@@ -179,6 +181,38 @@ export default function ProductDetailPage() {
     } finally {
       setColorDetecting(false)
     }
+  }
+
+  async function enhanceAllPhotos() {
+    if (!gallery || gallery.length === 0) {
+      setEnhanceMsg('No photos to enhance')
+      return
+    }
+    setEnhancingPhotos(true)
+    setEnhanceMsg('')
+    let successCount = 0
+    for (const img of gallery) {
+      try {
+        const res = await fetch(img.image_url)
+        const blob = await res.blob()
+        const form = new FormData()
+        form.append('file', blob)
+        const enhanceRes = await fetch('/api/portal/products/enhance-photo', { method: 'POST', body: form })
+        const enhanceData = await enhanceRes.json()
+        if (enhanceData.imageData) {
+          const enhancedBlob = await fetch(enhanceData.imageData).then(r => r.blob())
+          const galleryForm = new FormData()
+          galleryForm.append('file', enhancedBlob, `enhanced-${Date.now()}.jpg`)
+          await fetch(`/api/portal/products/${id}/gallery`, { method: 'POST', body: galleryForm })
+          successCount++
+        }
+      } catch (e) {
+        console.error('Enhancement failed for image', e)
+      }
+    }
+    setEnhanceMsg(`Enhanced ${successCount}/${gallery.length} photos`)
+    setEnhancingPhotos(false)
+    setTimeout(() => setEnhanceMsg(''), 3000)
   }
 
   function toggleCert(key: string) {
@@ -348,7 +382,16 @@ export default function ProductDetailPage() {
           <div className="bg-white border border-cream-300 rounded-xl p-6">
             <div className="flex items-center justify-between mb-5">
               <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">Photo Gallery</p>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={enhanceAllPhotos}
+                  disabled={enhancingPhotos || gallery.length === 0}
+                  className="flex items-center gap-1.5 border border-gold-400 text-gold-600 font-sans text-[10px] tracking-[0.2em] uppercase px-4 py-2 hover:bg-gold-50 transition-colors disabled:opacity-40"
+                  title="Enhance all photos with AI: standardize size + add oat wall background"
+                >
+                  {enhancingPhotos ? <Loader size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                  {enhancingPhotos ? 'Enhancing…' : 'Enhance All'}
+                </button>
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input
                     type="checkbox"
