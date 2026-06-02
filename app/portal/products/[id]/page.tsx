@@ -26,6 +26,7 @@ type ProductData = {
   ingredients?: string
   category: string
   has_variants?: boolean
+  image?: string | null
 }
 
 type Variant = {
@@ -38,6 +39,7 @@ type Variant = {
 }
 
 const VARIANT_SIZES = ['0-3', '3-6', '6-9', '9-12', '12-18', '18-24', 'one-size']
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 
 const inputCls = "w-full px-3 py-2.5 border border-cream-300 bg-white font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-bark-400 transition-colors rounded"
 const labelCls = "block font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-1.5"
@@ -129,12 +131,17 @@ export default function ProductDetailPage() {
         certifications: certs,
       }),
     })
-    // Save variants when this product uses them
+    // Save variants when this product uses them.
+    // Fall back to the hex value as the color name when none is typed,
+    // so a row with only a swatch still saves instead of being dropped.
     if (hasVariants) {
+      const variantsToSave = variants
+        .map(v => ({ ...v, color: (v.color.trim() || v.color_hex?.trim() || '') }))
+        .filter(v => v.color && v.size.trim())
       await fetch(`/api/portal/products/${id}/variants`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ variants: variants.filter(v => v.color.trim() && v.size.trim()) }),
+        body: JSON.stringify({ variants: variantsToSave }),
       })
     }
     setSaving(false)
@@ -323,13 +330,33 @@ export default function ProductDetailPage() {
             )}
 
             {gallery.length === 0 ? (
-              <div
-                className="border-2 border-dashed border-cream-300 rounded-lg h-40 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-bark-400 transition-colors"
-                onClick={() => galleryInputRef.current?.click()}
-              >
-                <Upload size={20} className="text-bark-400/50" />
-                <p className="font-sans text-xs text-bark-400">Click to upload your first photo</p>
-              </div>
+              (() => {
+                // Fall back to the product's main image (the storefront headshot)
+                // when there are no gallery rows yet.
+                const headshot = product.image
+                  || (SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${product.id}.jpg` : null)
+                return (
+                  <div className="space-y-3">
+                    {headshot && (
+                      <div className="relative aspect-square w-full max-w-[200px] bg-cream-200 rounded-lg overflow-hidden">
+                        <Image src={headshot} alt={product.name} fill className="object-cover" unoptimized
+                          onError={e => { (e.currentTarget.parentElement as HTMLElement).style.display = 'none' }} />
+                        <div className="absolute top-2 left-2 bg-gold-400 text-white font-sans text-[9px] tracking-[0.15em] uppercase px-2 py-0.5 rounded">
+                          Current
+                        </div>
+                      </div>
+                    )}
+                    <div
+                      className="border-2 border-dashed border-cream-300 rounded-lg h-32 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-bark-400 transition-colors"
+                      onClick={() => galleryInputRef.current?.click()}
+                    >
+                      <Upload size={20} className="text-bark-400/50" />
+                      <p className="font-sans text-xs text-bark-400">{headshot ? 'Add gallery photos' : 'Click to upload your first photo'}</p>
+                      <p className="font-sans text-[10px] text-bark-400/60">Best size: 1200 × 1600 px (3:4 portrait)</p>
+                    </div>
+                  </div>
+                )
+              })()
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {gallery.map((img) => {
@@ -381,10 +408,11 @@ export default function ProductDetailPage() {
                 })}
                 {/* Add more */}
                 <div
-                  className="aspect-square border-2 border-dashed border-cream-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-bark-400 transition-colors"
+                  className="aspect-square border-2 border-dashed border-cream-300 rounded-lg flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-bark-400 transition-colors text-center px-2"
                   onClick={() => galleryInputRef.current?.click()}
                 >
                   <Plus size={20} className="text-bark-400/50" />
+                  <span className="font-sans text-[9px] text-bark-400/60 leading-tight">1200×1600 px<br />(3:4)</span>
                 </div>
               </div>
             )}
@@ -524,8 +552,8 @@ export default function ProductDetailPage() {
             </p>
           </div>
 
-          {/* Variants (sizes & colors) */}
-          <div className="bg-white border border-cream-300 rounded-xl p-6">
+          {/* Variants (sizes & colors) — wider so the rows fit */}
+          <div className="bg-white border border-cream-300 rounded-xl p-6 md:col-span-2 xl:col-span-2">
             <div className="flex items-center justify-between mb-4">
               <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">Sizes &amp; Colors</p>
               <label className="flex items-center gap-2 cursor-pointer">
@@ -593,26 +621,16 @@ export default function ProductDetailPage() {
                         type="text"
                         value={v.color}
                         onChange={e => updateVariant(i, 'color', e.target.value)}
-                        placeholder="color"
+                        placeholder="Color name (e.g. Dusty Rose)"
                         className="flex-1 min-w-0 px-2 py-1.5 border border-cream-300 rounded text-sm text-bark-600 focus:outline-none focus:border-bark-400"
                       />
-                      <div className="flex items-center gap-1 shrink-0">
-                        <input
-                          type="text"
-                          value={v.color_hex || ''}
-                          onChange={e => updateVariant(i, 'color_hex', e.target.value)}
-                          placeholder="#000"
-                          className="w-16 px-2 py-1.5 border border-cream-300 rounded text-xs text-bark-600 focus:outline-none focus:border-bark-400"
-                          title="Hex color code"
-                        />
-                        <input
-                          type="color"
-                          value={v.color_hex || '#cccccc'}
-                          onChange={e => updateVariant(i, 'color_hex', e.target.value)}
-                          className="w-8 h-8 rounded border border-cream-300 shrink-0 cursor-pointer"
-                          title="Swatch color"
-                        />
-                      </div>
+                      <input
+                        type="color"
+                        value={v.color_hex || '#cccccc'}
+                        onChange={e => updateVariant(i, 'color_hex', e.target.value)}
+                        className="w-9 h-9 rounded border border-cream-300 shrink-0 cursor-pointer"
+                        title="Pick swatch color"
+                      />
                       <select
                         value={v.size}
                         onChange={e => updateVariant(i, 'size', e.target.value)}
