@@ -8,11 +8,23 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 // so the inventory review screen can show a draggable product picker.
 export async function GET() {
   try {
-    const [catalog, variantsRes, galleryRes] = await Promise.all([
+    const [catalog, variantsRes, galleryRes, ordersRes] = await Promise.all([
       getCatalog({ activeOnly: false }),
       supabaseAdmin.from('product_variants').select('product_id, color, color_hex, size, quantity'),
       supabaseAdmin.from('product_gallery').select('product_id, image_url, is_primary, sort_order'),
+      supabaseAdmin.from('orders').select('selected_items, status, created_at').neq('status', 'pending'),
     ])
+
+    // Units sold in the last 90 days, per product id
+    const ninetyAgo = Date.now() - 90 * 24 * 60 * 60 * 1000
+    const sold90 = new Map<string, number>()
+    for (const order of ordersRes.data ?? []) {
+      if (new Date(order.created_at).getTime() < ninetyAgo) continue
+      const its = (order.selected_items ?? []) as Array<{ id: string }>
+      for (const it of its) {
+        if (it?.id) sold90.set(it.id, (sold90.get(it.id) ?? 0) + 1)
+      }
+    }
 
     // Group variants + primary image by product id
     const variantsByProduct = new Map<string, Array<{ color: string; color_hex: string | null; size: string; quantity: number }>>()
@@ -37,6 +49,8 @@ export async function GET() {
         category: p.category,
         emoji: p.imageEmoji,
         image,
+        price: p.price,                    // selling price (cents)
+        sold90: sold90.get(p.id) ?? 0,     // units sold last 90 days
         variants: variantsByProduct.get(p.id) ?? [],
       }
     })

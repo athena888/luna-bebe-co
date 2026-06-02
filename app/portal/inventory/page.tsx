@@ -19,7 +19,7 @@ interface ParsedItem {
 }
 
 interface CatalogVariant { color: string; color_hex: string | null; size: string; quantity: number }
-interface CatalogProduct { id: string; name: string; category: string; emoji: string; image: string | null; variants: CatalogVariant[] }
+interface CatalogProduct { id: string; name: string; category: string; emoji: string; image: string | null; price?: number; sold90?: number; variants: CatalogVariant[] }
 
 type Phase = 'upload' | 'parsing' | 'review' | 'saving' | 'done'
 
@@ -278,8 +278,8 @@ export default function InventoryPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-cream-200 bg-cream-50">
-                {['', 'Item ID', 'Name', 'Color', 'Hex', 'Size', 'Qty', 'Unit $', 'In stock', ''].map((h, idx) => (
-                  <th key={idx} className="px-3 py-3 text-left font-sans text-[10px] font-semibold uppercase tracking-widest text-bark-400">{h}</th>
+                {['', 'Item ID', 'Name', 'Color', 'Hex', 'Size', 'Qty', 'Cost $', 'Sell $', 'Margin', 'Profit', 'Sold 90d', 'In stock', ''].map((h, idx) => (
+                  <th key={idx} className="px-3 py-3 text-left font-sans text-[10px] font-semibold uppercase tracking-widest text-bark-400 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -368,6 +368,28 @@ export default function InventoryPage() {
                     </td>
                     <td className="px-1 py-1 w-20">
                       <Cell value={item.unit_price ?? ''} onChange={v => updateItem(i, 'unit_price', v === '' ? null : parseFloat(v))} type="number" />
+                    </td>
+                    {/* selling price (from linked product) */}
+                    <td className="px-2 py-1 w-20 text-center">
+                      {linked?.price ? <span className="font-sans text-xs text-bark-600">${(linked.price / 100).toFixed(2)}</span> : <span className="font-sans text-[10px] text-bark-300">—</span>}
+                    </td>
+                    {/* margin % */}
+                    <td className="px-2 py-1 w-16 text-center">
+                      {linked?.price && item.unit_price != null && item.unit_price > 0 ? (
+                        <span className="font-sans text-xs text-sage-600">{Math.round(((linked.price / 100 - Number(item.unit_price)) / (linked.price / 100)) * 100)}%</span>
+                      ) : <span className="font-sans text-[10px] text-bark-300">—</span>}
+                    </td>
+                    {/* profit on this purchase qty */}
+                    <td className="px-2 py-1 w-20 text-center">
+                      {linked?.price && item.unit_price != null ? (
+                        <span className="font-sans text-xs text-bark-600">${(Math.max(0, (linked.price / 100 - Number(item.unit_price))) * (Number(item.quantity) || 0)).toFixed(2)}</span>
+                      ) : <span className="font-sans text-[10px] text-bark-300">—</span>}
+                    </td>
+                    {/* selling score — units sold last 90 days */}
+                    <td className="px-2 py-1 w-16 text-center">
+                      {linked ? (
+                        <span className={`font-sans text-xs ${(linked.sold90 ?? 0) > 0 ? 'text-gold-600 font-medium' : 'text-bark-300'}`}>{linked.sold90 ?? 0}</span>
+                      ) : <span className="font-sans text-[10px] text-bark-300">—</span>}
                     </td>
                     {/* current stock for this color+size */}
                     <td className="px-2 py-1 w-20 text-center">
