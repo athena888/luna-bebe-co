@@ -10,6 +10,7 @@ export interface DbProduct extends Product {
   sort_order: number
   has_variants: boolean
   certifications: ProductCert[]
+  needs_review: boolean
 }
 
 interface ProductRow {
@@ -27,6 +28,7 @@ interface ProductRow {
   sort_order: number
   has_variants: boolean | null
   certifications: ProductCert[] | null
+  needs_review?: boolean | null
 }
 
 function rowToProduct(r: ProductRow): DbProduct {
@@ -45,6 +47,7 @@ function rowToProduct(r: ProductRow): DbProduct {
     sort_order: r.sort_order,
     has_variants: r.has_variants ?? false,
     certifications: r.certifications ?? [],
+    needs_review: r.needs_review ?? false,
   }
 }
 
@@ -178,6 +181,7 @@ export interface UpdateProductInput {
   active?: boolean
   hasVariants?: boolean
   certifications?: ProductCert[]
+  needsReview?: boolean
 }
 
 /** Updates editable fields on an existing product. */
@@ -193,6 +197,7 @@ export async function updateProduct(id: string, input: UpdateProductInput): Prom
   if (input.active !== undefined) patch.active = input.active
   if (input.hasVariants !== undefined) patch.has_variants = input.hasVariants
   if (input.certifications !== undefined) patch.certifications = input.certifications
+  if (input.needsReview !== undefined) patch.needs_review = input.needsReview
   if (Object.keys(patch).length === 0) return
   const { error } = await supabaseAdmin.from('products').update(patch).eq('id', id)
   if (error) throw error

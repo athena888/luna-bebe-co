@@ -21,7 +21,7 @@ function ProductImageCard({
   product,
   onDelete,
 }: {
-  product: Product
+  product: Product & { active?: boolean; needs_review?: boolean }
   onDelete: (id: string) => void
 }) {
   const [state, setState] = useState<UploadState>('idle')
@@ -77,6 +77,16 @@ function ProductImageCard({
         {!displayUrl && (
           <div className="absolute inset-0 flex items-center justify-center text-4xl">{product.imageEmoji}</div>
         )}
+
+        {/* Status badges */}
+        <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
+          {product.needs_review && (
+            <span className="font-sans text-[9px] tracking-[0.12em] uppercase bg-amber-400 text-white px-2 py-0.5 rounded shadow">Needs review</span>
+          )}
+          {product.active === false && (
+            <span className="font-sans text-[9px] tracking-[0.12em] uppercase bg-bark-600 text-white px-2 py-0.5 rounded shadow">Unpublished</span>
+          )}
+        </div>
 
         {/* Upload overlay */}
         <div className={`absolute inset-0 flex flex-col items-center justify-center gap-2 transition-opacity

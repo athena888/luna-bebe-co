@@ -308,10 +308,14 @@ export default function InventoryPage() {
         <div className="w-16 h-16 rounded-full bg-sage-100 flex items-center justify-center mb-6">
           <CheckCircle2 size={32} className="text-sage-500" />
         </div>
-        <h2 className="font-serif text-3xl text-bark-700 mb-2">Inventory updated</h2>
+        <h2 className="font-serif text-3xl text-bark-700 mb-2">Saved for review</h2>
         <p className="font-sans text-bark-400 mb-1">
-          <span className="font-semibold text-bark-700">{result.updated}</span> variants saved
+          <span className="font-semibold text-bark-700">{result.updated}</span> variant{result.updated !== 1 ? 's' : ''} staged
           {result.failed > 0 && <>, <span className="text-red-600">{result.failed} skipped</span></>}
+        </p>
+        <p className="font-sans text-sm text-bark-400 mt-2 max-w-md">
+          The affected products are tagged <span className="text-amber-600 font-medium">Needs review</span> in Products. New items
+          stay <span className="text-bark-600 font-medium">unpublished</span> until you verify the quantities &amp; details and publish them.
         </p>
         {result.errors.length > 0 && (
           <div className="mt-4 text-left w-full bg-red-50 border border-red-200 rounded-xl p-4">
@@ -319,7 +323,10 @@ export default function InventoryPage() {
             {result.errors.map((e, i) => <p key={i} className="font-sans text-xs text-red-600">{e}</p>)}
           </div>
         )}
-        <Button variant="gold" size="md" className="mt-8" onClick={reset}>Upload another sheet</Button>
+        <div className="flex gap-3 mt-8">
+          <a href="/portal/products"><Button variant="gold" size="md">Go to Products to review</Button></a>
+          <Button variant="outline" size="md" onClick={reset}>Upload another sheet</Button>
+        </div>
       </div>
     </div>
   )
@@ -347,7 +354,7 @@ export default function InventoryPage() {
             onClick={confirm}
             disabled={items.length === 0 || phase === 'saving'}
           >
-            {phase === 'saving' ? <><Loader2 size={14} className="animate-spin mr-1.5" />Saving…</> : 'Confirm & Save to Website'}
+            {phase === 'saving' ? <><Loader2 size={14} className="animate-spin mr-1.5" />Saving…</> : 'Save for review'}
           </Button>
         </div>
       </div>
@@ -612,6 +619,8 @@ export default function InventoryPage() {
       <p className="font-sans text-xs text-bark-400 mt-3">
         Quantities are <strong>additive</strong> — if a variant already exists, the new amount is added to the current stock.
         The <strong>In stock</strong> column shows what that product currently has for the same color + size.
+        Saving <strong>tags each product &ldquo;Needs review&rdquo;</strong> in Products and keeps new items unpublished — nothing
+        goes live to customers until you review and publish it there.
       </p>
     </div>
   )

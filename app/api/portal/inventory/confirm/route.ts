@@ -54,7 +54,14 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true, updated, failed, errors })
+    // Flag every product touched by this import so the admin reviews + publishes
+    // it from the Products page — nothing here changes the live storefront on its own.
+    const touchedIds = Array.from(new Set(items.map(it => it.item_id?.toLowerCase().trim()).filter(Boolean)))
+    if (touchedIds.length) {
+      await supabaseAdmin.from('products').update({ needs_review: true }).in('id', touchedIds)
+    }
+
+    return NextResponse.json({ success: true, updated, failed, errors, flagged: touchedIds.length })
   } catch (error) {
     console.error('Inventory confirm error:', error)
     return NextResponse.json({ error: 'Failed to save inventory' }, { status: 500 })

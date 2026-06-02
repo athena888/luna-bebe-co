@@ -28,6 +28,8 @@ type ProductData = {
   category: string
   has_variants?: boolean
   image?: string | null
+  active?: boolean
+  needs_review?: boolean
 }
 
 type Variant = {
@@ -67,6 +69,8 @@ export default function ProductDetailPage() {
   const [sales, setSales] = useState<{ units: number; revenue: number; lastOrderedAt: string | null }>({ units: 0, revenue: 0, lastOrderedAt: null })
   const [hasVariants, setHasVariants] = useState(false)
   const [variants, setVariants] = useState<Variant[]>([])
+  const [published, setPublished] = useState(true)
+  const [needsReview, setNeedsReview] = useState(false)
   const [detectedColors, setDetectedColors] = useState<Array<{ name: string; hex: string }> | null>(null)
   const [colorDetecting, setColorDetecting] = useState(false)
   const [certs, setCerts] = useState<ProductCert[]>([])
@@ -98,6 +102,8 @@ export default function ProductDetailPage() {
       if (data.sales) setSales(data.sales)
       setHasVariants(!!data.product.has_variants)
       setCerts(data.product.certifications ?? [])
+      setPublished(data.product.active !== false)
+      setNeedsReview(!!data.product.needs_review)
     }
     // Load cert library + variants in parallel
     fetch('/api/portal/cert-library').then(r => r.json()).then(d => setCertLibrary(d.certs ?? [])).catch(() => {})
@@ -114,8 +120,10 @@ export default function ProductDetailPage() {
 
   useEffect(() => { load() }, [load])
 
-  async function handleSave() {
+  async function handleSave(opts?: { active?: boolean; needsReview?: boolean }) {
     if (!product) return
+    const nextActive = opts?.active ?? published
+    const nextReview = opts?.needsReview ?? needsReview
     setSaving(true)
     setSaveMsg('')
     const res = await fetch(`/api/portal/products/${id}`, {
@@ -130,8 +138,12 @@ export default function ProductDetailPage() {
         inventoryQuantity: inventory,
         hasVariants,
         certifications: certs,
+        active: nextActive,
+        needsReview: nextReview,
       }),
     })
+    if (opts?.active !== undefined) setPublished(opts.active)
+    if (opts?.needsReview !== undefined) setNeedsReview(opts.needsReview)
     // Save variants when this product uses them.
     // Fall back to the hex value as the color name when none is typed,
     // so a row with only a swatch still saves instead of being dropped.
@@ -278,18 +290,45 @@ export default function ProductDetailPage() {
             <ArrowLeft size={18} />
           </button>
           <div>
-            <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">{product.category}</p>
+            <div className="flex items-center gap-2">
+              <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">{product.category}</p>
+              {!published && <span className="font-sans text-[9px] tracking-[0.15em] uppercase bg-bark-200 text-bark-600 px-2 py-0.5 rounded">Unpublished</span>}
+              {needsReview && <span className="font-sans text-[9px] tracking-[0.15em] uppercase bg-amber-100 text-amber-700 px-2 py-0.5 rounded">Needs review</span>}
+              {published && !needsReview && <span className="font-sans text-[9px] tracking-[0.15em] uppercase bg-sage-100 text-sage-700 px-2 py-0.5 rounded">Published</span>}
+            </div>
             <h1 className="font-serif text-2xl text-bark-600">{product.name}</h1>
           </div>
         </div>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="flex items-center gap-2 bg-bark-600 text-white font-sans text-[11px] tracking-[0.2em] uppercase px-6 py-2.5 hover:bg-bark-700 transition-colors disabled:opacity-40"
-        >
-          {saving ? <Loader size={13} className="animate-spin" /> : saveMsg === 'Saved' ? <Check size={13} /> : null}
-          {saving ? 'Saving…' : saveMsg || 'Save Changes'}
-        </button>
+        <div className="flex items-center gap-2">
+          {(!published || needsReview) && (
+            <button
+              onClick={() => handleSave({ active: true, needsReview: false })}
+              disabled={saving}
+              className="flex items-center gap-2 bg-sage-500 text-white font-sans text-[11px] tracking-[0.2em] uppercase px-5 py-2.5 hover:bg-sage-600 transition-colors disabled:opacity-40"
+              title="Verify looks good, mark reviewed, and show to customers"
+            >
+              <Check size={13} /> Publish
+            </button>
+          )}
+          {published && !needsReview && (
+            <button
+              onClick={() => handleSave({ active: false })}
+              disabled={saving}
+              className="font-sans text-[11px] tracking-[0.2em] uppercase px-4 py-2.5 border border-cream-300 text-bark-500 hover:border-bark-400 transition-colors disabled:opacity-40"
+              title="Hide from customers"
+            >
+              Unpublish
+            </button>
+          )}
+          <button
+            onClick={() => handleSave()}
+            disabled={saving}
+            className="flex items-center gap-2 bg-bark-600 text-white font-sans text-[11px] tracking-[0.2em] uppercase px-6 py-2.5 hover:bg-bark-700 transition-colors disabled:opacity-40"
+          >
+            {saving ? <Loader size={13} className="animate-spin" /> : saveMsg === 'Saved' ? <Check size={13} /> : null}
+            {saving ? 'Saving…' : saveMsg || 'Save Changes'}
+          </button>
+        </div>
       </div>
 
       <div className="space-y-6">
@@ -785,7 +824,7 @@ export default function ProductDetailPage() {
 
         {/* Save button — spans full width */}
         <button
-          onClick={handleSave}
+          onClick={() => handleSave()}
           disabled={saving}
           className="w-full bg-bark-600 text-white font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-bark-700 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
         >
