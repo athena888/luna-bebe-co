@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { getAllProducts } from '@/lib/products'
 import { PRODUCT_TAGS } from '@/lib/product-tags'
 import type { CertDef, ProductCert } from '@/lib/certifications'
-import { ArrowLeft, Upload, Trash2, Star, Loader, Sparkles, Check, Plus, Minus, Video, X, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, Upload, Trash2, Star, Loader, Sparkles, Check, Plus, Minus, Video, X, ShieldCheck, Wand2 } from 'lucide-react'
 
 type GalleryImage = {
   id: string
@@ -55,6 +55,8 @@ export default function ProductDetailPage() {
   const [sales, setSales] = useState<{ units: number; revenue: number; lastOrderedAt: string | null }>({ units: 0, revenue: 0, lastOrderedAt: null })
   const [hasVariants, setHasVariants] = useState(false)
   const [variants, setVariants] = useState<Variant[]>([])
+  const [detectedColors, setDetectedColors] = useState<Array<{ name: string; hex: string }> | null>(null)
+  const [colorDetecting, setColorDetecting] = useState(false)
   const [certs, setCerts] = useState<ProductCert[]>([])
   const [certLibrary, setCertLibrary] = useState<CertDef[]>([])
   const [certUploading, setCertUploading] = useState<string | null>(null)
@@ -162,6 +164,21 @@ export default function ProductDetailPage() {
   }
   function removeVariant(index: number) {
     setVariants(prev => prev.filter((_, i) => i !== index))
+  }
+
+  async function detectColorsFromPhotos() {
+    setColorDetecting(true)
+    try {
+      const res = await fetch(`/api/portal/products/${id}/detect-colors`)
+      const data = await res.json()
+      if (data.colors) {
+        setDetectedColors(data.colors)
+      }
+    } catch (e) {
+      console.error('Color detection failed', e)
+    } finally {
+      setColorDetecting(false)
+    }
   }
 
   function toggleCert(key: string) {
@@ -849,9 +866,51 @@ export default function ProductDetailPage() {
 
             {hasVariants ? (
               <>
-                <p className="font-sans text-[10px] text-bark-400/70 mb-3">
+                <p className="font-sans text-[10px] text-bark-400/70 mb-4">
                   Each row is one color + size with its own stock. Customers choose from these; sizes with 0 stock show as unavailable.
                 </p>
+
+                {/* Color detection */}
+                <div className="mb-4 p-4 bg-cream-50 rounded-lg border border-cream-200">
+                  <button
+                    onClick={detectColorsFromPhotos}
+                    disabled={colorDetecting}
+                    className="flex items-center gap-2 font-sans text-[11px] tracking-[0.2em] uppercase text-bark-600 hover:text-bark-700 disabled:opacity-50"
+                  >
+                    {colorDetecting ? <Loader size={14} className="animate-spin" /> : <Wand2 size={14} />}
+                    {colorDetecting ? 'Analyzing photos…' : 'Detect colors from photos'}
+                  </button>
+                  {detectedColors && detectedColors.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      <p className="font-sans text-[10px] text-bark-400">Click to add:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {detectedColors.map((col, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => {
+                              const exists = variants.some(v => v.color.toLowerCase() === col.name.toLowerCase())
+                              if (!exists) {
+                                addVariant()
+                                setTimeout(() => {
+                                  setVariants(prev => {
+                                    const updated = [...prev]
+                                    updated[updated.length - 1] = { ...updated[updated.length - 1], color: col.name, color_hex: col.hex }
+                                    return updated
+                                  })
+                                })
+                              }
+                            }}
+                            className="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-cream-300 rounded hover:border-bark-400 text-sm text-bark-600 transition-colors"
+                          >
+                            <div className="w-5 h-5 rounded border border-bark-200" style={{ backgroundColor: col.hex }} />
+                            {col.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div className="space-y-2">
                   {variants.map((v, i) => (
                     <div key={v.id ?? i} className="flex items-center gap-2">

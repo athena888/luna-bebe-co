@@ -278,6 +278,7 @@ function AddProductModal({ onClose, onCreated }: { onClose: () => void; onCreate
   const [aiLoading, setAiLoading] = useState(false)
   const [aiNames, setAiNames] = useState<string[]>([])
   const [aiError, setAiError] = useState('')
+  const [aiFile, setAiFile] = useState<File | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const aiInputRef = useRef<HTMLInputElement>(null)
 
@@ -299,7 +300,17 @@ function AddProductModal({ onClose, onCreated }: { onClose: () => void; onCreate
       const data = await res.json()
       if (data.product) {
         setProductId(data.product.id)
-        setStep('photo')
+        // If we have an AI-uploaded file, auto-upload it to gallery
+        if (aiFile) {
+          const form = new FormData()
+          form.append('file', aiFile)
+          form.append('primary', 'true')
+          await fetch(`/api/portal/products/${data.product.id}/gallery`, { method: 'POST', body: form })
+          setUploadState('done')
+          setTimeout(() => { onCreated(); onClose() }, 1000)
+        } else {
+          setStep('photo')
+        }
       } else {
         setError(data.error || 'Failed to create product')
       }
@@ -313,6 +324,7 @@ function AddProductModal({ onClose, onCreated }: { onClose: () => void; onCreate
   async function handleAIDraft(file: File) {
     setAiLoading(true)
     setAiError('')
+    setAiFile(file)
     const form = new FormData()
     form.append('file', file)
     form.append('category', category)
@@ -368,7 +380,7 @@ function AddProductModal({ onClose, onCreated }: { onClose: () => void; onCreate
             </div>
 
             <div className="space-y-4">
-              <p className="font-sans text-sm text-bark-600">Upload a product photo, spec sheet, or screenshot to get AI suggestions for names, description, and ingredients.</p>
+              <p className="font-sans text-sm text-bark-600">Upload a product photo to get AI suggestions for names, description, and ingredients. Your photo will be auto-saved to the product gallery.</p>
 
               <div
                 onClick={() => aiInputRef.current?.click()}
