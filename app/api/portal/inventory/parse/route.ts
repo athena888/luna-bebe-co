@@ -61,11 +61,12 @@ Extract ALL line items from this sheet. A single style can have multiple color c
 - quantity: integer count (the Qty column)
 - unit_price: the per-unit price in dollars as a number (e.g. 4.30 from "$4.30"). If the price is "TBD", blank, or missing, use null.
 - status: "to_source" if the row is under a "TO SOURCE" / "confirm before ordering" section or has no price; otherwise "stock".
+${isImage ? `- photo_box: the location of THIS style's product photo in the image, as fractions of the image: {"x":0..1,"y":0..1,"w":0..1,"h":0..1} where x,y is the TOP-LEFT corner and w,h are width/height. Use the main product/style photo (or the per-color swatch photo if that's all there is). All rows of the same style may share the same photo_box. Use null if there is no photo for that item.` : '- photo_box: always null (no image to crop from).'}
 
 Ignore subtotal, total, and section-summary rows. Only return real line items.
 
 Return ONLY a valid JSON array, no markdown, no explanation:
-[{"item_id":"...","name":"...","color":"...","color_hex":"...","size":"...","quantity":0,"unit_price":0,"status":"stock"}]`,
+[{"item_id":"...","name":"...","color":"...","color_hex":"...","size":"...","quantity":0,"unit_price":0,"status":"stock","photo_box":{"x":0,"y":0,"w":0,"h":0}}]`,
           },
         ],
       }],

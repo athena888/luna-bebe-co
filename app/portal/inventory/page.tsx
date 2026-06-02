@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import Image from 'next/image'
 import { Upload, FileText, Trash2, Plus, AlertTriangle, CheckCircle2, Loader2, Check, Search } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-import { resizeImage } from '@/lib/image-resize'
+import { resizeImage, cropImage, dataUrlToFile, type PhotoBox } from '@/lib/image-resize'
 
 const SIZES = ['0-3', '3-6', '6-9', '9-12', '12-18', '18-24', 'one-size']
 
@@ -25,6 +25,7 @@ interface ParsedItem {
   quantity: number
   unit_price?: number | null   // dollars
   status?: string              // 'stock' | 'to_source'
+  photo_box?: PhotoBox | null  // location of the product photo in an uploaded image
 }
 
 interface CatalogVariant { color: string; color_hex: string | null; size: string; quantity: number }
@@ -66,6 +67,8 @@ export default function InventoryPage() {
   const [fileName, setFileName] = useState('')
   const [dropRow, setDropRow] = useState<number | null>(null)   // row currently hovered during drag
   const [pickerSearch, setPickerSearch] = useState('')
+  const [sourceImage, setSourceImage] = useState<string | null>(null)   // the uploaded image (data URL) to crop from
+  const [crops, setCrops] = useState<Record<number, string>>({})        // row index -> cropped photo data URL
   const fileRef = useRef<HTMLInputElement>(null)
 
   // Load the product catalog (photos + current stock) for the picker
@@ -86,19 +89,48 @@ export default function InventoryPage() {
     setFileName(file.name)
     setPhase('parsing')
 
+    setCrops({})
+    setSourceImage(null)
+
     const form = new FormData()
     // Shrink large photos so they fit the upload limit; PDFs pass through unchanged
-    const toSend = file.type.startsWith('image/') ? await resizeImage(file, 2200, 0.9) : file
+    const isImage = file.type.startsWith('image/')
+    const toSend = isImage ? await resizeImage(file, 2200, 0.9) : file
     form.append('file', toSend)
+
+    // Keep the (resized) image so we can crop product photos out of it later.
+    // Boxes from Claude are relative to exactly this image.
+    let sourceDataUrl: string | null = null
+    if (isImage) {
+      sourceDataUrl = await new Promise<string>((resolve) => {
+        const r = new FileReader()
+        r.onload = () => resolve(r.result as string)
+        r.readAsDataURL(toSend)
+      })
+      setSourceImage(sourceDataUrl)
+    }
 
     try {
       const res = await fetch('/api/portal/inventory/parse', { method: 'POST', body: form })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
-      setItems(data.items)
+      const parsed: ParsedItem[] = data.items
+      setItems(parsed)
       setPhase('review')
+
+      // Crop each product photo out of the source image (best-effort)
+      if (sourceDataUrl) {
+        const next: Record<number, string> = {}
+        await Promise.all(parsed.map(async (it, idx) => {
+          if (it.photo_box) {
+            const cropped = await cropImage(sourceDataUrl!, it.photo_box)
+            if (cropped) next[idx] = cropped
+          }
+        }))
+        setCrops(next)
+      }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to parse PDF')
+      setError(e instanceof Error ? e.message : 'Failed to read the sheet')
       setPhase('upload')
     }
   }
@@ -157,8 +189,23 @@ export default function InventoryPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed')
       const p = data.product
+
+      // If we cropped a photo from the sheet, attach it as the draft's primary image
+      let draftImage: string | null = null
+      const crop = crops[rowIndex]
+      if (crop) {
+        try {
+          const gForm = new FormData()
+          gForm.append('file', dataUrlToFile(crop, `${p.id}.jpg`))
+          gForm.append('primary', 'true')
+          const up = await fetch(`/api/portal/products/${p.id}/gallery`, { method: 'POST', body: gForm })
+          const upData = await up.json().catch(() => ({}))
+          if (up.ok && upData.image?.image_url) draftImage = upData.image.image_url
+        } catch { /* photo is best-effort */ }
+      }
+
       // Add to the in-memory catalog so the row links + future rows can reuse it
-      setCatalog(prev => [{ id: p.id, name: p.name, category: p.category, emoji: '📦', image: null, variants: [] }, ...prev])
+      setCatalog(prev => [{ id: p.id, name: p.name, category: p.category, emoji: '📦', image: draftImage, variants: [] }, ...prev])
       setItems(prev => prev.map((it, i) => i === rowIndex ? { ...it, item_id: p.id, name: p.name } : it))
     } catch (e) {
       alert(e instanceof Error ? e.message : 'Failed to create draft product')
@@ -346,16 +393,17 @@ export default function InventoryPage() {
                       dropRow === i ? 'bg-gold-100/70 ring-1 ring-gold-300' : unknown ? 'bg-amber-50/40' : linked ? 'bg-sage-50/30' : 'hover:bg-cream-50/50'
                     }`}
                   >
-                    {/* linked thumbnail */}
+                    {/* thumbnail: linked product photo, else the cropped photo from the sheet, else a drop target */}
                     <td className="px-2 py-1 w-12">
-                      {linked ? (
-                        linked.image ? (
-                          <div className="relative w-9 h-9 rounded overflow-hidden bg-cream-100 border border-cream-200">
-                            <Image src={linked.image} alt={linked.name} fill className="object-cover" unoptimized />
-                          </div>
-                        ) : (
-                          <div className="w-9 h-9 rounded bg-cream-100 border border-cream-200 flex items-center justify-center text-base">{linked.emoji}</div>
-                        )
+                      {linked?.image ? (
+                        <div className="relative w-9 h-9 rounded overflow-hidden bg-cream-100 border border-cream-200">
+                          <Image src={linked.image} alt={linked.name} fill className="object-cover" unoptimized />
+                        </div>
+                      ) : crops[i] ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={crops[i]} alt="from sheet" className="w-9 h-9 rounded object-cover border border-cream-200" title="Cropped from your uploaded sheet" />
+                      ) : linked ? (
+                        <div className="w-9 h-9 rounded bg-cream-100 border border-cream-200 flex items-center justify-center text-base">{linked.emoji}</div>
                       ) : (
                         <div className="w-9 h-9 rounded border border-dashed border-cream-300 flex items-center justify-center text-bark-300" title="Drag a product here">
                           <Plus size={12} />
