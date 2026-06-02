@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { getAllProducts } from '@/lib/products'
 import { PRODUCT_TAGS } from '@/lib/product-tags'
 import type { CertDef, ProductCert } from '@/lib/certifications'
-import { ArrowLeft, Upload, Trash2, Star, Loader, Sparkles, Check, Plus, Minus, Video, X, ShieldCheck, Wand2 } from 'lucide-react'
+import { ArrowLeft, Upload, Trash2, Star, Loader, Check, Plus, Minus, X, ShieldCheck, Wand2 } from 'lucide-react'
 
 type GalleryImage = {
   id: string
@@ -70,12 +70,6 @@ export default function ProductDetailPage() {
   const [uploadError, setUploadError] = useState('')
   const galleryInputRef = useRef<HTMLInputElement>(null)
 
-  // Hover video state
-  const [hoverVideo, setHoverVideo] = useState<string | null>(null)
-  const [videoUploading, setVideoUploading] = useState(false)
-  const [videoError, setVideoError] = useState('')
-  const videoInputRef = useRef<HTMLInputElement>(null)
-
   // AI writing assistance state
   const [improveLoading, setImproveLoading] = useState<'description' | 'ingredients' | null>(null)
   const [originalDescription, setOriginalDescription] = useState<string | null>(null)
@@ -92,7 +86,6 @@ export default function ProductDetailPage() {
       if (data.sales) setSales(data.sales)
       setHasVariants(!!data.product.has_variants)
       setCerts(data.product.certifications ?? [])
-      setHoverVideo(data.product.hover_video ?? null)
     }
     // Load cert library + variants in parallel
     fetch('/api/portal/cert-library').then(r => r.json()).then(d => setCertLibrary(d.certs ?? [])).catch(() => {})
@@ -282,8 +275,8 @@ export default function ProductDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-        {/* LEFT — Gallery + AI */}
-        <div className="lg:col-span-2 space-y-8">
+        {/* LEFT — Gallery */}
+        <div className="lg:col-span-1 space-y-8">
 
           {/* Photo Gallery */}
           <div className="bg-white border border-cream-300 rounded-xl p-6">
@@ -385,91 +378,10 @@ export default function ProductDetailPage() {
             )}
           </div>
 
-          {/* Hover Video */}
-          <div className="bg-white border border-cream-300 rounded-xl p-6">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2">
-                <Video size={14} className="text-gold-400" />
-                <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">Hover Video</p>
-              </div>
-              <button
-                onClick={() => videoInputRef.current?.click()}
-                disabled={videoUploading}
-                className="flex items-center gap-1.5 border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.2em] uppercase px-4 py-2 hover:bg-bark-600 hover:text-white transition-colors disabled:opacity-40"
-              >
-                {videoUploading ? <Loader size={12} className="animate-spin" /> : <Upload size={12} />}
-                Upload
-              </button>
-              <input
-                ref={videoInputRef}
-                type="file"
-                accept="video/mp4,video/webm,video/quicktime"
-                className="hidden"
-                onChange={async e => {
-                  const file = e.target.files?.[0]
-                  if (!file) return
-                  setVideoUploading(true)
-                  setVideoError('')
-                  const form = new FormData()
-                  form.append('file', file)
-                  const res = await fetch(`/api/portal/products/${id}/hover-video`, { method: 'POST', body: form })
-                  if (res.ok) {
-                    const data = await res.json()
-                    setHoverVideo(data.videoUrl)
-                  } else {
-                    const data = await res.json().catch(() => ({}))
-                    setVideoError(data.error ?? 'Upload failed')
-                  }
-                  setVideoUploading(false)
-                  e.target.value = ''
-                }}
-              />
-            </div>
-
-            <p className="font-sans text-[10px] text-bark-400/60 mb-4">
-              Plays silently when a customer hovers over this product on the build page. MP4, WebM, or MOV. Keep it under 10 MB.
-            </p>
-
-            {videoError && (
-              <p className="mb-3 font-sans text-xs text-red-500 bg-red-50 border border-red-200 rounded px-3 py-2">{videoError}</p>
-            )}
-
-            {hoverVideo ? (
-              <div className="relative">
-                <video
-                  src={hoverVideo}
-                  className="w-full rounded-lg max-h-48 object-cover bg-cream-100"
-                  muted
-                  loop
-                  autoPlay
-                  playsInline
-                />
-                <button
-                  onClick={async () => {
-                    await fetch(`/api/portal/products/${id}/hover-video`, { method: 'DELETE' })
-                    setHoverVideo(null)
-                  }}
-                  className="absolute top-2 right-2 w-7 h-7 bg-white rounded-full flex items-center justify-center shadow hover:bg-red-50 transition-colors"
-                  title="Remove video"
-                >
-                  <X size={13} className="text-red-500" />
-                </button>
-              </div>
-            ) : (
-              <div
-                className="border-2 border-dashed border-cream-300 rounded-lg h-28 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-bark-400 transition-colors"
-                onClick={() => videoInputRef.current?.click()}
-              >
-                <Video size={20} className="text-bark-400/40" />
-                <p className="font-sans text-xs text-bark-400">Click to upload hover video</p>
-              </div>
-            )}
-          </div>
-
         </div>
 
         {/* RIGHT — Product Details + Inventory */}
-        <div className="space-y-6">
+        <div className="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
           {/* Product Details */}
           <div className="bg-white border border-cream-300 rounded-xl p-6">
@@ -576,6 +488,9 @@ export default function ProductDetailPage() {
               </div>
             </div>
           </div>
+
+          {/* Right sub-column: Sales + Variants + Certifications */}
+          <div className="space-y-6">
 
           {/* Sales */}
           <div className="bg-white border border-cream-300 rounded-xl p-6">
@@ -697,7 +612,8 @@ export default function ProductDetailPage() {
                       <input
                         type="number"
                         min={0}
-                        value={v.quantity}
+                        value={v.quantity === 0 ? '' : v.quantity}
+                        placeholder="0"
                         onChange={e => updateVariant(i, 'quantity', parseInt(e.target.value) || 0)}
                         className="w-16 px-2 py-1.5 border border-cream-300 rounded text-sm text-bark-600 text-center focus:outline-none focus:border-bark-400 shrink-0"
                         title="Quantity in stock"
@@ -732,7 +648,8 @@ export default function ProductDetailPage() {
                   <input
                     type="number"
                     min={0}
-                    value={inventory}
+                    value={inventory === 0 ? '' : inventory}
+                    placeholder="0"
                     onChange={e => setInventory(Math.max(0, parseInt(e.target.value) || 0))}
                     className="w-20 text-center border border-cream-300 bg-white font-sans text-lg text-bark-600 py-2 focus:outline-none focus:border-bark-400 rounded"
                   />
@@ -816,11 +733,13 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Save button (sticky bottom on mobile) */}
+          </div>{/* end right sub-column */}
+
+          {/* Save button — spans full width */}
           <button
             onClick={handleSave}
             disabled={saving}
-            className="w-full bg-bark-600 text-white font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-bark-700 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+            className="lg:col-span-2 w-full bg-bark-600 text-white font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-bark-700 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
           >
             {saving ? <Loader size={13} className="animate-spin" /> : saveMsg === 'Saved' ? <Check size={13} /> : null}
             {saving ? 'Saving…' : saveMsg || 'Save All Changes'}
