@@ -430,14 +430,6 @@ export default function ProductDetailPage() {
                   />
                   <span className="font-sans text-xs text-bark-400">Set as primary</span>
                 </label>
-                <button
-                  onClick={() => galleryInputRef.current?.click()}
-                  disabled={uploading}
-                  className="flex items-center gap-1.5 border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.2em] uppercase px-4 py-2 hover:bg-bark-600 hover:text-white transition-colors disabled:opacity-40"
-                >
-                  {uploading ? <Loader size={12} className="animate-spin" /> : <Upload size={12} />}
-                  Upload
-                </button>
                 <input
                   ref={galleryInputRef}
                   type="file"
@@ -509,6 +501,13 @@ export default function ProductDetailPage() {
                       <span className="text-[9px]">Skip</span>
                     </button>
                     <div className="absolute inset-0 bg-bark-600/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                      <button
+                        onClick={() => galleryInputRef.current?.click()}
+                        title="Add more photos"
+                        className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-bark-600 hover:text-white transition-colors"
+                      >
+                        <Plus size={14} className="text-bark-600" />
+                      </button>
                       {!img.is_primary && (
                         <button
                           onClick={() => handleSetPrimary(img.id)}
