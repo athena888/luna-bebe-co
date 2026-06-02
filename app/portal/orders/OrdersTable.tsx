@@ -36,6 +36,21 @@ export function OrdersTable({ orders: initial }: { orders: ExtendedOrder[] }) {
     )
   }
 
+  const [processing, setProcessing] = useState<string | null>(null)
+  async function markProcessing(orderId: string) {
+    setProcessing(orderId)
+    try {
+      const res = await fetch(`/api/orders/${orderId}/process`, { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed')
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'processing' } : o))
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to update order')
+    } finally {
+      setProcessing(null)
+    }
+  }
+
   function toggleExpand(orderId: string) {
     setExpanded(prev => prev === orderId ? null : orderId)
   }
@@ -104,6 +119,16 @@ export function OrdersTable({ orders: initial }: { orders: ExtendedOrder[] }) {
                         orderId={order.id}
                         onShipped={(trackingNumber, labelUrl) => handleShipped(order.id, trackingNumber, labelUrl)}
                       />
+                    )}
+                    {order.status === 'pending' && (
+                      <button
+                        onClick={() => markProcessing(order.id)}
+                        disabled={processing === order.id}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-100 text-blue-600 font-sans text-xs font-semibold hover:bg-blue-200 transition-colors disabled:opacity-50"
+                        title="Mark this order as processing so you can generate a shipping label"
+                      >
+                        {processing === order.id ? 'Updating…' : 'Mark processing'}
+                      </button>
                     )}
                   </td>
                 </tr>
