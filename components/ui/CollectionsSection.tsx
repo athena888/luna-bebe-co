@@ -6,6 +6,7 @@ import { X, ArrowRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { getProductById } from '@/lib/products'
 import type { Product } from '@/types'
+import type { CollectionDef } from '@/lib/collections-db'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 
@@ -17,33 +18,19 @@ function productImg(id: string) {
   return `${SUPABASE_URL}/storage/v1/object/public/product-images/${id}.jpg`
 }
 
-// Items shown per collection — manage in /portal/collections (coming soon)
-const COLLECTION_ITEMS: Record<string, string[]> = {
-  newborn: ['swaddle-muslin', 'swaddle-bamboo', 'garment-kimono', 'garment-gown', 'bath-botanical', 'keepsake-bunny', 'keepsake-rattle'],
-  mama: ['mom-lavender', 'mom-silk', 'mom-tea', 'mom-journal', 'mom-herbal'],
-  bundle: ['swaddle-bamboo', 'garment-kimono', 'bath-botanical', 'mom-lavender', 'keepsake-bunny'],
-  custom: [],
-}
-
 interface Category {
-  slug: string
+  id: string
   label: string
   sub: string
   img: string
+  productIds: string[]
 }
-
-const CATEGORIES: Category[] = [
-  { slug: 'newborn', label: 'Newborn Gifts',      sub: 'Swaddles, garments & keepsakes',       img: homeImg('newborn') },
-  { slug: 'mama',    label: 'For Mama',            sub: 'Because she deserves to be celebrated', img: homeImg('mama') },
-  { slug: 'bundle',  label: 'Mama & Baby Bundle',  sub: 'A gift for two hearts at once',         img: homeImg('bundle') },
-  { slug: 'custom',  label: 'Custom Box',          sub: 'Build it your way, item by item',       img: homeImg('custom') },
-]
 
 // ─── Modal ───────────────────────────────────────────────────────────────────
 
 function CollectionModal({ cat, onClose }: { cat: Category; onClose: () => void }) {
   const router = useRouter()
-  const ids = COLLECTION_ITEMS[cat.slug] ?? []
+  const ids = cat.productIds ?? []
   const products: Product[] = ids.map(id => getProductById(id)).filter(Boolean) as Product[]
 
   useEffect(() => {
@@ -134,17 +121,46 @@ function CollectionModal({ cat, onClose }: { cat: Category; onClose: () => void 
 // ─── Section ─────────────────────────────────────────────────────────────────
 
 export function CollectionsSection() {
+  const [categories, setCategories] = useState<Category[]>([])
   const [active, setActive] = useState<Category | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch('/api/collections')
+        if (res.ok) {
+          const data = await res.json()
+          const cats: Category[] = data.collections.map((col: CollectionDef) => ({
+            id: col.id,
+            label: col.label,
+            sub: col.sub,
+            img: homeImg(col.home_image_slot),
+            productIds: col.product_ids,
+          }))
+          setCategories(cats)
+        }
+      } catch (err) {
+        console.error('Failed to load collections:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [])
+
+  if (loading) return <div className="py-12 text-center text-bark-400">Loading collections...</div>
+  if (!categories.length) return null
 
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {CATEGORIES.map((cat, i) => (
+        {categories.map((cat, i) => (
           <div
-            key={cat.slug}
+            key={cat.id}
             className={`group relative overflow-hidden cursor-pointer border-b border-cream-300
               sm:border-b-0 sm:border-r
-              ${i === CATEGORIES.length - 1 ? 'sm:border-r-0' : ''}
+              ${i === categories.length - 1 ? 'sm:border-r-0' : ''}
               lg:border-r lg:last:border-r-0`}
             onClick={() => setActive(cat)}
           >
