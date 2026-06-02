@@ -295,9 +295,8 @@ export default function ProductDetailPage() {
     }
   }
 
-  if (!baseProduct) return <div className="p-8 font-sans text-bark-400">Product not found.</div>
   if (loading) return <div className="p-8 flex items-center gap-3 font-sans text-sm text-bark-400"><Loader size={16} className="animate-spin" /> Loading…</div>
-  if (!product) return null
+  if (!product) return <div className="p-8 font-sans text-bark-400">Product not found. (Try refreshing the page or going back.)</div>
 
   return (
     <div className="p-6 max-w-5xl">
