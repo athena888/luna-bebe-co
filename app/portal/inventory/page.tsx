@@ -19,6 +19,7 @@ function recommendedRetail(cost?: number | null): number | null {
 interface ParsedItem {
   item_id: string
   name: string
+  color_code?: string          // supplier's raw color code from the sheet (e.g. "XJ32#")
   color: string
   color_hex?: string
   size: string
@@ -368,13 +369,13 @@ export default function InventoryPage() {
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6 items-start">
 
-        {/* Parsed rows table */}
-        <div className="bg-white rounded-2xl border border-cream-200 overflow-hidden overflow-x-auto">
+        {/* Parsed rows table — fixed height, scrolls internally */}
+        <div className="bg-white rounded-2xl border border-cream-200 overflow-auto max-h-[70vh]">
           <table className="w-full text-sm">
-            <thead>
+            <thead className="sticky top-0 z-10">
               <tr className="border-b border-cream-200 bg-cream-50">
-                {['', 'Item ID', 'Name', 'Color', 'Hex', 'Size', 'Qty', 'Cost $', 'Rec. retail', 'Sell $', 'Margin', 'Profit', 'Sold 90d', 'In stock', ''].map((h, idx) => (
-                  <th key={idx} className="px-3 py-3 text-left font-sans text-[10px] font-semibold uppercase tracking-widest text-bark-400 whitespace-nowrap">{h}</th>
+                {['', 'Product', 'Code', 'Color', 'Hex', 'Size', 'Qty', 'Cost $', 'Rec. retail', 'Sell $', 'Margin', 'Profit', 'Sold 90d', 'In stock', ''].map((h, idx) => (
+                  <th key={idx} className="px-3 py-3 text-left font-sans text-[10px] font-semibold uppercase tracking-widest text-bark-400 whitespace-nowrap bg-cream-50">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -413,7 +414,7 @@ export default function InventoryPage() {
                         </div>
                       ) : crops[i] ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={crops[i]} alt="from sheet" className="w-9 h-9 rounded object-cover border border-cream-200" title="Cropped from your uploaded sheet" />
+                        <img src={crops[i]} alt="from sheet" className="w-9 h-9 rounded object-contain bg-cream-50 border border-cream-200" title="Cropped from your uploaded sheet" />
                       ) : linked ? (
                         <div className="w-9 h-9 rounded bg-cream-100 border border-cream-200 flex items-center justify-center text-base">{linked.emoji}</div>
                       ) : (
@@ -422,15 +423,16 @@ export default function InventoryPage() {
                         </div>
                       )}
                     </td>
-                    <td className="px-1 py-1 min-w-[120px]">
-                      <Cell value={item.item_id} onChange={v => updateItem(i, 'item_id', v)} />
+                    {/* Product = name + link controls (item id is kept internally, not shown) */}
+                    <td className="px-1 py-1 min-w-[150px]">
+                      <Cell value={item.name} onChange={v => updateItem(i, 'name', v)} />
                       {linked && (
                         <span className="px-2 text-[10px] text-sage-600 flex items-center gap-1.5">
                           <span className="flex items-center gap-0.5"><Check size={10} /> linked</span>
                           <button onClick={() => unlink(i)} className="text-bark-400 hover:text-red-500 underline" title="Unlink this product">unlink</button>
                         </span>
                       )}
-                      {!linked && item.item_id && (
+                      {!linked && (
                         <button
                           onClick={() => createDraft(i)}
                           disabled={draftingRow === i}
@@ -441,8 +443,9 @@ export default function InventoryPage() {
                         </button>
                       )}
                     </td>
-                    <td className="px-1 py-1 min-w-[140px]">
-                      <Cell value={item.name} onChange={v => updateItem(i, 'name', v)} />
+                    {/* Color code from the sheet (for cross-verifying) */}
+                    <td className="px-1 py-1 w-20">
+                      <Cell value={item.color_code ?? ''} onChange={v => updateItem(i, 'color_code', v)} />
                     </td>
                     <td className="px-1 py-1 min-w-[120px]">
                       <Cell value={item.color} onChange={v => updateItem(i, 'color', v)} />

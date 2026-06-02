@@ -5,7 +5,7 @@ export type PhotoBox = { x: number; y: number; w: number; h: number }
  * and return a JPEG data URL. Used to pull each product's photo out of an
  * uploaded supplier quotation. Returns null on any failure / invalid box.
  */
-export async function cropImage(dataUrl: string, box: PhotoBox, outMax = 600): Promise<string | null> {
+export async function cropImage(dataUrl: string, box: PhotoBox, outMax = 600, pad = 0.12): Promise<string | null> {
   try {
     const valid = box && [box.x, box.y, box.w, box.h].every(n => typeof n === 'number' && n >= 0 && n <= 1) && box.w > 0.01 && box.h > 0.01
     if (!valid) return null
@@ -17,10 +17,18 @@ export async function cropImage(dataUrl: string, box: PhotoBox, outMax = 600): P
       i.src = dataUrl
     })
 
-    const sx = Math.round(box.x * img.naturalWidth)
-    const sy = Math.round(box.y * img.naturalHeight)
-    const sw = Math.round(box.w * img.naturalWidth)
-    const sh = Math.round(box.h * img.naturalHeight)
+    // Pad the box outward so an imperfect AI box doesn't cut the product off
+    const px = box.w * pad
+    const py = box.h * pad
+    const bx = Math.max(0, box.x - px)
+    const by = Math.max(0, box.y - py)
+    const bw = Math.min(1 - bx, box.w + px * 2)
+    const bh = Math.min(1 - by, box.h + py * 2)
+
+    const sx = Math.round(bx * img.naturalWidth)
+    const sy = Math.round(by * img.naturalHeight)
+    const sw = Math.round(bw * img.naturalWidth)
+    const sh = Math.round(bh * img.naturalHeight)
     if (sw <= 0 || sh <= 0) return null
 
     // Scale the crop down so the longest side is <= outMax
