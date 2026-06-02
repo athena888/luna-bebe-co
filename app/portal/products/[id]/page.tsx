@@ -377,21 +377,14 @@ export default function ProductDetailPage() {
                     )}
                     <div className="absolute inset-0 bg-bark-600/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                       <button
-                        onClick={() => galleryInputRef.current?.click()}
-                        title="Add more photos"
-                        className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-bark-600 hover:text-white transition-colors"
+                        onClick={() => handleSetPrimary(img.id)}
+                        title={img.is_primary ? 'This is the primary photo' : 'Set as primary photo'}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                          img.is_primary ? 'bg-gold-400' : 'bg-white hover:bg-gold-100'
+                        }`}
                       >
-                        <Plus size={14} className="text-bark-600" />
+                        <Star size={14} className={img.is_primary ? 'text-white fill-current' : 'text-bark-600'} />
                       </button>
-                      {!img.is_primary && (
-                        <button
-                          onClick={() => handleSetPrimary(img.id)}
-                          title="Set as primary"
-                          className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-gold-100 transition-colors"
-                        >
-                          <Star size={14} className="text-bark-600" />
-                        </button>
-                      )}
                       <button
                         onClick={() => handleDelete(img.id)}
                         title="Delete"
@@ -528,32 +521,11 @@ export default function ProductDetailPage() {
 
         </div>{/* end Row 1 */}
 
-        {/* Row 2 — Sales + Sizes/Colors + Certifications side by side */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
+        {/* Row 2 — Sizes & Colors (full width — it has the most fields) */}
+        <div>
 
-          {/* Sales */}
+          {/* Variants (sizes & colors) */}
           <div className="bg-white border border-cream-300 rounded-xl p-6">
-            <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-5">Sales</p>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="font-serif text-3xl text-bark-600">{sales.units}</p>
-                <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mt-1">Units sold</p>
-              </div>
-              <div>
-                <p className="font-serif text-3xl text-bark-600">${(sales.revenue / 100).toFixed(2)}</p>
-                <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mt-1">Revenue</p>
-              </div>
-            </div>
-            <p className="font-sans text-[10px] text-bark-400/70 mt-4">
-              {sales.lastOrderedAt
-                ? `Last ordered ${new Date(sales.lastOrderedAt).toLocaleDateString()}`
-                : 'No sales yet'}
-              {' '}· across all paid orders
-            </p>
-          </div>
-
-          {/* Variants (sizes & colors) — wider so the rows fit */}
-          <div className="bg-white border border-cream-300 rounded-xl p-6 md:col-span-2 xl:col-span-2">
             <div className="flex items-center justify-between mb-4">
               <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">Sizes &amp; Colors</p>
               <label className="flex items-center gap-2 cursor-pointer">
@@ -614,6 +586,16 @@ export default function ProductDetailPage() {
                   )}
                 </div>
 
+                {variants.length > 0 && (
+                  <div className="flex items-center gap-2 px-1 mb-1.5">
+                    <span className="flex-1 min-w-0 font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400">Color name</span>
+                    <span className="w-20 text-center font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 shrink-0">Hex</span>
+                    <span className="w-9 shrink-0" />
+                    <span className="w-20 text-center font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 shrink-0">Size</span>
+                    <span className="w-16 text-center font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 shrink-0">Stock</span>
+                    <span className="w-4 shrink-0" />
+                  </div>
+                )}
                 <div className="space-y-2">
                   {variants.map((v, i) => (
                     <div key={v.id ?? i} className="flex items-center gap-2">
@@ -621,8 +603,16 @@ export default function ProductDetailPage() {
                         type="text"
                         value={v.color}
                         onChange={e => updateVariant(i, 'color', e.target.value)}
-                        placeholder="Color name (e.g. Dusty Rose)"
+                        placeholder="Dusty Rose"
                         className="flex-1 min-w-0 px-2 py-1.5 border border-cream-300 rounded text-sm text-bark-600 focus:outline-none focus:border-bark-400"
+                      />
+                      <input
+                        type="text"
+                        value={v.color_hex || ''}
+                        onChange={e => updateVariant(i, 'color_hex', e.target.value)}
+                        placeholder="#B0808C"
+                        className="w-20 px-2 py-1.5 border border-cream-300 rounded text-xs text-bark-600 text-center focus:outline-none focus:border-bark-400 shrink-0"
+                        title="Hex color code"
                       />
                       <input
                         type="color"
@@ -700,6 +690,32 @@ export default function ProductDetailPage() {
             )}
           </div>
 
+        </div>{/* end Row 2 */}
+
+        {/* Row 3 — Sales + Certifications side by side */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+
+          {/* Sales */}
+          <div className="bg-white border border-cream-300 rounded-xl p-6">
+            <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-5">Sales</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="font-serif text-3xl text-bark-600">{sales.units}</p>
+                <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mt-1">Units sold</p>
+              </div>
+              <div>
+                <p className="font-serif text-3xl text-bark-600">${(sales.revenue / 100).toFixed(2)}</p>
+                <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mt-1">Revenue</p>
+              </div>
+            </div>
+            <p className="font-sans text-[10px] text-bark-400/70 mt-4">
+              {sales.lastOrderedAt
+                ? `Last ordered ${new Date(sales.lastOrderedAt).toLocaleDateString()}`
+                : 'No sales yet'}
+              {' '}· across all paid orders
+            </p>
+          </div>
+
           {/* Certifications */}
           <div className="bg-white border border-cream-300 rounded-xl p-6">
             <div className="flex items-center gap-2 mb-4">
@@ -762,7 +778,7 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-        </div>{/* end Row 2 */}
+        </div>{/* end Row 3 */}
 
         {/* Save button — spans full width */}
         <button

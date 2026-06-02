@@ -79,12 +79,15 @@ export default function CollectionsPage() {
 
   return (
     <div className="p-4 sm:p-8 max-w-5xl">
-      <div className="flex items-center gap-4 mb-8">
+      <div className="flex items-center gap-4 mb-3">
         <Link href="/portal" className="text-bark-400 hover:text-bark-600 transition-colors">
           <ArrowLeft size={18} />
         </Link>
         <h1 className="font-serif text-2xl text-bark-600">Collections</h1>
       </div>
+      <p className="font-sans text-sm text-bark-400 mb-8 max-w-2xl leading-relaxed">
+        Collections are the curated product groups shown on your home page under <span className="text-bark-600">&ldquo;Shop by Occasion&rdquo;</span> (e.g. Newborn Essentials, Baby Shower, Gender Neutral). Customers tap a collection to see the products inside it. Edit each one&rsquo;s name, subtitle, and which products it includes — this only controls how products are grouped on the storefront; it doesn&rsquo;t change the products themselves.
+      </p>
 
       <div className="space-y-6">
         {collections.map(col => (
