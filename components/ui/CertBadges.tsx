@@ -28,18 +28,18 @@ export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
 
   return (
     <>
-      {/* Badge row */}
-      <div className="flex items-center gap-3 flex-wrap">
+      {/* Badge row — icon next to text */}
+      <div className="flex items-center gap-2 flex-wrap">
         {active.map((cert, idx) => (
           <button
             key={cert.key}
             onClick={() => openModal(idx)}
-            className="flex flex-col items-center gap-1.5 border border-cream-300 bg-cream-50 hover:border-bark-400 hover:bg-cream-100 transition-colors px-4 py-3 rounded-lg group min-w-20"
+            className="flex items-center gap-2 border border-cream-300 bg-cream-50 hover:border-bark-400 hover:bg-cream-100 transition-colors px-3 py-2 rounded-lg group"
           >
             {cert.iconUrl
-              ? <Image src={cert.iconUrl} alt={cert.name ?? cert.key} width={24} height={24} className="object-contain shrink-0 mix-blend-mode-screen" style={{ mixBlendMode: 'screen' }} unoptimized />
-              : <ShieldCheck size={20} className="text-gold-400 shrink-0" />}
-            <span className="font-sans text-[11px] tracking-[0.08em] uppercase text-bark-500 group-hover:text-bark-700 transition-colors text-center line-clamp-2">
+              ? <Image src={cert.iconUrl} alt={cert.name ?? cert.key} width={22} height={22} className="object-contain shrink-0" unoptimized />
+              : <ShieldCheck size={18} className="text-gold-400 shrink-0" />}
+            <span className="font-sans text-[11px] tracking-[0.08em] uppercase text-bark-500 group-hover:text-bark-700 transition-colors whitespace-nowrap">
               {cert.name ?? cert.key}
             </span>
           </button>
@@ -75,21 +75,21 @@ export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
 
             {/* Cert tabs — show the cert icon */}
             {hasTabs && (
-              <div className="flex gap-2 px-5 pt-3 pb-2 overflow-x-auto scrollbar-hide">
+              <div className="flex gap-1.5 px-4 pt-2.5 pb-1.5 overflow-x-auto scrollbar-hide">
                 {active.map((c, idx) => (
                   <button
                     key={c.key}
                     onClick={() => selectTab(idx)}
                     title={c.name ?? c.key}
-                    className={`shrink-0 flex items-center gap-1.5 font-sans text-xs px-2.5 py-1.5 rounded-full border transition-colors ${
+                    className={`shrink-0 flex items-center gap-1 font-sans text-xs px-2 py-1 rounded-full border transition-colors ${
                       openIdx === idx
                         ? 'border-bark-600 bg-bark-600 text-white'
                         : 'border-cream-300 text-bark-500 hover:border-bark-400'
                     }`}
                   >
                     {c.iconUrl
-                      ? <Image src={c.iconUrl} alt={c.name ?? c.key} width={18} height={18} className="object-contain shrink-0" unoptimized />
-                      : <ShieldCheck size={14} className="shrink-0" />}
+                      ? <Image src={c.iconUrl} alt={c.name ?? c.key} width={16} height={16} className="object-contain shrink-0" unoptimized />
+                      : <ShieldCheck size={13} className="shrink-0" />}
                     <span className="truncate max-w-24">{c.name ?? c.key}</span>
                   </button>
                 ))}
