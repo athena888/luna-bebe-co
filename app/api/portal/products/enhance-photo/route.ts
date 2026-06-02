@@ -45,7 +45,8 @@ Do not include text or watermarks.`
 
     const imageBuffers = await generateImage(enhancePrompt, 1)
     if (!imageBuffers || imageBuffers.length === 0) {
-      return NextResponse.json({ error: 'Image generation failed' }, { status: 500 })
+      console.error('No image buffers returned from Gemini')
+      return NextResponse.json({ error: 'Image generation failed - no images returned', details: 'Gemini API returned empty result' }, { status: 500 })
     }
 
     const base64Image = imageBuffers[0].toString('base64')
@@ -55,7 +56,8 @@ Do not include text or watermarks.`
       imageData: `data:image/jpeg;base64,${base64Image}`,
     })
   } catch (error) {
-    console.error('Photo enhancement error:', error)
-    return NextResponse.json({ error: 'Photo enhancement failed' }, { status: 500 })
+    const errorMsg = error instanceof Error ? error.message : String(error)
+    console.error('Photo enhancement error:', errorMsg)
+    return NextResponse.json({ error: 'Photo enhancement failed', details: errorMsg }, { status: 500 })
   }
 }

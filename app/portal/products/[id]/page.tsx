@@ -190,8 +190,9 @@ export default function ProductDetailPage() {
       return
     }
     setEnhancingPhotos(true)
-    setEnhanceMsg('')
+    setEnhanceMsg('Analyzing images...')
     let successCount = 0
+    let errorCount = 0
     for (const img of gallery) {
       if (skipEnhanceIds.has(img.id)) continue
       try {
@@ -201,6 +202,14 @@ export default function ProductDetailPage() {
         form.append('file', blob)
         const enhanceRes = await fetch('/api/portal/products/enhance-photo', { method: 'POST', body: form })
         const enhanceData = await enhanceRes.json()
+
+        if (!enhanceRes.ok) {
+          console.error('Enhancement failed:', enhanceData)
+          setEnhanceMsg(`Error: ${enhanceData.error || 'Unknown error'}`)
+          errorCount++
+          continue
+        }
+
         if (enhanceData.imageData) {
           // Convert base64 data URL to blob
           const base64 = enhanceData.imageData.split(',')[1]
@@ -216,12 +225,20 @@ export default function ProductDetailPage() {
           galleryForm.append('file', enhancedBlob, `enhanced-${Date.now()}.jpg`)
           await fetch(`/api/portal/products/${id}/gallery`, { method: 'POST', body: galleryForm })
           successCount++
+          setEnhanceMsg(`${successCount}/${gallery.length - skipEnhanceIds.size} enhanced...`)
+        } else {
+          console.error('No imageData in response:', enhanceData)
+          errorCount++
         }
       } catch (e) {
         console.error('Enhancement failed for image', e)
+        errorCount++
       }
     }
-    setEnhanceMsg(`Enhanced ${successCount}/${gallery.length - skipEnhanceIds.size} photos`)
+    const finalMsg = errorCount > 0
+      ? `Enhanced ${successCount}/${gallery.length - skipEnhanceIds.size} (${errorCount} errors - check console)`
+      : `Enhanced ${successCount}/${gallery.length - skipEnhanceIds.size} photos`
+    setEnhanceMsg(finalMsg)
     setEnhancingPhotos(false)
     setTimeout(() => setEnhanceMsg(''), 3000)
   }
