@@ -57,6 +57,7 @@ export default function ProductDetailPage() {
   const [variants, setVariants] = useState<Variant[]>([])
   const [detectedColors, setDetectedColors] = useState<Array<{ name: string; hex: string }> | null>(null)
   const [colorDetecting, setColorDetecting] = useState(false)
+  const [skipEnhanceIds, setSkipEnhanceIds] = useState<Set<string>>(new Set())
   const [enhancingPhotos, setEnhancingPhotos] = useState(false)
   const [enhanceMsg, setEnhanceMsg] = useState('')
   const [certs, setCerts] = useState<ProductCert[]>([])
@@ -192,6 +193,7 @@ export default function ProductDetailPage() {
     setEnhanceMsg('')
     let successCount = 0
     for (const img of gallery) {
+      if (skipEnhanceIds.has(img.id)) continue
       try {
         const res = await fetch(img.image_url)
         const blob = await res.blob()
@@ -200,7 +202,16 @@ export default function ProductDetailPage() {
         const enhanceRes = await fetch('/api/portal/products/enhance-photo', { method: 'POST', body: form })
         const enhanceData = await enhanceRes.json()
         if (enhanceData.imageData) {
-          const enhancedBlob = await fetch(enhanceData.imageData).then(r => r.blob())
+          // Convert base64 data URL to blob
+          const base64 = enhanceData.imageData.split(',')[1]
+          const byteCharacters = atob(base64)
+          const byteNumbers = new Array(byteCharacters.length)
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i)
+          }
+          const byteArray = new Uint8Array(byteNumbers)
+          const enhancedBlob = new Blob([byteArray], { type: 'image/jpeg' })
+
           const galleryForm = new FormData()
           galleryForm.append('file', enhancedBlob, `enhanced-${Date.now()}.jpg`)
           await fetch(`/api/portal/products/${id}/gallery`, { method: 'POST', body: galleryForm })
@@ -210,7 +221,7 @@ export default function ProductDetailPage() {
         console.error('Enhancement failed for image', e)
       }
     }
-    setEnhanceMsg(`Enhanced ${successCount}/${gallery.length} photos`)
+    setEnhanceMsg(`Enhanced ${successCount}/${gallery.length - skipEnhanceIds.size} photos`)
     setEnhancingPhotos(false)
     setTimeout(() => setEnhanceMsg(''), 3000)
   }
@@ -380,17 +391,18 @@ export default function ProductDetailPage() {
 
           {/* Photo Gallery */}
           <div className="bg-white border border-cream-300 rounded-xl p-6">
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-2 mb-5">
               <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">Photo Gallery</p>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                 <button
                   onClick={enhanceAllPhotos}
                   disabled={enhancingPhotos || gallery.length === 0}
-                  className="flex items-center gap-1.5 border border-gold-400 text-gold-600 font-sans text-[10px] tracking-[0.2em] uppercase px-4 py-2 hover:bg-gold-50 transition-colors disabled:opacity-40"
+                  className="flex items-center gap-1.5 border border-gold-400 text-gold-600 font-sans text-[9px] sm:text-[10px] tracking-[0.2em] uppercase px-3 sm:px-4 py-2 hover:bg-gold-50 transition-colors disabled:opacity-40 whitespace-nowrap"
                   title="Enhance all photos with AI: standardize size + add oat wall background"
                 >
                   {enhancingPhotos ? <Loader size={12} className="animate-spin" /> : <Sparkles size={12} />}
-                  {enhancingPhotos ? 'Enhancing…' : 'Enhance All'}
+                  <span className="hidden sm:inline">{enhancingPhotos ? 'Enhancing…' : 'Enhance All'}</span>
+                  <span className="sm:hidden">{enhancingPhotos ? 'Enhancing…' : 'Enhance'}</span>
                 </button>
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input
@@ -453,6 +465,24 @@ export default function ProductDetailPage() {
                         Hover
                       </div>
                     )}
+                    <button
+                      onClick={() => setSkipEnhanceIds(prev => {
+                        const next = new Set(prev)
+                        if (next.has(img.id)) next.delete(img.id)
+                        else next.add(img.id)
+                        return next
+                      })}
+                      className="absolute top-2 right-2 flex items-center gap-1.5 bg-white/90 hover:bg-white text-bark-600 font-sans text-[9px] px-2 py-1.5 rounded transition-colors"
+                      title="Skip AI enhancement for this photo"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={skipEnhanceIds.has(img.id)}
+                        onChange={() => {}}
+                        className="accent-bark-600 cursor-pointer"
+                      />
+                      <span className="text-[9px]">Skip</span>
+                    </button>
                     <div className="absolute inset-0 bg-bark-600/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                       {!img.is_primary && (
                         <button
@@ -964,13 +994,23 @@ export default function ProductDetailPage() {
                         placeholder="color"
                         className="flex-1 min-w-0 px-2 py-1.5 border border-cream-300 rounded text-sm text-bark-600 focus:outline-none focus:border-bark-400"
                       />
-                      <input
-                        type="color"
-                        value={v.color_hex || '#cccccc'}
-                        onChange={e => updateVariant(i, 'color_hex', e.target.value)}
-                        className="w-8 h-8 rounded border border-cream-300 shrink-0 cursor-pointer"
-                        title="Swatch color"
-                      />
+                      <div className="flex items-center gap-1 shrink-0">
+                        <input
+                          type="text"
+                          value={v.color_hex || ''}
+                          onChange={e => updateVariant(i, 'color_hex', e.target.value)}
+                          placeholder="#000"
+                          className="w-16 px-2 py-1.5 border border-cream-300 rounded text-xs text-bark-600 focus:outline-none focus:border-bark-400"
+                          title="Hex color code"
+                        />
+                        <input
+                          type="color"
+                          value={v.color_hex || '#cccccc'}
+                          onChange={e => updateVariant(i, 'color_hex', e.target.value)}
+                          className="w-8 h-8 rounded border border-cream-300 shrink-0 cursor-pointer"
+                          title="Swatch color"
+                        />
+                      </div>
                       <select
                         value={v.size}
                         onChange={e => updateVariant(i, 'size', e.target.value)}
