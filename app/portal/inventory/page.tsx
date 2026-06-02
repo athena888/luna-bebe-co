@@ -450,6 +450,11 @@ export default function InventoryPage() {
                           })}
                         </div>
                       )}
+                      {linked && item.color && (
+                        productColors.some(([cname]) => cname.toLowerCase() === item.color.toLowerCase())
+                          ? <p className="px-2 pt-1 font-sans text-[10px] text-sage-600">✓ adds to existing stock</p>
+                          : <p className="px-2 pt-1 font-sans text-[10px] text-amber-600">⚠ new color — won&rsquo;t merge. Tap a chip above if it&rsquo;s the same color.</p>
+                      )}
                     </td>
                     <td className="px-1 py-1 w-24">
                       <div className="flex items-center gap-1.5">
