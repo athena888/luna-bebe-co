@@ -74,7 +74,7 @@ export function Header() {
           </nav>
 
           {/* Right slot */}
-          <div className="flex items-center gap-3 md:gap-1 justify-self-end">
+          <div className="flex items-center gap-2 md:gap-1 justify-self-end">
             <Link href="/wishlist" className="hidden md:flex p-2 text-bark-400 hover:text-bark-600 transition-colors" title="Wishlist">
               <Heart size={17} />
             </Link>
@@ -82,7 +82,7 @@ export function Header() {
               <User size={17} />
             </Link>
             <button
-              className="md:hidden w-10 h-10 flex items-center justify-center text-bark-600 shrink-0 -mr-2"
+              className="md:hidden p-2 text-bark-600 hover:text-bark-700 transition-colors"
               onClick={() => setOpen(!open)}
             >
               {open ? <X size={20} /> : <Menu size={20} />}

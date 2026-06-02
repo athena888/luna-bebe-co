@@ -56,7 +56,7 @@ export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-cream-200">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-cream-200">
               <div className="flex items-center gap-2">
                 <ShieldCheck size={16} className="text-gold-400" />
                 <span className="font-sans text-sm font-medium text-bark-600">Verified Certifications</span>
@@ -68,7 +68,7 @@ export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
 
             {/* Cert tabs */}
             {active.length > 1 && (
-              <div className="flex gap-2 px-5 pt-4 overflow-x-auto scrollbar-hide">
+              <div className="flex gap-2 px-5 pt-3 pb-2 overflow-x-auto scrollbar-hide">
                 {active.map((c, idx) => (
                   <button
                     key={c.key}
@@ -86,10 +86,10 @@ export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
             )}
 
             {/* Content */}
-            <div className="px-5 py-5">
+            <div className="px-5 py-4">
               {/* Certificate doc */}
               {opened.certificateUrl && (
-                <div className="mb-4 border border-cream-200 rounded-xl overflow-hidden bg-cream-50">
+                <div className="mb-3 border border-cream-200 rounded-xl overflow-hidden bg-cream-50">
                   {opened.certificateUrl.endsWith('.pdf') ? (
                     <a href={opened.certificateUrl} target="_blank" rel="noopener noreferrer"
                       className="flex items-center gap-2 p-4 font-sans text-sm text-gold-500 hover:text-gold-600 transition-colors">
@@ -120,7 +120,7 @@ export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
 
             {/* Prev / Next */}
             {active.length > 1 && (
-              <div className="flex items-center justify-between px-5 pb-5">
+              <div className="flex items-center justify-between px-5 py-3">
                 <button onClick={prev} disabled={openIdx === 0}
                   className="flex items-center gap-1 font-sans text-xs text-bark-400 hover:text-bark-600 transition-colors disabled:opacity-30">
                   <ChevronLeft size={14} /> Prev
