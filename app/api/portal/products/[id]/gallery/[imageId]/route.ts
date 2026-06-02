@@ -43,25 +43,15 @@ export async function PATCH(
 
   if (!image) return NextResponse.json({ error: 'Image not found' }, { status: 404 })
 
-  // Download and re-upload as the primary product image
-  try {
-    const res = await fetch(image.image_url)
-    const buffer = await res.arrayBuffer()
-    await supabaseAdmin.storage
-      .from('product-images')
-      .upload(`${id}.jpg`, buffer, { contentType: 'image/jpeg', upsert: true })
-  } catch {
-    // Non-fatal — primary flag still updates
-  }
-
   // Clear old primary, set new
   await supabaseAdmin.from('product_gallery').update({ is_primary: false }).eq('product_id', id)
   await supabaseAdmin.from('product_gallery').update({ is_primary: true }).eq('id', imageId)
 
-  // Store primary URL directly in overrides so build page shows correct image
+  // Update products.image to use the gallery image URL
   await supabaseAdmin
-    .from('product_overrides')
-    .upsert({ product_id: id, image: image.image_url }, { onConflict: 'product_id' })
+    .from('products')
+    .update({ image: image.image_url })
+    .eq('id', id)
 
   return NextResponse.json({ ok: true })
 }
