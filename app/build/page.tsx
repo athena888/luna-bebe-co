@@ -78,7 +78,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
       >
         {showImage ? (
           <Image src={storageSrc} alt={product.name} fill
-            className={`object-contain transition-all duration-500 ${soldOut ? 'grayscale brightness-[0.35]' : ''}`}
+            className={`object-cover transition-all duration-500 ${soldOut ? 'grayscale brightness-[0.35]' : ''}`}
             sizes="(max-width: 640px) 176px, 208px" onError={() => setImgFailed(true)} unoptimized />
         ) : (
           <div className={`absolute inset-0 flex items-center justify-center text-5xl
@@ -548,7 +548,7 @@ export default function BuildPage() {
               <div
                 ref={modalScrollRef}
                 onScroll={handleModalScroll}
-                className="relative flex overflow-x-auto scrollbar-hide snap-x snap-mandatory h-[min(72vw,360px)] lg:h-0 lg:flex-1"
+                className="relative flex overflow-x-auto scrollbar-hide snap-x snap-mandatory aspect-[3/4] w-full"
               >
                 {modalLoading && (
                   <div className="absolute inset-0 flex items-center justify-center z-10 bg-cream-100">
@@ -558,7 +558,7 @@ export default function BuildPage() {
                 {!modalLoading && modalGallery.length === 0 && (
                   <div className="shrink-0 w-full h-full snap-start relative">
                     {modalMainSrc
-                      ? <Image src={modalMainSrc} alt={modalProduct.name} fill className="object-contain" sizes="(max-width:1023px) 100vw, 55vw" unoptimized />
+                      ? <Image src={modalMainSrc} alt={modalProduct.name} fill className="object-cover" sizes="(max-width:1023px) 100vw, 55vw" unoptimized />
                       : <div className="absolute inset-0 flex items-center justify-center text-8xl bg-cream-100">
                           <span className="select-none">{modalProduct.imageEmoji}</span>
                         </div>
@@ -567,7 +567,7 @@ export default function BuildPage() {
                 )}
                 {modalGallery.map((img) => (
                   <div key={img.id} className="shrink-0 w-full h-full snap-start relative">
-                    <Image src={img.image_url} alt={img.label ?? modalProduct.name} fill className="object-contain" sizes="(max-width:1023px) 100vw, 55vw" unoptimized />
+                    <Image src={img.image_url} alt={img.label ?? modalProduct.name} fill className="object-cover" sizes="(max-width:1023px) 100vw, 55vw" unoptimized />
                   </div>
                 ))}
                 {modalVideo && (
