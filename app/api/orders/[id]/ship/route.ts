@@ -41,7 +41,8 @@ export async function POST(
     })
   } catch (err) {
     console.error('Shippo label error:', err)
-    return NextResponse.json({ error: 'Failed to create shipping label' }, { status: 500 })
+    const message = err instanceof Error ? err.message : 'Failed to create shipping label'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 
   await supabaseAdmin

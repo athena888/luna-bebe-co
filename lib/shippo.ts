@@ -38,6 +38,18 @@ export async function createShippingLabel({
   toPhone?: string
   isPremium: boolean
 }): Promise<ShippoLabel> {
+  // Safety guard: never buy a real (paid) label outside production.
+  // A live token starts with "shippo_live_"; the test token starts with
+  // "shippo_test_". Buying a label with a live token charges real money,
+  // so block it unless we're actually in the production environment.
+  const key = SHIPPO_KEY()
+  if (key?.startsWith('shippo_live_') && process.env.NODE_ENV !== 'production') {
+    throw new Error(
+      'Refusing to buy a LIVE Shippo label outside production. ' +
+      'Set SHIPPO_API_KEY to your test token (shippo_test_…) in .env.local for dev testing.'
+    )
+  }
+
   const fromAddress = {
     name: process.env.SHIPPO_FROM_NAME || 'Petite Lavande',
     street1: process.env.SHIPPO_FROM_STREET1 || '123 Your Street',
