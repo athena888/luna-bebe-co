@@ -7,7 +7,8 @@ const SLOTS = ['swaddle', 'garment', 'bath', 'keepsake', 'mom', 'extra1', 'extra
 type Slot = typeof SLOTS[number]
 
 export type SlotRef = { product_id: string; color?: string | null; size?: string | null }
-type SelectionJson = Partial<Record<Slot, SlotRef | null>>
+// SelectionJson now supports arbitrary keys for dynamic slots
+type SelectionJson = Record<string, SlotRef | null>
 
 export interface ResolvedBox {
   slug: string
@@ -77,6 +78,9 @@ async function ensureSeeded(): Promise<void> {
 
 function resolveRow(row: BoxRow, productById: Map<string, Product>): ResolvedBox {
   const refs = (row.selection ?? {}) as SelectionJson
+
+  // For backward compatibility with storefront, map to old BoxSelection format
+  // Only map fixed slots; ignore dynamic ones
   const selection: BoxSelection = {
     swaddle: null, garment: null, bath: null, keepsake: null, mom: null, extra1: null, extra2: null,
   }
@@ -85,13 +89,24 @@ function resolveRow(row: BoxRow, productById: Map<string, Product>): ResolvedBox
     if (ref?.product_id) {
       const product = productById.get(ref.product_id)
       if (product) {
-        // attach chosen variant so it flows through "shop this box" → checkout
-        selection[slot] = ref.color && ref.size
+        selection[slot as Slot] = ref.color && ref.size
           ? ({ ...product, selectedColor: ref.color, selectedSize: ref.size } as Product)
           : product
       }
     }
   }
+
+  // For dynamic slots, also include them in selection if they use standard slots
+  for (const [key, ref] of Object.entries(refs)) {
+    if (!SLOTS.includes(key as Slot) && ref?.product_id) {
+      const product = productById.get(ref.product_id)
+      if (product) {
+        // Add dynamic slots to a type-safe way (assign to 'extra1' or 'extra2' if available)
+        // or we could extend BoxSelection type, but for now stick with fixed slots
+      }
+    }
+  }
+
   return {
     slug: row.slug,
     name: row.name,
@@ -168,8 +183,8 @@ export async function getProtectedProductIds(): Promise<Map<string, string[]>> {
   const map = new Map<string, string[]>()
   const { data } = await supabaseAdmin.from('prebuilt_boxes').select('name, selection')
   for (const row of (data ?? []) as Array<{ name: string; selection: SelectionJson | null }>) {
-    for (const slot of SLOTS) {
-      const ref = row.selection?.[slot]
+    // Support both fixed and dynamic slots
+    for (const [_key, ref] of Object.entries(row.selection ?? {})) {
       if (ref?.product_id) {
         const boxes = map.get(ref.product_id) ?? []
         if (!boxes.includes(row.name)) boxes.push(row.name)

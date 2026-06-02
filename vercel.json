@@ -9,6 +9,10 @@
       "schedule": "0 9 1 * *"
     },
     {
+      "path": "/api/cron/restock-alerts",
+      "schedule": "0 9 * * *"
+    },
+    {
       "path": "/api/cron/wholesale-overdue",
       "schedule": "0 8 * * *"
     }

@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Loader, Check, Sparkles } from 'lucide-react'
+import { ArrowLeft, Loader, Check, Sparkles, Plus, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import type { ResolvedBox, SlotRef } from '@/lib/prebuilt-boxes-db'
 
-type CatalogProduct = { id: string; name: string; category: string; has_variants?: boolean }
+type CatalogProduct = { id: string; name: string; category: string; has_variants?: boolean; price: number }
+type BoxSlot = { key: string; label: string; product_id: string | null; color?: string | null; size?: string | null }
 
-const SLOTS: Array<{ key: string; label: string }> = [
+const SLOT_TEMPLATES: Array<{ key: string; label: string }> = [
   { key: 'swaddle', label: 'Swaddle / Blanket' },
   { key: 'garment', label: 'Garment' },
   { key: 'bath', label: 'Bath & Skincare' },
@@ -28,9 +29,10 @@ export default function BoxEditorPage() {
 
   const [box, setBox] = useState<ResolvedBox | null>(null)
   const [products, setProducts] = useState<CatalogProduct[]>([])
-  const [selection, setSelection] = useState<Record<string, SlotRef | null>>({})
+  const [slots, setSlots] = useState<BoxSlot[]>([])
   const [name, setName] = useState('')
   const [customPrice, setCustomPrice] = useState('')
+  const [showCustomPrice, setShowCustomPrice] = useState(true) // toggle: custom vs calculated
   const [image, setImage] = useState('')
   const [featured, setFeatured] = useState(true)
   const [loading, setLoading] = useState(true)
@@ -38,6 +40,7 @@ export default function BoxEditorPage() {
   const [saveMsg, setSaveMsg] = useState('')
   const [generating, setGenerating] = useState(false)
   const [genError, setGenError] = useState('')
+  const [categoryWarning, setCategoryWarning] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -52,7 +55,20 @@ export default function BoxEditorPage() {
       setCustomPrice(box.customPrice != null ? (box.customPrice / 100).toFixed(2) : '')
       setImage(box.image ?? '')
       setFeatured(box.featured)
-      setSelection(box.selectionRefs ?? {})
+      // Convert selectionRefs map to slots array
+      const slotRefs = box.selectionRefs ?? {}
+      const newSlots: BoxSlot[] = Object.entries(slotRefs).map(([key, ref]) => {
+        const template = SLOT_TEMPLATES.find(t => t.key === key)
+        return {
+          key,
+          label: template?.label || key,
+          product_id: (ref as SlotRef)?.product_id ?? null,
+          color: (ref as SlotRef)?.color ?? undefined,
+          size: (ref as SlotRef)?.size ?? undefined,
+        }
+      })
+      setSlots(newSlots.length > 0 ? newSlots : [])
+      setShowCustomPrice(true)
     }
     if (listRes.ok) {
       const { products } = await listRes.json()
@@ -63,11 +79,32 @@ export default function BoxEditorPage() {
 
   useEffect(() => { load() }, [load])
 
-  function setSlotProduct(slot: string, productId: string) {
-    setSelection(prev => ({
-      ...prev,
-      [slot]: productId ? { product_id: productId } : null,
-    }))
+  function updateSlotProduct(slotKey: string, productId: string) {
+    setSlots(prev => prev.map(s => s.key === slotKey ? { ...s, product_id: productId || null } : s))
+    setCategoryWarning(null)
+  }
+
+  function addSlot() {
+    const newKey = `custom-${Date.now()}`
+    const availableLabel = `Extra Slot ${slots.length - 6}`
+    setSlots(prev => [...prev, {
+      key: newKey,
+      label: availableLabel,
+      product_id: null,
+    }])
+  }
+
+  function removeSlot(slotKey: string) {
+    const slotToRemove = slots.find(s => s.key === slotKey)
+    if (!slotToRemove) return
+
+    // Check if this is the only slot with this category/label
+    const categoryCount = slots.filter(s => s.label === slotToRemove.label).length
+    if (categoryCount === 1) {
+      setCategoryWarning(`Removing "${slotToRemove.label}" — this is the only slot with this category. Your box will no longer have this item type.`)
+    }
+
+    setSlots(prev => prev.filter(s => s.key !== slotKey))
   }
 
   async function handleGenerateImage() {
@@ -93,6 +130,19 @@ export default function BoxEditorPage() {
   async function handleSave() {
     setSaving(true)
     setSaveMsg('')
+    // Convert slots array back to selection map
+    const selection: Record<string, SlotRef | null> = {}
+    for (const slot of slots) {
+      if (slot.product_id) {
+        selection[slot.key] = {
+          product_id: slot.product_id,
+          color: slot.color || undefined,
+          size: slot.size || undefined,
+        }
+      } else {
+        selection[slot.key] = null
+      }
+    }
     const res = await fetch(`/api/portal/boxes/${slug}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -142,20 +192,74 @@ export default function BoxEditorPage() {
             <label className={labelCls}>Name</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)} className={inputCls} />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className={labelCls}>Price (USD)</label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 font-sans text-sm text-bark-400">$</span>
-                <input type="number" step="0.01" value={customPrice} onChange={e => setCustomPrice(e.target.value)} placeholder="leave blank to auto-calc" className={inputCls + ' pl-7'} />
+          <div>
+            <label className={labelCls}>Pricing</label>
+            <div className="space-y-3">
+              {/* Price toggle */}
+              <div className="flex items-center gap-4 p-3 bg-cream-100/40 rounded border border-cream-300">
+                <button
+                  type="button"
+                  onClick={() => setShowCustomPrice(true)}
+                  className={`flex-1 px-3 py-2 rounded text-sm font-sans transition-colors ${
+                    showCustomPrice
+                      ? 'bg-bark-600 text-white'
+                      : 'bg-white text-bark-600 border border-cream-300'
+                  }`}
+                >
+                  Your Price
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowCustomPrice(false)}
+                  className={`flex-1 px-3 py-2 rounded text-sm font-sans transition-colors ${
+                    !showCustomPrice
+                      ? 'bg-bark-600 text-white'
+                      : 'bg-white text-bark-600 border border-cream-300'
+                  }`}
+                >
+                  Calculated Sum
+                </button>
               </div>
+
+              {/* Price display based on toggle */}
+              {showCustomPrice ? (
+                <div>
+                  <label className="block font-sans text-xs text-bark-400 mb-2">Set custom price</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-sans text-sm text-bark-400">$</span>
+                    <input type="number" step="0.01" value={customPrice} onChange={e => setCustomPrice(e.target.value)} placeholder="e.g., 125.00" className={inputCls + ' pl-7'} />
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-cream-100/40 p-3 rounded border border-cream-300">
+                  <div className="space-y-2">
+                    <div className="flex justify-between font-sans text-sm">
+                      <span className="text-bark-500">Products total:</span>
+                      <span className="text-bark-600 font-medium">
+                        ${(slots.reduce((sum, slot) => {
+                          if (!slot.product_id) return sum
+                          const prod = products.find(p => p.id === slot.product_id)
+                          return sum + (prod?.price ?? 0)
+                        }, 0) / 100).toFixed(2)}
+                      </span>
+                    </div>
+                    {customPrice && (
+                      <div className="flex justify-between font-sans text-sm border-t border-cream-300 pt-2">
+                        <span className="text-bark-500">Your custom price:</span>
+                        <span className="text-bark-600 font-medium">${parseFloat(customPrice).toFixed(2)}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="flex items-end pb-1">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={featured} onChange={e => setFeatured(e.target.checked)} className="accent-bark-600 w-4 h-4" />
-                <span className="font-sans text-sm text-bark-500">Featured on homepage</span>
-              </label>
-            </div>
+          </div>
+
+          <div className="flex items-end pb-1">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={featured} onChange={e => setFeatured(e.target.checked)} className="accent-bark-600 w-4 h-4" />
+              <span className="font-sans text-sm text-bark-500">Featured on homepage</span>
+            </label>
           </div>
           <div>
             <label className={labelCls}>Assembled Box Image</label>
@@ -172,44 +276,72 @@ export default function BoxEditorPage() {
               type="button"
               onClick={handleGenerateImage}
               disabled={generating}
-              className="w-full flex items-center justify-center gap-2 border border-gold-300 bg-gold-50/40 text-bark-600 font-sans text-[11px] tracking-[0.2em] uppercase py-3 rounded hover:border-gold-400 transition-colors disabled:opacity-50 mb-3"
+              className="w-full flex items-center justify-center gap-2 border border-gold-300 bg-gold-50/40 text-bark-600 font-sans text-[11px] tracking-[0.2em] uppercase py-3 rounded hover:border-gold-400 transition-colors disabled:opacity-50"
             >
               {generating ? <Loader size={13} className="animate-spin" /> : <Sparkles size={13} className="text-gold-400" />}
               {generating ? 'Generating ultra-realistic box photo…' : 'Generate box image with AI'}
             </button>
-            {genError && <p className="font-sans text-xs text-red-500 mb-2">{genError}</p>}
-
-            <input type="text" value={image} onChange={e => setImage(e.target.value)} placeholder="Or paste an image URL" className={inputCls} />
-            <p className="font-sans text-[10px] text-bark-400/60 mt-1.5">AI reads each product&apos;s photo and composes a realistic organic French lifestyle shot. ~20–40s.</p>
+            {genError && <p className="font-sans text-xs text-red-500 mt-2">{genError}</p>}
+            <p className="font-sans text-[10px] text-bark-400/60 mt-2">AI reads each product&apos;s photo and composes a realistic organic French lifestyle shot. ~20–40s.</p>
           </div>
         </div>
       </div>
 
       {/* Slots */}
       <div className="bg-white border border-cream-300 rounded-xl p-6">
-        <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-5">Box Contents (7 slots)</p>
+        <div className="flex items-center justify-between mb-5">
+          <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">Box Contents ({slots.length} items)</p>
+          <button
+            type="button"
+            onClick={addSlot}
+            className="flex items-center gap-2 px-3 py-1.5 rounded border border-gold-300 bg-gold-50/40 text-bark-600 font-sans text-[10px] tracking-[0.1em] uppercase hover:border-gold-400 transition-colors"
+          >
+            <Plus size={12} /> Add Item
+          </button>
+        </div>
+
+        {categoryWarning && (
+          <div className="mb-4 p-3 bg-amber-50 border border-amber-300 rounded text-amber-900 font-sans text-xs">
+            ⚠️ {categoryWarning}
+          </div>
+        )}
+
         <div className="space-y-3">
-          {SLOTS.map(({ key, label }) => {
-            const ref = selection[key]
+          {slots.map((slot) => {
+            const product = products.find(p => p.id === slot.product_id)
             return (
-              <div key={key} className="flex items-center gap-3">
-                <span className="font-sans text-xs text-bark-400 w-32 shrink-0">{label}</span>
-                <select
-                  value={ref?.product_id ?? ''}
-                  onChange={e => setSlotProduct(key, e.target.value)}
-                  className={inputCls + ' flex-1 cursor-pointer'}
+              <div key={slot.key} className="flex items-center gap-3">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-sans text-xs text-bark-400 w-32 shrink-0">{slot.label}</span>
+                    {product && <span className="text-[10px] text-bark-500/60">• ${(product.price / 100).toFixed(2)}</span>}
+                  </div>
+                  <select
+                    value={slot.product_id ?? ''}
+                    onChange={e => updateSlotProduct(slot.key, e.target.value)}
+                    className={inputCls + ' cursor-pointer'}
+                  >
+                    <option value="">— Empty —</option>
+                    {products.map(p => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeSlot(slot.key)}
+                  className="p-2 text-bark-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors shrink-0"
+                  title="Remove item from box"
                 >
-                  <option value="">— Empty —</option>
-                  {products.map(p => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
-                  ))}
-                </select>
+                  <Trash2 size={16} />
+                </button>
               </div>
             )
           })}
         </div>
+
         <p className="font-sans text-[10px] text-bark-400/70 mt-4">
-          Swap any slot to a different product. Once a product is no longer used by any box, you can delete it from Products.
+          Swap or remove items as needed. Add extra slots for seasonal variations. Once a product is no longer used by any box, you can delete it from Products.
         </p>
       </div>
     </div>
