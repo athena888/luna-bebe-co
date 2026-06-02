@@ -26,6 +26,7 @@ interface ParsedItem {
   unit_price?: number | null   // dollars
   status?: string              // 'stock' | 'to_source'
   photo_box?: PhotoBox | null  // location of the product photo in an uploaded image
+  _origId?: string             // originally-detected item_id, kept so a link can be undone
 }
 
 interface CatalogVariant { color: string; color_hex: string | null; size: string; quantity: number }
@@ -159,7 +160,7 @@ export default function InventoryPage() {
   function assignProduct(rowIndex: number, product: CatalogProduct) {
     setItems(prev => prev.map((item, i) => {
       if (i !== rowIndex) return item
-      const next = { ...item, item_id: product.id, name: product.name }
+      const next = { ...item, _origId: item._origId ?? item.item_id, item_id: product.id, name: product.name }
       // Try to match the parsed color to one of the product's existing colors
       const parsedColor = (item.color || '').trim().toLowerCase()
       const parsedHex = (item.color_hex || '').trim().toLowerCase()
@@ -170,9 +171,17 @@ export default function InventoryPage() {
       if (match) {
         next.color = match.color
         if (match.color_hex) next.color_hex = match.color_hex
+        // (color preserved as detected when no match)
       }
       return next
     }))
+  }
+
+  // Undo a link: restore the originally-detected style number.
+  function unlink(rowIndex: number) {
+    setItems(prev => prev.map((item, i) =>
+      i === rowIndex ? { ...item, item_id: item._origId ?? '', _origId: undefined } : item
+    ))
   }
 
   // Create an unpublished draft product from an unmatched row and link it.
@@ -209,7 +218,7 @@ export default function InventoryPage() {
 
       // Add to the in-memory catalog so the row links + future rows can reuse it
       setCatalog(prev => [{ id: p.id, name: p.name, category: p.category, emoji: '📦', image: draftImage, price: p.price ?? priceCents, sold90: 0, variants: [] }, ...prev])
-      setItems(prev => prev.map((it, i) => i === rowIndex ? { ...it, item_id: p.id, name: p.name } : it))
+      setItems(prev => prev.map((it, i) => i === rowIndex ? { ...it, _origId: it._origId ?? it.item_id, item_id: p.id, name: p.name } : it))
     } catch (e) {
       alert(e instanceof Error ? e.message : 'Failed to create draft product')
     } finally {
@@ -415,7 +424,12 @@ export default function InventoryPage() {
                     </td>
                     <td className="px-1 py-1 min-w-[120px]">
                       <Cell value={item.item_id} onChange={v => updateItem(i, 'item_id', v)} />
-                      {linked && <span className="px-2 text-[10px] text-sage-600 flex items-center gap-0.5"><Check size={10} /> linked</span>}
+                      {linked && (
+                        <span className="px-2 text-[10px] text-sage-600 flex items-center gap-1.5">
+                          <span className="flex items-center gap-0.5"><Check size={10} /> linked</span>
+                          <button onClick={() => unlink(i)} className="text-bark-400 hover:text-red-500 underline" title="Unlink this product">unlink</button>
+                        </span>
+                      )}
                       {!linked && item.item_id && (
                         <button
                           onClick={() => createDraft(i)}
