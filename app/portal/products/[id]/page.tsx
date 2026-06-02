@@ -259,7 +259,7 @@ export default function ProductDetailPage() {
   if (!product) return <div className="p-8 font-sans text-bark-400">Product not found. (Try refreshing the page or going back.)</div>
 
   return (
-    <div className="p-6 max-w-5xl">
+    <div className="p-6 max-w-7xl">
 
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
@@ -282,10 +282,13 @@ export default function ProductDetailPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="space-y-6">
 
-        {/* LEFT — Gallery */}
-        <div className="lg:col-span-1 space-y-8">
+        {/* Row 1 — Gallery + Product Details side by side */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+
+        {/* Gallery */}
+        <div className="space-y-8">
 
           {/* Photo Gallery */}
           <div className="bg-white border border-cream-300 rounded-xl p-6">
@@ -389,11 +392,8 @@ export default function ProductDetailPage() {
 
         </div>
 
-        {/* RIGHT — Product Details + Inventory */}
-        <div className="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-
-          {/* Product Details */}
-          <div className="bg-white border border-cream-300 rounded-xl p-6">
+        {/* Product Details */}
+        <div className="bg-white border border-cream-300 rounded-xl p-6">
             <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-5">Product Details</p>
 
             <div className="space-y-4">
@@ -498,8 +498,10 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Right sub-column: Sales + Variants + Certifications */}
-          <div className="space-y-6">
+        </div>{/* end Row 1 */}
+
+        {/* Row 2 — Sales + Sizes/Colors + Certifications side by side */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
 
           {/* Sales */}
           <div className="bg-white border border-cream-300 rounded-xl p-6">
@@ -742,19 +744,18 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          </div>{/* end right sub-column */}
+        </div>{/* end Row 2 */}
 
-          {/* Save button — spans full width */}
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="lg:col-span-2 w-full bg-bark-600 text-white font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-bark-700 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
-          >
-            {saving ? <Loader size={13} className="animate-spin" /> : saveMsg === 'Saved' ? <Check size={13} /> : null}
-            {saving ? 'Saving…' : saveMsg || 'Save All Changes'}
-          </button>
+        {/* Save button — spans full width */}
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="w-full bg-bark-600 text-white font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-bark-700 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+        >
+          {saving ? <Loader size={13} className="animate-spin" /> : saveMsg === 'Saved' ? <Check size={13} /> : null}
+          {saving ? 'Saving…' : saveMsg || 'Save All Changes'}
+        </button>
 
-        </div>
       </div>
     </div>
   )
