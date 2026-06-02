@@ -74,18 +74,19 @@ export function Header() {
           </nav>
 
           {/* Right slot */}
-          <div className="flex items-center gap-2 md:gap-1 justify-self-end">
-            <Link href="/wishlist" className="hidden md:flex p-2 text-bark-400 hover:text-bark-600 transition-colors" title="Wishlist">
-              <Heart size={17} />
+          <div className="flex items-center gap-1.5 md:gap-0.5 justify-self-end">
+            <Link href="/wishlist" className="hidden md:flex p-2.5 text-bark-400 hover:text-bark-600 transition-colors" title="Wishlist">
+              <Heart size={16} />
             </Link>
-            <Link href="/account" className="hidden md:flex p-2 text-bark-400 hover:text-bark-600 transition-colors" title="My Account">
-              <User size={17} />
+            <Link href="/account" className="hidden md:flex p-2.5 text-bark-400 hover:text-bark-600 transition-colors" title="My Account">
+              <User size={16} />
             </Link>
             <button
-              className="md:hidden p-2 text-bark-600 hover:text-bark-700 transition-colors"
+              className="md:hidden p-2.5 text-bark-600 hover:text-bark-700 transition-colors flex items-center justify-center"
               onClick={() => setOpen(!open)}
+              title={open ? 'Close menu' : 'Open menu'}
             >
-              {open ? <X size={20} /> : <Menu size={20} />}
+              {open ? <X size={18} /> : <Menu size={18} />}
             </button>
           </div>
         </div>

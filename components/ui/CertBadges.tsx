@@ -30,7 +30,7 @@ export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
             className="flex flex-col items-center gap-1.5 border border-cream-300 bg-cream-50 hover:border-bark-400 hover:bg-cream-100 transition-colors px-4 py-3 rounded-lg group min-w-20"
           >
             {cert.iconUrl
-              ? <Image src={cert.iconUrl} alt={cert.name ?? cert.key} width={24} height={24} className="object-contain shrink-0" unoptimized />
+              ? <Image src={cert.iconUrl} alt={cert.name ?? cert.key} width={24} height={24} className="object-contain shrink-0 mix-blend-mode-screen" style={{ mixBlendMode: 'screen' }} unoptimized />
               : <ShieldCheck size={20} className="text-gold-400 shrink-0" />}
             <span className="font-sans text-[11px] tracking-[0.08em] uppercase text-bark-500 group-hover:text-bark-700 transition-colors text-center line-clamp-2">
               {cert.name ?? cert.key}

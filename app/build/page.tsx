@@ -589,7 +589,7 @@ export default function BuildPage() {
 
               {/* Cert badges — below the photo, above the info text */}
               {modalCerts.length > 0 && (
-                <div className="px-5 pb-4 pt-1 border-t border-cream-100">
+                <div className="px-5 pb-2 pt-2 border-t border-cream-100">
                   <CertBadges certs={modalCerts} />
                 </div>
               )}
