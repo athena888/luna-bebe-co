@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { CATEGORY_LABELS, CATEGORY_ORDER } from '@/lib/products'
 import { PRODUCT_TAGS } from '@/lib/product-tags'
 import type { ProductCategory, Product } from '@/types'
-import { Upload, CheckCircle, Loader, Settings, Trash2, Plus, X, Sparkles } from 'lucide-react'
+import { Upload, CheckCircle, Loader, Settings, Trash2, Plus, X, Sparkles, ImageUp, Check, AlertCircle } from 'lucide-react'
 import Image from 'next/image'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
@@ -138,6 +138,130 @@ function ProductImageCard({
 const inputCls = "w-full px-3 py-2.5 border border-cream-300 bg-white font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-bark-400 transition-colors rounded"
 const labelCls = "block font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-1.5"
 
+type BulkResult = { productId: string; url?: string; error?: string }
+
+function BulkPhotoUploadModal({ onClose, onUploaded }: { onClose: () => void; onUploaded: () => void }) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [files, setFiles] = useState<File[]>([])
+  const [uploading, setUploading] = useState(false)
+  const [results, setResults] = useState<{ succeeded: BulkResult[]; failed: BulkResult[] } | null>(null)
+
+  function handleFiles(selected: FileList | null) {
+    if (!selected) return
+    const imgs = Array.from(selected).filter(f => /\.(jpe?g|png|webp)$/i.test(f.name))
+    setFiles(imgs)
+    setResults(null)
+  }
+
+  async function handleUpload() {
+    if (!files.length) return
+    setUploading(true)
+    const form = new FormData()
+    files.forEach(f => form.append('files', f))
+    const res = await fetch('/api/portal/products/bulk-upload', { method: 'POST', body: form })
+    const data = await res.json()
+    setResults(data)
+    setUploading(false)
+    if (data.succeeded?.length) onUploaded()
+  }
+
+  return (
+    <div className="fixed inset-0 bg-bark-600/40 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="font-serif text-xl text-bark-600">Bulk Upload Photos</h2>
+          <button onClick={onClose} className="text-bark-400 hover:text-bark-600"><X size={18} /></button>
+        </div>
+
+        <div className="bg-cream-50 border border-cream-200 rounded-xl p-4 mb-5 text-xs font-sans text-bark-500 leading-relaxed">
+          <p className="font-medium text-bark-600 mb-1">File naming convention</p>
+          <p>Name each image after the product ID, e.g.:</p>
+          <ul className="mt-1.5 space-y-0.5 font-mono text-[11px] text-bark-500">
+            <li>swaddle-muslin.jpg</li>
+            <li>garment-romper.png</li>
+            <li>bath-calendula.webp</li>
+          </ul>
+          <p className="mt-2 text-bark-400">The filename (without extension) must match the product ID exactly. Find product IDs in the Products list.</p>
+        </div>
+
+        {/* Drop zone */}
+        <div
+          className="border-2 border-dashed border-cream-300 rounded-xl p-10 text-center cursor-pointer hover:border-bark-400 hover:bg-cream-50 transition-colors mb-4"
+          onClick={() => inputRef.current?.click()}
+          onDragOver={e => e.preventDefault()}
+          onDrop={e => { e.preventDefault(); handleFiles(e.dataTransfer.files) }}
+        >
+          <ImageUp size={28} className="mx-auto mb-3 text-bark-400/50" />
+          <p className="font-sans text-sm text-bark-600 font-medium">Drop images here or click to browse</p>
+          <p className="font-sans text-xs text-bark-400 mt-1">JPG, PNG, WebP — select multiple at once</p>
+          <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden"
+            onChange={e => handleFiles(e.target.files)} />
+        </div>
+
+        {/* File list preview */}
+        {files.length > 0 && !results && (
+          <div className="mb-4">
+            <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">{files.length} files selected</p>
+            <div className="space-y-1.5 max-h-48 overflow-y-auto">
+              {files.map(f => {
+                const productId = f.name.replace(/\.[^.]+$/, '')
+                return (
+                  <div key={f.name} className="flex items-center gap-2 font-sans text-xs">
+                    <span className="font-mono text-bark-500 flex-1 truncate">{f.name}</span>
+                    <span className="text-bark-400">→</span>
+                    <span className="text-bark-600 flex-1 truncate">{productId}</span>
+                  </div>
+                )
+              })}
+            </div>
+            <button
+              onClick={handleUpload}
+              disabled={uploading}
+              className="mt-4 w-full flex items-center justify-center gap-2 bg-bark-600 text-white font-sans text-[11px] tracking-[0.2em] uppercase py-3 rounded hover:bg-bark-700 transition-colors disabled:opacity-40"
+            >
+              {uploading ? <Loader size={13} className="animate-spin" /> : <ImageUp size={13} />}
+              {uploading ? `Uploading ${files.length} photos…` : `Upload ${files.length} Photos`}
+            </button>
+          </div>
+        )}
+
+        {/* Results */}
+        {results && (
+          <div className="space-y-3">
+            {results.succeeded.length > 0 && (
+              <div className="bg-sage-50 border border-sage-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Check size={14} className="text-sage-600" />
+                  <p className="font-sans text-sm font-medium text-sage-700">{results.succeeded.length} photos uploaded</p>
+                </div>
+                <div className="space-y-1">
+                  {results.succeeded.map(r => (
+                    <p key={r.productId} className="font-mono text-[11px] text-sage-600">{r.productId}</p>
+                  ))}
+                </div>
+              </div>
+            )}
+            {results.failed.length > 0 && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertCircle size={14} className="text-red-500" />
+                  <p className="font-sans text-sm font-medium text-red-700">{results.failed.length} failed</p>
+                </div>
+                <div className="space-y-1">
+                  {results.failed.map(r => (
+                    <p key={r.productId} className="font-mono text-[11px] text-red-600">{r.productId}: {r.error}</p>
+                  ))}
+                </div>
+              </div>
+            )}
+            <button onClick={onClose} className="w-full font-sans text-sm text-bark-400 hover:text-bark-600 transition-colors py-2">Done</button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function AddProductModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
   const [name, setName] = useState('')
   const [category, setCategory] = useState<ProductCategory>('swaddle')
@@ -253,6 +377,7 @@ export default function ProductsPortalPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [showAdd, setShowAdd] = useState(false)
+  const [showBulkPhoto, setShowBulkPhoto] = useState(false)
   const [cleaning, setCleaning] = useState(false)
   const [deleteError, setDeleteError] = useState('')
 
@@ -329,6 +454,12 @@ export default function ProductsPortalPage() {
           >
             {cleaning ? 'Cleaning…' : 'Delete No-Image'}
           </button>
+          <button
+            onClick={() => setShowBulkPhoto(true)}
+            className="flex items-center gap-1.5 font-sans text-[11px] tracking-[0.2em] uppercase text-bark-600 hover:text-bark-700 border border-bark-600 px-4 py-2 rounded transition-colors whitespace-nowrap"
+          >
+            <ImageUp size={13} /> Bulk Photos
+          </button>
           <Link
             href="/portal/products/bulk"
             className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-600 hover:text-bark-700 border border-bark-600 px-4 py-2 rounded transition-colors whitespace-nowrap"
@@ -365,6 +496,13 @@ export default function ProductsPortalPage() {
             </div>
           </div>
         ))
+      )}
+
+      {showBulkPhoto && (
+        <BulkPhotoUploadModal
+          onClose={() => setShowBulkPhoto(false)}
+          onUploaded={() => load()}
+        />
       )}
 
       {showAdd && (
