@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Loader, Check } from 'lucide-react'
+import { ArrowLeft, Loader, Check, Sparkles } from 'lucide-react'
+import Image from 'next/image'
 import type { ResolvedBox, SlotRef } from '@/lib/prebuilt-boxes-db'
 
 type CatalogProduct = { id: string; name: string; category: string; has_variants?: boolean }
@@ -35,6 +36,8 @@ export default function BoxEditorPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
+  const [generating, setGenerating] = useState(false)
+  const [genError, setGenError] = useState('')
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -65,6 +68,26 @@ export default function BoxEditorPage() {
       ...prev,
       [slot]: productId ? { product_id: productId } : null,
     }))
+  }
+
+  async function handleGenerateImage() {
+    setGenerating(true)
+    setGenError('')
+    try {
+      const res = await fetch(`/api/portal/boxes/${slug}/generate-image`, { method: 'POST' })
+      const data = await res.json()
+      if (data.imageUrl) {
+        setImage(data.imageUrl)
+        setSaveMsg('Image generated!')
+        setTimeout(() => setSaveMsg(''), 3000)
+      } else {
+        setGenError(data.error || 'Generation failed')
+      }
+    } catch {
+      setGenError('Generation failed')
+    } finally {
+      setGenerating(false)
+    }
   }
 
   async function handleSave() {
@@ -135,8 +158,29 @@ export default function BoxEditorPage() {
             </div>
           </div>
           <div>
-            <label className={labelCls}>Assembled box image URL</label>
-            <input type="text" value={image} onChange={e => setImage(e.target.value)} placeholder="https://…" className={inputCls} />
+            <label className={labelCls}>Assembled Box Image</label>
+
+            {/* Current image preview */}
+            {image && (
+              <div className="relative w-full aspect-[4/3] bg-cream-200 rounded-xl overflow-hidden mb-3">
+                <Image src={image} alt="Box image" fill className="object-cover" unoptimized />
+              </div>
+            )}
+
+            {/* AI generate */}
+            <button
+              type="button"
+              onClick={handleGenerateImage}
+              disabled={generating}
+              className="w-full flex items-center justify-center gap-2 border border-gold-300 bg-gold-50/40 text-bark-600 font-sans text-[11px] tracking-[0.2em] uppercase py-3 rounded hover:border-gold-400 transition-colors disabled:opacity-50 mb-3"
+            >
+              {generating ? <Loader size={13} className="animate-spin" /> : <Sparkles size={13} className="text-gold-400" />}
+              {generating ? 'Generating ultra-realistic box photo…' : 'Generate box image with AI'}
+            </button>
+            {genError && <p className="font-sans text-xs text-red-500 mb-2">{genError}</p>}
+
+            <input type="text" value={image} onChange={e => setImage(e.target.value)} placeholder="Or paste an image URL" className={inputCls} />
+            <p className="font-sans text-[10px] text-bark-400/60 mt-1.5">AI reads each product&apos;s photo and composes a realistic organic French lifestyle shot. ~20–40s.</p>
           </div>
         </div>
       </div>

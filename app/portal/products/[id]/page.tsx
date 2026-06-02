@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { getAllProducts } from '@/lib/products'
 import { PRODUCT_TAGS } from '@/lib/product-tags'
 import type { CertDef, ProductCert } from '@/lib/certifications'
-import { ArrowLeft, Upload, Trash2, Star, Loader, Sparkles, Check, Plus, Minus, Video, X, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, Upload, Trash2, Star, Loader, Sparkles, Check, Plus, Minus, Video, X, ShieldCheck, Wand2 } from 'lucide-react'
 
 type GalleryImage = {
   id: string
@@ -55,6 +55,9 @@ export default function ProductDetailPage() {
   const [sales, setSales] = useState<{ units: number; revenue: number; lastOrderedAt: string | null }>({ units: 0, revenue: 0, lastOrderedAt: null })
   const [hasVariants, setHasVariants] = useState(false)
   const [variants, setVariants] = useState<Variant[]>([])
+  const [detectedColors, setDetectedColors] = useState<Array<{ name: string; hex: string }>>([])
+  const [detectingColors, setDetectingColors] = useState(false)
+  const [detectError, setDetectError] = useState('')
   const [certs, setCerts] = useState<ProductCert[]>([])
   const [certLibrary, setCertLibrary] = useState<CertDef[]>([])
   const [certUploading, setCertUploading] = useState<string | null>(null)
@@ -162,6 +165,32 @@ export default function ProductDetailPage() {
   }
   function removeVariant(index: number) {
     setVariants(prev => prev.filter((_, i) => i !== index))
+  }
+
+  async function detectColors() {
+    setDetectingColors(true)
+    setDetectError('')
+    setDetectedColors([])
+    try {
+      const res = await fetch(`/api/portal/products/${id}/detect-colors`)
+      const data = await res.json()
+      if (data.colors?.length) {
+        setDetectedColors(data.colors)
+      } else {
+        setDetectError(data.error || 'No colors detected')
+      }
+    } catch {
+      setDetectError('Could not detect colors')
+    } finally {
+      setDetectingColors(false)
+    }
+  }
+
+  function addColorFromSwatch(c: { name: string; hex: string }) {
+    // Add a row for each standard size for this color (or just one blank row to fill in)
+    setVariants(prev => [...prev, { color: c.name, color_hex: c.hex, size: '0-3', quantity: 0, unit_price: null }])
+    // Remove from suggested swatches
+    setDetectedColors(prev => prev.filter(dc => dc.hex !== c.hex))
   }
 
   function toggleCert(key: string) {
@@ -853,6 +882,45 @@ export default function ProductDetailPage() {
                 <p className="font-sans text-[10px] text-bark-400/70 mb-3">
                   Each row is one color + size with its own stock. Customers choose from these; sizes with 0 stock show as unavailable.
                 </p>
+
+                {/* AI color detection */}
+                <div className="mb-4">
+                  <button
+                    onClick={detectColors}
+                    disabled={detectingColors}
+                    className="flex items-center gap-2 border border-gold-300 bg-gold-50/40 text-bark-600 font-sans text-[10px] tracking-[0.15em] uppercase px-4 py-2 rounded hover:border-gold-400 transition-colors disabled:opacity-50"
+                  >
+                    {detectingColors ? <Loader size={12} className="animate-spin" /> : <Wand2 size={12} className="text-gold-400" />}
+                    {detectingColors ? 'Scanning product photos…' : 'Detect colors from photos'}
+                  </button>
+                  {detectError && <p className="font-sans text-[10px] text-red-500 mt-2">{detectError}</p>}
+
+                  {/* Detected color swatches */}
+                  {detectedColors.length > 0 && (
+                    <div className="mt-3 bg-cream-50 border border-cream-200 rounded-lg p-3">
+                      <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">
+                        {detectedColors.length} colors detected — click to add as variant row:
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {detectedColors.map(c => (
+                          <button
+                            key={c.hex}
+                            onClick={() => addColorFromSwatch(c)}
+                            className="flex items-center gap-2 border border-cream-300 bg-white hover:border-bark-400 rounded-full px-3 py-1.5 transition-colors"
+                          >
+                            <span
+                              className="w-4 h-4 rounded-full border border-cream-200 shrink-0"
+                              style={{ backgroundColor: c.hex }}
+                            />
+                            <span className="font-sans text-xs text-bark-600">{c.name}</span>
+                            <span className="font-mono text-[10px] text-bark-400">{c.hex}</span>
+                          </button>
+                        ))}
+                      </div>
+                      <p className="font-sans text-[10px] text-bark-400/60 mt-2">Each adds one row — then set the size and quantity. Add more sizes by clicking "Add a size/color".</p>
+                    </div>
+                  )}
+                </div>
                 <div className="space-y-2">
                   {variants.map((v, i) => (
                     <div key={v.id ?? i} className="flex items-center gap-2">
