@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
+import { getCatalog } from '@/lib/products-db'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 
@@ -15,6 +16,14 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer()
     const base64 = Buffer.from(arrayBuffer).toString('base64')
 
+    // Give Claude the existing catalog so it can match items even across
+    // languages (e.g. a Chinese supplier sheet → English catalog names).
+    let catalogList = ''
+    try {
+      const catalog = await getCatalog({ activeOnly: false })
+      catalogList = catalog.map(p => `- ${p.id}: ${p.name} (${p.category})`).join('\n')
+    } catch { /* matching is best-effort */ }
+
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4096,
@@ -27,10 +36,11 @@ export async function POST(req: NextRequest) {
           },
           {
             type: 'text',
-            text: `You are an inventory parser for a luxury baby clothing and gift box company. The sheet may be a supplier "buy now" / purchase sheet with prices and color swatches.
+            text: `You are an inventory parser for a luxury baby clothing and gift box company. The sheet may be a supplier "buy now" / purchase sheet with prices and color swatches, and may be in any language (e.g. Chinese).
 
+${catalogList ? `Here is the company's EXISTING product catalog (id: name):\n${catalogList}\n\nFor each line item, if it clearly corresponds to one of these existing products (translate across languages as needed — e.g. "短袖连体衣" = "Short Sleeve Onesie"), set item_id to that EXACT existing id. Only match when you are confident; otherwise slugify the name as a new id.\n` : ''}
 Extract ALL line items from this PDF. For each item identify:
-- item_id: the product/SKU code. If none, slugify the name (e.g. "Short-sleeve onesie" → "short-sleeve-onesie"). Keep the SAME item_id across its size/color rows.
+- item_id: the matching EXISTING catalog id when confident (see list above); otherwise the product/SKU code, or slugify the name (e.g. "Short-sleeve onesie" → "short-sleeve-onesie"). Keep the SAME item_id across its size/color rows.
 - name: product name as shown (drop trailing footnote markers like "*")
 - color: the color name (e.g. "white", "khaki/sand", "grey-blue", "dusty rose", "cream", "natural wood")
 - color_hex: the hex code shown near the swatch if present (e.g. "#E4DCD6"). Uppercase, include the leading "#". Use "" if none.

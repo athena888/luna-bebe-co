@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
-import { Upload, FileText, Trash2, Plus, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react'
+import { useState, useRef, useCallback, useEffect } from 'react'
+import Image from 'next/image'
+import { Upload, FileText, Trash2, Plus, AlertTriangle, CheckCircle2, Loader2, Check, Search } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-import { getAllProducts } from '@/lib/products'
 
 const SIZES = ['0-3', '3-6', '6-9', '9-12', '12-18', '18-24', 'one-size']
-const KNOWN_IDS = new Set(getAllProducts().map(p => p.id))
 
 interface ParsedItem {
   item_id: string
@@ -18,6 +17,9 @@ interface ParsedItem {
   unit_price?: number | null   // dollars
   status?: string              // 'stock' | 'to_source'
 }
+
+interface CatalogVariant { color: string; color_hex: string | null; size: string; quantity: number }
+interface CatalogProduct { id: string; name: string; category: string; emoji: string; image: string | null; variants: CatalogVariant[] }
 
 type Phase = 'upload' | 'parsing' | 'review' | 'saving' | 'done'
 
@@ -48,11 +50,25 @@ function SizeSelect({ value, onChange }: { value: string; onChange: (v: string) 
 export default function InventoryPage() {
   const [phase, setPhase] = useState<Phase>('upload')
   const [items, setItems] = useState<ParsedItem[]>([])
+  const [catalog, setCatalog] = useState<CatalogProduct[]>([])
   const [result, setResult] = useState<{ updated: number; failed: number; errors: string[] } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [dragOver, setDragOver] = useState(false)
   const [fileName, setFileName] = useState('')
+  const [dropRow, setDropRow] = useState<number | null>(null)   // row currently hovered during drag
+  const [pickerSearch, setPickerSearch] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
+
+  // Load the product catalog (photos + current stock) for the picker
+  useEffect(() => {
+    if (phase !== 'review' || catalog.length) return
+    fetch('/api/portal/inventory/catalog')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.products) setCatalog(d.products) })
+      .catch(() => {})
+  }, [phase, catalog.length])
+
+  const catalogById = new Map(catalog.map(p => [p.id, p]))
 
   async function handleFile(file: File) {
     if (file.type !== 'application/pdf') { setError('Please upload a PDF file'); return }
@@ -94,6 +110,27 @@ export default function InventoryPage() {
     setItems(prev => [...prev, { item_id: '', name: '', color: '', color_hex: '', size: '0-3', quantity: 0, unit_price: null, status: 'stock' }])
   }
 
+  // Assign a catalog product to a parsed row: fills item_id + name, and
+  // auto-matches the color to an existing variant when one looks similar.
+  function assignProduct(rowIndex: number, product: CatalogProduct) {
+    setItems(prev => prev.map((item, i) => {
+      if (i !== rowIndex) return item
+      const next = { ...item, item_id: product.id, name: product.name }
+      // Try to match the parsed color to one of the product's existing colors
+      const parsedColor = (item.color || '').trim().toLowerCase()
+      const parsedHex = (item.color_hex || '').trim().toLowerCase()
+      const match = product.variants.find(v =>
+        (v.color && v.color.toLowerCase() === parsedColor) ||
+        (v.color_hex && parsedHex && v.color_hex.toLowerCase() === parsedHex)
+      )
+      if (match) {
+        next.color = match.color
+        if (match.color_hex) next.color_hex = match.color_hex
+      }
+      return next
+    }))
+  }
+
   async function confirm() {
     setPhase('saving')
     try {
@@ -124,7 +161,7 @@ export default function InventoryPage() {
   if (phase === 'upload') return (
     <div className="p-8 max-w-2xl mx-auto">
       <h1 className="font-serif text-3xl text-bark-700 mb-1">Inventory Upload</h1>
-      <p className="font-sans text-sm text-bark-400 mb-8">Upload a PDF inventory sheet — Claude will extract every item, color, size, and quantity for you to review before saving.</p>
+      <p className="font-sans text-sm text-bark-400 mb-8">Upload a PDF inventory sheet — Claude will extract every item, color, size, and quantity. Then drag your existing products onto each row to link them.</p>
 
       {error && (
         <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 mb-6 text-sm font-sans">
@@ -149,12 +186,12 @@ export default function InventoryPage() {
       <div className="mt-6 bg-cream-50 rounded-xl border border-cream-200 p-4">
         <p className="font-sans text-xs font-semibold uppercase tracking-widest text-bark-400 mb-2">What your PDF should include</p>
         <ul className="font-sans text-sm text-bark-500 space-y-1 list-disc list-inside">
-          <li>Item ID or product name</li>
+          <li>Item ID or product name (any language)</li>
           <li>Color (and hex swatch code, if shown)</li>
           <li>Size (e.g. 0-3m, 3-6m, NB, 12m)</li>
           <li>Quantity and unit price</li>
         </ul>
-        <p className="font-sans text-xs text-bark-400 mt-3">Works with supplier &ldquo;buy now&rdquo; purchase sheets too — prices, hex codes, and &ldquo;to source&rdquo; items are captured.</p>
+        <p className="font-sans text-xs text-bark-400 mt-3">If the sheet&rsquo;s names don&rsquo;t match your catalog (e.g. a different language), you&rsquo;ll link each row to the right product by dragging it from the product panel on the next screen.</p>
       </div>
     </div>
   )
@@ -192,7 +229,10 @@ export default function InventoryPage() {
   )
 
   // ── Review phase ────────────────────────────────────────────
-  const unknownIds = items.filter(item => item.item_id && !KNOWN_IDS.has(item.item_id))
+  const unknownIds = items.filter(item => item.item_id && !catalogById.has(item.item_id))
+  const filteredCatalog = pickerSearch.trim()
+    ? catalog.filter(p => `${p.name} ${p.id} ${p.category}`.toLowerCase().includes(pickerSearch.toLowerCase()))
+    : catalog
 
   return (
     <div className="p-8">
@@ -200,7 +240,7 @@ export default function InventoryPage() {
         <div>
           <h1 className="font-serif text-3xl text-bark-700">Review Inventory</h1>
           <p className="font-sans text-sm text-bark-400 mt-0.5">
-            <FileText size={13} className="inline mr-1 -mt-0.5" />{fileName} — {items.length} items found. Edit any cell before confirming.
+            <FileText size={13} className="inline mr-1 -mt-0.5" />{fileName} — {items.length} items found. Drag a product onto a row to link it, then confirm.
           </p>
         </div>
         <div className="flex gap-3">
@@ -226,82 +266,186 @@ export default function InventoryPage() {
         <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-3 mb-4 text-sm font-sans">
           <AlertTriangle size={16} className="shrink-0 mt-0.5" />
           <span>
-            <strong>{unknownIds.length} item ID{unknownIds.length > 1 ? 's' : ''} not in your product catalog</strong> —&nbsp;
-            {unknownIds.map(i => i.item_id).join(', ')}. These will still be saved; quantities will stack when the product is added later.
+            <strong>{unknownIds.length} row{unknownIds.length > 1 ? 's are' : ' is'} not linked to a product</strong> — drag the matching product from the right onto each highlighted row. Unlinked rows still save and will stack when that product is added later.
           </span>
         </div>
       )}
 
-      <div className="bg-white rounded-2xl border border-cream-200 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-cream-200 bg-cream-50">
-              {['Item ID', 'Name', 'Color', 'Hex', 'Size', 'Qty', 'Unit $', 'Status', ''].map(h => (
-                <th key={h} className="px-3 py-3 text-left font-sans text-[10px] font-semibold uppercase tracking-widest text-bark-400">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item, i) => {
-              const unknown = item.item_id && !KNOWN_IDS.has(item.item_id)
-              return (
-                <tr key={i} className={`border-b border-cream-100 hover:bg-cream-50/50 ${unknown ? 'bg-amber-50/40' : ''}`}>
-                  <td className="px-1 py-1 min-w-[130px]">
-                    <Cell value={item.item_id} onChange={v => updateItem(i, 'item_id', v)} />
-                  </td>
-                  <td className="px-1 py-1 min-w-[140px]">
-                    <Cell value={item.name} onChange={v => updateItem(i, 'name', v)} />
-                  </td>
-                  <td className="px-1 py-1 min-w-[110px]">
-                    <Cell value={item.color} onChange={v => updateItem(i, 'color', v)} />
-                  </td>
-                  <td className="px-1 py-1 w-24">
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className="inline-block w-4 h-4 rounded border border-cream-300 shrink-0"
-                        style={{ backgroundColor: item.color_hex || 'transparent' }}
-                      />
-                      <Cell value={item.color_hex ?? ''} onChange={v => updateItem(i, 'color_hex', v)} />
-                    </div>
-                  </td>
-                  <td className="px-1 py-1 min-w-[100px]">
-                    <SizeSelect value={item.size} onChange={v => updateItem(i, 'size', v)} />
-                  </td>
-                  <td className="px-1 py-1 w-16">
-                    <Cell value={item.quantity} onChange={v => updateItem(i, 'quantity', parseInt(v) || 0)} type="number" />
-                  </td>
-                  <td className="px-1 py-1 w-20">
-                    <Cell
-                      value={item.unit_price ?? ''}
-                      onChange={v => updateItem(i, 'unit_price', v === '' ? null : parseFloat(v))}
-                      type="number"
-                    />
-                  </td>
-                  <td className="px-1 py-1 w-24">
-                    <select
-                      value={item.status ?? 'stock'}
-                      onChange={e => updateItem(i, 'status', e.target.value)}
-                      className="w-full bg-transparent border-0 outline-none focus:bg-cream-50 px-2 py-1 rounded text-sm text-bark-700 font-sans"
-                    >
-                      <option value="stock">Stock</option>
-                      <option value="to_source">To source</option>
-                    </select>
-                  </td>
-                  <td className="px-2 py-1 w-10">
-                    <button onClick={() => removeItem(i)} className="text-bark-300 hover:text-red-500 transition-colors">
-                      <Trash2 size={14} />
-                    </button>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6 items-start">
 
-        <div className="px-4 py-3 border-t border-cream-100">
-          <button onClick={addRow} className="flex items-center gap-1.5 text-sm font-sans text-gold-500 hover:text-gold-600 transition-colors">
-            <Plus size={15} /> Add row manually
-          </button>
+        {/* Parsed rows table */}
+        <div className="bg-white rounded-2xl border border-cream-200 overflow-hidden overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-cream-200 bg-cream-50">
+                {['', 'Item ID', 'Name', 'Color', 'Hex', 'Size', 'Qty', 'Unit $', 'In stock', ''].map((h, idx) => (
+                  <th key={idx} className="px-3 py-3 text-left font-sans text-[10px] font-semibold uppercase tracking-widest text-bark-400">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, i) => {
+                const linked = item.item_id ? catalogById.get(item.item_id) : undefined
+                const unknown = item.item_id && !linked
+                // current stock for this exact product + color + size
+                const existing = linked?.variants.find(v =>
+                  v.color.toLowerCase() === (item.color || '').toLowerCase() && v.size === item.size
+                )
+                const productColors = linked
+                  ? Array.from(new Map(linked.variants.map(v => [v.color, v.color_hex])).entries())
+                  : []
+                return (
+                  <tr
+                    key={i}
+                    onDragOver={e => { e.preventDefault(); setDropRow(i) }}
+                    onDragLeave={() => setDropRow(r => r === i ? null : r)}
+                    onDrop={e => {
+                      e.preventDefault()
+                      setDropRow(null)
+                      const pid = e.dataTransfer.getData('text/plain')
+                      const prod = catalogById.get(pid)
+                      if (prod) assignProduct(i, prod)
+                    }}
+                    className={`border-b border-cream-100 transition-colors ${
+                      dropRow === i ? 'bg-gold-100/70 ring-1 ring-gold-300' : unknown ? 'bg-amber-50/40' : linked ? 'bg-sage-50/30' : 'hover:bg-cream-50/50'
+                    }`}
+                  >
+                    {/* linked thumbnail */}
+                    <td className="px-2 py-1 w-12">
+                      {linked ? (
+                        linked.image ? (
+                          <div className="relative w-9 h-9 rounded overflow-hidden bg-cream-100 border border-cream-200">
+                            <Image src={linked.image} alt={linked.name} fill className="object-cover" unoptimized />
+                          </div>
+                        ) : (
+                          <div className="w-9 h-9 rounded bg-cream-100 border border-cream-200 flex items-center justify-center text-base">{linked.emoji}</div>
+                        )
+                      ) : (
+                        <div className="w-9 h-9 rounded border border-dashed border-cream-300 flex items-center justify-center text-bark-300" title="Drag a product here">
+                          <Plus size={12} />
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-1 py-1 min-w-[120px]">
+                      <Cell value={item.item_id} onChange={v => updateItem(i, 'item_id', v)} />
+                      {linked && <span className="px-2 text-[10px] text-sage-600 flex items-center gap-0.5"><Check size={10} /> linked</span>}
+                    </td>
+                    <td className="px-1 py-1 min-w-[140px]">
+                      <Cell value={item.name} onChange={v => updateItem(i, 'name', v)} />
+                    </td>
+                    <td className="px-1 py-1 min-w-[120px]">
+                      <Cell value={item.color} onChange={v => updateItem(i, 'color', v)} />
+                      {productColors.length > 0 && (
+                        <div className="flex flex-wrap gap-1 px-2 pt-1">
+                          {productColors.map(([cname, chex]) => {
+                            const active = cname.toLowerCase() === (item.color || '').toLowerCase()
+                            return (
+                              <button
+                                key={cname}
+                                onClick={() => { updateItem(i, 'color', cname); if (chex) updateItem(i, 'color_hex', chex) }}
+                                className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] border transition-colors ${active ? 'border-bark-600 bg-bark-600 text-white' : 'border-cream-300 text-bark-500 hover:border-bark-400'}`}
+                                title="Use existing color"
+                              >
+                                {chex && <span className="w-2.5 h-2.5 rounded-full border border-black/10" style={{ backgroundColor: chex }} />}
+                                {cname}
+                              </button>
+                            )
+                          })}
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-1 py-1 w-24">
+                      <div className="flex items-center gap-1.5">
+                        <span className="inline-block w-4 h-4 rounded border border-cream-300 shrink-0" style={{ backgroundColor: item.color_hex || 'transparent' }} />
+                        <Cell value={item.color_hex ?? ''} onChange={v => updateItem(i, 'color_hex', v)} />
+                      </div>
+                    </td>
+                    <td className="px-1 py-1 min-w-[100px]">
+                      <SizeSelect value={item.size} onChange={v => updateItem(i, 'size', v)} />
+                    </td>
+                    <td className="px-1 py-1 w-16">
+                      <Cell value={item.quantity} onChange={v => updateItem(i, 'quantity', parseInt(v) || 0)} type="number" />
+                    </td>
+                    <td className="px-1 py-1 w-20">
+                      <Cell value={item.unit_price ?? ''} onChange={v => updateItem(i, 'unit_price', v === '' ? null : parseFloat(v))} type="number" />
+                    </td>
+                    {/* current stock for this color+size */}
+                    <td className="px-2 py-1 w-20 text-center">
+                      {linked ? (
+                        <span className={`font-sans text-xs ${existing ? 'text-bark-600' : 'text-bark-300'}`}>
+                          {existing ? `${existing.quantity} now` : 'new'}
+                        </span>
+                      ) : (
+                        <span className="font-sans text-[10px] text-bark-300">—</span>
+                      )}
+                    </td>
+                    <td className="px-2 py-1 w-10">
+                      <button onClick={() => removeItem(i)} className="text-bark-300 hover:text-red-500 transition-colors">
+                        <Trash2 size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+
+          <div className="px-4 py-3 border-t border-cream-100">
+            <button onClick={addRow} className="flex items-center gap-1.5 text-sm font-sans text-gold-500 hover:text-gold-600 transition-colors">
+              <Plus size={15} /> Add row manually
+            </button>
+          </div>
+        </div>
+
+        {/* Product picker — drag a card onto a row */}
+        <div className="bg-white rounded-2xl border border-cream-200 p-4 xl:sticky xl:top-6">
+          <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-1">Your Products</p>
+          <p className="font-sans text-[11px] text-bark-400/80 mb-3 leading-snug">Drag a product onto a row to link it. Its photo, colors &amp; current stock will fill in.</p>
+          <div className="relative mb-3">
+            <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-bark-300" />
+            <input
+              value={pickerSearch}
+              onChange={e => setPickerSearch(e.target.value)}
+              placeholder="Search products…"
+              className="w-full pl-8 pr-2 py-1.5 border border-cream-300 rounded text-sm text-bark-600 focus:outline-none focus:border-bark-400"
+            />
+          </div>
+          {catalog.length === 0 ? (
+            <p className="font-sans text-xs text-bark-400 py-4 text-center">Loading products…</p>
+          ) : (
+            <div className="space-y-2 max-h-[70vh] overflow-y-auto pr-1">
+              {filteredCatalog.map(p => {
+                const totalStock = p.variants.reduce((s, v) => s + (v.quantity || 0), 0)
+                return (
+                  <div
+                    key={p.id}
+                    draggable
+                    onDragStart={e => { e.dataTransfer.setData('text/plain', p.id); e.dataTransfer.effectAllowed = 'copy' }}
+                    className="flex items-center gap-2 border border-cream-200 rounded-lg p-2 cursor-grab active:cursor-grabbing hover:border-gold-300 hover:bg-cream-50 transition-colors"
+                    title="Drag onto a row to link"
+                  >
+                    {p.image ? (
+                      <div className="relative w-10 h-10 rounded overflow-hidden bg-cream-100 shrink-0">
+                        <Image src={p.image} alt={p.name} fill className="object-cover" unoptimized />
+                      </div>
+                    ) : (
+                      <div className="w-10 h-10 rounded bg-cream-100 flex items-center justify-center text-lg shrink-0">{p.emoji}</div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="font-sans text-xs font-medium text-bark-600 truncate">{p.name}</p>
+                      <p className="font-sans text-[10px] text-bark-400 truncate">{p.id}</p>
+                      <p className="font-sans text-[10px] text-bark-400">
+                        {p.variants.length > 0 ? `${p.variants.length} variant${p.variants.length > 1 ? 's' : ''} · ${totalStock} in stock` : 'no variants yet'}
+                      </p>
+                    </div>
+                  </div>
+                )
+              })}
+              {filteredCatalog.length === 0 && (
+                <p className="font-sans text-xs text-bark-400 py-4 text-center">No products match &ldquo;{pickerSearch}&rdquo;</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -320,7 +464,7 @@ export default function InventoryPage() {
 
       <p className="font-sans text-xs text-bark-400 mt-3">
         Quantities are <strong>additive</strong> — if a variant already exists, the new amount is added to the current stock.
-        Hex codes and unit costs are saved with each variant. &ldquo;To source&rdquo; rows still save (set quantity to 0 if not yet ordered).
+        The <strong>In stock</strong> column shows what that product currently has for the same color + size.
       </p>
     </div>
   )
