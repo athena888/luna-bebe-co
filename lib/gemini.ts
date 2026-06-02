@@ -2,7 +2,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY!
 
 export async function generateImage(prompt: string, count = 1): Promise<Buffer[]> {
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${GEMINI_API_KEY}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/imagen-3-generate-001:predict?key=${GEMINI_API_KEY}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
