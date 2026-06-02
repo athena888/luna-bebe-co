@@ -32,9 +32,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   // If setting as primary, write to the main product-images bucket too
   // so the customer build page picks it up automatically
   if (setPrimary) {
-    await supabaseAdmin.storage
+    const { error: primaryErr } = await supabaseAdmin.storage
       .from('product-images')
       .upload(`${id}.jpg`, buffer, { contentType: file.type, upsert: true })
+    if (primaryErr) {
+      console.error('Primary upload error:', primaryErr)
+      return NextResponse.json({ error: `Storage error: ${primaryErr.message}` }, { status: 500 })
+    }
   }
 
   // Upload to gallery bucket with unique name
@@ -44,7 +48,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     .upload(galleryFileName, buffer, { contentType: file.type, upsert: false })
 
   if (uploadError) {
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
+    console.error('Gallery upload error:', uploadError)
+    return NextResponse.json({ error: `Storage error: ${uploadError.message}` }, { status: 500 })
   }
 
   const { data: urlData } = supabaseAdmin.storage.from('product-images').getPublicUrl(galleryFileName)
@@ -75,7 +80,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     .single()
 
   if (insertError) {
-    return NextResponse.json({ error: 'Failed to save to gallery' }, { status: 500 })
+    console.error('Gallery insert error:', insertError)
+    return NextResponse.json({ error: `Database error: ${insertError.message}` }, { status: 500 })
   }
 
   // If primary, store the URL on the product so the storefront picks it up immediately
