@@ -138,13 +138,13 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
         </div>
         {/* Cert logos — grid view only shows logos, no text */}
         {certs && certs.length > 0 && (
-          <div className="flex items-center gap-1.5 flex-wrap mt-2">
-            {certs.slice(0, 3).map(cert => (
-              <div key={cert.key} className="w-5 h-5 relative" title={cert.name || cert.key}>
+          <div className="flex items-center gap-2 flex-nowrap mt-3">
+            {certs.slice(0, 5).map(cert => (
+              <div key={cert.key} className="w-8 h-8 relative shrink-0" title={cert.name || cert.key}>
                 {cert.iconUrl ? (
                   <Image src={cert.iconUrl} alt={cert.name || cert.key} fill className="object-contain" unoptimized />
                 ) : (
-                  <ShieldCheck size={14} className="text-gold-400" />
+                  <ShieldCheck size={18} className="text-gold-400" />
                 )}
               </div>
             ))}
