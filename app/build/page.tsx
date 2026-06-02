@@ -494,7 +494,7 @@ export default function BuildPage() {
           onClick={() => setModalProduct(null)}
         >
           <div
-            className="bg-white w-full max-w-4xl h-[92vh] flex flex-col lg:flex-row overflow-hidden relative rounded"
+            className="bg-white w-full max-w-4xl max-h-[92vh] flex flex-col lg:flex-row lg:overflow-hidden overflow-y-auto relative rounded"
             onClick={e => e.stopPropagation()}
           >
             <button
@@ -504,12 +504,13 @@ export default function BuildPage() {
               <X size={16} />
             </button>
 
-            {/* Image slides — horizontal scroll with snap */}
+            {/* Image panel — fixed height on mobile, fills height on desktop */}
             <div className="relative lg:w-[55%] shrink-0 bg-cream-100 flex flex-col">
+              {/* Image slides */}
               <div
                 ref={modalScrollRef}
                 onScroll={handleModalScroll}
-                className="relative flex-1 flex overflow-x-auto scrollbar-hide snap-x snap-mandatory min-h-0"
+                className="relative flex overflow-x-auto scrollbar-hide snap-x snap-mandatory h-[min(72vw,360px)] lg:h-0 lg:flex-1"
               >
                 {modalLoading && (
                   <div className="absolute inset-0 flex items-center justify-center z-10 bg-cream-100">
@@ -519,7 +520,7 @@ export default function BuildPage() {
                 {!modalLoading && modalGallery.length === 0 && (
                   <div className="shrink-0 w-full h-full snap-start relative">
                     {modalMainSrc
-                      ? <Image src={modalMainSrc} alt={modalProduct.name} fill className="object-cover" sizes="55vw" unoptimized />
+                      ? <Image src={modalMainSrc} alt={modalProduct.name} fill className="object-contain" sizes="(max-width:1023px) 100vw, 55vw" unoptimized />
                       : <div className="absolute inset-0 flex items-center justify-center text-8xl bg-cream-100">
                           <span className="select-none">{modalProduct.imageEmoji}</span>
                         </div>
@@ -528,7 +529,7 @@ export default function BuildPage() {
                 )}
                 {modalGallery.map((img) => (
                   <div key={img.id} className="shrink-0 w-full h-full snap-start relative">
-                    <Image src={img.image_url} alt={img.label ?? modalProduct.name} fill className="object-cover" sizes="55vw" unoptimized />
+                    <Image src={img.image_url} alt={img.label ?? modalProduct.name} fill className="object-contain" sizes="(max-width:1023px) 100vw, 55vw" unoptimized />
                   </div>
                 ))}
                 {modalVideo && (
@@ -537,18 +538,27 @@ export default function BuildPage() {
                   </div>
                 )}
               </div>
+
+              {/* Slide dots */}
               {totalSlides > 1 && (
-                <div className="shrink-0 flex items-center justify-center gap-1.5 py-3">
+                <div className="shrink-0 flex items-center justify-center gap-1.5 py-2.5">
                   {Array.from({ length: totalSlides }).map((_, i) => (
                     <button key={i} onClick={() => scrollToSlide(i)}
                       className={`rounded-full transition-all duration-200 ${modalImgIdx === i ? 'w-4 h-1.5 bg-bark-600' : 'w-1.5 h-1.5 bg-bark-300'}`} />
                   ))}
                 </div>
               )}
+
+              {/* Cert badges — below the photo, above the info text */}
+              {modalCerts.length > 0 && (
+                <div className="px-5 pb-4 pt-1 border-t border-cream-100">
+                  <CertBadges certs={modalCerts} />
+                </div>
+              )}
             </div>
 
-            {/* Product info */}
-            <div className="flex-1 min-h-0 overflow-y-auto p-6 lg:p-8 flex flex-col">
+            {/* Product info — scrolls on desktop, flows naturally on mobile */}
+            <div className="flex-1 lg:min-h-0 lg:overflow-y-auto p-6 lg:p-8 flex flex-col">
               <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-2">{CATEGORY_LABELS[modalProduct.category]}</p>
               <h2 className="font-sans text-2xl lg:text-3xl text-bark-600 leading-tight mb-2">{modalProduct.name}</h2>
               <p className="font-sans text-base text-bark-400 mb-4">{formatPrice(modalProduct.price)}</p>
@@ -566,11 +576,6 @@ export default function BuildPage() {
                 <div className="mb-4">
                   <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mr-2">Materials</span>
                   <span className="font-sans text-xs text-bark-400">{modalProduct.ingredients}</span>
-                </div>
-              )}
-              {modalCerts.length > 0 && (
-                <div className="mb-4">
-                  <CertBadges certs={modalCerts} />
                 </div>
               )}
               {/* Variant pickers (color + size) */}
