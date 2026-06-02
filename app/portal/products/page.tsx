@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { CATEGORY_LABELS, CATEGORY_ORDER } from '@/lib/products'
 import { PRODUCT_TAGS } from '@/lib/product-tags'
+import { resizeImage } from '@/lib/image-resize'
 import type { ProductCategory, Product } from '@/types'
 import { Upload, CheckCircle, Loader, Settings, Trash2, Plus, X, Sparkles, ImageUp, Check, AlertCircle } from 'lucide-react'
 import Image from 'next/image'
@@ -32,8 +33,9 @@ function ProductImageCard({
 
   async function handleFile(file: File) {
     setState('uploading')
+    const resized = await resizeImage(file)
     const form = new FormData()
-    form.append('file', file)
+    form.append('file', resized)
     form.append('productId', product.id)
     try {
       const res = await fetch('/api/portal/products/upload', { method: 'POST', body: form })
@@ -324,9 +326,11 @@ function AddProductModal({ onClose, onCreated }: { onClose: () => void; onCreate
   async function handleAIDraft(file: File) {
     setAiLoading(true)
     setAiError('')
-    setAiFile(file)
+    // Resize once; reuse for both the AI scan and the gallery save
+    const resized = await resizeImage(file)
+    setAiFile(resized)
     const form = new FormData()
-    form.append('file', file)
+    form.append('file', resized)
     form.append('category', category)
     try {
       const res = await fetch('/api/portal/products/ai-describe', { method: 'POST', body: form })
@@ -348,8 +352,9 @@ function AddProductModal({ onClose, onCreated }: { onClose: () => void; onCreate
 
   async function handlePhoto(file: File) {
     setUploadState('uploading')
+    const resized = await resizeImage(file)
     const form = new FormData()
-    form.append('file', file)
+    form.append('file', resized)
     form.append('productId', productId)
     try {
       const res = await fetch('/api/portal/products/upload', { method: 'POST', body: form })

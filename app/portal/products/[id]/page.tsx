@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { getAllProducts } from '@/lib/products'
 import { PRODUCT_TAGS } from '@/lib/product-tags'
+import { resizeImage } from '@/lib/image-resize'
 import type { CertDef, ProductCert } from '@/lib/certifications'
 import { ArrowLeft, Upload, Trash2, Star, Loader, Check, Plus, Minus, X, ShieldCheck, Wand2 } from 'lucide-react'
 
@@ -238,8 +239,10 @@ export default function ProductDetailPage() {
   async function handleGalleryUpload(file: File, primary: boolean) {
     setUploading(true)
     setUploadError('')
+    // Shrink/convert phone photos so they fit Vercel's upload size limit
+    const resized = await resizeImage(file)
     const form = new FormData()
-    form.append('file', file)
+    form.append('file', resized)
     form.append('primary', primary ? 'true' : 'false')
     const res = await fetch(`/api/portal/products/${id}/gallery`, { method: 'POST', body: form })
     if (!res.ok) {
