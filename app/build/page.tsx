@@ -122,20 +122,20 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
         )}
       </button>
 
-      {/* Cert logos — right below the image */}
-      {certs && certs.length > 0 && (
-        <div className="flex items-center gap-2 flex-nowrap pt-2 pb-2">
-          {certs.slice(0, 5).map(cert => (
-            <div key={cert.key} className="w-8 h-8 relative shrink-0" title={cert.name || cert.key}>
+      {/* Cert logos — right below the image — consistent height for all cards */}
+      <div className="h-6 flex items-center gap-1.5 flex-nowrap">
+        {certs && certs.length > 0 && (
+          certs.slice(0, 5).map(cert => (
+            <div key={cert.key} className="w-6 h-6 relative shrink-0" title={cert.name || cert.key}>
               {cert.iconUrl ? (
                 <Image src={cert.iconUrl} alt={cert.name || cert.key} fill className="object-contain" unoptimized />
               ) : (
-                <ShieldCheck size={18} className="text-gold-400" />
+                <ShieldCheck size={16} className="text-gold-400" />
               )}
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
 
       <div className={`pb-1 ${soldOut ? 'opacity-40' : ''}`}>
         <h3 className="font-sans text-sm text-bark-600 leading-snug mb-1">{product.name}</h3>
