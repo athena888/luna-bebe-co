@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   openGraph: { title: 'Petite Lavande', description: 'Luxury curated organic baby gift boxes — built item by item, shipped with love.' },
 }
 
+// Revalidate bestsellers periodically so they reflect real sales
+export const revalidate = 300
+
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 function homeImg(slot: string) {
   return `${SUPABASE_URL}/storage/v1/object/public/home-images/${slot}.jpg`
@@ -28,11 +31,44 @@ const TESTIMONIALS = [
   { quote: "Everyone at the shower was asking where the box was from. The AI guide helped me pick perfectly for someone I barely know.", name: 'Priya N.', context: 'Office baby shower' },
 ]
 
-export default function HomePage() {
-  const featured: Product[] = FEATURED_IDS.flatMap(id => {
-    const p = getProductById(id)
-    return p ? [p] : []
-  })
+async function getBestsellers(): Promise<Product[]> {
+  try {
+    const { getCatalog } = await import('@/lib/products-db')
+    const { supabaseAdmin } = await import('@/lib/supabase')
+    const [catalog, ordersRes] = await Promise.all([
+      getCatalog({ activeOnly: true }),
+      supabaseAdmin.from('orders').select('selected_items, status').neq('status', 'pending'),
+    ])
+    const unitsById = new Map<string, number>()
+    for (const order of ordersRes.data ?? []) {
+      const items = (order.selected_items ?? []) as Array<{ id: string }>
+      for (const it of items) {
+        if (!it?.id) continue
+        unitsById.set(it.id, (unitsById.get(it.id) ?? 0) + 1)
+      }
+    }
+    const catalogById = new Map(catalog.map(p => [p.id, p]))
+    const ranked = [...unitsById.entries()]
+      .filter(([id]) => catalogById.has(id))
+      .sort((a, b) => b[1] - a[1])
+      .map(([id]) => catalogById.get(id)!)
+    const seen = new Set(ranked.map(p => p.id))
+    const fallback = [
+      ...FEATURED_IDS.map(id => catalogById.get(id)).filter(Boolean),
+      ...catalog,
+    ].filter(p => p && !seen.has(p.id)) as typeof catalog
+    return [...ranked, ...fallback].slice(0, 8)
+  } catch (e) {
+    console.error('getBestsellers failed, using static featured:', e)
+    return FEATURED_IDS.flatMap(id => {
+      const p = getProductById(id)
+      return p ? [p] : []
+    })
+  }
+}
+
+export default async function HomePage() {
+  const featured = await getBestsellers()
 
   return (
     <>

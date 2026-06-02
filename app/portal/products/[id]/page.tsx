@@ -57,9 +57,6 @@ export default function ProductDetailPage() {
   const [variants, setVariants] = useState<Variant[]>([])
   const [detectedColors, setDetectedColors] = useState<Array<{ name: string; hex: string }> | null>(null)
   const [colorDetecting, setColorDetecting] = useState(false)
-  const [skipEnhanceIds, setSkipEnhanceIds] = useState<Set<string>>(new Set())
-  const [enhancingPhotos, setEnhancingPhotos] = useState(false)
-  const [enhanceMsg, setEnhanceMsg] = useState('')
   const [certs, setCerts] = useState<ProductCert[]>([])
   const [certLibrary, setCertLibrary] = useState<CertDef[]>([])
   const [certUploading, setCertUploading] = useState<string | null>(null)
@@ -166,65 +163,6 @@ export default function ProductDetailPage() {
     } finally {
       setColorDetecting(false)
     }
-  }
-
-  async function enhanceAllPhotos() {
-    if (!gallery || gallery.length === 0) {
-      setEnhanceMsg('No photos to enhance')
-      return
-    }
-    setEnhancingPhotos(true)
-    setEnhanceMsg('Analyzing images...')
-    let successCount = 0
-    let errorCount = 0
-    for (const img of gallery) {
-      if (skipEnhanceIds.has(img.id)) continue
-      try {
-        const res = await fetch(img.image_url)
-        const blob = await res.blob()
-        const form = new FormData()
-        form.append('file', blob)
-        const enhanceRes = await fetch('/api/portal/products/enhance-photo', { method: 'POST', body: form })
-        const enhanceData = await enhanceRes.json()
-
-        if (!enhanceRes.ok) {
-          console.error('Enhancement failed:', enhanceData)
-          setEnhanceMsg(`Error: ${enhanceData.error || 'Unknown error'}`)
-          errorCount++
-          continue
-        }
-
-        if (enhanceData.imageData) {
-          // Convert base64 data URL to blob
-          const base64 = enhanceData.imageData.split(',')[1]
-          const byteCharacters = atob(base64)
-          const byteNumbers = new Array(byteCharacters.length)
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i)
-          }
-          const byteArray = new Uint8Array(byteNumbers)
-          const enhancedBlob = new Blob([byteArray], { type: 'image/jpeg' })
-
-          const galleryForm = new FormData()
-          galleryForm.append('file', enhancedBlob, `enhanced-${Date.now()}.jpg`)
-          await fetch(`/api/portal/products/${id}/gallery`, { method: 'POST', body: galleryForm })
-          successCount++
-          setEnhanceMsg(`${successCount}/${gallery.length - skipEnhanceIds.size} enhanced...`)
-        } else {
-          console.error('No imageData in response:', enhanceData)
-          errorCount++
-        }
-      } catch (e) {
-        console.error('Enhancement failed for image', e)
-        errorCount++
-      }
-    }
-    const finalMsg = errorCount > 0
-      ? `Enhanced ${successCount}/${gallery.length - skipEnhanceIds.size} (${errorCount} errors - check console)`
-      : `Enhanced ${successCount}/${gallery.length - skipEnhanceIds.size} photos`
-    setEnhanceMsg(finalMsg)
-    setEnhancingPhotos(false)
-    setTimeout(() => setEnhanceMsg(''), 3000)
   }
 
   async function improveText(type: 'description' | 'ingredients') {
@@ -352,16 +290,6 @@ export default function ProductDetailPage() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-2 mb-5">
               <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">Photo Gallery</p>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                <button
-                  onClick={enhanceAllPhotos}
-                  disabled={enhancingPhotos || gallery.length === 0}
-                  className="flex items-center gap-1.5 border border-gold-400 text-gold-600 font-sans text-[9px] sm:text-[10px] tracking-[0.2em] uppercase px-3 sm:px-4 py-2 hover:bg-gold-50 transition-colors disabled:opacity-40 whitespace-nowrap"
-                  title="Enhance all photos with AI: standardize size + add oat wall background"
-                >
-                  {enhancingPhotos ? <Loader size={12} className="animate-spin" /> : <Sparkles size={12} />}
-                  <span className="hidden sm:inline">{enhancingPhotos ? 'Enhancing…' : 'Enhance All'}</span>
-                  <span className="sm:hidden">{enhancingPhotos ? 'Enhancing…' : 'Enhance'}</span>
-                </button>
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input
                     type="checkbox"
@@ -387,14 +315,6 @@ export default function ProductDetailPage() {
 
             {uploadError && (
               <p className="mb-4 font-sans text-xs text-red-500 bg-red-50 border border-red-200 rounded px-3 py-2">{uploadError}</p>
-            )}
-
-            {enhanceMsg && (
-              <p className={`mb-4 font-sans text-xs rounded px-3 py-2 border ${
-                enhanceMsg.includes('Error') || enhanceMsg.includes('error')
-                  ? 'text-red-500 bg-red-50 border-red-200'
-                  : 'text-bark-600 bg-cream-50 border-cream-200'
-              }`}>{enhanceMsg}</p>
             )}
 
             {gallery.length === 0 ? (
@@ -423,24 +343,6 @@ export default function ProductDetailPage() {
                         Hover
                       </div>
                     )}
-                    <button
-                      onClick={() => setSkipEnhanceIds(prev => {
-                        const next = new Set(prev)
-                        if (next.has(img.id)) next.delete(img.id)
-                        else next.add(img.id)
-                        return next
-                      })}
-                      className="absolute top-2 right-2 flex items-center gap-1.5 bg-white/90 hover:bg-white text-bark-600 font-sans text-[9px] px-2 py-1.5 rounded transition-colors"
-                      title="Skip AI enhancement for this photo"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={skipEnhanceIds.has(img.id)}
-                        onChange={() => {}}
-                        className="accent-bark-600 cursor-pointer"
-                      />
-                      <span className="text-[9px]">Skip</span>
-                    </button>
                     <div className="absolute inset-0 bg-bark-600/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                       <button
                         onClick={() => galleryInputRef.current?.click()}

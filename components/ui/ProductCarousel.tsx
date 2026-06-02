@@ -5,10 +5,29 @@ import Image from 'next/image'
 import { ChevronLeft, ChevronRight, X, ShoppingBag } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import type { Product } from '@/types'
+import type { ProductCert, CertDef } from '@/lib/certifications'
 import { CATEGORY_LABELS } from '@/lib/products'
+import { CertBadges } from '@/components/ui/CertBadges'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 const CLONES = 3
+
+type GalleryImage = {
+  id: string
+  image_url: string
+  label: string | null
+  is_primary: boolean
+  sort_order: number
+}
+
+type VariantOpt = {
+  color: string
+  color_hex: string | null
+  size: string
+  quantity: number
+}
+
+type ResolvedCert = ProductCert & Partial<CertDef>
 
 // Phase 0: carousel-specific override → phase 1: product photo → phase 2: emoji
 function getImgSrc(p: Product, phase: number): string | null {
@@ -26,18 +45,71 @@ function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
 function ProductModal({ product, onClose }: { product: Product; onClose: () => void }) {
   const router = useRouter()
   const [imgPhase, setImgPhase] = useState(0)
-  const src = getImgSrc(product, imgPhase)
+  const [gallery, setGallery] = useState<GalleryImage[]>([])
+  const [variants, setVariants] = useState<VariantOpt[]>([])
+  const [certs, setCerts] = useState<ResolvedCert[]>([])
+  const [imgIdx, setImgIdx] = useState(0)
+  const [pickColor, setPickColor] = useState<string | null>(null)
+  const [pickSize, setPickSize] = useState<string | null>(null)
+  const [desc, setDesc] = useState(product.description)
+  const [ingredients, setIngredients] = useState(product.ingredients)
+
+  // Fallback main image (catalog override → product photo → emoji)
+  const fallbackSrc = getImgSrc(product, imgPhase)
+
+  // Fetch live gallery / variants / certs / fresh copy
+  useEffect(() => {
+    let active = true
+    fetch(`/api/products/${product.id}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!active || !data) return
+        const sorted: GalleryImage[] = [...(data.gallery ?? [])].sort((a: GalleryImage, b: GalleryImage) => {
+          if (a.is_primary && !b.is_primary) return -1
+          if (!a.is_primary && b.is_primary) return 1
+          return a.sort_order - b.sort_order
+        })
+        setGallery(sorted)
+        if (Array.isArray(data.variants)) setVariants(data.variants)
+        if (Array.isArray(data.product?.certifications)) setCerts(data.product.certifications)
+        if (data.product?.description) setDesc(data.product.description)
+        if (data.product?.ingredients !== undefined) setIngredients(data.product.ingredients ?? undefined)
+      })
+      .catch(() => {})
+    return () => { active = false }
+  }, [product.id])
 
   useEffect(() => {
-    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose() }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowRight') setImgIdx(i => Math.min(i + 1, slideCount - 1))
+      if (e.key === 'ArrowLeft') setImgIdx(i => Math.max(i - 1, 0))
+    }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onClose, gallery.length])
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
   }, [])
+
+  // Slides: prefer gallery images; fall back to single resolved image
+  const slides: string[] = gallery.length > 0
+    ? gallery.map(g => g.image_url)
+    : fallbackSrc ? [fallbackSrc] : []
+  const slideCount = slides.length
+  const mainSrc = slides[imgIdx] ?? null
+
+  // Variant picker derived state
+  const hasVariants = variants.length > 0
+  const colors = useMemo(() => {
+    const m = new Map<string, string | null>()
+    variants.forEach(v => { if (!m.has(v.color)) m.set(v.color, v.color_hex) })
+    return Array.from(m.entries()).map(([color, color_hex]) => ({ color, color_hex }))
+  }, [variants])
+  const sizesForColor = pickColor ? variants.filter(v => v.color === pickColor) : []
 
   function handleAddToBox() {
     sessionStorage.setItem('pl_pending_add', product.id)
@@ -54,19 +126,54 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
         className="bg-cream-50 w-full max-w-2xl flex flex-col sm:flex-row overflow-hidden max-h-[90vh] shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
-        <div className="relative w-full sm:w-[45%] shrink-0 bg-cream-100" style={{ aspectRatio: '3/4' }}>
-          {src ? (
-            <Image src={src} alt={product.name} fill className="object-cover" unoptimized onError={() => setImgPhase(p => p + 1)} />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center" style={{ fontSize: '6rem' }}>
-              {product.imageEmoji}
-            </div>
-          )}
-          {product.tag && (
-            <div className="absolute top-3 left-3">
-              <span className="bg-white/90 text-bark-600 font-sans text-[9px] tracking-[0.2em] uppercase px-2.5 py-1">
-                {product.tag}
-              </span>
+        <div className="relative w-full sm:w-[45%] shrink-0 bg-cream-100 flex flex-col">
+          <div className="relative w-full" style={{ aspectRatio: '3/4' }}>
+            {mainSrc ? (
+              <Image src={mainSrc} alt={product.name} fill className="object-cover" unoptimized onError={() => { if (gallery.length === 0) setImgPhase(p => p + 1) }} />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center" style={{ fontSize: '6rem' }}>
+                {product.imageEmoji}
+              </div>
+            )}
+            {product.tag && (
+              <div className="absolute top-3 left-3">
+                <span className="bg-white/90 text-bark-600 font-sans text-[9px] tracking-[0.2em] uppercase px-2.5 py-1">
+                  {product.tag}
+                </span>
+              </div>
+            )}
+
+            {/* Photo shift arrows */}
+            {slideCount > 1 && (
+              <>
+                <button
+                  onClick={() => setImgIdx(i => Math.max(i - 1, 0))}
+                  disabled={imgIdx === 0}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/85 shadow flex items-center justify-center text-bark-600 hover:bg-white transition-all disabled:opacity-0"
+                >
+                  <ChevronLeft size={15} />
+                </button>
+                <button
+                  onClick={() => setImgIdx(i => Math.min(i + 1, slideCount - 1))}
+                  disabled={imgIdx === slideCount - 1}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/85 shadow flex items-center justify-center text-bark-600 hover:bg-white transition-all disabled:opacity-0"
+                >
+                  <ChevronRight size={15} />
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Photo dots */}
+          {slideCount > 1 && (
+            <div className="flex justify-center gap-1.5 py-2.5">
+              {slides.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setImgIdx(i)}
+                  className={`rounded-full transition-all duration-200 ${imgIdx === i ? 'w-4 h-1.5 bg-bark-600' : 'w-1.5 h-1.5 bg-bark-300'}`}
+                />
+              ))}
             </div>
           )}
         </div>
@@ -82,13 +189,68 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
           </div>
           <h2 className="font-sans text-2xl text-bark-600 leading-tight mb-1">{product.name}</h2>
           <p className="font-sans text-base text-bark-400 mb-5">{formatPrice(product.price)}</p>
-          <p className="font-sans text-sm text-bark-500 leading-relaxed mb-5">{product.description}</p>
-          {product.ingredients && (
-            <div className="border-t border-cream-300 pt-4 mb-5">
-              <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-1">Materials</p>
-              <p className="font-sans text-xs text-bark-500">{product.ingredients}</p>
+          <p className="font-sans text-sm text-bark-500 leading-relaxed mb-5">{desc}</p>
+
+          {/* Variant picker — color then size */}
+          {hasVariants && (
+            <div className="border-t border-cream-300 pt-4 mb-5 space-y-3">
+              <div>
+                <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-2">Color</p>
+                <div className="flex flex-wrap gap-2">
+                  {colors.map(({ color, color_hex }) => {
+                    const inStock = variants.some(v => v.color === color && v.quantity > 0)
+                    return (
+                      <button
+                        key={color}
+                        onClick={() => { setPickColor(color); setPickSize(null) }}
+                        disabled={!inStock}
+                        className={`flex items-center gap-1.5 border px-2.5 py-1.5 rounded font-sans text-xs transition-colors disabled:opacity-40 ${
+                          pickColor === color ? 'border-bark-600 bg-bark-600 text-white' : 'border-cream-300 text-bark-500 hover:border-bark-400'
+                        }`}
+                      >
+                        {color_hex && <span className="w-3 h-3 rounded-full border border-black/10" style={{ backgroundColor: color_hex }} />}
+                        {color}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+              {pickColor && (
+                <div>
+                  <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-2">Size</p>
+                  <div className="flex flex-wrap gap-2">
+                    {sizesForColor.map(v => (
+                      <button
+                        key={v.size}
+                        onClick={() => setPickSize(v.size)}
+                        disabled={v.quantity <= 0}
+                        className={`border px-3 py-1.5 rounded font-sans text-xs transition-colors disabled:opacity-40 disabled:line-through ${
+                          pickSize === v.size ? 'border-bark-600 bg-bark-600 text-white' : 'border-cream-300 text-bark-500 hover:border-bark-400'
+                        }`}
+                      >
+                        {v.size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
+
+          {ingredients && (
+            <div className="border-t border-cream-300 pt-4 mb-5">
+              <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-1">Materials</p>
+              <p className="font-sans text-xs text-bark-500">{ingredients}</p>
+            </div>
+          )}
+
+          {/* Certifications */}
+          {certs.length > 0 && (
+            <div className="border-t border-cream-300 pt-4 mb-5">
+              <CertBadges certs={certs} />
+            </div>
+          )}
+
           <div className="mt-auto pt-4 space-y-2.5">
             <button
               onClick={handleAddToBox}
@@ -285,13 +447,6 @@ export function ProductCarousel({ products }: { products: Product[] }) {
                   )}
 
                   <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent pointer-events-none" />
-
-                  {isCenter && (
-                    <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-black/25 backdrop-blur-sm px-2 py-1 rounded-full">
-                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                      <span className="font-sans text-[9px] text-white/80 uppercase tracking-[0.15em]">Live</span>
-                    </div>
-                  )}
 
                   {product.tag && (
                     <div className="absolute top-3 left-3">
