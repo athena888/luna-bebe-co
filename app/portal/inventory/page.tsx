@@ -8,6 +8,14 @@ import { resizeImage } from '@/lib/image-resize'
 
 const SIZES = ['0-3', '3-6', '6-9', '9-12', '12-18', '18-24', 'one-size']
 
+// Suggested boutique retail = ~3x cost, rounded up to a .99 price point.
+const RETAIL_MARKUP = 3
+function recommendedRetail(cost?: number | null): number | null {
+  const c = Number(cost)
+  if (!c || c <= 0) return null
+  return Math.max(0, Math.ceil(c * RETAIL_MARKUP) - 0.01)
+}
+
 interface ParsedItem {
   item_id: string
   name: string
@@ -306,7 +314,7 @@ export default function InventoryPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-cream-200 bg-cream-50">
-                {['', 'Item ID', 'Name', 'Color', 'Hex', 'Size', 'Qty', 'Cost $', 'Sell $', 'Margin', 'Profit', 'Sold 90d', 'In stock', ''].map((h, idx) => (
+                {['', 'Item ID', 'Name', 'Color', 'Hex', 'Size', 'Qty', 'Cost $', 'Rec. retail', 'Sell $', 'Margin', 'Profit', 'Sold 90d', 'In stock', ''].map((h, idx) => (
                   <th key={idx} className="px-3 py-3 text-left font-sans text-[10px] font-semibold uppercase tracking-widest text-bark-400 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
@@ -406,6 +414,12 @@ export default function InventoryPage() {
                     </td>
                     <td className="px-1 py-1 w-20">
                       <Cell value={item.unit_price ?? ''} onChange={v => updateItem(i, 'unit_price', v === '' ? null : parseFloat(v))} type="number" />
+                    </td>
+                    {/* recommended retail (≈3x cost) */}
+                    <td className="px-2 py-1 w-20 text-center">
+                      {recommendedRetail(item.unit_price) != null
+                        ? <span className="font-sans text-xs text-gold-600" title="Suggested retail ≈ 3× cost">${recommendedRetail(item.unit_price)!.toFixed(2)}</span>
+                        : <span className="font-sans text-[10px] text-bark-300">—</span>}
                     </td>
                     {/* selling price (from linked product) */}
                     <td className="px-2 py-1 w-20 text-center">
