@@ -6,12 +6,14 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { PRODUCTS, CATEGORY_LABELS, CATEGORY_ORDER, getAllProducts } from '@/lib/products'
 import type { Product, ProductCategory } from '@/types'
-import { Check, X, Plus, ShoppingBag, Heart } from 'lucide-react'
+import { Check, X, Plus, ShoppingBag, Heart, ShieldCheck } from 'lucide-react'
 import Image from 'next/image'
 import { memo, useCallback, useMemo, useState as useLocalState } from 'react'
 import { toggleWishlist, isWishlisted } from '@/lib/wishlist'
 import { CertBadges } from '@/components/ui/CertBadges'
-import type { ProductCert } from '@/lib/certifications'
+import type { ProductCert, CertDef } from '@/lib/certifications'
+
+type ResolvedCert = ProductCert & Partial<CertDef>
 
 const CATEGORY_SUBTITLES: Record<string, string> = {
   swaddle: 'Wrap them in softness from day one.',
@@ -42,9 +44,9 @@ function variantKey(id: string, color?: string, size?: string) {
 }
 
 // ── Product Card ─────────────────────────────────────────────────────────────
-const ProductCard = memo(function ProductCard({ product, selected, onToggle, onOpen, soldOut, hoverImage, hoverVideo }: {
+const ProductCard = memo(function ProductCard({ product, selected, onToggle, onOpen, soldOut, hoverImage, hoverVideo, certs }: {
   product: Product; selected: boolean; onToggle: () => void; onOpen: () => void; soldOut: boolean
-  hoverImage?: string; hoverVideo?: string
+  hoverImage?: string; hoverVideo?: string; certs?: ResolvedCert[]
 }) {
   const [imgFailed, setImgFailed] = useState(false)
   const [hoverImgFailed, setHoverImgFailed] = useState(false)
@@ -122,7 +124,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
 
       <div className={`pt-2 pb-1 ${soldOut ? 'opacity-40' : ''}`}>
         <h3 className="font-sans text-sm text-bark-600 leading-snug mb-1">{product.name}</h3>
-        <div className="flex items-center justify-between gap-1">
+        <div className="flex items-center justify-between gap-1 mb-2">
           <span className={`font-sans text-xs text-bark-400 ${soldOut ? 'line-through' : ''}`}>{formatPrice(product.price)}</span>
           {!soldOut && (
             <button onClick={onToggle}
@@ -134,6 +136,20 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
             </button>
           )}
         </div>
+        {/* Cert logos — grid view only shows logos, no text */}
+        {certs && certs.length > 0 && (
+          <div className="flex items-center gap-1.5 flex-wrap mt-2">
+            {certs.slice(0, 3).map(cert => (
+              <div key={cert.key} className="w-5 h-5 relative" title={cert.name || cert.key}>
+                {cert.iconUrl ? (
+                  <Image src={cert.iconUrl} alt={cert.name || cert.key} fill className="object-contain" unoptimized />
+                ) : (
+                  <ShieldCheck size={14} className="text-gold-400" />
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -145,6 +161,7 @@ export default function BuildPage() {
   const [selected, setSelected] = useState<Map<string, SelectedItem>>(new Map())
   const [inventory, setInventory] = useState<Record<string, number>>({})
   const [hoverMedia, setHoverMedia] = useState<Record<string, { image?: string; video?: string }>>({})
+  const [productCerts, setProductCerts] = useState<Record<string, ResolvedCert[]>>({})
 
   // Live catalog from the database, grouped by category. Falls back to the
   // built-in static catalog until the fetch resolves.
@@ -213,6 +230,25 @@ export default function BuildPage() {
       sessionStorage.removeItem('pl_pending_add')
     }
   }, [])
+
+  // Load certs for all products in catalog
+  useEffect(() => {
+    const allProducts = Object.values(catalog).flat()
+    const toLoad = allProducts.filter(p => !(p.id in productCerts))
+    if (toLoad.length === 0) return
+
+    Promise.all(toLoad.map(p =>
+      fetch(`/api/products/${p.id}`)
+        .then(r => r.json())
+        .then(d => ({ id: p.id, certs: d.product?.certifications ?? [] }))
+        .catch(() => ({ id: p.id, certs: [] }))
+    )).then(results => {
+      setProductCerts(prev => ({
+        ...prev,
+        ...Object.fromEntries(results.map(r => [r.id, r.certs]))
+      }))
+    })
+  }, [catalog, productCerts])
 
   const modalVideo = modalProduct ? hoverMedia[modalProduct.id]?.video : undefined
   const totalSlides = modalGallery.length + (modalVideo ? 1 : 0) || 1
@@ -349,6 +385,7 @@ export default function BuildPage() {
                       soldOut={isSoldOut(product.id)}
                       hoverImage={hoverMedia[product.id]?.image}
                       hoverVideo={hoverMedia[product.id]?.video}
+                      certs={productCerts[product.id]}
                     />
                   </div>
                 ))}

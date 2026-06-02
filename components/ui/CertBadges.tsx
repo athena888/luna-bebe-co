@@ -22,28 +22,28 @@ export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
   return (
     <>
       {/* Badge row */}
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex items-center gap-3 flex-wrap">
         {active.map((cert, idx) => (
           <button
             key={cert.key}
             onClick={() => setOpenIdx(idx)}
-            className="flex items-center gap-1.5 border border-cream-300 bg-cream-50 hover:border-bark-400 hover:bg-cream-100 transition-colors px-2.5 py-1.5 rounded-full group"
+            className="flex flex-col items-center gap-1.5 border border-cream-300 bg-cream-50 hover:border-bark-400 hover:bg-cream-100 transition-colors px-4 py-3 rounded-lg group min-w-20"
           >
             {cert.iconUrl
-              ? <Image src={cert.iconUrl} alt={cert.name ?? cert.key} width={14} height={14} className="object-contain shrink-0" unoptimized />
-              : <ShieldCheck size={11} className="text-gold-400 shrink-0" />}
-            <span className="font-sans text-[10px] tracking-[0.1em] uppercase text-bark-500 group-hover:text-bark-700 transition-colors">
+              ? <Image src={cert.iconUrl} alt={cert.name ?? cert.key} width={24} height={24} className="object-contain shrink-0" unoptimized />
+              : <ShieldCheck size={20} className="text-gold-400 shrink-0" />}
+            <span className="font-sans text-[11px] tracking-[0.08em] uppercase text-bark-500 group-hover:text-bark-700 transition-colors text-center line-clamp-2">
               {cert.name ?? cert.key}
             </span>
           </button>
         ))}
-        <button
-          onClick={() => setOpenIdx(0)}
-          className="font-sans text-[10px] text-bark-400/70 hover:text-bark-500 transition-colors underline underline-offset-2"
-        >
-          What are these?
-        </button>
       </div>
+      <button
+        onClick={() => setOpenIdx(0)}
+        className="font-sans text-[9px] text-bark-400/70 hover:text-bark-500 transition-colors underline underline-offset-2 mt-1.5"
+      >
+        What are these certifications?
+      </button>
 
       {/* Modal */}
       {opened && (
