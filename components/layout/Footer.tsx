@@ -66,8 +66,8 @@ export function Footer() {
             <p className="font-serif italic text-bark-400 text-sm">Fait avec amour, pour vous.</p>
           </div>
 
-          {/* 4 column grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-12">
+          {/* 3 column grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 mb-12">
 
             {/* Shop */}
             <div>
@@ -87,15 +87,6 @@ export function Footer() {
                 <li><Link href="/story" className="text-bark-400 hover:text-bark-600 transition-colors">Our Story</Link></li>
                 <li><Link href="/track" className="text-bark-400 hover:text-bark-600 transition-colors">Track Order</Link></li>
                 <li><Link href="/account" className="text-bark-400 hover:text-bark-600 transition-colors">My Account</Link></li>
-              </ul>
-            </div>
-
-            {/* Partners */}
-            <div>
-              <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-4 font-medium">Partners</p>
-              <ul className="space-y-2.5 text-xs font-sans">
-                <li><Link href="/wholesale" className="text-bark-400 hover:text-bark-600 transition-colors">Wholesale</Link></li>
-                <li><Link href="/affiliate" className="text-bark-400 hover:text-bark-600 transition-colors">Affiliate</Link></li>
               </ul>
             </div>
 

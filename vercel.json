@@ -5,16 +5,8 @@
       "schedule": "0 10 * * *"
     },
     {
-      "path": "/api/cron/affiliate-payouts",
-      "schedule": "0 9 1 * *"
-    },
-    {
       "path": "/api/cron/restock-alerts",
       "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/cron/wholesale-overdue",
-      "schedule": "0 8 * * *"
     }
   ]
 }
