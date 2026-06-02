@@ -10,14 +10,21 @@ type ResolvedCert = ProductCert & Partial<CertDef>
 
 export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
   const [openIdx, setOpenIdx] = useState<number | null>(null)
+  // When multiple cert tabs exist, the paperwork stays hidden until a tab is clicked
+  const [docRevealed, setDocRevealed] = useState(false)
 
   const active = certs.filter(c => c.name)
   if (active.length === 0) return null
 
   const opened = openIdx !== null ? active[openIdx] : null
+  const hasTabs = active.length > 1
+  // Single cert: show paperwork as before. Multiple: only after a tab is clicked.
+  const showDoc = !hasTabs || docRevealed
 
-  function prev() { setOpenIdx(i => (i !== null ? Math.max(0, i - 1) : 0)) }
-  function next() { setOpenIdx(i => (i !== null ? Math.min(active.length - 1, i + 1) : 0)) }
+  function openModal(idx: number) { setDocRevealed(false); setOpenIdx(idx) }
+  function selectTab(idx: number) { setDocRevealed(true); setOpenIdx(idx) }
+  function prev() { setDocRevealed(true); setOpenIdx(i => (i !== null ? Math.max(0, i - 1) : 0)) }
+  function next() { setDocRevealed(true); setOpenIdx(i => (i !== null ? Math.min(active.length - 1, i + 1) : 0)) }
 
   return (
     <>
@@ -26,7 +33,7 @@ export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
         {active.map((cert, idx) => (
           <button
             key={cert.key}
-            onClick={() => setOpenIdx(idx)}
+            onClick={() => openModal(idx)}
             className="flex flex-col items-center gap-1.5 border border-cream-300 bg-cream-50 hover:border-bark-400 hover:bg-cream-100 transition-colors px-4 py-3 rounded-lg group min-w-20"
           >
             {cert.iconUrl
@@ -39,7 +46,7 @@ export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
         ))}
       </div>
       <button
-        onClick={() => setOpenIdx(0)}
+        onClick={() => openModal(0)}
         className="font-sans text-[9px] text-bark-400/70 hover:text-bark-500 transition-colors underline underline-offset-2 mt-1.5"
       >
         What are these certifications?
@@ -66,20 +73,24 @@ export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
               </button>
             </div>
 
-            {/* Cert tabs */}
-            {active.length > 1 && (
+            {/* Cert tabs — show the cert icon */}
+            {hasTabs && (
               <div className="flex gap-2 px-5 pt-3 pb-2 overflow-x-auto scrollbar-hide">
                 {active.map((c, idx) => (
                   <button
                     key={c.key}
-                    onClick={() => setOpenIdx(idx)}
-                    className={`shrink-0 font-sans text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                    onClick={() => selectTab(idx)}
+                    title={c.name ?? c.key}
+                    className={`shrink-0 flex items-center gap-1.5 font-sans text-xs px-2.5 py-1.5 rounded-full border transition-colors ${
                       openIdx === idx
                         ? 'border-bark-600 bg-bark-600 text-white'
                         : 'border-cream-300 text-bark-500 hover:border-bark-400'
                     }`}
                   >
-                    {c.name ?? c.key}
+                    {c.iconUrl
+                      ? <Image src={c.iconUrl} alt={c.name ?? c.key} width={18} height={18} className="object-contain shrink-0" unoptimized />
+                      : <ShieldCheck size={14} className="shrink-0" />}
+                    <span className="truncate max-w-24">{c.name ?? c.key}</span>
                   </button>
                 ))}
               </div>
@@ -87,8 +98,8 @@ export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
 
             {/* Content */}
             <div className="px-5 py-4">
-              {/* Certificate doc */}
-              {opened.certificateUrl && (
+              {/* Certificate doc — only after a tab is clicked when tabs exist */}
+              {showDoc && opened.certificateUrl && (
                 <div className="mb-3 border border-cream-200 rounded-xl overflow-hidden bg-cream-50">
                   {opened.certificateUrl.endsWith('.pdf') ? (
                     <a href={opened.certificateUrl} target="_blank" rel="noopener noreferrer"
@@ -102,6 +113,11 @@ export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
                     </a>
                   )}
                 </div>
+              )}
+
+              {/* Hint to view paperwork when it exists but is hidden */}
+              {hasTabs && !docRevealed && opened.certificateUrl && (
+                <p className="mb-3 font-sans text-[10px] text-gold-500/80">Tap a certification tab above to view its paperwork.</p>
               )}
 
               <div className="flex items-center gap-3 mb-3">

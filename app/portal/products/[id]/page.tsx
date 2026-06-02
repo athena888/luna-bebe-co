@@ -42,6 +42,15 @@ const VARIANT_SIZES = ['0-3', '3-6', '6-9', '9-12', '12-18', '18-24', 'one-size'
 const inputCls = "w-full px-3 py-2.5 border border-cream-300 bg-white font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-bark-400 transition-colors rounded"
 const labelCls = "block font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-1.5"
 
+// Primary photo always first, then by sort_order
+function sortGallery(imgs: GalleryImage[]): GalleryImage[] {
+  return [...imgs].sort((a, b) => {
+    if (a.is_primary && !b.is_primary) return -1
+    if (!a.is_primary && b.is_primary) return 1
+    return a.sort_order - b.sort_order
+  })
+}
+
 export default function ProductDetailPage() {
   const params = useParams()
   const router = useRouter()
@@ -81,7 +90,7 @@ export default function ProductDetailPage() {
     if (res.ok) {
       const data = await res.json()
       setProduct(data.product)
-      setGallery(data.gallery)
+      setGallery(sortGallery(data.gallery ?? []))
       setInventory(data.inventory.quantity)
       if (data.sales) setSales(data.sales)
       setHasVariants(!!data.product.has_variants)
@@ -243,7 +252,7 @@ export default function ProductDetailPage() {
 
   async function handleSetPrimary(imageId: string) {
     await fetch(`/api/portal/products/${id}/gallery/${imageId}`, { method: 'PATCH' })
-    setGallery(g => g.map(img => ({ ...img, is_primary: img.id === imageId })))
+    setGallery(g => sortGallery(g.map(img => ({ ...img, is_primary: img.id === imageId }))))
   }
 
   if (loading) return <div className="p-8 flex items-center gap-3 font-sans text-sm text-bark-400"><Loader size={16} className="animate-spin" /> Loading…</div>

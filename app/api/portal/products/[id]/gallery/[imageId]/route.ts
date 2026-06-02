@@ -47,11 +47,15 @@ export async function PATCH(
   await supabaseAdmin.from('product_gallery').update({ is_primary: false }).eq('product_id', id)
   await supabaseAdmin.from('product_gallery').update({ is_primary: true }).eq('id', imageId)
 
-  // Update products.image to use the gallery image URL
+  // Update both products.image and product_overrides.image so the storefront
+  // thumbnail (the "shortcut") matches the selected primary everywhere
   await supabaseAdmin
     .from('products')
     .update({ image: image.image_url })
     .eq('id', id)
+  await supabaseAdmin
+    .from('product_overrides')
+    .upsert({ product_id: id, image: image.image_url }, { onConflict: 'product_id' })
 
   return NextResponse.json({ ok: true })
 }
