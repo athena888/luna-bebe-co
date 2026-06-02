@@ -16,6 +16,30 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   const inventory = inventoryRes.data ?? { quantity: 0 }
   const gallery = galleryRes.data ?? []
 
+  // If the gallery table has no rows but the product already has a storefront
+  // photo (uploaded via the products list / bulk import, which only writes
+  // product-images/{id}.jpg without a gallery row), seed a real gallery row
+  // from it so the editor shows and can manage it.
+  if (gallery.length === 0) {
+    let imageUrl: string | null = product.image ?? null
+    if (!imageUrl) {
+      const { data: files } = await supabaseAdmin.storage
+        .from('product-images')
+        .list('', { search: `${id}.jpg` })
+      if (files?.some(f => f.name === `${id}.jpg`)) {
+        imageUrl = supabaseAdmin.storage.from('product-images').getPublicUrl(`${id}.jpg`).data.publicUrl
+      }
+    }
+    if (imageUrl) {
+      const { data: seeded } = await supabaseAdmin
+        .from('product_gallery')
+        .insert({ product_id: id, image_url: imageUrl, label: null, is_primary: true, sort_order: 0 })
+        .select()
+        .single()
+      if (seeded) gallery.push(seeded)
+    }
+  }
+
   // Aggregate units sold + revenue for this product across paid orders
   let units = 0
   let revenue = 0
