@@ -10,11 +10,20 @@ export async function POST(req: NextRequest) {
     const file = formData.get('file') as File | null
 
     if (!file) return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
-    if (file.type !== 'application/pdf') return NextResponse.json({ error: 'Please upload a PDF file' }, { status: 400 })
+    const isPdf = file.type === 'application/pdf'
+    const isImage = ['image/jpeg', 'image/png', 'image/webp'].includes(file.type)
+    if (!isPdf && !isImage) {
+      return NextResponse.json({ error: 'Please upload a PDF or image (JPG, PNG, WebP)' }, { status: 400 })
+    }
     if (file.size > 20 * 1024 * 1024) return NextResponse.json({ error: 'File too large (max 20MB)' }, { status: 400 })
 
     const arrayBuffer = await file.arrayBuffer()
     const base64 = Buffer.from(arrayBuffer).toString('base64')
+
+    // PDFs use the document block; images use the image block (both via Claude Vision)
+    const sourceBlock = isPdf
+      ? { type: 'document' as const, source: { type: 'base64' as const, media_type: 'application/pdf' as const, data: base64 } }
+      : { type: 'image' as const, source: { type: 'base64' as const, media_type: file.type as 'image/jpeg' | 'image/png' | 'image/webp', data: base64 } }
 
     // Give Claude the existing catalog so it can match items even across
     // languages (e.g. a Chinese supplier sheet → English catalog names).
@@ -30,17 +39,14 @@ export async function POST(req: NextRequest) {
       messages: [{
         role: 'user',
         content: [
-          {
-            type: 'document' as const,
-            source: { type: 'base64' as const, media_type: 'application/pdf' as const, data: base64 },
-          },
+          sourceBlock,
           {
             type: 'text',
-            text: `You are an inventory parser for a luxury baby clothing and gift box company. The sheet may be a supplier "buy now" / purchase sheet with prices and color swatches, and may be in any language (e.g. Chinese).
+            text: `You are an inventory parser for a luxury baby clothing and gift box company. The sheet (PDF or a photo of a quotation/order sheet) may be a supplier "buy now" / purchase sheet with style numbers, color codes (e.g. XJ39#, 100#), per-size quantities, and prices, and may be in any language (e.g. Chinese).
 
 ${catalogList ? `Here is the company's EXISTING product catalog (id: name):\n${catalogList}\n\nFor each line item, if it clearly corresponds to one of these existing products (translate across languages as needed — e.g. "短袖连体衣" = "Short Sleeve Onesie"), set item_id to that EXACT existing id. Only match when you are confident; otherwise slugify the name as a new id.\n` : ''}
-Extract ALL line items from this PDF. For each item identify:
-- item_id: the matching EXISTING catalog id when confident (see list above); otherwise the product/SKU code, or slugify the name (e.g. "Short-sleeve onesie" → "short-sleeve-onesie"). Keep the SAME item_id across its size/color rows.
+Extract ALL line items from this sheet. A single style can have multiple color codes and multiple sizes — emit ONE row per (style, color, size, quantity) combination. For each item identify:
+- item_id: the matching EXISTING catalog id when confident (see list above); otherwise the style number / SKU code exactly as shown (e.g. "BD01F", "BR06F"), or slugify the name. Keep the SAME item_id across its size/color rows.
 - name: product name as shown (drop trailing footnote markers like "*")
 - color: the color name (e.g. "white", "khaki/sand", "grey-blue", "dusty rose", "cream", "natural wood")
 - color_hex: the hex code shown near the swatch if present (e.g. "#E4DCD6"). Uppercase, include the leading "#". Use "" if none.

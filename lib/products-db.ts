@@ -119,6 +119,7 @@ export interface CreateProductInput {
   image?: string | null
   tag?: string | null
   ingredients?: string | null
+  active?: boolean          // false = unpublished draft (hidden from customers)
 }
 
 function slugify(s: string): string {
@@ -157,7 +158,7 @@ export async function createProduct(input: CreateProductInput): Promise<DbProduc
       image: input.image ?? null,
       tag: input.tag ?? null,
       ingredients: input.ingredients ?? null,
-      active: true,
+      active: input.active ?? true,
       is_custom: true,
     })
     .select()

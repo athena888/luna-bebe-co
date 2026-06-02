@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import Image from 'next/image'
 import { Upload, FileText, Trash2, Plus, AlertTriangle, CheckCircle2, Loader2, Check, Search } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { resizeImage } from '@/lib/image-resize'
 
 const SIZES = ['0-3', '3-6', '6-9', '9-12', '12-18', '18-24', 'one-size']
 
@@ -71,13 +72,16 @@ export default function InventoryPage() {
   const catalogById = new Map(catalog.map(p => [p.id, p]))
 
   async function handleFile(file: File) {
-    if (file.type !== 'application/pdf') { setError('Please upload a PDF file'); return }
+    const ok = file.type === 'application/pdf' || ['image/jpeg', 'image/png', 'image/webp'].includes(file.type)
+    if (!ok) { setError('Please upload a PDF or image (JPG, PNG, WebP)'); return }
     setError(null)
     setFileName(file.name)
     setPhase('parsing')
 
     const form = new FormData()
-    form.append('file', file)
+    // Shrink large photos so they fit the upload limit; PDFs pass through unchanged
+    const toSend = file.type.startsWith('image/') ? await resizeImage(file, 2200, 0.9) : file
+    form.append('file', toSend)
 
     try {
       const res = await fetch('/api/portal/inventory/parse', { method: 'POST', body: form })
@@ -131,6 +135,30 @@ export default function InventoryPage() {
     }))
   }
 
+  // Create an unpublished draft product from an unmatched row and link it.
+  const [draftingRow, setDraftingRow] = useState<number | null>(null)
+  async function createDraft(rowIndex: number) {
+    const item = items[rowIndex]
+    setDraftingRow(rowIndex)
+    try {
+      const res = await fetch('/api/portal/inventory/create-draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: item.name || item.item_id, item_id: item.item_id }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed')
+      const p = data.product
+      // Add to the in-memory catalog so the row links + future rows can reuse it
+      setCatalog(prev => [{ id: p.id, name: p.name, category: p.category, emoji: '📦', image: null, variants: [] }, ...prev])
+      setItems(prev => prev.map((it, i) => i === rowIndex ? { ...it, item_id: p.id, name: p.name } : it))
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Failed to create draft product')
+    } finally {
+      setDraftingRow(null)
+    }
+  }
+
   async function confirm() {
     setPhase('saving')
     try {
@@ -161,7 +189,7 @@ export default function InventoryPage() {
   if (phase === 'upload') return (
     <div className="p-8 max-w-2xl mx-auto">
       <h1 className="font-serif text-3xl text-bark-700 mb-1">Inventory Upload</h1>
-      <p className="font-sans text-sm text-bark-400 mb-8">Upload a PDF inventory sheet — Claude will extract every item, color, size, and quantity. Then drag your existing products onto each row to link them.</p>
+      <p className="font-sans text-sm text-bark-400 mb-8">Upload a PDF <strong>or a photo</strong> of an inventory / quotation sheet — Claude reads every style, color, size, and quantity. Then drag your existing products onto each row to link them, or create an unpublished draft for new items.</p>
 
       {error && (
         <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 mb-6 text-sm font-sans">
@@ -178,9 +206,9 @@ export default function InventoryPage() {
         className={`border-2 border-dashed rounded-2xl p-16 text-center cursor-pointer transition-colors ${dragOver ? 'border-gold-400 bg-gold-50' : 'border-cream-300 hover:border-gold-300 hover:bg-cream-50'}`}
       >
         <Upload size={36} className="mx-auto mb-4 text-gold-400" />
-        <p className="font-sans text-bark-600 font-medium mb-1">Drop your PDF here</p>
-        <p className="font-sans text-sm text-bark-400">or click to browse — max 20 MB</p>
-        <input ref={fileRef} type="file" accept="application/pdf" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }} />
+        <p className="font-sans text-bark-600 font-medium mb-1">Drop your PDF or photo here</p>
+        <p className="font-sans text-sm text-bark-400">or click to browse — PDF or image (JPG/PNG), max 20 MB</p>
+        <input ref={fileRef} type="file" accept="application/pdf,image/jpeg,image/png,image/webp" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }} />
       </div>
 
       <div className="mt-6 bg-cream-50 rounded-xl border border-cream-200 p-4">
@@ -329,6 +357,16 @@ export default function InventoryPage() {
                     <td className="px-1 py-1 min-w-[120px]">
                       <Cell value={item.item_id} onChange={v => updateItem(i, 'item_id', v)} />
                       {linked && <span className="px-2 text-[10px] text-sage-600 flex items-center gap-0.5"><Check size={10} /> linked</span>}
+                      {!linked && item.item_id && (
+                        <button
+                          onClick={() => createDraft(i)}
+                          disabled={draftingRow === i}
+                          className="ml-2 mt-0.5 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-100 text-blue-600 font-sans text-[10px] font-semibold hover:bg-blue-200 transition-colors disabled:opacity-50"
+                          title="Create an unpublished draft product (hidden from customers until you edit & publish it)"
+                        >
+                          {draftingRow === i ? 'Creating…' : '+ Create draft'}
+                        </button>
+                      )}
                     </td>
                     <td className="px-1 py-1 min-w-[140px]">
                       <Cell value={item.name} onChange={v => updateItem(i, 'name', v)} />
