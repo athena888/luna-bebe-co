@@ -79,26 +79,10 @@ export default function ProductDetailPage() {
   const [videoError, setVideoError] = useState('')
   const videoInputRef = useRef<HTMLInputElement>(null)
 
-  // AI generate state
-  const [aiPrompt, setAiPrompt] = useState('')
-  const [aiBaseFile, setAiBaseFile] = useState<File | null>(null)
-  const [aiBasePreview, setAiBasePreview] = useState<string | null>(null)
-  const [aiGenerating, setAiGenerating] = useState(false)
-  const [aiResult, setAiResult] = useState<string | null>(null)
-
-  // Lifestyle photo state
-  const [lifestyleMode, setLifestyleMode] = useState(false)
-  const [babyImage, setBabyImage] = useState<File | null>(null)
-  const [babyImagePreview, setBabyImagePreview] = useState<string | null>(null)
-  const [clothingImage, setClothingImage] = useState<File | null>(null)
-  const [clothingImagePreview, setClothingImagePreview] = useState<string | null>(null)
-
-  // AI Draft (description writer) state
-  const [draftKeywords, setDraftKeywords] = useState('')
-  const [draftFile, setDraftFile] = useState<File | null>(null)
-  const [drafting, setDrafting] = useState(false)
-  const [draftError, setDraftError] = useState('')
-  const draftFileRef = useRef<HTMLInputElement>(null)
+  // AI writing assistance state
+  const [improveLoading, setImproveLoading] = useState<'description' | 'ingredients' | null>(null)
+  const [originalDescription, setOriginalDescription] = useState<string | null>(null)
+  const [originalIngredients, setOriginalIngredients] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -243,6 +227,44 @@ export default function ProductDetailPage() {
     setTimeout(() => setEnhanceMsg(''), 3000)
   }
 
+  async function improveText(type: 'description' | 'ingredients') {
+    const text = type === 'description' ? product?.description : product?.ingredients
+    if (!text || !text.trim()) return
+
+    setImproveLoading(type)
+    try {
+      if (type === 'description' && !originalDescription) setOriginalDescription(text)
+      if (type === 'ingredients' && !originalIngredients) setOriginalIngredients(text)
+
+      const res = await fetch('/api/portal/products/improve-text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, type }),
+      })
+      const data = await res.json()
+
+      if (data.improved) {
+        setProduct(p => p ? { ...p, [type]: data.improved } : p)
+      } else if (data.error) {
+        console.error('Improve text failed:', data.error)
+      }
+    } catch (e) {
+      console.error('Improve text error:', e)
+    } finally {
+      setImproveLoading(null)
+    }
+  }
+
+  function revertText(type: 'description' | 'ingredients') {
+    if (type === 'description' && originalDescription) {
+      setProduct(p => p ? { ...p, description: originalDescription } : p)
+      setOriginalDescription(null)
+    } else if (type === 'ingredients' && originalIngredients) {
+      setProduct(p => p ? { ...p, ingredients: originalIngredients } : p)
+      setOriginalIngredients(null)
+    }
+  }
+
   function toggleCert(key: string) {
     setCerts(prev =>
       prev.some(c => c.key === key)
@@ -291,87 +313,6 @@ export default function ProductDetailPage() {
   async function handleSetPrimary(imageId: string) {
     await fetch(`/api/portal/products/${id}/gallery/${imageId}`, { method: 'PATCH' })
     setGallery(g => g.map(img => ({ ...img, is_primary: img.id === imageId })))
-  }
-
-  async function handleAiGenerate() {
-    if (lifestyleMode) {
-      if (!clothingImage) return
-      setAiGenerating(true)
-      setAiResult(null)
-      const form = new FormData()
-      form.append('isLifestyle', 'true')
-      form.append('image', clothingImage)
-      if (babyImage) form.append('babyImage', babyImage)
-      const res = await fetch(`/api/portal/products/${id}/ai-generate`, { method: 'POST', body: form })
-      const data = await res.json()
-      if (data.imageUrl) {
-        setAiResult(data.imageUrl)
-        await load()
-        // Discard baby image after generation
-        setBabyImage(null)
-        setBabyImagePreview(null)
-      }
-      setAiGenerating(false)
-    } else {
-      if (!aiPrompt && !aiBaseFile) return
-      setAiGenerating(true)
-      setAiResult(null)
-      const form = new FormData()
-      form.append('prompt', aiPrompt)
-      if (aiBaseFile) form.append('image', aiBaseFile)
-      const res = await fetch(`/api/portal/products/${id}/ai-generate`, { method: 'POST', body: form })
-      const data = await res.json()
-      if (data.imageUrl) {
-        setAiResult(data.imageUrl)
-        await load()
-      }
-      setAiGenerating(false)
-    }
-  }
-
-  function handleAiBaseSelect(file: File) {
-    setAiBaseFile(file)
-    setAiBasePreview(URL.createObjectURL(file))
-  }
-
-  async function handleAiDraft() {
-    if (!draftKeywords.trim() && !draftFile) return
-    setDrafting(true)
-    setDraftError('')
-    try {
-      let res: Response
-      if (draftFile) {
-        const form = new FormData()
-        form.append('file', draftFile)
-        form.append('keywords', draftKeywords)
-        form.append('category', product?.category ?? '')
-        res = await fetch('/api/portal/products/ai-describe', { method: 'POST', body: form })
-      } else {
-        res = await fetch('/api/portal/products/ai-describe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ keywords: draftKeywords, category: product?.category ?? '' }),
-        })
-      }
-      const data = await res.json()
-      if (data.draft) {
-        setProduct(p => p ? {
-          ...p,
-          name: data.draft.name || p.name,
-          description: data.draft.description || p.description,
-          ingredients: data.draft.ingredients || p.ingredients,
-          tag: data.draft.tag || p.tag,
-        } : p)
-        setDraftKeywords('')
-        setDraftFile(null)
-      } else {
-        setDraftError(data.error || 'Could not generate a draft')
-      }
-    } catch {
-      setDraftError('Could not generate a draft')
-    } finally {
-      setDrafting(false)
-    }
   }
 
   if (loading) return <div className="p-8 flex items-center gap-3 font-sans text-sm text-bark-400"><Loader size={16} className="animate-spin" /> Loading…</div>
@@ -623,185 +564,6 @@ export default function ProductDetailPage() {
             )}
           </div>
 
-          {/* AI Photo Generation */}
-          <div className="bg-white border border-cream-300 rounded-xl p-6">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2">
-                <Sparkles size={14} className="text-gold-400" />
-                <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">AI Photo Generation</p>
-              </div>
-              <div className="flex items-center border border-cream-300 rounded bg-cream-50">
-                <button
-                  onClick={() => { setLifestyleMode(false); setAiResult(null) }}
-                  className={`px-3 py-1.5 font-sans text-[9px] tracking-[0.15em] uppercase transition-colors ${
-                    !lifestyleMode ? 'bg-bark-600 text-white' : 'text-bark-400 hover:text-bark-600'
-                  }`}
-                >
-                  Standard
-                </button>
-                <button
-                  onClick={() => { setLifestyleMode(true); setAiResult(null) }}
-                  className={`px-3 py-1.5 font-sans text-[9px] tracking-[0.15em] uppercase transition-colors border-l border-cream-300 ${
-                    lifestyleMode ? 'bg-bark-600 text-white' : 'text-bark-400 hover:text-bark-600'
-                  }`}
-                >
-                  Lifestyle
-                </button>
-              </div>
-            </div>
-
-            {/* AI result preview */}
-            {(aiGenerating || aiResult) && (
-              <div className="mb-4">
-                <p className={labelCls}>Generated result</p>
-                <div className="border border-cream-300 rounded-lg h-48 flex items-center justify-center bg-cream-50 relative overflow-hidden">
-                  {aiGenerating ? (
-                    <div className="flex flex-col items-center gap-2">
-                      <Loader size={20} className="text-gold-400 animate-spin" />
-                      <p className="font-sans text-[10px] text-bark-400">Generating…</p>
-                    </div>
-                  ) : aiResult ? (
-                    <Image src={aiResult} alt="Generated" fill className="object-cover" unoptimized />
-                  ) : null}
-                </div>
-              </div>
-            )}
-
-            {/* Standard mode */}
-            {!lifestyleMode && (
-              <div className="mb-4">
-                <label className={labelCls}>Prompt</label>
-                <div
-                  className="relative"
-                  onDragOver={e => e.preventDefault()}
-                  onDrop={e => {
-                    e.preventDefault()
-                    const file = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/'))
-                    if (file) handleAiBaseSelect(file)
-                  }}
-                >
-                  <textarea
-                    value={aiPrompt}
-                    onChange={e => setAiPrompt(e.target.value)}
-                    onPaste={e => {
-                      const items = Array.from(e.clipboardData.items)
-                      const imageItem = items.find(item => item.type.startsWith('image/'))
-                      if (imageItem) {
-                        e.preventDefault()
-                        const file = imageItem.getAsFile()
-                        if (file) handleAiBaseSelect(file)
-                      }
-                    }}
-                    placeholder="e.g. soft cream background, natural morning light, product on linen fabric…  Paste or drop a photo here to use as reference"
-                    rows={3}
-                    className={inputCls + ' resize-none'}
-                  />
-                </div>
-
-                {aiBaseFile && (
-                  <div className="mt-2 flex items-center gap-2">
-                    <div className="relative w-10 h-10 rounded overflow-hidden border border-cream-300 shrink-0">
-                      {aiBasePreview && <Image src={aiBasePreview} alt="reference" fill className="object-cover" unoptimized />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-sans text-[10px] text-bark-600 truncate">{aiBaseFile.name}</p>
-                      <p className="font-sans text-[9px] text-bark-400">Reference photo attached</p>
-                    </div>
-                    <button
-                      onClick={() => { setAiBaseFile(null); setAiBasePreview(null) }}
-                      className="font-sans text-[10px] text-bark-400 hover:text-red-500 transition-colors shrink-0"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                )}
-
-                <p className="font-sans text-[9px] text-bark-400/60 mt-2">
-                  Paste or drop a photo to use as reference. Generated images are saved to gallery automatically.
-                </p>
-              </div>
-            )}
-
-            {/* Lifestyle mode */}
-            {lifestyleMode && (
-              <div className="space-y-4">
-                <div>
-                  <label className={labelCls}>Clothing Photo</label>
-                  <div className="relative border-2 border-dashed border-cream-300 rounded-lg p-4 flex items-center justify-center min-h-32 cursor-pointer hover:border-bark-400 transition-colors"
-                    onClick={() => document.getElementById('clothing-upload')?.click()}
-                  >
-                    {clothingImagePreview ? (
-                      <div className="relative w-full h-24">
-                        <Image src={clothingImagePreview} alt="clothing" fill className="object-contain" unoptimized />
-                      </div>
-                    ) : (
-                      <div className="text-center">
-                        <Upload size={18} className="text-bark-400/50 mx-auto mb-1" />
-                        <p className="font-sans text-[9px] text-bark-400">Click to upload clothing photo</p>
-                      </div>
-                    )}
-                  </div>
-                  <input
-                    id="clothing-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={e => {
-                      const f = e.target.files?.[0]
-                      if (f) {
-                        setClothingImage(f)
-                        setClothingImagePreview(URL.createObjectURL(f))
-                      }
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label className={labelCls}>Baby Reference Photo (Optional)</label>
-                  <div className="relative border-2 border-dashed border-cream-300 rounded-lg p-4 flex items-center justify-center min-h-32 cursor-pointer hover:border-bark-400 transition-colors"
-                    onClick={() => document.getElementById('baby-upload')?.click()}
-                  >
-                    {babyImagePreview ? (
-                      <div className="relative w-full h-24">
-                        <Image src={babyImagePreview} alt="baby" fill className="object-contain" unoptimized />
-                      </div>
-                    ) : (
-                      <div className="text-center">
-                        <Upload size={18} className="text-bark-400/50 mx-auto mb-1" />
-                        <p className="font-sans text-[9px] text-bark-400">Click to upload baby reference</p>
-                      </div>
-                    )}
-                  </div>
-                  <input
-                    id="baby-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={e => {
-                      const f = e.target.files?.[0]
-                      if (f) {
-                        setBabyImage(f)
-                        setBabyImagePreview(URL.createObjectURL(f))
-                      }
-                    }}
-                  />
-                  <p className="font-sans text-[9px] text-bark-400/60 mt-2">
-                    Upload a baby photo for reference. Image discarded after generation.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            <button
-              onClick={handleAiGenerate}
-              disabled={aiGenerating || (lifestyleMode ? !clothingImage : (!aiPrompt && !aiBaseFile))}
-              className="flex items-center gap-2 bg-gold-400 text-white font-sans text-[10px] tracking-[0.2em] uppercase px-6 py-2.5 hover:bg-gold-500 transition-colors disabled:opacity-40"
-            >
-              <Sparkles size={12} />
-              {aiGenerating ? 'Generating…' : lifestyleMode ? 'Generate Lifestyle Photo' : 'Generate Photo'}
-            </button>
-          </div>
-
         </div>
 
         {/* RIGHT — Product Details + Inventory */}
@@ -810,62 +572,6 @@ export default function ProductDetailPage() {
           {/* Product Details */}
           <div className="bg-white border border-cream-300 rounded-xl p-6">
             <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-5">Product Details</p>
-
-            {/* AI Draft helper */}
-            <div className="mb-6 border border-gold-200 bg-gold-50/40 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles size={13} className="text-gold-400" />
-                <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500">AI Draft Writer</p>
-              </div>
-              <p className="font-sans text-[10px] text-bark-400 mb-3 leading-relaxed">
-                Type a few keywords or attach a supplier spec sheet (PDF/image). Claude drafts the name, ingredients, description &amp; tag in the brand voice. Review before saving.
-              </p>
-              <textarea
-                value={draftKeywords}
-                onChange={e => setDraftKeywords(e.target.value)}
-                placeholder="e.g. organic cotton sleep sack, GOTS certified, sage green, sizes 0-6m, TOG 1.0…"
-                rows={2}
-                className={inputCls + ' resize-none mb-2'}
-              />
-              {draftFile && (
-                <div className="flex items-center gap-2 mb-2 text-xs text-bark-500">
-                  <span className="truncate flex-1">{draftFile.name}</span>
-                  <button onClick={() => setDraftFile(null)} className="text-bark-400 hover:text-red-500 transition-colors">
-                    <X size={13} />
-                  </button>
-                </div>
-              )}
-              {draftError && <p className="font-sans text-[10px] text-red-500 mb-2">{draftError}</p>}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleAiDraft}
-                  disabled={drafting || (!draftKeywords.trim() && !draftFile)}
-                  className="flex items-center gap-1.5 bg-gold-400 text-white font-sans text-[10px] tracking-[0.15em] uppercase px-4 py-2 rounded hover:bg-gold-500 transition-colors disabled:opacity-40"
-                >
-                  {drafting ? <Loader size={12} className="animate-spin" /> : <Sparkles size={12} />}
-                  {drafting ? 'Writing…' : 'Draft with AI'}
-                </button>
-                <button
-                  onClick={() => draftFileRef.current?.click()}
-                  disabled={drafting}
-                  className="flex items-center gap-1.5 border border-cream-300 text-bark-500 font-sans text-[10px] tracking-[0.15em] uppercase px-4 py-2 rounded hover:border-bark-400 transition-colors disabled:opacity-40"
-                >
-                  <Upload size={12} />
-                  Attach File
-                </button>
-                <input
-                  ref={draftFileRef}
-                  type="file"
-                  accept="application/pdf,image/*"
-                  className="hidden"
-                  onChange={e => {
-                    const f = e.target.files?.[0]
-                    if (f) setDraftFile(f)
-                    e.target.value = ''
-                  }}
-                />
-              </div>
-            </div>
 
             <div className="space-y-4">
               <div>
@@ -878,7 +584,29 @@ export default function ProductDetailPage() {
                 />
               </div>
               <div>
-                <label className={labelCls}>Description</label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className={labelCls}>Description</label>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => improveText('description')}
+                      disabled={improveLoading === 'description' || !product.description.trim()}
+                      title="Improve clarity and writing"
+                      className="flex items-center gap-1 text-gold-600 hover:text-gold-700 disabled:opacity-40 font-sans text-[9px] tracking-[0.15em] uppercase"
+                    >
+                      {improveLoading === 'description' ? <Loader size={12} className="animate-spin" /> : <Wand2 size={12} />}
+                      Improve
+                    </button>
+                    {originalDescription && (
+                      <button
+                        onClick={() => revertText('description')}
+                        title="Revert to original"
+                        className="text-bark-400 hover:text-bark-600 font-sans text-[9px] tracking-[0.15em] uppercase"
+                      >
+                        Undo
+                      </button>
+                    )}
+                  </div>
+                </div>
                 <textarea
                   value={product.description}
                   onChange={e => setProduct(p => p ? { ...p, description: e.target.value } : p)}
@@ -913,7 +641,29 @@ export default function ProductDetailPage() {
                 </select>
               </div>
               <div>
-                <label className={labelCls}>Ingredients / Materials</label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className={labelCls}>Ingredients / Materials</label>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => improveText('ingredients')}
+                      disabled={improveLoading === 'ingredients' || !product.ingredients?.trim()}
+                      title="Improve clarity and writing"
+                      className="flex items-center gap-1 text-gold-600 hover:text-gold-700 disabled:opacity-40 font-sans text-[9px] tracking-[0.15em] uppercase"
+                    >
+                      {improveLoading === 'ingredients' ? <Loader size={12} className="animate-spin" /> : <Wand2 size={12} />}
+                      Improve
+                    </button>
+                    {originalIngredients && (
+                      <button
+                        onClick={() => revertText('ingredients')}
+                        title="Revert to original"
+                        className="text-bark-400 hover:text-bark-600 font-sans text-[9px] tracking-[0.15em] uppercase"
+                      >
+                        Undo
+                      </button>
+                    )}
+                  </div>
+                </div>
                 <input
                   type="text"
                   value={product.ingredients ?? ''}
