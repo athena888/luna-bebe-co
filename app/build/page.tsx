@@ -120,22 +120,22 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
             <p className="font-sans text-[10px] text-cream-100 leading-relaxed line-clamp-3">{product.description}</p>
           </div>
         )}
-      </button>
 
-      {/* Cert logos — right below the image — consistent height for all cards */}
-      <div className="h-6 flex items-center gap-1.5 flex-nowrap">
+        {/* Cert logos — overlay on bottom-left of image */}
         {certs && certs.length > 0 && (
-          certs.slice(0, 5).map(cert => (
-            <div key={cert.key} className="w-6 h-6 relative shrink-0" title={cert.name || cert.key}>
-              {cert.iconUrl ? (
-                <Image src={cert.iconUrl} alt={cert.name || cert.key} fill className="object-contain" unoptimized />
-              ) : (
-                <ShieldCheck size={16} className="text-gold-400" />
-              )}
-            </div>
-          ))
+          <div className="absolute bottom-2 left-2 flex items-center gap-1 z-10">
+            {certs.slice(0, 4).map(cert => (
+              <div key={cert.key} className="w-5 h-5 relative bg-white/90 rounded-full p-0.5 backdrop-blur-sm" title={cert.name || cert.key}>
+                {cert.iconUrl ? (
+                  <Image src={cert.iconUrl} alt={cert.name || cert.key} fill className="object-contain" unoptimized />
+                ) : (
+                  <ShieldCheck size={14} className="text-gold-400" />
+                )}
+              </div>
+            ))}
+          </div>
         )}
-      </div>
+      </button>
 
       <div className={`pb-1 ${soldOut ? 'opacity-40' : ''}`}>
         <h3 className="font-sans text-sm text-bark-600 leading-snug mb-1">{product.name}</h3>
