@@ -42,10 +42,10 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-white">
       {/* Nav bar */}
       <div className="border-b border-cream-300">
-        <div className="relative w-full pl-4 sm:pl-9 pr-16 sm:pr-6 h-[68px] md:h-[88px] flex md:items-start md:pt-4 items-center justify-between">
+        <div className="relative w-full pl-4 sm:pl-9 pr-16 sm:pr-6 h-[68px] md:h-[100px] flex md:items-start md:pt-6 items-center justify-between">
 
           {/* Logo — left */}
-          <Link href="/" className="flex flex-col leading-none shrink-0 md:pt-1">
+          <Link href="/" className="flex flex-col leading-none shrink-0 md:pt-3">
             <span
               className="uppercase inline-block"
               style={{
