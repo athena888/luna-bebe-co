@@ -21,4 +21,4 @@ User-Agent: puppeteer
 Disallow: /
 
 # Allow Sitemap for search engines
-Sitemap: https://petite-lavande.com/sitemap.xml
+Sitemap: https://petitelavande.com/sitemap.xml
