@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { resend } from '@/lib/resend'
+import { rateLimitByIp } from '@/lib/rate-limit'
 
 export async function POST(req: NextRequest) {
   try {
+    if (!await rateLimitByIp(req, 'newsletter', 5, 3600)) {
+      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+    }
+
     const { email } = await req.json()
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: 'Invalid email' }, { status: 400 })

@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { anthropic, LUNA_SYSTEM_PROMPT } from '@/lib/anthropic'
+import { rateLimitByIp } from '@/lib/rate-limit'
 
 export async function POST(req: NextRequest) {
   try {
+    if (!await rateLimitByIp(req, 'ai_letter', 10, 3600)) {
+      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+    }
+
     const { recipientName, senderName } = await req.json()
 
     if (!recipientName || !senderName) {

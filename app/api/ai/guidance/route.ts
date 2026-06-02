@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { anthropic, LUNA_SYSTEM_PROMPT } from '@/lib/anthropic'
 import { getAllProducts, getProductById } from '@/lib/products'
+import { rateLimitByIp } from '@/lib/rate-limit'
 import type { GiftGuideAnswers } from '@/types'
 
 export async function POST(req: NextRequest) {
   try {
+    if (!await rateLimitByIp(req, 'ai_guidance', 15, 3600)) {
+      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+    }
+
     const { answers }: { answers: GiftGuideAnswers } = await req.json()
 
     if (!answers) {

@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
+import { rateLimitByIp } from '@/lib/rate-limit'
 
 export async function POST(req: NextRequest) {
   try {
+    if (!await rateLimitByIp(req, 'validate_code', 20, 3600)) {
+      return NextResponse.json({ error: 'Too many attempts. Please try again later.' }, { status: 429 })
+    }
+
     const { code } = await req.json()
     if (!code) return NextResponse.json({ error: 'Code is required' }, { status: 400 })
 
