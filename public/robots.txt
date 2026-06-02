@@ -1,0 +1,24 @@
+# Allow Google, Bing, and search engines to crawl for SEO
+User-Agent: Googlebot
+User-Agent: Googlebot-Image
+User-Agent: Bingbot
+User-Agent: Slurp
+User-Agent: DuckDuckBot
+User-Agent: Baiduspider
+Allow: /
+
+# Block scrapers, crawlers, and site downloaders
+User-Agent: *
+Disallow: /
+
+# Specific blocklist for known scrapers and automation tools
+User-Agent: curl
+User-Agent: wget
+User-Agent: HTTrack
+User-Agent: Scrapy
+User-Agent: selenium
+User-Agent: puppeteer
+Disallow: /
+
+# Allow Sitemap for search engines
+Sitemap: https://petite-lavande.com/sitemap.xml

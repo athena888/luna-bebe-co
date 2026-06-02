@@ -10,6 +10,38 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          // Prevent MIME type sniffing
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          // Prevent clickjacking
+          { key: 'X-Frame-Options', value: 'DENY' },
+          // Prevent XSS attacks
+          { key: 'X-XSS-Protection', value: '1; mode=block' },
+          // Prevent referrer leakage
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          // Hide server info
+          { key: 'X-Powered-By', value: '' },
+          // Content Security Policy — allow Google Analytics, Stripe, Supabase, only allow scripts from same origin
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://js.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self' https:; connect-src 'self' https://api.stripe.com https://www.google-analytics.com https://www.googletagmanager.com https://*.supabase.co https://api.anthropic.com https://api.gemini.com; frame-src 'self' https://js.stripe.com; base-uri 'self'; form-action 'self'",
+          },
+        ],
+      },
+      // Block source maps from being served in production
+      {
+        source: '/:path*.js.map',
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex' },
+          { key: 'Cache-Control', value: 'private, no-store' },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
