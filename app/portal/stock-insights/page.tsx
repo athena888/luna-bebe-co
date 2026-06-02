@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { LineChart, Loader2, TrendingUp, Package, Search } from 'lucide-react'
+import Link from 'next/link'
+import { LineChart, Loader2, TrendingUp, Package, Search, FileText } from 'lucide-react'
 
 interface ColorStat { color: string; units: number }
 interface SizeStat { size: string; units: number }
@@ -92,12 +93,21 @@ export default function StockInsightsPage() {
 
   return (
     <div className="p-4 sm:p-8">
-      <div className="mb-6">
-        <h1 className="font-serif text-3xl text-bark-600 flex items-center gap-2"><LineChart size={26} className="text-gold-400" /> Stock Insights</h1>
-        <p className="font-sans text-sm text-bark-400 mt-1 max-w-2xl">
-          Every product that has ever sold or exists in your catalog — with photo, units sold (all-time &amp; last 90 days),
-          color &amp; size breakdown, profit, and month-by-month seasonality to help you restock the right styles at the right time of year.
-        </p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div>
+          <h1 className="font-serif text-3xl text-bark-600 flex items-center gap-2"><LineChart size={26} className="text-gold-400" /> Stock Insights</h1>
+          <p className="font-sans text-sm text-bark-400 mt-1 max-w-2xl">
+            Every product that has ever sold or exists in your catalog — with photo, units sold (all-time &amp; last 90 days),
+            color &amp; size breakdown, profit, and month-by-month seasonality to help you restock the right styles at the right time of year.
+          </p>
+        </div>
+        <Link
+          href="/portal/stock-insights/buy-sheet"
+          target="_blank"
+          className="shrink-0 flex items-center gap-2 bg-gold-400 text-white font-sans text-[11px] tracking-[0.2em] uppercase px-5 py-3 rounded hover:bg-gold-500 transition-colors whitespace-nowrap"
+        >
+          <FileText size={15} /> Generate Buy Sheet
+        </Link>
       </div>
 
       {/* Summary */}
