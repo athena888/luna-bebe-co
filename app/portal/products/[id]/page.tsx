@@ -35,10 +35,22 @@ type ProductData = {
 type Variant = {
   id?: string
   color: string
+  color_code?: string | null
   color_hex?: string | null
   size: string
   quantity: number
   unit_price?: number | null   // dollars
+}
+
+type InventoryChange = {
+  id: string
+  color: string
+  color_code: string | null
+  color_hex: string | null
+  size: string
+  old_quantity: number
+  delta: number
+  new_quantity: number
 }
 
 const VARIANT_SIZES = ['0-3', '3-6', '6-9', '9-12', '12-18', '18-24', 'one-size']
@@ -71,6 +83,11 @@ export default function ProductDetailPage() {
   const [variants, setVariants] = useState<Variant[]>([])
   const [published, setPublished] = useState(true)
   const [needsReview, setNeedsReview] = useState(false)
+  const [changes, setChanges] = useState<InventoryChange[]>([])
+  const [changeBusy, setChangeBusy] = useState(false)
+  const [aiScanning, setAiScanning] = useState(false)
+  const [aiNames, setAiNames] = useState<string[]>([])
+  const [aiMsg, setAiMsg] = useState('')
   const [detectedColors, setDetectedColors] = useState<Array<{ name: string; hex: string }> | null>(null)
   const [colorDetecting, setColorDetecting] = useState(false)
   const [certs, setCerts] = useState<ProductCert[]>([])
@@ -105,8 +122,9 @@ export default function ProductDetailPage() {
       setPublished(data.product.active !== false)
       setNeedsReview(!!data.product.needs_review)
     }
-    // Load cert library + variants in parallel
+    // Load cert library + pending inventory changes in parallel
     fetch('/api/portal/cert-library').then(r => r.json()).then(d => setCertLibrary(d.certs ?? [])).catch(() => {})
+    fetch(`/api/portal/products/${id}/changes`).then(r => r.json()).then(d => setChanges(d.changes ?? [])).catch(() => {})
     const vRes = await fetch(`/api/portal/products/${id}/variants`)
     if (vRes.ok) {
       const vData = await vRes.json()
@@ -160,6 +178,51 @@ export default function ProductDetailPage() {
     setSaving(false)
     setSaveMsg(res.ok ? 'Saved' : 'Error saving')
     setTimeout(() => setSaveMsg(''), 2000)
+  }
+
+  // Approve (keep) or revert (undo the added qty) imported stock changes
+  async function resolveChange(action: 'approve' | 'revert', changeId?: string, all?: boolean) {
+    setChangeBusy(true)
+    try {
+      await fetch(`/api/portal/products/${id}/changes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, changeId, all }),
+      })
+      await load()  // refresh variants + remaining changes + review flag
+    } finally {
+      setChangeBusy(false)
+    }
+  }
+
+  // AI: suggest name / description / materials from the product's primary photo
+  async function aiScanFromPhoto() {
+    const primary = gallery.find(g => g.is_primary) ?? gallery[0]
+    if (!primary) { setAiMsg('Add a photo first, then scan.'); setTimeout(() => setAiMsg(''), 2500); return }
+    setAiScanning(true)
+    setAiMsg('')
+    setAiNames([])
+    try {
+      const blob = await fetch(primary.image_url).then(r => r.blob())
+      const form = new FormData()
+      form.append('file', blob, 'product.jpg')
+      form.append('category', product?.category ?? '')
+      const res = await fetch('/api/portal/products/ai-describe', { method: 'POST', body: form })
+      const data = await res.json()
+      if (data.draft) {
+        setAiNames(data.draft.names || [])
+        if (data.draft.description) setProduct(p => p ? { ...p, description: data.draft.description } : p)
+        if (data.draft.ingredients) setProduct(p => p ? { ...p, ingredients: data.draft.ingredients } : p)
+        if (data.draft.tag) setProduct(p => p ? { ...p, tag: data.draft.tag } : p)
+        setAiMsg('Filled description & materials below — pick a name if you like, then Save.')
+      } else {
+        setAiMsg(data.error || 'Could not read the photo')
+      }
+    } catch {
+      setAiMsg('AI scan failed')
+    } finally {
+      setAiScanning(false)
+    }
   }
 
   function addVariant() {
@@ -333,6 +396,42 @@ export default function ProductDetailPage() {
 
       <div className="space-y-6">
 
+        {/* Pending inventory changes — review before they count */}
+        {changes.length > 0 && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
+            <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
+              <div>
+                <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-amber-700">Pending stock changes from import</p>
+                <p className="font-sans text-xs text-amber-700/80 mt-0.5">These quantities were already added. Approve to keep them, or revert to undo and restore the previous stock.</p>
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => resolveChange('approve', undefined, true)} disabled={changeBusy}
+                  className="bg-sage-500 text-white font-sans text-[10px] tracking-[0.15em] uppercase px-4 py-2 rounded hover:bg-sage-600 transition-colors disabled:opacity-40">Approve all</button>
+                <button onClick={() => resolveChange('revert', undefined, true)} disabled={changeBusy}
+                  className="border border-amber-400 text-amber-700 font-sans text-[10px] tracking-[0.15em] uppercase px-4 py-2 rounded hover:bg-amber-100 transition-colors disabled:opacity-40">Revert all</button>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              {changes.map(c => (
+                <div key={c.id} className="flex items-center gap-3 flex-wrap bg-white/60 rounded px-3 py-2">
+                  {c.color_hex && <span className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0" style={{ backgroundColor: c.color_hex }} />}
+                  <span className="font-sans text-xs text-bark-600 min-w-0">
+                    {c.color_code ? <span className="text-bark-400">[{c.color_code}] </span> : null}
+                    <strong>{c.color}</strong> · {c.size}
+                  </span>
+                  <span className="font-sans text-xs text-bark-500">{c.old_quantity} → <strong className="text-bark-700">{c.new_quantity}</strong> <span className="text-sage-600">(+{c.delta})</span></span>
+                  <div className="flex gap-1.5 ml-auto">
+                    <button onClick={() => resolveChange('approve', c.id)} disabled={changeBusy}
+                      className="text-sage-600 hover:text-sage-700 font-sans text-[10px] uppercase tracking-[0.12em]">Approve</button>
+                    <button onClick={() => resolveChange('revert', c.id)} disabled={changeBusy}
+                      className="text-red-500 hover:text-red-600 font-sans text-[10px] uppercase tracking-[0.12em]">Revert</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Row 1 — Gallery + Product Details side by side */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
@@ -457,7 +556,19 @@ export default function ProductDetailPage() {
 
         {/* Product Details */}
         <div className="bg-white border border-cream-300 rounded-xl p-6">
-            <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-5">Product Details</p>
+            <div className="flex items-center justify-between mb-5">
+              <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">Product Details</p>
+              <button
+                onClick={aiScanFromPhoto}
+                disabled={aiScanning}
+                className="flex items-center gap-1.5 border border-gold-400 text-gold-600 font-sans text-[10px] tracking-[0.15em] uppercase px-3 py-1.5 rounded hover:bg-gold-50 transition-colors disabled:opacity-40"
+                title="Scan the product photo and suggest a name, description, and materials"
+              >
+                {aiScanning ? <Loader size={12} className="animate-spin" /> : <Wand2 size={12} />}
+                {aiScanning ? 'Scanning…' : 'AI fill from photo'}
+              </button>
+            </div>
+            {aiMsg && <p className="font-sans text-[11px] text-bark-500 bg-cream-50 border border-cream-200 rounded px-3 py-2 mb-3">{aiMsg}</p>}
 
             <div className="space-y-4">
               <div>
@@ -468,6 +579,14 @@ export default function ProductDetailPage() {
                   onChange={e => setProduct(p => p ? { ...p, name: e.target.value } : p)}
                   className={inputCls}
                 />
+                {aiNames.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-1.5">
+                    {aiNames.map(n => (
+                      <button key={n} onClick={() => setProduct(p => p ? { ...p, name: n } : p)}
+                        className="px-2 py-1 rounded border border-cream-300 text-bark-500 hover:border-bark-400 font-sans text-[11px] transition-colors">{n}</button>
+                    ))}
+                  </div>
+                )}
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1.5">
@@ -631,6 +750,7 @@ export default function ProductDetailPage() {
                 {variants.length > 0 && (
                   <div className="flex items-center gap-2 px-1 mb-1.5">
                     <span className="flex-1 min-w-0 font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400">Color name</span>
+                    <span className="w-16 text-center font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 shrink-0">Code</span>
                     <span className="w-20 text-center font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 shrink-0">Hex</span>
                     <span className="w-9 shrink-0" />
                     <span className="w-20 text-center font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 shrink-0">Size</span>
@@ -647,6 +767,14 @@ export default function ProductDetailPage() {
                         onChange={e => updateVariant(i, 'color', e.target.value)}
                         placeholder="Dusty Rose"
                         className="flex-1 min-w-0 px-2 py-1.5 border border-cream-300 rounded text-sm text-bark-600 focus:outline-none focus:border-bark-400"
+                      />
+                      <input
+                        type="text"
+                        value={v.color_code || ''}
+                        onChange={e => updateVariant(i, 'color_code', e.target.value)}
+                        placeholder="—"
+                        className="w-16 px-2 py-1.5 border border-cream-300 rounded text-xs text-bark-600 text-center focus:outline-none focus:border-bark-400 shrink-0"
+                        title="Supplier color code"
                       />
                       <input
                         type="text"

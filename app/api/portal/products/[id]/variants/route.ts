@@ -6,7 +6,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   const { id } = await params
   const { data, error } = await supabaseAdmin
     .from('product_variants')
-    .select('id, color, color_hex, size, quantity, unit_price')
+    .select('id, color, color_code, color_hex, size, quantity, unit_price')
     .eq('product_id', id)
     .order('color')
     .order('size')
@@ -17,6 +17,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
 interface VariantInput {
   color: string
+  color_code?: string | null
   color_hex?: string | null
   size: string
   quantity: number
@@ -53,6 +54,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       p_quantity: Math.max(0, Math.round(v.quantity) || 0),
       p_color_hex: v.color_hex?.trim() || null,
       p_unit_price: unitCents,
+      p_color_code: v.color_code?.trim() || null,
     })
     if (error) errors.push(`${color} ${size}: ${error.message}`)
     else { saved++; keep.push({ color, size }) }

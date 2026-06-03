@@ -604,6 +604,7 @@ export default function ProductsPortalPage() {
   const [showBulkPhoto, setShowBulkPhoto] = useState(false)
   const [cleaning, setCleaning] = useState(false)
   const [deleteError, setDeleteError] = useState('')
+  const [reviewOnly, setReviewOnly] = useState(false)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -656,9 +657,13 @@ export default function ProductsPortalPage() {
     }
   }
 
+  const reviewCount = products.filter(p => (p as { needs_review?: boolean }).needs_review || (p as { active?: boolean }).active === false).length
+  const visibleProducts = reviewOnly
+    ? products.filter(p => (p as { needs_review?: boolean }).needs_review || (p as { active?: boolean }).active === false)
+    : products
   const grouped = CATEGORY_ORDER.map(cat => ({
     cat,
-    items: products.filter(p => p.category === cat),
+    items: visibleProducts.filter(p => p.category === cat),
   })).filter(g => g.items.length > 0)
 
   return (
@@ -671,6 +676,15 @@ export default function ProductsPortalPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
+          <button
+            onClick={() => setReviewOnly(v => !v)}
+            className={`font-sans text-[11px] tracking-[0.2em] uppercase px-4 py-2 rounded border transition-colors whitespace-nowrap ${
+              reviewOnly ? 'bg-amber-400 text-white border-amber-400' : 'text-amber-700 border-amber-300 hover:bg-amber-50'
+            }`}
+            title="Show only products flagged from an inventory import or unpublished"
+          >
+            {reviewOnly ? 'Showing review' : `Needs review${reviewCount ? ` (${reviewCount})` : ''}`}
+          </button>
           <button
             onClick={handleCleanup}
             disabled={cleaning}
