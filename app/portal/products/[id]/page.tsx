@@ -92,6 +92,8 @@ export default function ProductDetailPage() {
   const [detectedColors, setDetectedColors] = useState<Array<{ name: string; hex: string }> | null>(null)
   const [colorDetecting, setColorDetecting] = useState(false)
   const [dropVariant, setDropVariant] = useState<number | null>(null)
+  const [styling, setStyling] = useState(false)
+  const [styleMsg, setStyleMsg] = useState('')
   const [certs, setCerts] = useState<ProductCert[]>([])
   const [certLibrary, setCertLibrary] = useState<CertDef[]>([])
   const [certUploading, setCertUploading] = useState<string | null>(null)
@@ -314,6 +316,41 @@ export default function ProductDetailPage() {
     }
   }
 
+  // AI restyle: take the primary photo and re-stage it in the house style
+  // (oat-muslin flat lay, soft daylight) while keeping the garment. Saves the
+  // result as a NEW primary image so the original stays as a fallback.
+  async function stylePhoto() {
+    const primary = gallery.find(g => g.is_primary) ?? gallery[0]
+    if (!primary) { setStyleMsg('Add a photo first.'); setTimeout(() => setStyleMsg(''), 2500); return }
+    setStyling(true)
+    setStyleMsg('Restyling… this can take ~20s')
+    try {
+      const blob = await fetch(primary.image_url).then(r => r.blob())
+      const form = new FormData()
+      form.append('file', blob)
+      const res = await fetch(`/api/portal/products/${id}/restyle`, { method: 'POST', body: form })
+      const data = await res.json()
+      if (!res.ok || !data.imageData) { setStyleMsg(data.error || 'Restyle failed'); return }
+      // Convert base64 → blob and save as new primary image
+      const b64 = data.imageData.split(',')[1]
+      const bin = atob(b64)
+      const arr = new Uint8Array(bin.length)
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i)
+      const styledBlob = new Blob([arr], { type: 'image/jpeg' })
+      const gForm = new FormData()
+      gForm.append('file', styledBlob, `styled-${Date.now()}.jpg`)
+      gForm.append('primary', 'true')
+      await fetch(`/api/portal/products/${id}/gallery`, { method: 'POST', body: gForm })
+      await load()
+      setStyleMsg('Done — styled photo set as primary. Original kept below.')
+      setTimeout(() => setStyleMsg(''), 4000)
+    } catch {
+      setStyleMsg('Restyle failed')
+    } finally {
+      setStyling(false)
+    }
+  }
+
   async function handleGalleryUpload(file: File, primary: boolean) {
     setUploading(true)
     setUploadError('')
@@ -446,6 +483,15 @@ export default function ProductDetailPage() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-2 mb-5">
               <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">Photo Gallery</p>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                <button
+                  onClick={stylePhoto}
+                  disabled={styling || gallery.length === 0}
+                  className="flex items-center gap-1.5 border border-gold-400 text-gold-600 font-sans text-[10px] tracking-[0.15em] uppercase px-3 py-1.5 rounded hover:bg-gold-50 transition-colors disabled:opacity-40"
+                  title="Re-stage the primary photo in the house style (oat-muslin flat lay, soft daylight) — keeps the garment, original is kept as fallback"
+                >
+                  {styling ? <Loader size={12} className="animate-spin" /> : <Wand2 size={12} />}
+                  {styling ? 'Styling…' : 'Style photo (AI)'}
+                </button>
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input
                     type="checkbox"
@@ -471,6 +517,9 @@ export default function ProductDetailPage() {
 
             {uploadError && (
               <p className="mb-4 font-sans text-xs text-red-500 bg-red-50 border border-red-200 rounded px-3 py-2">{uploadError}</p>
+            )}
+            {styleMsg && (
+              <p className="mb-4 font-sans text-xs text-bark-600 bg-cream-50 border border-cream-200 rounded px-3 py-2">{styleMsg}</p>
             )}
 
             {gallery.length === 0 ? (

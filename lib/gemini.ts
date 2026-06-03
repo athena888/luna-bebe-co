@@ -38,3 +38,42 @@ export async function generateImage(prompt: string, count = 1): Promise<Buffer[]
     return Buffer.from(base64, 'base64')
   })
 }
+
+/**
+ * Image-to-image edit with Gemini ("nano banana" — gemini-2.5-flash-image).
+ * Feeds the source photo + a prompt and returns the edited image, so the real
+ * garment is preserved while the background/lighting are restyled.
+ */
+export async function editImage(imageBase64: string, mimeType: string, prompt: string): Promise<Buffer> {
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${GEMINI_API_KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{
+          role: 'user',
+          parts: [
+            { inline_data: { mime_type: mimeType, data: imageBase64 } },
+            { text: prompt },
+          ],
+        }],
+      }),
+    }
+  )
+
+  if (!res.ok) {
+    const err = await res.text()
+    console.error('Gemini edit error:', { status: res.status, body: err })
+    throw new Error(`Gemini image edit failed (${res.status}): ${err}`)
+  }
+
+  const data = await res.json()
+  const parts = data?.candidates?.[0]?.content?.parts ?? []
+  for (const p of parts) {
+    const inline = p.inline_data || p.inlineData
+    if (inline?.data) return Buffer.from(inline.data, 'base64')
+  }
+  console.error('No image part in Gemini edit response:', JSON.stringify(data).slice(0, 500))
+  throw new Error('No image returned from the Gemini editor')
+}
