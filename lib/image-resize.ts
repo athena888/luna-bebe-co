@@ -10,6 +10,11 @@ export async function cropImage(dataUrl: string, box: PhotoBox, outMax = 600, pa
     const valid = box && [box.x, box.y, box.w, box.h].every(n => typeof n === 'number' && n >= 0 && n <= 1) && box.w > 0.01 && box.h > 0.01
     if (!valid) return null
 
+    // Reject degenerate boxes (thin slivers / extreme aspect ratios) — these are
+    // almost always a wrong AI guess and look broken. Better to show no photo.
+    const ratio = box.w / box.h
+    if (box.w < 0.05 || box.h < 0.05 || ratio > 3 || ratio < 0.2) return null
+
     const img: HTMLImageElement = await new Promise((resolve, reject) => {
       const i = new window.Image()
       i.onload = () => resolve(i)
@@ -17,13 +22,16 @@ export async function cropImage(dataUrl: string, box: PhotoBox, outMax = 600, pa
       i.src = dataUrl
     })
 
-    // Pad the box outward so an imperfect AI box doesn't cut the product off
-    const px = box.w * pad
-    const py = box.h * pad
-    const bx = Math.max(0, box.x - px)
-    const by = Math.max(0, box.y - py)
-    const bw = Math.min(1 - bx, box.w + px * 2)
-    const bh = Math.min(1 - by, box.h + py * 2)
+    // Pad the box outward so an imperfect AI box doesn't cut the product off,
+    // and enforce a sensible minimum size around the box center.
+    const cx = box.x + box.w / 2
+    const cy = box.y + box.h / 2
+    const w = Math.max(box.w * (1 + pad * 2), 0.14)
+    const h = Math.max(box.h * (1 + pad * 2), 0.14)
+    const bx = Math.max(0, Math.min(cx - w / 2, 1 - w))
+    const by = Math.max(0, Math.min(cy - h / 2, 1 - h))
+    const bw = Math.min(1 - bx, w)
+    const bh = Math.min(1 - by, h)
 
     const sx = Math.round(bx * img.naturalWidth)
     const sy = Math.round(by * img.naturalHeight)
