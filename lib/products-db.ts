@@ -175,6 +175,7 @@ export interface UpdateProductInput {
   name?: string
   description?: string
   price?: number
+  category?: ProductCategory
   tag?: string | null
   ingredients?: string | null
   imageEmoji?: string
@@ -191,6 +192,7 @@ export async function updateProduct(id: string, input: UpdateProductInput): Prom
   if (input.name !== undefined) patch.name = input.name
   if (input.description !== undefined) patch.description = input.description
   if (input.price !== undefined) patch.price = input.price
+  if (input.category !== undefined) patch.category = input.category
   if (input.tag !== undefined) patch.tag = input.tag
   if (input.ingredients !== undefined) patch.ingredients = input.ingredients
   if (input.imageEmoji !== undefined) patch.image_emoji = input.imageEmoji

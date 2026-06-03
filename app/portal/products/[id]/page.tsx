@@ -3,8 +3,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { getAllProducts } from '@/lib/products'
+import { getAllProducts, CATEGORY_LABELS, CATEGORY_ORDER } from '@/lib/products'
 import { PRODUCT_TAGS } from '@/lib/product-tags'
+import type { ProductCategory } from '@/types'
 import { resizeImage } from '@/lib/image-resize'
 import type { CertDef, ProductCert } from '@/lib/certifications'
 import { ArrowLeft, Upload, Trash2, Star, Loader, Check, Plus, Minus, X, ShieldCheck, Wand2 } from 'lucide-react'
@@ -90,6 +91,7 @@ export default function ProductDetailPage() {
   const [aiMsg, setAiMsg] = useState('')
   const [detectedColors, setDetectedColors] = useState<Array<{ name: string; hex: string }> | null>(null)
   const [colorDetecting, setColorDetecting] = useState(false)
+  const [dropVariant, setDropVariant] = useState<number | null>(null)
   const [certs, setCerts] = useState<ProductCert[]>([])
   const [certLibrary, setCertLibrary] = useState<CertDef[]>([])
   const [certUploading, setCertUploading] = useState<string | null>(null)
@@ -151,6 +153,7 @@ export default function ProductDetailPage() {
         name: product.name,
         description: product.description,
         price: product.price,
+        category: product.category,
         tag: product.tag,
         ingredients: product.ingredients,
         inventoryQuantity: inventory,
@@ -633,6 +636,18 @@ export default function ProductDetailPage() {
                 </div>
               </div>
               <div>
+                <label className={labelCls}>Category</label>
+                <select
+                  value={product.category}
+                  onChange={e => setProduct(p => p ? { ...p, category: e.target.value as ProductCategory } : p)}
+                  className={inputCls + ' appearance-none cursor-pointer'}
+                >
+                  {CATEGORY_ORDER.map(cat => (
+                    <option key={cat} value={cat}>{CATEGORY_LABELS[cat]}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
                 <label className={labelCls}>Tag / Badge</label>
                 <select
                   value={product.tag ?? ''}
@@ -718,11 +733,13 @@ export default function ProductDetailPage() {
                   </button>
                   {detectedColors && detectedColors.length > 0 && (
                     <div className="mt-3 space-y-2">
-                      <p className="font-sans text-[10px] text-bark-400">Click to add:</p>
+                      <p className="font-sans text-[10px] text-bark-400">Tap to add a new row · or drag a color onto a row below to recolor it.</p>
                       <div className="flex flex-wrap gap-2">
                         {detectedColors.map((col, idx) => (
                           <button
                             key={idx}
+                            draggable
+                            onDragStart={e => { e.dataTransfer.setData('application/x-color', JSON.stringify(col)); e.dataTransfer.effectAllowed = 'copy' }}
                             onClick={() => {
                               const exists = variants.some(v => v.color.toLowerCase() === col.name.toLowerCase())
                               if (!exists) {
@@ -736,10 +753,14 @@ export default function ProductDetailPage() {
                                 })
                               }
                             }}
-                            className="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-cream-300 rounded hover:border-bark-400 text-sm text-bark-600 transition-colors"
+                            className="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-cream-300 rounded hover:border-bark-400 text-sm text-bark-600 transition-colors cursor-grab active:cursor-grabbing"
+                            title="Drag onto a variant row to recolor it"
                           >
-                            <div className="w-5 h-5 rounded border border-bark-200" style={{ backgroundColor: col.hex }} />
-                            {col.name}
+                            <span className="w-5 h-5 rounded border border-bark-200 shrink-0" style={{ backgroundColor: col.hex }} />
+                            <span className="flex flex-col items-start leading-tight">
+                              <span>{col.name}</span>
+                              <span className="font-mono text-[9px] text-bark-400">{col.hex}</span>
+                            </span>
                           </button>
                         ))}
                       </div>
@@ -747,8 +768,9 @@ export default function ProductDetailPage() {
                   )}
                 </div>
 
+                {/* Column headers — desktop only (rows stack on mobile) */}
                 {variants.length > 0 && (
-                  <div className="flex items-center gap-2 px-1 mb-1.5">
+                  <div className="hidden lg:flex items-center gap-2 px-1 mb-1.5">
                     <span className="flex-1 min-w-0 font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400">Color name</span>
                     <span className="w-16 text-center font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 shrink-0">Code</span>
                     <span className="w-20 text-center font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 shrink-0">Hex</span>
@@ -758,21 +780,34 @@ export default function ProductDetailPage() {
                     <span className="w-4 shrink-0" />
                   </div>
                 )}
-                <div className="space-y-2">
+                <div className="space-y-3 lg:space-y-2">
                   {variants.map((v, i) => (
-                    <div key={v.id ?? i} className="flex items-center gap-2">
+                    <div
+                      key={v.id ?? i}
+                      onDragOver={e => { if (e.dataTransfer.types.includes('application/x-color')) { e.preventDefault(); setDropVariant(i) } }}
+                      onDragLeave={() => setDropVariant(d => d === i ? null : d)}
+                      onDrop={e => {
+                        const raw = e.dataTransfer.getData('application/x-color')
+                        if (!raw) return
+                        e.preventDefault(); setDropVariant(null)
+                        try { const c = JSON.parse(raw); updateVariant(i, 'color', c.name); if (c.hex) updateVariant(i, 'color_hex', c.hex) } catch {}
+                      }}
+                      className={`flex flex-wrap items-center gap-2 rounded-lg p-2 border lg:border-0 lg:p-0 lg:rounded-none transition-colors ${
+                        dropVariant === i ? 'border-gold-300 bg-gold-50/60' : 'border-cream-200 lg:bg-transparent'
+                      }`}
+                    >
                       <input
                         type="text"
                         value={v.color}
                         onChange={e => updateVariant(i, 'color', e.target.value)}
-                        placeholder="Dusty Rose"
-                        className="flex-1 min-w-0 px-2 py-1.5 border border-cream-300 rounded text-sm text-bark-600 focus:outline-none focus:border-bark-400"
+                        placeholder="Color name (e.g. Dusty Rose)"
+                        className="basis-full lg:basis-auto lg:flex-1 min-w-0 px-2 py-1.5 border border-cream-300 rounded text-sm text-bark-600 focus:outline-none focus:border-bark-400"
                       />
                       <input
                         type="text"
                         value={v.color_code || ''}
                         onChange={e => updateVariant(i, 'color_code', e.target.value)}
-                        placeholder="—"
+                        placeholder="code"
                         className="w-16 px-2 py-1.5 border border-cream-300 rounded text-xs text-bark-600 text-center focus:outline-none focus:border-bark-400 shrink-0"
                         title="Supplier color code"
                       />
@@ -780,7 +815,7 @@ export default function ProductDetailPage() {
                         type="text"
                         value={v.color_hex || ''}
                         onChange={e => updateVariant(i, 'color_hex', e.target.value)}
-                        placeholder="#B0808C"
+                        placeholder="#hex"
                         className="w-20 px-2 py-1.5 border border-cream-300 rounded text-xs text-bark-600 text-center focus:outline-none focus:border-bark-400 shrink-0"
                         title="Hex color code"
                       />
@@ -809,7 +844,7 @@ export default function ProductDetailPage() {
                       />
                       <button
                         onClick={() => removeVariant(i)}
-                        className="text-bark-300 hover:text-red-500 transition-colors shrink-0"
+                        className="text-bark-300 hover:text-red-500 transition-colors shrink-0 ml-auto lg:ml-0"
                         title="Remove"
                       >
                         <Trash2 size={14} />
