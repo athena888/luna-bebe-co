@@ -94,6 +94,7 @@ export default function ProductDetailPage() {
   const [detectedColors, setDetectedColors] = useState<Array<{ name: string; hex: string }> | null>(null)
   const [colorDetecting, setColorDetecting] = useState(false)
   const [dropVariant, setDropVariant] = useState<number | null>(null)
+  const [dragImg, setDragImg] = useState<number | null>(null)
   const [styling, setStyling] = useState(false)
   const [styleMsg, setStyleMsg] = useState('')
   // SEO Studio state
@@ -453,6 +454,19 @@ export default function ProductDetailPage() {
     setGallery(g => g.map(img => ({ ...img, is_hover: img.id === imageId })))
   }
 
+  // Drag-to-reorder gallery photos
+  async function reorderGallery(from: number, to: number) {
+    if (from === to) return
+    const next = [...gallery]
+    const [moved] = next.splice(from, 1)
+    next.splice(to, 0, moved)
+    setGallery(next)
+    await fetch(`/api/portal/products/${id}/gallery/reorder`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderedIds: next.map(g => g.id) }),
+    }).catch(() => {})
+  }
+
   if (loading) return <div className="p-8 flex items-center gap-3 font-sans text-sm text-bark-400"><Loader size={16} className="animate-spin" /> Loading…</div>
   if (!product) return <div className="p-8 font-sans text-bark-400">Product not found. (Try refreshing the page or going back.)</div>
 
@@ -625,10 +639,18 @@ export default function ProductDetailPage() {
               })()
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {gallery.map((img) => {
+                {gallery.map((img, idx) => {
                   return (
-                  <div key={img.id} className="group relative aspect-square bg-cream-200 rounded-lg overflow-hidden">
-                    <Image src={img.image_url} alt={img.label ?? product.name} fill className="object-cover" unoptimized />
+                  <div
+                    key={img.id}
+                    draggable
+                    onDragStart={() => setDragImg(idx)}
+                    onDragOver={e => e.preventDefault()}
+                    onDrop={e => { e.preventDefault(); if (dragImg !== null) reorderGallery(dragImg, idx); setDragImg(null) }}
+                    onDragEnd={() => setDragImg(null)}
+                    className={`group relative aspect-square bg-cream-200 rounded-lg overflow-hidden cursor-grab active:cursor-grabbing ${dragImg === idx ? 'opacity-50' : ''}`}
+                  >
+                    <Image src={img.image_url} alt={img.label ?? product.name} fill className="object-cover pointer-events-none" unoptimized />
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
                       {img.is_primary && (
                         <span className="bg-gold-400 text-white font-sans text-[9px] tracking-[0.15em] uppercase px-2 py-0.5 rounded">Primary</span>

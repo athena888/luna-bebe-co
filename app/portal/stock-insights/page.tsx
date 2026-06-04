@@ -152,6 +152,14 @@ export default function StockInsightsPage() {
             <option value="profit">Profit</option>
             <option value="stock">Current stock</option>
           </select>
+          <Link
+            href="/portal/stock-insights/stock-report"
+            target="_blank"
+            className="flex items-center gap-1.5 border border-bark-400 text-bark-600 font-sans text-[10px] tracking-[0.15em] uppercase px-3 py-2 rounded hover:bg-cream-50 transition-colors whitespace-nowrap"
+            title="Printable stock report: photo, color, size, style, qty, sell, cost, markup"
+          >
+            <FileText size={13} /> Print stock PDF
+          </Link>
         </div>
       </div>
 
