@@ -23,9 +23,14 @@ function shopThisBox(selection: BoxSelection) {
 export default function ShopPage() {
   const router = useRouter()
   const [boxes, setBoxes] = useState<ResolvedBox[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/boxes').then(r => r.json()).then(d => setBoxes(d.boxes ?? [])).catch(() => {})
+    fetch('/api/boxes')
+      .then(r => r.json())
+      .then(d => setBoxes(d.boxes ?? []))
+      .catch(() => {})
+      .finally(() => setLoading(false))
   }, [])
 
   return (
@@ -44,6 +49,15 @@ export default function ShopPage() {
 
         {/* Box cards */}
         <div className="max-w-5xl mx-auto px-6 py-16">
+          {loading ? (
+            <div className="py-20 text-center font-sans text-sm text-bark-400">Loading boxes…</div>
+          ) : boxes.length === 0 ? (
+            <div className="py-16 text-center">
+              <p className="font-serif text-2xl text-bark-500 mb-3">Build your own box</p>
+              <p className="font-sans text-sm text-bark-400 max-w-md mx-auto mb-8">Our curated boxes are being restocked — in the meantime, hand-pick 5 premium items and we&rsquo;ll wrap it beautifully.</p>
+              <Link href="/build" className="inline-block bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase px-8 py-4 hover:bg-bark-700 transition-colors">Build a Box</Link>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {boxes.map(box => {
               const items = Object.values(box.selection).filter(Boolean) as NonNullable<typeof box.selection.swaddle>[]
@@ -109,6 +123,7 @@ export default function ShopPage() {
               )
             })}
           </div>
+          )}
 
           <div className="mt-16 text-center border-t border-cream-300 pt-12">
             <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-3">Or start from scratch</p>

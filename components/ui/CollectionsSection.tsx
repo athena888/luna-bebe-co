@@ -161,14 +161,21 @@ function CollectionModal({ cat, byCategory, boxes, onClose }: {
 
 // ─── Section ─────────────────────────────────────────────────────────────────
 
-export function CollectionsSection() {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [byCategory, setByCategory] = useState<Record<string, Product[]>>({})
-  const [boxes, setBoxes] = useState<BoxItem[]>([])
+export interface CollectionsInitial {
+  categories: Category[]
+  byCategory: Record<string, Product[]>
+  boxes: BoxItem[]
+}
+
+export function CollectionsSection({ initial }: { initial?: CollectionsInitial }) {
+  const [categories, setCategories] = useState<Category[]>(initial?.categories ?? [])
+  const [byCategory, setByCategory] = useState<Record<string, Product[]>>(initial?.byCategory ?? {})
+  const [boxes, setBoxes] = useState<BoxItem[]>(initial?.boxes ?? [])
   const [active, setActive] = useState<Category | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!initial)
 
   useEffect(() => {
+    if (initial) return // server provided data — no client fetch / loading state
     async function load() {
       try {
         // Live active catalog (grouped) + collections + prebuilt boxes
@@ -203,6 +210,7 @@ export function CollectionsSection() {
       }
     }
     load()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (loading) return <div className="py-12 text-center text-bark-400">Loading collections...</div>

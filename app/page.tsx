@@ -71,8 +71,37 @@ async function getBestsellers(): Promise<Product[]> {
   }
 }
 
+const SUPABASE_URL_ENV = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+function collectionImg(slot: string) {
+  return `${SUPABASE_URL_ENV}/storage/v1/object/public/home-images/${slot}.jpg`
+}
+
+// Server-fetch Shop by Occasion data so the section renders immediately
+// (no client-side "Loading collections…" hang).
+async function getCollectionsData() {
+  try {
+    const { getCatalog } = await import('@/lib/products-db')
+    const { getCollections } = await import('@/lib/collections-db')
+    const { getBoxes } = await import('@/lib/prebuilt-boxes-db')
+    const [catalog, collections, boxes] = await Promise.all([
+      getCatalog({ activeOnly: true }),
+      getCollections().catch(() => []),
+      getBoxes({}).catch(() => []),
+    ])
+    const byCategory: Record<string, typeof catalog> = {}
+    for (const p of catalog) (byCategory[p.category] ??= []).push(p)
+    return {
+      categories: collections.map(c => ({ id: c.id, label: c.label, sub: c.sub, img: collectionImg(c.home_image_slot), productIds: c.product_ids })),
+      byCategory,
+      boxes: boxes.map(b => ({ slug: b.slug, name: b.name, tagline: b.tagline, image: b.image })),
+    }
+  } catch {
+    return null
+  }
+}
+
 export default async function HomePage() {
-  const featured = await getBestsellers()
+  const [featured, collectionsData] = await Promise.all([getBestsellers(), getCollectionsData()])
 
   return (
     <>
@@ -144,7 +173,7 @@ export default async function HomePage() {
             <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">Shop by Occasion</h2>
             <p className="font-sans text-xs text-bark-400 mt-2 tracking-wide">Tap any collection to see what&apos;s inside</p>
           </div>
-          <CollectionsSection />
+          <CollectionsSection initial={collectionsData ?? undefined} />
         </section>
 
         {/* ── 4. Featured products — center-snap looping carousel ── */}
