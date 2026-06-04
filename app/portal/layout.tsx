@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { LayoutDashboard, ShoppingBag, Phone, ImagePlus, Home, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, Gift, Camera, ShieldCheck, Layers, LineChart } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, Phone, ImagePlus, Home, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, Gift, Camera, ShieldCheck, Layers, LineChart, Images } from 'lucide-react'
 
 const NAV = [
   { href: '/portal', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
@@ -17,6 +17,7 @@ const NAV = [
   { href: '/portal/stock-insights', label: 'Stock Insights', icon: <LineChart size={16} /> },
   { href: '/portal/webhooks', label: 'Webhooks', icon: <Webhook size={16} /> },
   { href: '/portal/home-images', label: 'Home Images', icon: <Home size={16} /> },
+  { href: '/portal/site-images', label: 'Site Images', icon: <Images size={16} /> },
   { href: '/portal/social', label: 'Social Feed', icon: <Camera size={16} /> },
   { href: '/portal/analytics', label: 'Analytics', icon: <TrendingUp size={16} /> },
 ]

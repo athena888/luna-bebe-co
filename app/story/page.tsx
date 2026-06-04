@@ -2,17 +2,32 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { getSiteImages } from '@/lib/site-images'
 
 export const metadata: Metadata = {
   title: 'Our Story',
   description: 'The story behind Petite Lavande — why we believe every new baby deserves a gift as extraordinary as they are.',
 }
 
-export default function StoryPage() {
+export const revalidate = 60
+
+export default async function StoryPage() {
+  const imgs = await getSiteImages(['story.hero', 'story.founder', 'story.value.1', 'story.value.2', 'story.value.3'])
+  const hero = imgs['story.hero']
+  const founder = imgs['story.founder']
+  const valueImgs = [imgs['story.value.1'], imgs['story.value.2'], imgs['story.value.3']]
+
   return (
     <>
       <Header />
       <main className="min-h-screen bg-cream-50">
+
+        {/* Hero image (optional, managed in portal → Site Images) */}
+        {hero && (
+          <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] overflow-hidden">
+            <img src={hero.public_url} alt={hero.alt_text} className="w-full h-full object-cover" />
+          </div>
+        )}
 
         {/* Hero */}
         <div className="border-b border-cream-300 bg-white">
@@ -30,6 +45,13 @@ export default function StoryPage() {
 
         {/* Founder letter */}
         <div className="max-w-2xl mx-auto px-6 py-20">
+          {founder && (
+            <div className="float-none sm:float-right sm:ml-8 mb-6 w-full sm:w-56 shrink-0">
+              <div className="aspect-[3/4] overflow-hidden rounded-sm border border-cream-300">
+                <img src={founder.public_url} alt={founder.alt_text} className="w-full h-full object-cover" />
+              </div>
+            </div>
+          )}
           <div className="space-y-6">
             <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400">A Letter from the Founder</p>
             <p
@@ -77,13 +99,22 @@ export default function StoryPage() {
                   title: 'Every Detail',
                   body: 'Wax-sealed boxes, handwritten letters, tissue and ribbon — because the unboxing is part of the gift. We believe in the beauty of ceremony.',
                 },
-              ].map(({ emoji, title, body }) => (
-                <div key={title} className="text-center">
-                  <div className="text-3xl mb-4">{emoji}</div>
-                  <h3 className="font-sans text-xs tracking-[0.2em] uppercase text-bark-600 mb-3">{title}</h3>
-                  <p className="font-sans text-sm text-bark-400 leading-relaxed">{body}</p>
-                </div>
-              ))}
+              ].map(({ emoji, title, body }, i) => {
+                const vi = valueImgs[i]
+                return (
+                  <div key={title} className="text-center">
+                    {vi ? (
+                      <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden border border-cream-300">
+                        <img src={vi.public_url} alt={vi.alt_text} className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="text-3xl mb-4">{emoji}</div>
+                    )}
+                    <h3 className="font-sans text-xs tracking-[0.2em] uppercase text-bark-600 mb-3">{title}</h3>
+                    <p className="font-sans text-sm text-bark-400 leading-relaxed">{body}</p>
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>
