@@ -5,7 +5,7 @@ export async function GET() {
   const [galleryRes, overridesRes] = await Promise.all([
     supabaseAdmin
       .from('product_gallery')
-      .select('product_id, image_url, is_primary, sort_order')
+      .select('product_id, image_url, is_primary, is_hover, sort_order')
       .order('sort_order'),
     supabaseAdmin
       .from('product_overrides')
@@ -22,9 +22,11 @@ export async function GET() {
     byProduct.get(row.product_id)!.push(row)
   }
   for (const [productId, images] of byProduct) {
-    const nonPrimary = images.find(img => !img.is_primary)
-    if (nonPrimary) {
-      result[productId] = { image: nonPrimary.image_url }
+    // Prefer an explicitly-chosen hover image; otherwise the first non-primary
+    const chosen = images.find(img => (img as { is_hover?: boolean }).is_hover)
+      ?? images.find(img => !img.is_primary)
+    if (chosen) {
+      result[productId] = { image: chosen.image_url }
     }
   }
 

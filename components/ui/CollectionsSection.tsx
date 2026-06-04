@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { X, ArrowRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { getProductById } from '@/lib/products'
 import type { Product } from '@/types'
 import type { CollectionDef } from '@/lib/collections-db'
 
@@ -28,10 +27,11 @@ interface Category {
 
 // ─── Modal ───────────────────────────────────────────────────────────────────
 
-function CollectionModal({ cat, onClose }: { cat: Category; onClose: () => void }) {
+function CollectionModal({ cat, catalog, onClose }: { cat: Category; catalog: Map<string, Product>; onClose: () => void }) {
   const router = useRouter()
   const ids = cat.productIds ?? []
-  const products: Product[] = ids.map(id => getProductById(id)).filter(Boolean) as Product[]
+  // Resolve against the LIVE active catalog so only real, published products show
+  const products: Product[] = ids.map(id => catalog.get(id)).filter(Boolean) as Product[]
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -72,7 +72,7 @@ function CollectionModal({ cat, onClose }: { cat: Category; onClose: () => void 
                 <div key={product.id} className="group">
                   <div className="relative aspect-square bg-cream-100 mb-2 overflow-hidden rounded-sm">
                     <Image
-                      src={productImg(product.id)}
+                      src={product.image || productImg(product.id)}
                       alt={product.name}
                       fill
                       className="object-cover"
@@ -122,15 +122,24 @@ function CollectionModal({ cat, onClose }: { cat: Category; onClose: () => void 
 
 export function CollectionsSection() {
   const [categories, setCategories] = useState<Category[]>([])
+  const [catalog, setCatalog] = useState<Map<string, Product>>(new Map())
   const [active, setActive] = useState<Category | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch('/api/collections')
-        if (res.ok) {
-          const data = await res.json()
+        // Live active catalog + collections in parallel
+        const [colRes, prodRes] = await Promise.all([
+          fetch('/api/collections'),
+          fetch('/api/products/all'),
+        ])
+        if (prodRes.ok) {
+          const pd = await prodRes.json()
+          setCatalog(new Map((pd.products ?? []).map((p: Product) => [p.id, p])))
+        }
+        if (colRes.ok) {
+          const data = await colRes.json()
           const cats: Category[] = data.collections.map((col: CollectionDef) => ({
             id: col.id,
             label: col.label,
@@ -186,7 +195,7 @@ export function CollectionsSection() {
         ))}
       </div>
 
-      {active && <CollectionModal cat={active} onClose={() => setActive(null)} />}
+      {active && <CollectionModal cat={active} catalog={catalog} onClose={() => setActive(null)} />}
     </>
   )
 }

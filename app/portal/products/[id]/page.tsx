@@ -16,6 +16,7 @@ type GalleryImage = {
   image_url: string
   label: string | null
   is_primary: boolean
+  is_hover?: boolean
   sort_order: number
 }
 
@@ -396,6 +397,13 @@ export default function ProductDetailPage() {
     setGallery(g => sortGallery(g.map(img => ({ ...img, is_primary: img.id === imageId }))))
   }
 
+  async function handleSetHover(imageId: string) {
+    await fetch(`/api/portal/products/${id}/gallery/${imageId}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'hover' }),
+    })
+    setGallery(g => g.map(img => ({ ...img, is_hover: img.id === imageId })))
+  }
+
   if (loading) return <div className="p-8 flex items-center gap-3 font-sans text-sm text-bark-400"><Loader size={16} className="animate-spin" /> Loading…</div>
   if (!product) return <div className="p-8 font-sans text-bark-400">Product not found. (Try refreshing the page or going back.)</div>
 
@@ -569,22 +577,18 @@ export default function ProductDetailPage() {
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {gallery.map((img) => {
-                  const nonPrimaryIdx = gallery.filter(i => !i.is_primary).indexOf(img)
-                  const isHover = !img.is_primary && nonPrimaryIdx === 0
                   return (
                   <div key={img.id} className="group relative aspect-square bg-cream-200 rounded-lg overflow-hidden">
                     <Image src={img.image_url} alt={img.label ?? product.name} fill className="object-cover" unoptimized />
-                    {img.is_primary && (
-                      <div className="absolute top-2 left-2 bg-gold-400 text-white font-sans text-[9px] tracking-[0.15em] uppercase px-2 py-0.5 rounded">
-                        Primary
-                      </div>
-                    )}
-                    {isHover && (
-                      <div className="absolute top-2 left-2 bg-sage-400 text-white font-sans text-[9px] tracking-[0.15em] uppercase px-2 py-0.5 rounded">
-                        Hover
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-bark-600/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                    <div className="absolute top-2 left-2 flex flex-col gap-1">
+                      {img.is_primary && (
+                        <span className="bg-gold-400 text-white font-sans text-[9px] tracking-[0.15em] uppercase px-2 py-0.5 rounded">Primary</span>
+                      )}
+                      {img.is_hover && (
+                        <span className="bg-sage-400 text-white font-sans text-[9px] tracking-[0.15em] uppercase px-2 py-0.5 rounded">Hover</span>
+                      )}
+                    </div>
+                    <div className="absolute inset-0 bg-bark-600/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2.5">
                       <button
                         onClick={() => handleSetPrimary(img.id)}
                         title={img.is_primary ? 'This is the primary photo' : 'Set as primary photo'}
@@ -593,6 +597,15 @@ export default function ProductDetailPage() {
                         }`}
                       >
                         <Star size={14} className={img.is_primary ? 'text-white fill-current' : 'text-bark-600'} />
+                      </button>
+                      <button
+                        onClick={() => handleSetHover(img.id)}
+                        title={img.is_hover ? 'This is the hover photo' : 'Set as hover photo (shown on card hover)'}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-[9px] font-bold tracking-wide transition-colors ${
+                          img.is_hover ? 'bg-sage-400 text-white' : 'bg-white text-bark-600 hover:bg-sage-100'
+                        }`}
+                      >
+                        H
                       </button>
                       <button
                         onClick={() => handleDelete(img.id)}

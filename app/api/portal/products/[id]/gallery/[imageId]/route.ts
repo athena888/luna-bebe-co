@@ -34,12 +34,13 @@ export async function DELETE(
   return NextResponse.json({ ok: true })
 }
 
-// Set as primary
+// Set as primary, or (action:'hover') set as the hover image
 export async function PATCH(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string; imageId: string }> }
 ) {
   const { id, imageId } = await params
+  const body = await req.json().catch(() => ({})) as { action?: string }
 
   const { data: image } = await supabaseAdmin
     .from('product_gallery')
@@ -49,6 +50,13 @@ export async function PATCH(
     .single()
 
   if (!image) return NextResponse.json({ error: 'Image not found' }, { status: 404 })
+
+  // Hover: one image per product flagged as the hover image (toggle off others)
+  if (body.action === 'hover') {
+    await supabaseAdmin.from('product_gallery').update({ is_hover: false }).eq('product_id', id)
+    await supabaseAdmin.from('product_gallery').update({ is_hover: true }).eq('id', imageId)
+    return NextResponse.json({ ok: true })
+  }
 
   // Clear old primary, set new
   await supabaseAdmin.from('product_gallery').update({ is_primary: false }).eq('product_id', id)

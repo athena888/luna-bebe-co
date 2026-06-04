@@ -6,6 +6,7 @@ import "./globals.css";
 import { CookieBanner } from "@/components/ui/CookieBanner";
 import { ChatWidget } from "@/components/ui/ChatWidget";
 import { UTMCapture } from "@/components/ui/UTMCapture";
+import { JsonLd } from "@/components/ui/JsonLd";
 
 const dancing = Dancing_Script({ subsets: ["latin"], variable: "--font-dancing", display: "swap" });
 const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["300", "400", "500"], style: ["normal", "italic"], variable: "--font-cormorant", display: "swap" });
@@ -47,6 +48,22 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>
       <body className="min-h-full flex flex-col bg-white text-bark-600">
+        {/* Site-wide structured data */}
+        <JsonLd data={{
+          '@context': 'https://schema.org',
+          '@type': 'Organization',
+          name: 'Petite Lavande',
+          url: BASE,
+          logo: `${BASE}/apple-touch-icon.png`,
+          description: 'Luxury curated organic baby gift boxes.',
+          email: 'hello@petitelavande.com',
+        }} />
+        <JsonLd data={{
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'Petite Lavande',
+          url: BASE,
+        }} />
         {children}
         <Suspense fallback={null}><UTMCapture /></Suspense>
         <CookieBanner />

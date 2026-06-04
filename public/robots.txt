@@ -1,24 +1,23 @@
-# Allow Google, Bing, and search engines to crawl for SEO
-User-Agent: Googlebot
-User-Agent: Googlebot-Image
-User-Agent: Bingbot
-User-Agent: Slurp
-User-Agent: DuckDuckBot
-User-Agent: Baiduspider
+# Petite Lavande — robots
+# Search engines & social preview bots may crawl everything except private areas.
+User-agent: *
 Allow: /
+Disallow: /portal/
+Disallow: /api/
+Disallow: /checkout
+Disallow: /letter
+Disallow: /confirmation
+Disallow: /account
 
-# Block scrapers, crawlers, and site downloaders
-User-Agent: *
+# Block known scraper / site-downloader / SEO-spy tools
+User-agent: curl
+User-agent: wget
+User-agent: HTTrack
+User-agent: Scrapy
+User-agent: SemrushBot
+User-agent: AhrefsBot
+User-agent: DotBot
+User-agent: MJ12bot
 Disallow: /
 
-# Specific blocklist for known scrapers and automation tools
-User-Agent: curl
-User-Agent: wget
-User-Agent: HTTrack
-User-Agent: Scrapy
-User-Agent: selenium
-User-Agent: puppeteer
-Disallow: /
-
-# Allow Sitemap for search engines
 Sitemap: https://petitelavande.com/sitemap.xml
