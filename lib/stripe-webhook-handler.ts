@@ -79,13 +79,14 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   if (order.selected_items?.length) {
     await Promise.allSettled(
       order.selected_items.map(item => {
-        const v = item as typeof item & { selectedColor?: string; selectedSize?: string }
-        // Variant items decrement the specific color/size; others use the flat counter
+        const v = item as typeof item & { selectedColor?: string; selectedSize?: string; selectedStyle?: string }
+        // Variant items decrement the specific color/size/style; others use the flat counter
         if (v.selectedColor && v.selectedSize) {
           return supabaseAdmin.rpc('decrement_variant', {
             p_product_id: item.id,
             p_color: v.selectedColor.toLowerCase().trim(),
             p_size: v.selectedSize,
+            p_style: v.selectedStyle ?? '',
           })
         }
         return supabaseAdmin.rpc('decrement_inventory', { p_product_id: item.id })

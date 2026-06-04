@@ -14,7 +14,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     product.has_variants
       ? supabaseAdmin
           .from('product_variants')
-          .select('color, color_hex, size, quantity')
+          .select('color, color_hex, style, size, quantity')
           .eq('product_id', id)
           .order('color')
           .order('size')

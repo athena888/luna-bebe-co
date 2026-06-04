@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       // 2) Move variants — additive on matching color+size
       const { data: vars } = await supabaseAdmin
         .from('product_variants')
-        .select('color, color_code, color_hex, size, quantity, unit_price')
+        .select('color, color_code, color_hex, style, size, quantity, unit_price')
         .eq('product_id', sid)
       for (const v of vars ?? []) {
         anyVariants = true
@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
           p_color_hex: v.color_hex ?? null,
           p_unit_price: v.unit_price ?? null,
           p_color_code: v.color_code ?? null,
+          p_style: v.style ?? '',
         })
       }
       await supabaseAdmin.from('product_variants').delete().eq('product_id', sid)

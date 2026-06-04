@@ -34,13 +34,13 @@ interface GalleryImage {
 // Products from the catalog API carry a has_variants flag
 type BuildProduct = Product & { has_variants?: boolean }
 
-interface VariantOpt { color: string; color_hex: string | null; size: string; quantity: number }
+interface VariantOpt { color: string; color_hex: string | null; style?: string; size: string; quantity: number }
 
 // A selected line in the box — a product plus its chosen variant (if any)
-type SelectedItem = Product & { selectedColor?: string; selectedSize?: string; colorHex?: string; lineKey: string }
+type SelectedItem = Product & { selectedColor?: string; selectedSize?: string; selectedStyle?: string; colorHex?: string; lineKey: string }
 
-function variantKey(id: string, color?: string, size?: string) {
-  return color && size ? `${id}:${color}:${size}` : id
+function variantKey(id: string, color?: string, size?: string, style?: string) {
+  return color && size ? `${id}:${color}:${size}:${style || ''}` : id
 }
 
 // ── Product Card ─────────────────────────────────────────────────────────────
@@ -200,6 +200,7 @@ export default function BuildPage() {
   const [modalCerts, setModalCerts] = useState<ProductCert[]>([])
   const [pickColor, setPickColor] = useState<string | null>(null)
   const [pickSize, setPickSize] = useState<string | null>(null)
+  const [pickStyle, setPickStyle] = useState<string | null>(null)
   const [modalLoading, setModalLoading] = useState(false)
   const [modalImgIdx, setModalImgIdx] = useState(0)
   const galleryCache = useRef<Record<string, GalleryImage[]>>({})
@@ -280,13 +281,13 @@ export default function BuildPage() {
     })
   }, [])
 
-  // Variant add/remove (key = id:color:size)
-  const toggleVariant = useCallback((product: BuildProduct, color: string, size: string, hex?: string | null) => {
-    const key = variantKey(product.id, color, size)
+  // Variant add/remove (key = id:color:size:style)
+  const toggleVariant = useCallback((product: BuildProduct, color: string, size: string, hex?: string | null, style?: string) => {
+    const key = variantKey(product.id, color, size, style)
     setSelected(prev => {
       const next = new Map(prev)
       if (next.has(key)) next.delete(key)
-      else next.set(key, { ...product, selectedColor: color, selectedSize: size, colorHex: hex ?? undefined, lineKey: key })
+      else next.set(key, { ...product, selectedColor: color, selectedSize: size, selectedStyle: style || undefined, colorHex: hex ?? undefined, lineKey: key })
       return next
     })
   }, [])
@@ -308,6 +309,7 @@ export default function BuildPage() {
     setModalCerts([])
     setPickColor(null)
     setPickSize(null)
+    setPickStyle(null)
     setModalLoading(true)
     setModalGallery(galleryCache.current[product.id] ?? [])
     try {
@@ -343,10 +345,18 @@ export default function BuildPage() {
     modalVariants.forEach(v => { if (!m.has(v.color)) m.set(v.color, v.color_hex) })
     return Array.from(m.entries()).map(([color, color_hex]) => ({ color, color_hex }))
   }, [modalVariants])
-  const sizesForColor = pickColor ? modalVariants.filter(v => v.color === pickColor) : []
-  const pickedVariant = modalVariants.find(v => v.color === pickColor && v.size === pickSize)
+  // Optional style/shape axis — only shown when this color actually has styles
+  const stylesForColor = useMemo(() => {
+    if (!pickColor) return [] as string[]
+    return Array.from(new Set(modalVariants.filter(v => v.color === pickColor && (v.style ?? '').trim()).map(v => (v.style ?? '').trim())))
+  }, [modalVariants, pickColor])
+  const needsStyle = stylesForColor.length > 0
+  const sizesForColor = pickColor
+    ? modalVariants.filter(v => v.color === pickColor && (!needsStyle || (v.style ?? '') === (pickStyle ?? '')))
+    : []
+  const pickedVariant = modalVariants.find(v => v.color === pickColor && v.size === pickSize && (v.style ?? '') === (pickStyle ?? ''))
   const pickInStock = !!pickedVariant && pickedVariant.quantity > 0
-  const pickedInBox = !!(modalProduct && pickColor && pickSize && selected.has(variantKey(modalProduct.id, pickColor, pickSize)))
+  const pickedInBox = !!(modalProduct && pickColor && pickSize && (!needsStyle || pickStyle) && selected.has(variantKey(modalProduct.id, pickColor, pickSize, pickStyle ?? '')))
   const allVariantsOut = modalHasVariants && modalVariants.every(v => v.quantity <= 0)
 
   function handleCheckout() {
@@ -478,7 +488,7 @@ export default function BuildPage() {
                 ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${product.id}.jpg`
                 : null)
               const variantLabel = product.selectedColor && product.selectedSize
-                ? `${product.selectedColor} · ${product.selectedSize}`
+                ? `${product.selectedColor} · ${product.selectedSize}${product.selectedStyle ? ` · ${product.selectedStyle}` : ''}`
                 : null
               return (
                 <div key={product.lineKey} className="flex gap-4 items-start py-1">
@@ -630,7 +640,7 @@ export default function BuildPage() {
                         return (
                           <button
                             key={color}
-                            onClick={() => { setPickColor(color); setPickSize(null) }}
+                            onClick={() => { setPickColor(color); setPickStyle(null); setPickSize(null) }}
                             disabled={!inStockForColor}
                             title={color}
                             className={`w-8 h-8 rounded-full border-2 transition-all disabled:opacity-30 ${active ? 'border-bark-600 scale-110' : 'border-cream-300 hover:border-bark-400'}`}
@@ -641,7 +651,33 @@ export default function BuildPage() {
                     </div>
                   </div>
 
-                  {pickColor && (
+                  {pickColor && needsStyle && (
+                    <div>
+                      <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">
+                        Style{pickStyle ? <span className="text-bark-600 capitalize">: {pickStyle}</span> : ''}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {stylesForColor.map(st => {
+                          const inStock = modalVariants.some(v => v.color === pickColor && (v.style ?? '') === st && v.quantity > 0)
+                          const active = pickStyle === st
+                          return (
+                            <button
+                              key={st}
+                              onClick={() => { setPickStyle(st); setPickSize(null) }}
+                              disabled={!inStock}
+                              className={`px-3 py-2 border font-sans text-xs capitalize transition-colors disabled:opacity-30 ${
+                                active ? 'border-bark-600 bg-bark-600 text-cream-50' : 'border-cream-300 text-bark-600 hover:border-bark-400'
+                              }`}
+                            >
+                              {st}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {pickColor && (!needsStyle || pickStyle) && (
                     <div>
                       <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">Size</p>
                       <div className="flex flex-wrap gap-2">
@@ -676,16 +712,16 @@ export default function BuildPage() {
                   allVariantsOut ? (
                     <div className="w-full border border-bark-300 text-bark-400 font-sans text-[11px] tracking-[0.2em] uppercase py-4 text-center">Sold Out</div>
                   ) : pickedInBox ? (
-                    <button onClick={() => toggleVariant(modalProduct, pickColor!, pickSize!, pickedVariant?.color_hex)}
+                    <button onClick={() => toggleVariant(modalProduct, pickColor!, pickSize!, pickedVariant?.color_hex, pickStyle ?? '')}
                       className="w-full border border-bark-300 text-bark-400 font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:border-bark-600 hover:text-bark-600 transition-colors flex items-center justify-center gap-2">
                       <Check size={13} /> In Your Box · Remove
                     </button>
                   ) : (
                     <button
-                      onClick={() => toggleVariant(modalProduct, pickColor!, pickSize!, pickedVariant?.color_hex)}
+                      onClick={() => toggleVariant(modalProduct, pickColor!, pickSize!, pickedVariant?.color_hex, pickStyle ?? '')}
                       disabled={!pickInStock}
                       className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-bark-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-                      {!pickColor ? 'Choose a color' : !pickSize ? 'Choose a size' : 'Add to Box'}
+                      {!pickColor ? 'Choose a color' : needsStyle && !pickStyle ? 'Choose a style' : !pickSize ? 'Choose a size' : 'Add to Box'}
                     </button>
                   )
                 ) : isSoldOut(modalProduct.id) ? (

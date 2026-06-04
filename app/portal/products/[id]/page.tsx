@@ -38,6 +38,7 @@ type Variant = {
   color: string
   color_code?: string | null
   color_hex?: string | null
+  style?: string | null        // optional shape/style (e.g. Star, Moon)
   size: string
   quantity: number
   unit_price?: number | null   // dollars
@@ -850,6 +851,7 @@ export default function ProductDetailPage() {
                     <span className="w-16 text-center font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 shrink-0">Code</span>
                     <span className="w-20 text-center font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 shrink-0">Hex</span>
                     <span className="w-9 shrink-0" />
+                    <span className="w-24 text-center font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 shrink-0">Style</span>
                     <span className="w-20 text-center font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 shrink-0">Size</span>
                     <span className="w-16 text-center font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 shrink-0">Stock</span>
                     <span className="w-4 shrink-0" />
@@ -900,6 +902,14 @@ export default function ProductDetailPage() {
                         onChange={e => updateVariant(i, 'color_hex', e.target.value)}
                         className="w-9 h-9 rounded border border-cream-300 shrink-0 cursor-pointer"
                         title="Pick swatch color"
+                      />
+                      <input
+                        type="text"
+                        value={v.style || ''}
+                        onChange={e => updateVariant(i, 'style', e.target.value)}
+                        placeholder="style"
+                        className="w-24 px-2 py-1.5 border border-cream-300 rounded text-xs text-bark-600 text-center focus:outline-none focus:border-bark-400 shrink-0"
+                        title="Optional shape/style, e.g. Star or Moon"
                       />
                       <select
                         value={v.size}
