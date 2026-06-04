@@ -433,8 +433,7 @@ export function ProductCarousel({ products }: { products: Product[] }) {
                         alt={product.name}
                         fill
                         className={`object-cover transition-transform duration-[8000ms] ease-in-out ${isCenter ? 'scale-110' : 'scale-100'}`}
-                        unoptimized
-                        onError={() => setImgPhase(p => ({ ...p, [phaseKey]: (p[phaseKey] ?? 0) + 1 }))}
+                                               onError={() => setImgPhase(p => ({ ...p, [phaseKey]: (p[phaseKey] ?? 0) + 1 }))}
                       />
                     </div>
                   ) : (

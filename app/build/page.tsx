@@ -79,7 +79,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
         {showImage ? (
           <Image src={storageSrc} alt={product.name} fill
             className={`object-cover transition-all duration-500 ${soldOut ? 'grayscale brightness-[0.35]' : ''}`}
-            sizes="(max-width: 640px) 176px, 208px" onError={() => setImgFailed(true)} unoptimized />
+            sizes="(max-width: 640px) 176px, 208px" onError={() => setImgFailed(true)} />
         ) : (
           <div className={`absolute inset-0 flex items-center justify-center text-5xl
             ${soldOut ? 'bg-cream-200 grayscale brightness-50' : selected ? 'bg-terra-100' : 'bg-cream-200 group-hover:bg-cream-300'}`}>
@@ -89,7 +89,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
         {!soldOut && showHoverImage && (
           <Image src={hoverImage!} alt={product.name} fill
             className="object-cover absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-            sizes="(max-width: 640px) 33vw, 25vw" onError={() => setHoverImgFailed(true)} unoptimized />
+            sizes="(max-width: 640px) 33vw, 25vw" onError={() => setHoverImgFailed(true)} />
         )}
         {!soldOut && hoverVideo && (
           <video ref={videoRef} src={hoverVideo} muted loop playsInline preload="none"
@@ -127,7 +127,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
             {certs.slice(0, 4).map(cert => (
               <div key={cert.key} className="w-5 h-5 relative bg-white/90 rounded-full p-0.5 backdrop-blur-sm" title={cert.name || cert.key}>
                 {cert.iconUrl ? (
-                  <Image src={cert.iconUrl} alt={cert.name || cert.key} fill className="object-contain" unoptimized />
+                  <Image src={cert.iconUrl} alt={cert.name || cert.key} fill className="object-contain" />
                 ) : (
                   <ShieldCheck size={14} className="text-gold-400" />
                 )}
@@ -494,7 +494,7 @@ export default function BuildPage() {
                 <div key={product.lineKey} className="flex gap-4 items-start py-1">
                   <div className="w-28 h-32 bg-cream-100 relative shrink-0 overflow-hidden rounded">
                     {src
-                      ? <Image src={src} alt={product.name} fill className="object-cover" sizes="112px" unoptimized />
+                      ? <Image src={src} alt={product.name} fill className="object-cover" sizes="112px" />
                       : <div className="w-full h-full flex items-center justify-center text-3xl">{product.imageEmoji}</div>
                     }
                   </div>
@@ -568,7 +568,7 @@ export default function BuildPage() {
                 {!modalLoading && modalGallery.length === 0 && (
                   <div className="shrink-0 w-full h-full snap-start relative">
                     {modalMainSrc
-                      ? <Image src={modalMainSrc} alt={modalProduct.name} fill className="object-cover" sizes="(max-width:1023px) 100vw, 55vw" unoptimized />
+                      ? <Image src={modalMainSrc} alt={modalProduct.name} fill className="object-cover" sizes="(max-width:1023px) 100vw, 55vw" />
                       : <div className="absolute inset-0 flex items-center justify-center text-8xl bg-cream-100">
                           <span className="select-none">{modalProduct.imageEmoji}</span>
                         </div>
@@ -577,7 +577,7 @@ export default function BuildPage() {
                 )}
                 {modalGallery.map((img) => (
                   <div key={img.id} className="shrink-0 w-full h-full snap-start relative">
-                    <Image src={img.image_url} alt={img.label ?? modalProduct.name} fill className="object-cover" sizes="(max-width:1023px) 100vw, 55vw" unoptimized />
+                    <Image src={img.image_url} alt={img.label ?? modalProduct.name} fill className="object-cover" sizes="(max-width:1023px) 100vw, 55vw" />
                   </div>
                 ))}
                 {modalVideo && (

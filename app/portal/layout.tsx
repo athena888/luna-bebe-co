@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { LayoutDashboard, ShoppingBag, Phone, ImagePlus, Home, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, Gift, Camera, ShieldCheck, Layers, LineChart } from 'lucide-react'
 
 const NAV = [
@@ -75,6 +75,9 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
+
+  // Anyone using the admin portal is internal — flag this browser so GA excludes it
+  useEffect(() => { try { localStorage.setItem('pl_internal', '1') } catch {} }, [])
 
   return (
     <div className="flex min-h-screen bg-bark-700">

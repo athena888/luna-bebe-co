@@ -74,10 +74,19 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <>
             <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
             <Script id="ga4" strategy="afterInteractive">{`
+              // Own-traffic exclusion: visiting ?internal=1 (or logging into the
+              // portal) flags this browser so GA tags it traffic_type=internal.
+              try {
+                var u = new URL(window.location.href);
+                if (u.searchParams.get('internal') === '1') localStorage.setItem('pl_internal','1');
+                if (u.searchParams.get('internal') === '0') localStorage.removeItem('pl_internal');
+              } catch(e){}
+              var __internal = false;
+              try { __internal = localStorage.getItem('pl_internal') === '1'; } catch(e){}
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', '${GA_ID}');
+              gtag('config', '${GA_ID}', __internal ? { traffic_type: 'internal' } : {});
             `}</Script>
           </>
         )}

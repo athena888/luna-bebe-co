@@ -144,8 +144,7 @@ export default function ProductDetailClient() {
                             fill
                             className="object-cover"
                             sizes="(max-width: 1024px) 50vw, 26vw"
-                            unoptimized
-                            onError={() => handleImgError(idx)}
+                                                       onError={() => handleImgError(idx)}
                           />
                         ) : (
                           <div className="absolute inset-0 flex items-center justify-center text-6xl bg-cream-200">
@@ -313,8 +312,7 @@ export default function ProductDetailClient() {
               fill
               className="object-contain"
               sizes="100vw"
-              unoptimized
-            />
+                         />
           </div>
 
           {/* Next */}

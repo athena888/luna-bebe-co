@@ -83,8 +83,7 @@ export default async function HomePage() {
             fill
             className="object-cover object-center"
             priority
-            unoptimized
-          />
+                     />
           <div className="absolute inset-0 bg-gradient-to-t from-bark-800/40 via-transparent to-transparent" />
           <div className="relative z-10 w-full px-6 sm:px-12 pb-10 sm:pb-14 flex justify-end">
             <div className="w-full max-w-[300px] sm:max-w-sm text-right">
@@ -175,8 +174,7 @@ export default async function HomePage() {
                 alt="Petite Lavande brand story"
                 fill
                 className="object-cover object-center"
-                unoptimized
-              />
+                             />
             </div>
             <div className="bg-cream-100 flex items-center justify-center px-8 sm:px-16 py-16 sm:py-24 order-2">
               <div className="max-w-sm">
@@ -234,8 +232,7 @@ export default async function HomePage() {
                 alt="What's inside a Petite Lavande box"
                 fill
                 className="object-cover object-center"
-                unoptimized
-              />
+                             />
             </div>
           </div>
 
@@ -260,8 +257,7 @@ export default async function HomePage() {
                   alt="Petite Lavande box"
                   fill
                   className="object-cover object-center"
-                  unoptimized
-                />
+                                 />
               </div>
             ))}
             <div className="shrink-0 w-6 sm:w-9" />
@@ -323,8 +319,7 @@ export default async function HomePage() {
             alt="Petite Lavande gift box"
             fill
             className="object-cover object-center opacity-40"
-            unoptimized
-          />
+                     />
           <div className="relative z-10 max-w-xl mx-auto">
             <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-8">Begin</p>
             <h2 className="font-serif text-4xl sm:text-5xl text-cream-50 leading-tight mb-3">
