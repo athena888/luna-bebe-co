@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import Image from 'next/image'
-import { ChevronLeft, ChevronRight, X, ShoppingBag } from 'lucide-react'
+import { ChevronLeft, ChevronRight, X, ShoppingBag, Leaf } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import type { Product } from '@/types'
 import type { ProductCert, CertDef } from '@/lib/certifications'
@@ -39,6 +39,12 @@ function getImgSrc(p: Product, phase: number): string | null {
 }
 
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
+
+// Treat a product as organic if its tag, ingredients, or name say so
+function isOrganic(p: Product): boolean {
+  const hay = `${p.tag ?? ''} ${p.ingredients ?? ''} ${p.name ?? ''}`.toLowerCase()
+  return hay.includes('organic') || hay.includes('gots')
+}
 
 // ─── Modal ────────────────────────────────────────────────────────────────────
 
@@ -451,6 +457,15 @@ export function ProductCarousel({ products }: { products: Product[] }) {
                     <div className="absolute top-3 left-3">
                       <span className="font-sans text-[9px] tracking-[0.15em] uppercase bg-gold-400/30 backdrop-blur-sm text-gold-100 px-2 py-0.5">
                         {product.tag}
+                      </span>
+                    </div>
+                  )}
+
+                  {isOrganic(product) && (
+                    <div className="absolute bottom-3 right-3 flex flex-col items-center gap-0.5 pointer-events-none">
+                      <span className="font-sans text-[8px] tracking-[0.18em] uppercase text-white drop-shadow">Organic</span>
+                      <span className="w-7 h-7 rounded-full bg-sage-500/90 backdrop-blur-sm flex items-center justify-center shadow-md">
+                        <Leaf size={14} className="text-white" />
                       </span>
                     </div>
                   )}
