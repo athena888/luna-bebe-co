@@ -86,6 +86,8 @@ export default function ProductDetailPage() {
   const [variants, setVariants] = useState<Variant[]>([])
   const [published, setPublished] = useState(true)
   const [needsReview, setNeedsReview] = useState(false)
+  const [featured, setFeatured] = useState(false)
+  const [organic, setOrganic] = useState(false)
   const [changes, setChanges] = useState<InventoryChange[]>([])
   const [changeBusy, setChangeBusy] = useState(false)
   const [aiScanning, setAiScanning] = useState(false)
@@ -140,6 +142,8 @@ export default function ProductDetailPage() {
       setSeoTitle(data.product.seo_title ?? '')
       setSeoDescription(data.product.seo_description ?? '')
       setFaqs(Array.isArray(data.product.faqs) ? data.product.faqs : [])
+      setFeatured(!!data.product.featured)
+      setOrganic(!!data.product.organic)
     }
     // Load cert library + pending inventory changes in parallel
     fetch('/api/portal/cert-library').then(r => r.json()).then(d => setCertLibrary(d.certs ?? [])).catch(() => {})
@@ -181,6 +185,8 @@ export default function ProductDetailPage() {
         seoTitle: seoTitle || null,
         seoDescription: seoDescription || null,
         faqs: faqs.filter(f => f.q.trim() && f.a.trim()),
+        featured,
+        organic,
       }),
     })
     if (opts?.active !== undefined) setPublished(opts.active)
@@ -808,6 +814,16 @@ export default function ProductDetailPage() {
                     <option key={tag} value={tag}>{tag}</option>
                   ))}
                 </select>
+              </div>
+              <div className="flex flex-wrap gap-4 pt-1">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={featured} onChange={e => setFeatured(e.target.checked)} className="accent-gold-500 w-4 h-4" />
+                  <span className="font-sans text-xs text-bark-600">⭐ Show in Bestsellers carousel</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={organic} onChange={e => setOrganic(e.target.checked)} className="accent-sage-500 w-4 h-4" />
+                  <span className="font-sans text-xs text-bark-600">🌿 Organic (shows organic badge)</span>
+                </label>
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1.5">

@@ -48,16 +48,20 @@ async function getBestsellers(): Promise<Product[]> {
       }
     }
     const catalogById = new Map(catalog.map(p => [p.id, p]))
+    // 1) Hand-picked featured products come first (admin curation)
+    const picked = catalog.filter(p => p.featured)
+    const seen = new Set(picked.map(p => p.id))
+    // 2) Then best-selling products, 3) then featured-id fallback / rest
     const ranked = [...unitsById.entries()]
-      .filter(([id]) => catalogById.has(id))
+      .filter(([id]) => catalogById.has(id) && !seen.has(id))
       .sort((a, b) => b[1] - a[1])
       .map(([id]) => catalogById.get(id)!)
-    const seen = new Set(ranked.map(p => p.id))
+    ranked.forEach(p => seen.add(p.id))
     const fallback = [
       ...FEATURED_IDS.map(id => catalogById.get(id)).filter(Boolean),
       ...catalog,
     ].filter(p => p && !seen.has(p.id)) as typeof catalog
-    return [...ranked, ...fallback].slice(0, 8)
+    return [...picked, ...ranked, ...fallback].slice(0, 8)
   } catch (e) {
     console.error('getBestsellers failed, using static featured:', e)
     return FEATURED_IDS.flatMap(id => {

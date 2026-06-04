@@ -14,6 +14,8 @@ export interface Product {
   ingredients?: string
   hoverImage?: string
   hoverVideo?: string
+  featured?: boolean
+  organic?: boolean
 }
 
 export type ProductCategory = 'swaddle' | 'garment' | 'bath' | 'keepsake' | 'mom'

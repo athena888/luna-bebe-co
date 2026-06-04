@@ -40,8 +40,9 @@ function getImgSrc(p: Product, phase: number): string | null {
 
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
 
-// Treat a product as organic if its tag, ingredients, or name say so
+// Organic if explicitly flagged by the admin, else inferred from tag/ingredients/name
 function isOrganic(p: Product): boolean {
+  if (p.organic) return true
   const hay = `${p.tag ?? ''} ${p.ingredients ?? ''} ${p.name ?? ''}`.toLowerCase()
   return hay.includes('organic') || hay.includes('gots')
 }
