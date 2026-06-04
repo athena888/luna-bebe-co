@@ -6,6 +6,7 @@ import { ShipButton } from './ShipButton'
 import type { Order } from '@/types'
 import Image from 'next/image'
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
 function formatDate(iso: string) { return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }
 
@@ -143,19 +144,36 @@ export function OrdersTable({ orders: initial }: { orders: ExtendedOrder[] }) {
                         <div className="flex-1">
                           <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-bark-400 mb-3">Items Ordered</p>
                           <div className="space-y-2">
-                            {(order.selected_items ?? []).map((item, i) => (
+                            {(order.selected_items ?? []).map((item, i) => {
+                              const v = item as typeof item & { selectedColor?: string; selectedSize?: string; selectedStyle?: string; image?: string; quantity?: number }
+                              const photo = v.image || (SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${item.id}.jpg` : '')
+                              const variant = [v.selectedColor, v.selectedSize, v.selectedStyle].filter(Boolean).join(' · ')
+                              return (
                               <div key={i} className="flex items-center justify-between py-2 border-b border-cream-200 last:border-0">
-                                <div className="flex items-center gap-3">
-                                  <span className="text-xl">{item.imageEmoji}</span>
-                                  <div>
-                                    <p className="font-sans text-sm text-bark-600">{item.name}</p>
+                                <div className="flex items-center gap-3 min-w-0">
+                                  {photo ? (
+                                    <div className="relative w-12 h-12 rounded overflow-hidden bg-cream-100 shrink-0 border border-cream-200">
+                                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                                      <img src={photo} alt={item.name} className="w-full h-full object-cover" onError={e => { (e.currentTarget.style.display = 'none') }} />
+                                    </div>
+                                  ) : <span className="text-xl shrink-0">{item.imageEmoji}</span>}
+                                  <div className="min-w-0">
+                                    <p className="font-sans text-sm text-bark-600 truncate">{item.name}</p>
                                     <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400">{item.category}</p>
+                                    {variant && <p className="font-sans text-[11px] text-bark-500 capitalize mt-0.5">{variant}{v.quantity && v.quantity > 1 ? ` · Qty ${v.quantity}` : ''}</p>}
                                   </div>
                                 </div>
-                                <span className="font-sans text-sm text-bark-500">{formatPrice(item.price)}</span>
+                                <span className="font-sans text-sm text-bark-500 shrink-0 ml-3">{formatPrice(item.price)}</span>
                               </div>
-                            ))}
+                              )
+                            })}
                           </div>
+                          {order.special_note && (
+                            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded">
+                              <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-amber-700 mb-1">⚠ Customer Special Request</p>
+                              <p className="font-sans text-xs text-bark-600 leading-relaxed whitespace-pre-wrap">{order.special_note}</p>
+                            </div>
+                          )}
                           {order.letter_content && (
                             <div className="mt-4 p-3 bg-cream-100 border border-cream-300">
                               <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-1">Handwritten Letter</p>

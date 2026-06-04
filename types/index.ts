@@ -45,6 +45,7 @@ export interface Order {
   customer_email: string
   customer_phone?: string
   recipient_name?: string
+  special_note?: string
   selected_items: Product[]
   letter_content?: string
   letter_version?: 1 | 2

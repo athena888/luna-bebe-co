@@ -28,6 +28,7 @@ export default function CheckoutPage() {
   const [contact, setContact] = useState({ name: '', email: '', phone: '' })
   const [address, setAddress] = useState({ line1: '', line2: '', city: '', state: '', zip: '' })
   const [recipientName, setRecipientName] = useState('')
+  const [specialNote, setSpecialNote] = useState('')
   const [letterVersion, setLetterVersion] = useState<1 | 2>(1)
 
   const [promoCode, setPromoCode] = useState('')
@@ -143,6 +144,7 @@ export default function CheckoutPage() {
           preferredAssemblyImage: chosenStyle?.url || null,
           preferredAssemblyStyle: chosenStyle?.label || null,
           recipientName: recipientName || undefined,
+          specialNote: specialNote || undefined,
           shippingAddress: {
             name: contact.name,
             email: contact.email,
@@ -212,6 +214,10 @@ export default function CheckoutPage() {
                     <div className="sm:col-span-2">
                       <label className={labelClass}>Gift Recipient Name (optional)</label>
                       <input type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)} placeholder="Who is this gift for?" className={inputClass} />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className={labelClass}>Special requests / notes (optional)</label>
+                      <textarea value={specialNote} onChange={e => setSpecialNote(e.target.value)} rows={3} placeholder="Allergies, delivery timing, gift message, anything we should know…" className={inputClass + ' resize-none'} />
                     </div>
                   </div>
                 </div>

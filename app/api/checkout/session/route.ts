@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
       shippingType,
       shippingAddress,
       recipientName,
+      specialNote,
       totalAmount,
       promoId,
       preferredAssemblyImage,
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest) {
         zip: string
       }
       recipientName: string
+      specialNote?: string
       totalAmount: number
       promoId?: string
       preferredAssemblyImage?: string
@@ -101,6 +103,7 @@ export async function POST(req: NextRequest) {
         customer_email: shippingAddress.email,
         customer_phone: shippingAddress.phone || null,
         recipient_name: recipientName || null,
+        special_note: specialNote || null,
         selected_items: selectedItems,
         letter_content: letterContent || null,
         letter_version: letterVersion || null,
