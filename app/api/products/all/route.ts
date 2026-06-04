@@ -12,7 +12,9 @@ export async function GET(req: NextRequest) {
       ;(byCategory[p.category] ??= []).push(p)
     }
 
-    return NextResponse.json({ products, byCategory })
+    return NextResponse.json({ products, byCategory }, {
+      headers: { 'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=600' },
+    })
   } catch (error) {
     console.error('Catalog fetch error:', error)
     return NextResponse.json({ error: 'Failed to load catalog' }, { status: 500 })

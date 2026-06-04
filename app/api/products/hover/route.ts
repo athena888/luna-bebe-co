@@ -37,5 +37,7 @@ export async function GET() {
     }
   }
 
-  return NextResponse.json({ hover: result })
+  return NextResponse.json({ hover: result }, {
+    headers: { 'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=600' },
+  })
 }

@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
         pathname: '/storage/v1/object/public/**',
       },
     ],
+    // Serve modern, smaller formats and cache transforms aggressively.
+    // (Only applies to <Image> NOT marked `unoptimized`.)
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 2678400, // 31 days
   },
   async headers() {
     return [
