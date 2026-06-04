@@ -21,7 +21,7 @@ function ProductImageCard({
   product,
   onDelete,
 }: {
-  product: Product & { active?: boolean; needs_review?: boolean }
+  product: Product & { active?: boolean; needs_review?: boolean; featured?: boolean }
   onDelete: (id: string) => void
 }) {
   const [state, setState] = useState<UploadState>('idle')
@@ -80,6 +80,9 @@ function ProductImageCard({
 
         {/* Status badges */}
         <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
+          {product.featured && (
+            <span className="font-sans text-[9px] tracking-[0.12em] uppercase bg-gold-400 text-white px-2 py-0.5 rounded shadow">★ Bestseller</span>
+          )}
           {product.needs_review && (
             <span className="font-sans text-[9px] tracking-[0.12em] uppercase bg-amber-400 text-white px-2 py-0.5 rounded shadow">Needs review</span>
           )}

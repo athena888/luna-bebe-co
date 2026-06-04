@@ -183,6 +183,13 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
               ))}
             </div>
           )}
+
+          {/* Certifications — under the image carousel */}
+          {certs.length > 0 && (
+            <div className="px-4 pb-3 pt-1 border-t border-cream-200">
+              <CertBadges certs={certs} />
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col overflow-y-auto p-6 sm:p-8 flex-1">
@@ -248,13 +255,6 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
             <div className="border-t border-cream-300 pt-4 mb-5">
               <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-1">Materials</p>
               <p className="font-sans text-xs text-bark-500">{ingredients}</p>
-            </div>
-          )}
-
-          {/* Certifications */}
-          {certs.length > 0 && (
-            <div className="border-t border-cream-300 pt-4 mb-5">
-              <CertBadges certs={certs} />
             </div>
           )}
 
