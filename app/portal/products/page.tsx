@@ -605,6 +605,39 @@ export default function ProductsPortalPage() {
   const [cleaning, setCleaning] = useState(false)
   const [deleteError, setDeleteError] = useState('')
   const [reviewOnly, setReviewOnly] = useState(false)
+  const [mergeMode, setMergeMode] = useState(false)
+  const [mergeSel, setMergeSel] = useState<string[]>([])
+  const [mergeTarget, setMergeTarget] = useState<string>('')
+  const [merging, setMerging] = useState(false)
+
+  function toggleMergeSel(pid: string) {
+    setMergeSel(prev => {
+      const next = prev.includes(pid) ? prev.filter(x => x !== pid) : [...prev, pid]
+      if (!next.includes(mergeTarget)) setMergeTarget(next[0] ?? '')
+      return next
+    })
+  }
+
+  async function doMerge() {
+    if (mergeSel.length < 2 || !mergeTarget) return
+    const sourceIds = mergeSel.filter(s => s !== mergeTarget)
+    const targetName = products.find(p => p.id === mergeTarget)?.name ?? mergeTarget
+    if (!confirm(`Merge ${sourceIds.length} product(s) into "${targetName}"? Their photos and stock (color/size) combine into it, and the others are removed. The merged product is flagged for review.`)) return
+    setMerging(true)
+    try {
+      const res = await fetch('/api/portal/products/merge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetId: mergeTarget, sourceIds }),
+      })
+      const data = await res.json()
+      if (!res.ok) { alert(data.error || 'Merge failed'); return }
+      setMergeMode(false); setMergeSel([]); setMergeTarget('')
+      await load()
+    } finally {
+      setMerging(false)
+    }
+  }
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -686,6 +719,15 @@ export default function ProductsPortalPage() {
             {reviewOnly ? 'Showing review' : `Needs review${reviewCount ? ` (${reviewCount})` : ''}`}
           </button>
           <button
+            onClick={() => { setMergeMode(v => !v); setMergeSel([]); setMergeTarget('') }}
+            className={`font-sans text-[11px] tracking-[0.2em] uppercase px-4 py-2 rounded border transition-colors whitespace-nowrap ${
+              mergeMode ? 'bg-bark-600 text-white border-bark-600' : 'text-bark-600 border-bark-400 hover:bg-cream-50'
+            }`}
+            title="Select multiple products to combine into one"
+          >
+            {mergeMode ? 'Cancel merge' : 'Merge products'}
+          </button>
+          <button
             onClick={handleCleanup}
             disabled={cleaning}
             className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-500 hover:text-red-500 border border-cream-300 hover:border-red-300 px-4 py-2 rounded transition-colors whitespace-nowrap disabled:opacity-40"
@@ -729,7 +771,24 @@ export default function ProductsPortalPage() {
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {items.map(product => (
-                <ProductImageCard key={product.id} product={product} onDelete={handleDelete} />
+                <div key={product.id} className="relative">
+                  <ProductImageCard product={product} onDelete={handleDelete} />
+                  {mergeMode && (
+                    <button
+                      onClick={() => toggleMergeSel(product.id)}
+                      className={`absolute inset-0 z-20 rounded-xl border-2 transition-colors ${
+                        mergeSel.includes(product.id) ? 'border-bark-600 bg-bark-600/20' : 'border-transparent bg-bark-900/0 hover:bg-bark-900/5'
+                      }`}
+                      title={mergeSel.includes(product.id) ? 'Selected' : 'Tap to select'}
+                    >
+                      <span className={`absolute top-2 left-2 w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold ${
+                        mergeSel.includes(product.id) ? 'bg-bark-600 text-white' : 'bg-white/90 text-bark-400 border border-cream-300'
+                      }`}>
+                        {mergeSel.includes(product.id) ? '✓' : ''}
+                      </span>
+                    </button>
+                  )}
+                </div>
               ))}
             </div>
           </div>
@@ -748,6 +807,38 @@ export default function ProductsPortalPage() {
           onClose={() => setShowAdd(false)}
           onCreated={() => { setShowAdd(false); load() }}
         />
+      )}
+
+      {/* Merge action bar */}
+      {mergeMode && mergeSel.length >= 1 && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-bark-700 text-cream-50 rounded-xl shadow-2xl px-4 py-3 flex flex-wrap items-center gap-3 max-w-[95vw]">
+          <span className="font-sans text-sm">{mergeSel.length} selected</span>
+          <div className="flex items-center gap-2">
+            <span className="font-sans text-xs text-cream-300">Merge into:</span>
+            <select
+              value={mergeTarget}
+              onChange={e => setMergeTarget(e.target.value)}
+              className="bg-bark-600 text-cream-50 text-sm rounded px-2 py-1 max-w-[180px] focus:outline-none"
+            >
+              {mergeSel.map(sid => (
+                <option key={sid} value={sid}>{products.find(p => p.id === sid)?.name ?? sid}</option>
+              ))}
+            </select>
+          </div>
+          <button
+            onClick={doMerge}
+            disabled={mergeSel.length < 2 || !mergeTarget || merging}
+            className="bg-gold-400 text-white font-sans text-[11px] tracking-[0.2em] uppercase px-4 py-2 rounded hover:bg-gold-500 transition-colors disabled:opacity-40"
+          >
+            {merging ? 'Merging…' : 'Merge'}
+          </button>
+          <button
+            onClick={() => { setMergeMode(false); setMergeSel([]); setMergeTarget('') }}
+            className="font-sans text-[11px] tracking-[0.2em] uppercase text-cream-300 hover:text-cream-50 px-2"
+          >
+            Cancel
+          </button>
+        </div>
       )}
     </div>
   )

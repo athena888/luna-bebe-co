@@ -16,13 +16,20 @@ export async function DELETE(
 
   if (!image) return NextResponse.json({ error: 'Image not found' }, { status: 404 })
 
-  // Remove from storage
+  await supabaseAdmin.from('product_gallery').delete().eq('id', imageId)
+
+  // Only remove the storage file if no other gallery row (e.g. a merged/split
+  // sibling product) still references the same image — avoids breaking shared photos.
   const urlParts = image.image_url.split('/product-images/')
   if (urlParts[1]) {
-    await supabaseAdmin.storage.from('product-images').remove([urlParts[1]])
+    const { count } = await supabaseAdmin
+      .from('product_gallery')
+      .select('id', { count: 'exact', head: true })
+      .eq('image_url', image.image_url)
+    if ((count ?? 0) === 0) {
+      await supabaseAdmin.storage.from('product-images').remove([urlParts[1]])
+    }
   }
-
-  await supabaseAdmin.from('product_gallery').delete().eq('id', imageId)
 
   return NextResponse.json({ ok: true })
 }

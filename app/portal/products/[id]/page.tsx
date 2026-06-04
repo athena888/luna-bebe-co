@@ -351,6 +351,21 @@ export default function ProductDetailPage() {
     }
   }
 
+  async function splitByColor() {
+    const colorCount = new Set(variants.map(v => v.color.toLowerCase().trim()).filter(Boolean)).size
+    if (colorCount < 2) { alert('This product needs at least 2 colors to split.'); return }
+    if (!confirm(`Split into ${colorCount} separate products (one per color)? Each color becomes a new unpublished draft with its own stock and a copy of the photo. The original is unpublished.`)) return
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/portal/products/${id}/split`, { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) { alert(data.error || 'Split failed'); setSaving(false); return }
+      router.push('/portal/products')
+    } catch {
+      alert('Split failed'); setSaving(false)
+    }
+  }
+
   async function handleGalleryUpload(file: File, primary: boolean) {
     setUploading(true)
     setUploadError('')
@@ -751,17 +766,28 @@ export default function ProductDetailPage() {
 
           {/* Variants (sizes & colors) */}
           <div className="bg-white border border-cream-300 rounded-xl p-6">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
               <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">Sizes &amp; Colors</p>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <span className="font-sans text-xs text-bark-500">This item has sizes/colors</span>
-                <input
-                  type="checkbox"
-                  checked={hasVariants}
-                  onChange={e => setHasVariants(e.target.checked)}
-                  className="accent-bark-600 w-4 h-4"
-                />
-              </label>
+              <div className="flex items-center gap-3">
+                {hasVariants && new Set(variants.map(v => v.color.toLowerCase().trim()).filter(Boolean)).size >= 2 && (
+                  <button
+                    onClick={splitByColor}
+                    className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-500 border border-cream-300 hover:border-bark-400 px-3 py-1.5 rounded transition-colors"
+                    title="Split this product into one separate product per color"
+                  >
+                    Split by color
+                  </button>
+                )}
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <span className="font-sans text-xs text-bark-500">This item has sizes/colors</span>
+                  <input
+                    type="checkbox"
+                    checked={hasVariants}
+                    onChange={e => setHasVariants(e.target.checked)}
+                    className="accent-bark-600 w-4 h-4"
+                  />
+                </label>
+              </div>
             </div>
 
             {hasVariants ? (
