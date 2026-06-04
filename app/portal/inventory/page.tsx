@@ -20,6 +20,7 @@ interface ParsedItem {
   item_id: string
   name: string
   color_code?: string          // supplier's raw color code from the sheet (e.g. "XJ32#")
+  style?: string               // optional shape/style (e.g. Star, Moon)
   color: string
   color_hex?: string
   size: string

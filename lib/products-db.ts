@@ -4,6 +4,8 @@ import { PROTECTED_PRODUCT_IDS } from './prebuilt-boxes'
 import type { ProductCert } from './certifications'
 import type { Product, ProductCategory } from '@/types'
 
+export interface ProductFaq { q: string; a: string }
+
 export interface DbProduct extends Product {
   active: boolean
   is_custom: boolean
@@ -11,6 +13,9 @@ export interface DbProduct extends Product {
   has_variants: boolean
   certifications: ProductCert[]
   needs_review: boolean
+  seo_title?: string | null
+  seo_description?: string | null
+  faqs?: ProductFaq[] | null
 }
 
 interface ProductRow {
@@ -29,6 +34,9 @@ interface ProductRow {
   has_variants: boolean | null
   certifications: ProductCert[] | null
   needs_review?: boolean | null
+  seo_title?: string | null
+  seo_description?: string | null
+  faqs?: ProductFaq[] | null
 }
 
 function rowToProduct(r: ProductRow): DbProduct {
@@ -48,6 +56,9 @@ function rowToProduct(r: ProductRow): DbProduct {
     has_variants: r.has_variants ?? false,
     certifications: r.certifications ?? [],
     needs_review: r.needs_review ?? false,
+    seo_title: r.seo_title ?? null,
+    seo_description: r.seo_description ?? null,
+    faqs: r.faqs ?? null,
   }
 }
 
@@ -183,6 +194,9 @@ export interface UpdateProductInput {
   hasVariants?: boolean
   certifications?: ProductCert[]
   needsReview?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  faqs?: ProductFaq[] | null
 }
 
 /** Updates editable fields on an existing product. */
@@ -200,6 +214,9 @@ export async function updateProduct(id: string, input: UpdateProductInput): Prom
   if (input.hasVariants !== undefined) patch.has_variants = input.hasVariants
   if (input.certifications !== undefined) patch.certifications = input.certifications
   if (input.needsReview !== undefined) patch.needs_review = input.needsReview
+  if (input.seoTitle !== undefined) patch.seo_title = input.seoTitle
+  if (input.seoDescription !== undefined) patch.seo_description = input.seoDescription
+  if (input.faqs !== undefined) patch.faqs = input.faqs
   if (Object.keys(patch).length === 0) return
   const { error } = await supabaseAdmin.from('products').update(patch).eq('id', id)
   if (error) throw error

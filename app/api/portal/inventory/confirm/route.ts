@@ -7,6 +7,7 @@ interface VariantRow {
   color: string
   color_code?: string
   color_hex?: string
+  style?: string
   size: string
   quantity: number
   unit_price?: number | null   // dollars
@@ -40,13 +41,14 @@ export async function POST(req: NextRequest) {
           : null
       const pid = item.item_id.toLowerCase().trim()
       const color = item.color.toLowerCase().trim()
+      const style = (item.style ?? '').trim()
       const delta = Math.round(item.quantity)
 
       // Read current stock first so we can log old → new (and allow a revert)
       const { data: existing } = await supabaseAdmin
         .from('product_variants')
         .select('quantity')
-        .eq('product_id', pid).eq('color', color).eq('size', item.size)
+        .eq('product_id', pid).eq('color', color).eq('size', item.size).eq('style', style)
         .maybeSingle()
       const oldQty = existing?.quantity ?? 0
 
@@ -58,6 +60,7 @@ export async function POST(req: NextRequest) {
         p_color_hex: hex,
         p_unit_price: unitPriceCents,
         p_color_code: code,
+        p_style: style,
       })
 
       if (error) {

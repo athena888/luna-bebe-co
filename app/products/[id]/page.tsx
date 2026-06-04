@@ -16,11 +16,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const p = await getCatalogProduct(id)
   if (!p) return { title: 'Product Not Found' }
   const url = `${BASE}/products/${id}`
-  // Derived from product data; owner can supply dedicated SEO copy later (TODO)
-  const description = (p.description || `${p.name} — a premium organic baby gift from Petite Lavande.`).slice(0, 160)
+  // Prefer the owner/AI SEO title + meta; fall back to product data.
+  // seo_title is a complete tag → use absolute so the "| Petite Lavande" template doesn't double up.
+  const description = (p.seo_description || p.description || `${p.name} — a premium organic baby gift from Petite Lavande.`).slice(0, 160)
   const img = productImage(p)
   return {
-    title: p.name,
+    title: p.seo_title ? { absolute: p.seo_title } : p.name,
     description,
     alternates: { canonical: url },
     openGraph: {
@@ -69,6 +70,17 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
               { '@type': 'ListItem', position: 3, name: p.name, item: url },
             ],
           }} />
+          {Array.isArray(p.faqs) && p.faqs.length > 0 && (
+            <JsonLd data={{
+              '@context': 'https://schema.org',
+              '@type': 'FAQPage',
+              mainEntity: p.faqs.map(f => ({
+                '@type': 'Question',
+                name: f.q,
+                acceptedAnswer: { '@type': 'Answer', text: f.a },
+              })),
+            }} />
+          )}
         </>
       )}
       <ProductDetailClient />

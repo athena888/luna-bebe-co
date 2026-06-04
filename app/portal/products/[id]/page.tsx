@@ -96,6 +96,15 @@ export default function ProductDetailPage() {
   const [dropVariant, setDropVariant] = useState<number | null>(null)
   const [styling, setStyling] = useState(false)
   const [styleMsg, setStyleMsg] = useState('')
+  // SEO Studio state
+  const [seoTitle, setSeoTitle] = useState('')
+  const [seoDescription, setSeoDescription] = useState('')
+  const [faqs, setFaqs] = useState<{ q: string; a: string }[]>([])
+  const [seoBrandVoice, setSeoBrandVoice] = useState('Warm, poetic, premium, calming')
+  const [seoKeyword, setSeoKeyword] = useState('')
+  const [seoSpecs, setSeoSpecs] = useState('')
+  const [seoLoading, setSeoLoading] = useState(false)
+  const [seoMsg, setSeoMsg] = useState('')
   const [certs, setCerts] = useState<ProductCert[]>([])
   const [certLibrary, setCertLibrary] = useState<CertDef[]>([])
   const [certUploading, setCertUploading] = useState<string | null>(null)
@@ -127,6 +136,9 @@ export default function ProductDetailPage() {
       setCerts(data.product.certifications ?? [])
       setPublished(data.product.active !== false)
       setNeedsReview(!!data.product.needs_review)
+      setSeoTitle(data.product.seo_title ?? '')
+      setSeoDescription(data.product.seo_description ?? '')
+      setFaqs(Array.isArray(data.product.faqs) ? data.product.faqs : [])
     }
     // Load cert library + pending inventory changes in parallel
     fetch('/api/portal/cert-library').then(r => r.json()).then(d => setCertLibrary(d.certs ?? [])).catch(() => {})
@@ -165,6 +177,9 @@ export default function ProductDetailPage() {
         certifications: certs,
         active: nextActive,
         needsReview: nextReview,
+        seoTitle: seoTitle || null,
+        seoDescription: seoDescription || null,
+        faqs: faqs.filter(f => f.q.trim() && f.a.trim()),
       }),
     })
     if (opts?.active !== undefined) setPublished(opts.active)
@@ -365,6 +380,40 @@ export default function ProductDetailPage() {
       router.push('/portal/products')
     } catch {
       alert('Split failed'); setSaving(false)
+    }
+  }
+
+  // Interactive SEO generator — uses owner hints + the primary photo
+  async function generateSeo() {
+    setSeoLoading(true)
+    setSeoMsg('')
+    setAiNames([])
+    try {
+      const form = new FormData()
+      const primary = gallery.find(g => g.is_primary) ?? gallery[0]
+      if (primary) {
+        const blob = await fetch(primary.image_url).then(r => r.blob())
+        form.append('file', blob, 'product.jpg')
+      }
+      form.append('brandVoice', seoBrandVoice)
+      form.append('targetKeyword', seoKeyword)
+      form.append('specs', seoSpecs)
+      form.append('currentName', product?.name ?? '')
+      form.append('category', product?.category ?? '')
+      const res = await fetch('/api/portal/products/ai-seo', { method: 'POST', body: form })
+      const data = await res.json()
+      if (!res.ok || !data.seo) { setSeoMsg(data.error || 'Generation failed'); return }
+      const s = data.seo
+      if (Array.isArray(s.names)) setAiNames(s.names)
+      if (s.description) setProduct(p => p ? { ...p, description: s.description } : p)
+      if (s.titleTag) setSeoTitle(s.titleTag)
+      if (s.metaDescription) setSeoDescription(s.metaDescription)
+      if (Array.isArray(s.faqs)) setFaqs(s.faqs.map((f: { q: string; a: string }) => ({ q: f.q, a: f.a })))
+      setSeoMsg('Generated — review the name options, description, title tag, meta & FAQs below, then Save.')
+    } catch {
+      setSeoMsg('Generation failed')
+    } finally {
+      setSeoLoading(false)
     }
   }
 
@@ -774,6 +823,72 @@ export default function ProductDetailPage() {
           </div>
 
         </div>{/* end Row 1 */}
+
+        {/* SEO Studio */}
+        <div className="bg-white border border-cream-300 rounded-xl p-6">
+          <div className="flex items-center gap-2 mb-1">
+            <Wand2 size={14} className="text-gold-400" />
+            <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">SEO Studio</p>
+          </div>
+          <p className="font-sans text-[11px] text-bark-400 mb-4 leading-relaxed max-w-2xl">
+            These three inputs are <strong>your suggestions to guide optimization</strong> — give what you know and AI turns it into
+            keyword-led SEO. On-page copy stays poetic for customers; the title tag &amp; meta are built robust for search.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+            <div>
+              <label className={labelCls}>Brand voice</label>
+              <input value={seoBrandVoice} onChange={e => setSeoBrandVoice(e.target.value)} className={inputCls} placeholder="Warm, poetic, premium" />
+            </div>
+            <div>
+              <label className={labelCls}>Target keyword</label>
+              <input value={seoKeyword} onChange={e => setSeoKeyword(e.target.value)} className={inputCls} placeholder="e.g. organic baby bubble romper" />
+            </div>
+            <div>
+              <label className={labelCls}>Verified specs</label>
+              <input value={seoSpecs} onChange={e => setSeoSpecs(e.target.value)} className={inputCls} placeholder="material, cert, size, origin, what's inside" />
+            </div>
+          </div>
+          <button
+            onClick={generateSeo}
+            disabled={seoLoading}
+            className="flex items-center gap-1.5 bg-gold-400 text-white font-sans text-[10px] tracking-[0.2em] uppercase px-4 py-2 rounded hover:bg-gold-500 transition-colors disabled:opacity-40"
+          >
+            {seoLoading ? <Loader size={12} className="animate-spin" /> : <Wand2 size={12} />}
+            {seoLoading ? 'Generating…' : 'Generate names, copy, title, meta & FAQs'}
+          </button>
+          {seoMsg && <p className="font-sans text-[11px] text-bark-500 mt-3 bg-cream-50 border border-cream-200 rounded px-3 py-2">{seoMsg}</p>}
+
+          {/* SEO outputs (editable, saved with the product) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-5">
+            <div>
+              <label className={labelCls}>Title tag <span className="text-bark-400/60">({seoTitle.length}/60)</span></label>
+              <input value={seoTitle} onChange={e => setSeoTitle(e.target.value)} className={inputCls} placeholder="Keyword-led title for search (≤60 chars)" />
+            </div>
+            <div>
+              <label className={labelCls}>Meta description <span className="text-bark-400/60">({seoDescription.length}/160)</span></label>
+              <input value={seoDescription} onChange={e => setSeoDescription(e.target.value)} className={inputCls} placeholder="150–160 char search snippet" />
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <div className="flex items-center justify-between mb-2">
+              <label className={labelCls}>FAQs (used for Google FAQ rich results)</label>
+              <button onClick={() => setFaqs(f => [...f, { q: '', a: '' }])} className="font-sans text-[11px] text-gold-500 hover:text-gold-600 flex items-center gap-1"><Plus size={12} /> Add FAQ</button>
+            </div>
+            <div className="space-y-2">
+              {faqs.map((f, i) => (
+                <div key={i} className="border border-cream-200 rounded-lg p-2 space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <input value={f.q} onChange={e => setFaqs(prev => prev.map((x, j) => j === i ? { ...x, q: e.target.value } : x))} placeholder="Question" className="flex-1 px-2 py-1.5 border border-cream-300 rounded text-sm text-bark-600 focus:outline-none focus:border-bark-400" />
+                    <button onClick={() => setFaqs(prev => prev.filter((_, j) => j !== i))} className="text-bark-300 hover:text-red-500 shrink-0"><Trash2 size={13} /></button>
+                  </div>
+                  <textarea value={f.a} onChange={e => setFaqs(prev => prev.map((x, j) => j === i ? { ...x, a: e.target.value } : x))} placeholder="Answer" rows={2} className="w-full px-2 py-1.5 border border-cream-300 rounded text-sm text-bark-600 resize-none focus:outline-none focus:border-bark-400" />
+                </div>
+              ))}
+              {faqs.length === 0 && <p className="font-sans text-[11px] text-bark-300">No FAQs yet — generate above or add manually.</p>}
+            </div>
+          </div>
+        </div>
 
         {/* Row 2 — Sizes & Colors (full width — it has the most fields) */}
         <div>

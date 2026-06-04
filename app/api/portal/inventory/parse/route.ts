@@ -48,6 +48,7 @@ ${catalogList ? `Here is the company's EXISTING product catalog (id: name):\n${c
 Extract ALL line items from this sheet. A single style can have multiple color codes and multiple sizes — emit ONE row per (style, color, size, quantity) combination. For each item identify:
 - item_id: the matching EXISTING catalog id when confident (see list above); otherwise the style number / SKU code exactly as shown (e.g. "BD01F", "BR06F"), or slugify the name. Keep the SAME item_id across its size/color rows.
 - name: product name as shown (drop trailing footnote markers like "*")
+- style: the shape/style variant if the item comes in distinct shapes (e.g. "Star", "Moon", "Bunny", "Cloud") — common for loveys/teethers/keepsakes. Use "" if the item has no shape variants.
 - color_code: the supplier's raw color CODE exactly as printed if present (e.g. "XJ32#", "XK47#", "100#", "88#"). Use "" if none.
 - color: the human color NAME (e.g. "white", "khaki/sand", "grey-blue", "dusty rose", "cream"). If the sheet only shows a code and no name, infer a reasonable name from the swatch color, else reuse the code.
 - color_hex: the actual swatch COLOR as a hex code (e.g. "#E4DCD6") — read it from the color swatch/photo if no hex text is printed. Uppercase, include the leading "#". Use "" if you truly cannot tell.
@@ -67,7 +68,7 @@ ${isImage ? `- photo_box: the location of THIS style's MAIN product photo (the l
 Ignore subtotal, total, and section-summary rows. Only return real line items.
 
 Return ONLY a valid JSON array, no markdown, no explanation:
-[{"item_id":"...","name":"...","color_code":"...","color":"...","color_hex":"...","size":"...","quantity":0,"unit_price":0,"status":"stock","photo_box":{"x":0,"y":0,"w":0,"h":0}}]`,
+[{"item_id":"...","name":"...","style":"","color_code":"...","color":"...","color_hex":"...","size":"...","quantity":0,"unit_price":0,"status":"stock","photo_box":{"x":0,"y":0,"w":0,"h":0}}]`,
           },
         ],
       }],
