@@ -68,14 +68,14 @@ export function Footer() {
           </div>
 
           {/* 3 column grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 mb-12">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 mb-12 text-center">
 
             {/* Shop */}
             <div>
               <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-4 font-medium">Shop</p>
               <ul className="space-y-2.5 text-xs font-sans">
-                <li><Link href="/shop" className="text-bark-400 hover:text-bark-600 transition-colors">Gift Boxes</Link></li>
-                <li><Link href="/build" className="text-bark-400 hover:text-bark-600 transition-colors">Build a Box</Link></li>
+                <li><Link href="/boxes" className="text-bark-400 hover:text-bark-600 transition-colors">Ready-Made Boxes</Link></li>
+                <li><Link href="/build" className="text-bark-400 hover:text-bark-600 transition-colors">Build Your Own Box</Link></li>
                 <li><Link href="/gift-cards" className="text-bark-400 hover:text-bark-600 transition-colors">Gift Cards</Link></li>
                 <li><Link href="/guide" className="text-bark-400 hover:text-bark-600 transition-colors">Gift Guide</Link></li>
               </ul>
@@ -104,8 +104,8 @@ export function Footer() {
           {/* Trust badges */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-12 border-t border-cream-300">
             {TRUST_BADGES.map(({ icon: Icon, label, sub }) => (
-              <div key={label} className="text-center sm:text-left">
-                <Icon size={18} className="text-bark-400 mb-2 mx-auto sm:mx-0" strokeWidth={1.5} />
+              <div key={label} className="text-center">
+                <Icon size={18} className="text-bark-400 mb-2 mx-auto" strokeWidth={1.5} />
                 <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-600">{label}</p>
                 <p className="font-sans text-[9px] text-bark-400">{sub}</p>
               </div>

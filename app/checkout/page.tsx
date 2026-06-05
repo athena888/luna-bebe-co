@@ -12,6 +12,11 @@ import Image from 'next/image'
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
 function boxItemTotal(selection: BoxSelection) { return Object.values(selection).reduce((sum, p) => sum + (p?.price ?? 0), 0) }
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+function productImage(p: { id: string; image?: string | null }): string | null {
+  return p.image ?? (SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${p.id}.jpg` : null)
+}
+
 const inputClass = "w-full px-4 py-3 border border-cream-300 bg-cream-50 font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-bark-400 transition-colors"
 const labelClass = "block font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2"
 
@@ -22,9 +27,6 @@ export default function CheckoutPage() {
   const [shippingType, setShippingType] = useState<ShippingType>('standard')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
-  const [boxImageUrl, setBoxImageUrl] = useState<string | null>(null)
-  const [imageLoading, setImageLoading] = useState(false)
-
   const [contact, setContact] = useState({ name: '', email: '', phone: '' })
   const [address, setAddress] = useState({ line1: '', line2: '', city: '', state: '', zip: '' })
   const [recipientName, setRecipientName] = useState('')
@@ -36,11 +38,6 @@ export default function CheckoutPage() {
   const [promoId, setPromoId] = useState<string | null>(null)
   const [promoLabel, setPromoLabel] = useState('')
 
-  interface StyleOption { style: string; label: string; url: string }
-  const [styleOptions, setStyleOptions] = useState<StyleOption[]>([])
-  const [stylesLoading, setStylesLoading] = useState(false)
-  const [chosenStyle, setChosenStyle] = useState<StyleOption | null>(null)
-
   useEffect(() => {
     const storedBox = sessionStorage.getItem('pl_box_selection')
     const storedLetter = sessionStorage.getItem('pl_letter')
@@ -51,7 +48,6 @@ export default function CheckoutPage() {
       try {
         const parsed = JSON.parse(storedBox)
         setSelection(parsed)
-        generateBoxPreview(parsed)
       } catch { router.push('/build') }
     } else {
       router.push('/build')
@@ -60,34 +56,6 @@ export default function CheckoutPage() {
     if (storedRecipient) setRecipientName(storedRecipient)
     if (storedVersion) setLetterVersion(parseInt(storedVersion) as 1 | 2)
   }, [router])
-
-  async function generateBoxPreview(sel: BoxSelection) {
-    const items = Object.values(sel).filter(Boolean)
-    if (items.length === 0) return
-    const itemNames = items.map(p => p!.name)
-    const itemIds = items.map(p => p!.id)
-
-    // Generate 3 style options for customer to choose
-    setStylesLoading(true)
-    try {
-      const res = await fetch('/api/ai/box-options', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ itemNames, itemIds }),
-      })
-      const data = await res.json()
-      if (data.options?.length) {
-        setStyleOptions(data.options)
-        setChosenStyle(data.options[0]) // default to first
-        setBoxImageUrl(data.options[0].url)
-      }
-    } catch {
-      // silently fail — checkout still works without image
-    } finally {
-      setStylesLoading(false)
-      setImageLoading(false)
-    }
-  }
 
   async function applyPromo() {
     if (!promoCode.trim()) return
@@ -141,8 +109,8 @@ export default function CheckoutPage() {
           letterVersion: letter ? letterVersion : undefined,
           shippingType,
           promoId: promoId || undefined,
-          preferredAssemblyImage: chosenStyle?.url || null,
-          preferredAssemblyStyle: chosenStyle?.label || null,
+          preferredAssemblyImage: null,
+          preferredAssemblyStyle: null,
           recipientName: recipientName || undefined,
           specialNote: specialNote || undefined,
           shippingAddress: {
@@ -284,46 +252,38 @@ export default function CheckoutPage() {
               <div className="lg:col-span-2">
                 <div className="sticky top-24 border border-cream-300">
 
-                  {/* Assembly style picker */}
-                  <div className="border-b border-cream-300">
-                    {stylesLoading && (
-                      <div className="flex flex-col items-center justify-center gap-3 py-10 bg-cream-100">
-                        <div className="w-6 h-6 border border-gold-400 border-t-transparent rounded-full animate-spin" />
-                        <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400">Crafting your previews…</p>
-                      </div>
-                    )}
-                    {!stylesLoading && styleOptions.length === 0 && (
-                      <div className="aspect-square w-full bg-cream-100 relative flex flex-col items-center justify-center gap-3">
-                        <div className="w-8 h-px bg-gold-400" />
-                        <p className="font-script text-2xl text-bark-400">Petite Lavande</p>
-                        <div className="w-8 h-px bg-gold-400" />
-                      </div>
-                    )}
-                    {!stylesLoading && styleOptions.length > 0 && (
-                      <div className="p-4">
-                        <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-bark-400 mb-3 text-center">Choose your assembly style</p>
-                        <div className="grid grid-cols-3 gap-2">
-                          {styleOptions.map(opt => (
-                            <button
-                              key={opt.style}
-                              type="button"
-                              onClick={() => { setChosenStyle(opt); setBoxImageUrl(opt.url) }}
-                              className={`relative overflow-hidden transition-all ${chosenStyle?.style === opt.style ? 'ring-2 ring-bark-600' : 'ring-1 ring-cream-300 hover:ring-bark-400'}`}
-                              style={{ aspectRatio: '1' }}
-                            >
-                              <Image src={opt.url} alt={opt.label} fill className="object-cover" unoptimized />
-                              {chosenStyle?.style === opt.style && (
-                                <div className="absolute inset-0 bg-bark-600/10" />
-                              )}
-                              <div className="absolute bottom-0 inset-x-0 bg-black/40 py-1 px-1">
-                                <p className="font-sans text-[8px] text-white/90 text-center leading-tight">{opt.label}</p>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                        <p className="font-sans text-[9px] text-bark-400/60 text-center mt-2">We'll assemble your box to match</p>
-                      </div>
-                    )}
+                  {/* Box contents preview — real product photos */}
+                  <div className="border-b border-cream-300 p-4">
+                    {(() => {
+                      const items = Object.values(selection).filter(Boolean) as Array<NonNullable<typeof selection.swaddle>>
+                      if (items.length === 0) {
+                        return (
+                          <div className="aspect-square w-full bg-cream-100 relative flex flex-col items-center justify-center gap-3 rounded-lg">
+                            <div className="w-8 h-px bg-gold-400" />
+                            <p className="font-script text-2xl text-bark-400">Petite Lavande</p>
+                            <div className="w-8 h-px bg-gold-400" />
+                          </div>
+                        )
+                      }
+                      return (
+                        <>
+                          <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-bark-400 mb-3 text-center">Inside your box</p>
+                          <div className="grid grid-cols-3 gap-2">
+                            {items.map((item, idx) => {
+                              const src = productImage(item)
+                              return (
+                                <div key={`${item.id}-${idx}`} className="relative aspect-square overflow-hidden rounded-md bg-cream-100 border border-cream-200">
+                                  {src
+                                    ? <Image src={src} alt={item.name} fill className="object-cover" unoptimized sizes="120px" />
+                                    : <span className="absolute inset-0 flex items-center justify-center text-2xl">{item.imageEmoji}</span>}
+                                </div>
+                              )
+                            })}
+                          </div>
+                          <p className="font-sans text-[9px] text-bark-400/60 text-center mt-2">Hand-assembled, wrapped &amp; wax-sealed before it ships</p>
+                        </>
+                      )
+                    })()}
                   </div>
 
                   {/* Items */}

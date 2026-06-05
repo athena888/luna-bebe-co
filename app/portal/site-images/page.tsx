@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Loader, Upload, Check } from 'lucide-react'
+import { Loader, Upload, Check, Sparkles } from 'lucide-react'
 import { IMAGE_SLOTS, slotsByGroup, type ImageSlot } from '@/lib/image-slots'
 import { resizeImage } from '@/lib/image-resize'
 
@@ -11,6 +11,7 @@ function SlotCard({ slot, current, onSaved }: { slot: ImageSlot; current?: Curre
   const [url, setUrl] = useState(current?.public_url ?? '')
   const [alt, setAlt] = useState(current?.alt_text ?? '')
   const [busy, setBusy] = useState(false)
+  const [suggesting, setSuggesting] = useState(false)
   const [msg, setMsg] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -33,17 +34,34 @@ function SlotCard({ slot, current, onSaved }: { slot: ImageSlot; current?: Curre
     } finally { setBusy(false) }
   }
 
-  async function saveAlt() {
-    if (!alt.trim()) return
+  async function saveAlt(text = alt) {
+    if (!text.trim()) return
     setBusy(true)
     try {
       const form = new FormData()
       form.append('slotKey', slot.key)
-      form.append('altText', alt.trim())
+      form.append('altText', text.trim())
       await fetch('/api/portal/site-images', { method: 'POST', body: form })
-      onSaved(slot.key, { public_url: url, alt_text: alt.trim() })
+      onSaved(slot.key, { public_url: url, alt_text: text.trim() })
       setMsg('Alt saved'); setTimeout(() => setMsg(''), 2000)
     } finally { setBusy(false) }
+  }
+
+  async function suggestAlt() {
+    const clean = url.split('?')[0]
+    if (!clean) { setMsg('Upload an image first'); setTimeout(() => setMsg(''), 2500); return }
+    setSuggesting(true); setMsg('')
+    try {
+      const res = await fetch('/api/portal/site-images/alt-suggest', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: clean, context: slot.label }),
+      })
+      const data = await res.json()
+      if (data.altText) { setAlt(data.altText); await saveAlt(data.altText) }
+      else { setMsg(data.error || 'AI failed'); setTimeout(() => setMsg(''), 2500) }
+    } catch {
+      setMsg('AI failed'); setTimeout(() => setMsg(''), 2500)
+    } finally { setSuggesting(false) }
   }
 
   return (
@@ -64,13 +82,25 @@ function SlotCard({ slot, current, onSaved }: { slot: ImageSlot; current?: Curre
         </div>
       </div>
       <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = '' }} />
-      <input
-        value={alt}
-        onChange={e => setAlt(e.target.value)}
-        onBlur={saveAlt}
-        placeholder="Alt text (required)"
-        className="w-full px-2 py-1.5 border border-cream-300 rounded text-xs text-bark-600 focus:outline-none focus:border-bark-400"
-      />
+      <div className="flex items-stretch gap-1.5">
+        <input
+          value={alt}
+          onChange={e => setAlt(e.target.value)}
+          onBlur={() => saveAlt()}
+          placeholder="Alt text (required)"
+          className="flex-1 min-w-0 px-2 py-1.5 border border-cream-300 rounded text-xs text-bark-600 focus:outline-none focus:border-bark-400"
+        />
+        <button
+          type="button"
+          onClick={suggestAlt}
+          disabled={suggesting || !url}
+          title="Generate alt text with AI"
+          className="shrink-0 inline-flex items-center gap-1 px-2 rounded border border-gold-300 bg-gold-50/50 text-bark-600 hover:border-gold-400 transition-colors disabled:opacity-40"
+        >
+          {suggesting ? <Loader size={12} className="animate-spin" /> : <Sparkles size={12} className="text-gold-400" />}
+          <span className="text-[10px] tracking-[0.1em] uppercase hidden sm:inline">AI</span>
+        </button>
+      </div>
       {msg && <p className={`font-sans text-[10px] mt-1 ${msg.includes('fail') || msg.includes('alt text first') ? 'text-red-500' : 'text-sage-600'}`}>{msg === 'Saved' ? <span className="inline-flex items-center gap-1"><Check size={10} /> Saved</span> : msg}</p>}
     </div>
   )

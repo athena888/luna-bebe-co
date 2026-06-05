@@ -20,6 +20,7 @@ export interface ResolvedBox {
   aesthetic: string
   featured: boolean
   image?: string
+  images: string[]               // ordered gallery (cover = images[0] / image)
   customPrice?: number
   sortOrder: number
   active: boolean
@@ -37,6 +38,7 @@ interface BoxRow {
   aesthetic: string
   featured: boolean
   image: string | null
+  images: string[] | null
   custom_price: number | null
   sort_order: number
   active: boolean
@@ -107,6 +109,11 @@ function resolveRow(row: BoxRow, productById: Map<string, Product>): ResolvedBox
     }
   }
 
+  // Gallery: prefer the images array; fall back to the legacy single image.
+  const images = Array.isArray(row.images) && row.images.length > 0
+    ? row.images.filter(Boolean)
+    : (row.image ? [row.image] : [])
+
   return {
     slug: row.slug,
     name: row.name,
@@ -116,7 +123,8 @@ function resolveRow(row: BoxRow, productById: Map<string, Product>): ResolvedBox
     description: row.description,
     aesthetic: row.aesthetic,
     featured: row.featured,
-    image: row.image ?? undefined,
+    image: images[0] ?? row.image ?? undefined,
+    images,
     customPrice: row.custom_price ?? undefined,
     sortOrder: row.sort_order,
     active: row.active,
@@ -156,6 +164,7 @@ export interface UpdateBoxInput {
   aesthetic?: string
   featured?: boolean
   image?: string | null
+  images?: string[]
   customPrice?: number | null
   selection?: SelectionJson
 }
@@ -170,7 +179,12 @@ export async function updateBox(slug: string, input: UpdateBoxInput): Promise<vo
   if (input.description !== undefined) patch.description = input.description
   if (input.aesthetic !== undefined) patch.aesthetic = input.aesthetic
   if (input.featured !== undefined) patch.featured = input.featured
-  if (input.image !== undefined) patch.image = input.image
+  if (input.images !== undefined) {
+    patch.images = input.images
+    patch.image = input.images[0] ?? null   // keep legacy cover in sync
+  } else if (input.image !== undefined) {
+    patch.image = input.image
+  }
   if (input.customPrice !== undefined) patch.custom_price = input.customPrice
   if (input.selection !== undefined) patch.selection = input.selection
   if (Object.keys(patch).length === 0) return

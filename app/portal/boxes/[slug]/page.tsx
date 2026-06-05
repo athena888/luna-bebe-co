@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Loader, Check, Sparkles, Plus, Trash2 } from 'lucide-react'
+import { ArrowLeft, Loader, Check, Plus, Trash2, Upload, Star } from 'lucide-react'
 import Image from 'next/image'
 import type { ResolvedBox, SlotRef } from '@/lib/prebuilt-boxes-db'
+import { resizeImage } from '@/lib/image-resize'
 
 type CatalogProduct = { id: string; name: string; category: string; has_variants?: boolean; price: number }
 type BoxSlot = { key: string; label: string; product_id: string | null; color?: string | null; size?: string | null }
@@ -33,13 +34,14 @@ export default function BoxEditorPage() {
   const [name, setName] = useState('')
   const [customPrice, setCustomPrice] = useState('')
   const [showCustomPrice, setShowCustomPrice] = useState(true) // toggle: custom vs calculated
-  const [image, setImage] = useState('')
+  const [images, setImages] = useState<string[]>([])
+  const [uploading, setUploading] = useState(false)
+  const [uploadErr, setUploadErr] = useState('')
+  const fileRef = useRef<HTMLInputElement>(null)
   const [featured, setFeatured] = useState(true)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
-  const [generating, setGenerating] = useState(false)
-  const [genError, setGenError] = useState('')
   const [categoryWarning, setCategoryWarning] = useState<string | null>(null)
 
   const load = useCallback(async () => {
@@ -53,7 +55,7 @@ export default function BoxEditorPage() {
       setBox(box)
       setName(box.name)
       setCustomPrice(box.customPrice != null ? (box.customPrice / 100).toFixed(2) : '')
-      setImage(box.image ?? '')
+      setImages(box.images ?? (box.image ? [box.image] : []))
       setFeatured(box.featured)
       // Convert selectionRefs map to slots array
       const slotRefs = box.selectionRefs ?? {}
@@ -107,25 +109,31 @@ export default function BoxEditorPage() {
     setSlots(prev => prev.filter(s => s.key !== slotKey))
   }
 
-  async function handleGenerateImage() {
-    setGenerating(true)
-    setGenError('')
+  async function handleUpload(files: FileList | null) {
+    if (!files?.length) return
+    setUploading(true)
+    setUploadErr('')
     try {
-      const res = await fetch(`/api/portal/boxes/${slug}/generate-image`, { method: 'POST' })
-      const data = await res.json()
-      if (data.imageUrl) {
-        setImage(data.imageUrl)
-        setSaveMsg('Image generated!')
-        setTimeout(() => setSaveMsg(''), 3000)
-      } else {
-        setGenError(data.error || 'Generation failed')
+      const uploaded: string[] = []
+      for (const file of Array.from(files)) {
+        const resized = await resizeImage(file, 2000, 0.9)
+        const form = new FormData()
+        form.append('file', resized)
+        const res = await fetch(`/api/portal/boxes/${slug}/upload-image`, { method: 'POST', body: form })
+        const data = await res.json()
+        if (data.url) uploaded.push(data.url)
+        else setUploadErr(data.error || 'Upload failed')
       }
+      if (uploaded.length) setImages(prev => [...prev, ...uploaded])
     } catch {
-      setGenError('Generation failed')
+      setUploadErr('Upload failed')
     } finally {
-      setGenerating(false)
+      setUploading(false)
     }
   }
+
+  function removeImage(url: string) { setImages(prev => prev.filter(u => u !== url)) }
+  function makeCover(url: string) { setImages(prev => [url, ...prev.filter(u => u !== url)]) }
 
   async function handleSave() {
     setSaving(true)
@@ -148,7 +156,7 @@ export default function BoxEditorPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name,
-        image: image || null,
+        images,
         featured,
         customPrice: customPrice ? Math.round(parseFloat(customPrice) * 100) : null,
         selection,
@@ -262,27 +270,47 @@ export default function BoxEditorPage() {
             </label>
           </div>
           <div>
-            <label className={labelCls}>Assembled Box Image</label>
+            <label className={labelCls}>Box Photos {images.length > 0 && <span className="text-bark-400/60 normal-case tracking-normal">· first photo is the cover</span>}</label>
 
-            {/* Current image preview */}
-            {image && (
-              <div className="relative w-full aspect-[4/3] bg-cream-200 rounded-xl overflow-hidden mb-3">
-                <Image src={image} alt="Box image" fill className="object-cover" unoptimized />
+            {/* Gallery thumbnails */}
+            {images.length > 0 && (
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-3">
+                {images.map((url, idx) => (
+                  <div key={url} className="relative group aspect-square rounded-lg overflow-hidden border border-cream-300 bg-cream-100">
+                    <Image src={url} alt={`Box photo ${idx + 1}`} fill className="object-cover" unoptimized />
+                    {idx === 0 && (
+                      <span className="absolute top-1 left-1 inline-flex items-center gap-1 bg-bark-600/85 text-white text-[8px] tracking-[0.1em] uppercase px-1.5 py-0.5 rounded">
+                        <Star size={9} className="fill-gold-300 text-gold-300" /> Cover
+                      </span>
+                    )}
+                    <div className="absolute inset-0 bg-bark-700/0 group-hover:bg-bark-700/45 transition-colors flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100">
+                      {idx !== 0 && (
+                        <button type="button" onClick={() => makeCover(url)} title="Make cover" className="p-1.5 bg-white/90 rounded text-bark-600 hover:text-gold-500">
+                          <Star size={13} />
+                        </button>
+                      )}
+                      <button type="button" onClick={() => removeImage(url)} title="Remove" className="p-1.5 bg-white/90 rounded text-bark-600 hover:text-red-500">
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
 
-            {/* AI generate */}
+            {/* Upload */}
+            <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden" onChange={e => { handleUpload(e.target.files); e.target.value = '' }} />
             <button
               type="button"
-              onClick={handleGenerateImage}
-              disabled={generating}
-              className="w-full flex items-center justify-center gap-2 border border-gold-300 bg-gold-50/40 text-bark-600 font-sans text-[11px] tracking-[0.2em] uppercase py-3 rounded hover:border-gold-400 transition-colors disabled:opacity-50"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className="w-full flex items-center justify-center gap-2 border border-cream-300 bg-cream-50 text-bark-600 font-sans text-[11px] tracking-[0.2em] uppercase py-3 rounded hover:border-bark-400 transition-colors disabled:opacity-50"
             >
-              {generating ? <Loader size={13} className="animate-spin" /> : <Sparkles size={13} className="text-gold-400" />}
-              {generating ? 'Generating ultra-realistic box photo…' : 'Generate box image with AI'}
+              {uploading ? <Loader size={13} className="animate-spin" /> : <Upload size={13} />}
+              {uploading ? 'Uploading…' : 'Upload box photos'}
             </button>
-            {genError && <p className="font-sans text-xs text-red-500 mt-2">{genError}</p>}
-            <p className="font-sans text-[10px] text-bark-400/60 mt-2">AI reads each product&apos;s photo and composes a realistic organic French lifestyle shot. ~20–40s.</p>
+            {uploadErr && <p className="font-sans text-xs text-red-500 mt-2">{uploadErr}</p>}
+            <p className="font-sans text-[10px] text-bark-400/60 mt-2">JPG/PNG/WebP up to 8MB each. Upload several — the first is the cover; the rest show in the box&apos;s photo gallery. Resized to ~2000px automatically.</p>
           </div>
         </div>
       </div>
