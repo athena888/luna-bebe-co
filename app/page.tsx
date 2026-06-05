@@ -122,7 +122,7 @@ export default async function HomePage() {
           <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4">
             {[
               { label: 'Free Shipping', sub: 'On orders over $150' },
-              { label: 'Personalized Letter', sub: 'Hand-written for every box' },
+              { label: 'Personalized Card', sub: 'Printed for every box' },
               { label: '100% Organic', sub: 'GOTS-certified materials' },
               { label: 'Gift-Ready', sub: 'Wax seal & ribbon, always' },
             ].map(({ label, sub }, i) => (
@@ -223,7 +223,7 @@ export default async function HomePage() {
                   Every ingredient, every material — traced to its origin. Provence lavender fields. Pacific Northwest farms. Small American makers. Everything chosen the way a daughter would choose for her own mother.
                 </p>
                 <ul className="space-y-2.5">
-                  {['5 curated organic items', 'Hand-written personal letter', 'Dried lavender & wax seal', 'Satin ribbon & gift-ready box'].map(item => (
+                  {['5 curated organic items', 'Personalized printed card', 'Dried lavender & wax seal', 'Satin ribbon & gift-ready box'].map(item => (
                     <li key={item} className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 flex items-center gap-3">
                       <span className="w-4 h-px bg-gold-400 shrink-0" />
                       {item}

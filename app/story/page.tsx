@@ -119,6 +119,57 @@ export default async function StoryPage() {
           </div>
         </div>
 
+        {/* We don't curate. We trace. */}
+        <div className="border-t border-cream-300">
+          <div className="max-w-2xl mx-auto px-6 py-20 text-center">
+            <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-gold-400 mb-5">Traced to the Source</p>
+            <p
+              className="text-3xl sm:text-4xl text-bark-600 mb-6"
+              style={{ fontFamily: 'var(--font-cormorant)' }}
+            >
+              We don&rsquo;t curate. We <em>trace</em>.
+            </p>
+            <p className="font-sans text-sm text-bark-500 leading-relaxed">
+              Every ingredient, every material — traced to its origin. Provence lavender fields. Pacific Northwest farms. Small American makers, ethical European sources. Everything tagged. Everything traceable. Everything chosen the way a daughter would choose for her own mother.
+            </p>
+          </div>
+        </div>
+
+        {/* Why Simple */}
+        <div className="border-t border-cream-300 bg-white">
+          <div className="max-w-2xl mx-auto px-6 py-20">
+            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">Why Simple</p>
+            <p className="font-sans text-base text-bark-600 leading-relaxed mb-6">
+              We don&rsquo;t add what doesn&rsquo;t belong. We don&rsquo;t pad the box with filler. Every item here exists because a new mother will actually use it, hold it, drink it, or dress her baby in it.
+            </p>
+            <p
+              className="text-2xl text-bark-500"
+              style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}
+            >
+              Simplicity isn&rsquo;t a shortcut. It&rsquo;s the harder choice.
+            </p>
+          </div>
+        </div>
+
+        {/* French Apothecary Soul, PNW Heart */}
+        <div className="border-t border-cream-300">
+          <div className="max-w-2xl mx-auto px-6 py-20">
+            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">French Apothecary Soul, PNW Heart</p>
+            <p className="font-sans text-sm text-bark-500 leading-relaxed mb-5">
+              The aesthetic comes from old French apothecaries — kraft paper, glass tubes, wax seals, twine, dried herbs. A time when remedies came with care, and care came with beauty.
+            </p>
+            <p className="font-sans text-sm text-bark-500 leading-relaxed mb-5">
+              The ingredients come from two worlds — Provence lavender fields, Pacific Northwest farms, small American makers, ethical European sources.
+            </p>
+            <p
+              className="text-xl text-bark-500"
+              style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}
+            >
+              A gift that feels both somewhere far away and grown close to home.
+            </p>
+          </div>
+        </div>
+
         {/* As seen on / social proof */}
         <div className="border-t border-cream-300">
           <div className="max-w-3xl mx-auto px-6 py-16 text-center">

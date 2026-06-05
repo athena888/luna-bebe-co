@@ -13,6 +13,7 @@ const NAV = [
   { href: '/portal/collections', label: 'Collections', icon: <Layers size={16} /> },
   { href: '/portal/boxes', label: 'Prebuilt Boxes', icon: <Gift size={16} /> },
   { href: '/portal/card-styles', label: 'Card Styles', icon: <Mail size={16} /> },
+  { href: '/portal/inside-card', label: 'Inside-Box Card', icon: <Mail size={16} /> },
   { href: '/portal/cert-icons', label: 'Cert Library', icon: <ShieldCheck size={16} /> },
   { href: '/portal/inventory', label: 'Inventory', icon: <PackageSearch size={16} /> },
   { href: '/portal/stock-insights', label: 'Stock Insights', icon: <LineChart size={16} /> },
