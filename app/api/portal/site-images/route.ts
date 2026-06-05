@@ -51,10 +51,15 @@ export async function POST(req: NextRequest) {
 
     const { data: { publicUrl } } = supabaseAdmin.storage.from(SLOT_BUCKET).getPublicUrl(path)
 
-    const { error: dbErr } = await supabaseAdmin.from('site_images').upsert(
-      { slot_key: slotKey, bucket: SLOT_BUCKET, path, public_url: publicUrl, alt_text: altText, sort_order: 0, updated_at: new Date().toISOString() },
-      { onConflict: 'slot_key' }
-    )
+    // Manual upsert keyed by slot_key. The table's unique index is partial
+    // (WHERE sort_order = 0), which Postgres can't use as an ON CONFLICT target,
+    // so we update-or-insert explicitly instead of supabase upsert(onConflict).
+    const row = { slot_key: slotKey, bucket: SLOT_BUCKET, path, public_url: publicUrl, alt_text: altText, sort_order: 0, updated_at: new Date().toISOString() }
+    const { data: existing } = await supabaseAdmin
+      .from('site_images').select('id').eq('slot_key', slotKey).limit(1).maybeSingle()
+    const { error: dbErr } = existing
+      ? await supabaseAdmin.from('site_images').update(row).eq('slot_key', slotKey)
+      : await supabaseAdmin.from('site_images').insert(row)
     if (dbErr) return NextResponse.json({ error: dbErr.message }, { status: 500 })
 
     return NextResponse.json({ url: publicUrl })
