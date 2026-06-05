@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Gift, Lock } from 'lucide-react'
+import { SlotImage } from '@/components/ui/SlotImage'
 
 const AMOUNTS = [
   { value: 5000,  label: '$50',  popular: false },
@@ -135,8 +136,10 @@ export default function GiftCardsPage() {
 
             {/* Preview */}
             <div className="lg:col-span-2">
-              <div className="sticky top-24 bg-bark-700 p-8 text-center">
-                <Gift size={32} className="text-gold-300 mx-auto mb-4" />
+              <div className="sticky top-24 bg-bark-700 text-center overflow-hidden">
+                <SlotImage slotKey="giftcard.visual" className="w-full aspect-[3/2] overflow-hidden" />
+                <div className="p-8 pt-6">
+                  <Gift size={32} className="text-gold-300 mx-auto mb-4" />
                 <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-gold-400 mb-2">Petite Lavande</p>
                 <p className="font-serif text-4xl text-cream-100 mb-1">${(amount / 100).toFixed(0)}</p>
                 <p className="font-sans text-sm text-cream-400 mb-6">Gift Card</p>
@@ -153,6 +156,7 @@ export default function GiftCardsPage() {
                   <p className="font-sans text-[10px] text-cream-400/60 leading-relaxed">
                     Delivered instantly by email · Valid forever · Redeemable at checkout
                   </p>
+                </div>
                 </div>
               </div>
             </div>

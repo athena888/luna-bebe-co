@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Sparkles, ChevronRight, RefreshCw, ArrowRight } from 'lucide-react'
 import type { GiftGuideAnswers, Product } from '@/types'
 import { CATEGORY_LABELS } from '@/lib/products'
+import { SlotImage } from '@/components/ui/SlotImage'
 
 const QUESTIONS = [
   { key: 'relationship' as keyof GiftGuideAnswers, question: "What's your relationship to the mama-to-be?", options: ['Best friend / close friend', 'Sister / family', 'Coworker / acquaintance', 'Partner / spouse'] },
@@ -64,6 +65,7 @@ export default function GuidePage() {
       <Header />
       <main className="min-h-screen bg-cream-100 py-12 px-4 sm:px-6">
         <div className="max-w-2xl mx-auto">
+          <SlotImage slotKey="guide.hero" className="w-full aspect-[16/9] rounded-2xl overflow-hidden mb-8 border border-cream-200" />
           <div className="text-center mb-10">
             <p className="text-xs font-sans font-semibold uppercase tracking-widest text-gold-400 mb-2">AI Gift Guide</p>
             <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-2">Find the Perfect Box</h1>

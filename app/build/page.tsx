@@ -11,6 +11,7 @@ import Image from 'next/image'
 import { memo, useCallback, useMemo, useState as useLocalState } from 'react'
 import { toggleWishlist, isWishlisted } from '@/lib/wishlist'
 import { CertBadges } from '@/components/ui/CertBadges'
+import { SlotImage } from '@/components/ui/SlotImage'
 import type { ProductCert, CertDef } from '@/lib/certifications'
 
 type ResolvedCert = ProductCert & Partial<CertDef>
@@ -377,6 +378,7 @@ export default function BuildPage() {
         <div className="w-full py-12 space-y-14">
           {activeCategories.map((cat) => (
             <section key={cat} id={`cat-${cat}`}>
+              <SlotImage slotKey={`build.banner.${cat}`} className="w-full aspect-[21/9] sm:aspect-[3/1] overflow-hidden mb-6" />
               <div className="pl-6 sm:pl-9 pr-6 sm:pr-8 mb-8">
                 <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-1">{CATEGORY_LABELS[cat]}</p>
                 <h2 className="font-serif text-lg sm:text-xl text-terra-500">{CATEGORY_SUBTITLES[cat]}</h2>

@@ -7,6 +7,7 @@ import { CookieBanner } from "@/components/ui/CookieBanner";
 import { ChatWidget } from "@/components/ui/ChatWidget";
 import { UTMCapture } from "@/components/ui/UTMCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { getSiteImage } from "@/lib/site-images";
 
 const dancing = Dancing_Script({ subsets: ["latin"], variable: "--font-dancing", display: "swap" });
 const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["300", "400", "500"], style: ["normal", "italic"], variable: "--font-cormorant", display: "swap" });
@@ -14,22 +15,28 @@ const jost = Jost({ subsets: ["latin"], weight: ["300", "400", "500", "600"], va
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
-export const metadata: Metadata = {
-  metadataBase: new URL(BASE),
-  title: { default: "Petite Lavande — Luxury Curated Baby Gift Boxes", template: "%s | Petite Lavande" },
-  description: "Build a bespoke luxury baby shower gift box. Choose 5 premium organic items, add a handwritten letter, and deliver an unforgettable unboxing experience.",
-  keywords: ["baby gift box", "luxury baby shower gift", "organic baby gifts", "newborn gift basket", "custom baby box"],
-  openGraph: {
-    type: "website",
-    siteName: "Petite Lavande",
-    title: "Petite Lavande — Luxury Curated Baby Gift Boxes",
-    description: "Build a bespoke luxury baby shower gift box. Premium organic items, handwritten letter, unforgettable unboxing.",
-    url: BASE,
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Petite Lavande gift box" }],
-  },
-  twitter: { card: "summary_large_image", title: "Petite Lavande", description: "Luxury curated organic baby gift boxes." },
-  robots: { index: true, follow: true },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  // Owner-managed social-share image (portal → Site Images), else default.
+  const og = await getSiteImage('global.og_image')
+  const ogImage = og?.public_url || '/og-image.jpg'
+  const ogAlt = og?.alt_text || 'Petite Lavande gift box'
+  return {
+    metadataBase: new URL(BASE),
+    title: { default: "Petite Lavande — Luxury Curated Baby Gift Boxes", template: "%s | Petite Lavande" },
+    description: "Build a bespoke luxury baby shower gift box. Choose 5 premium organic items, add a handwritten letter, and deliver an unforgettable unboxing experience.",
+    keywords: ["baby gift box", "luxury baby shower gift", "organic baby gifts", "newborn gift basket", "custom baby box"],
+    openGraph: {
+      type: "website",
+      siteName: "Petite Lavande",
+      title: "Petite Lavande — Luxury Curated Baby Gift Boxes",
+      description: "Build a bespoke luxury baby shower gift box. Premium organic items, handwritten letter, unforgettable unboxing.",
+      url: BASE,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: ogAlt }],
+    },
+    twitter: { card: "summary_large_image", title: "Petite Lavande", description: "Luxury curated organic baby gift boxes.", images: [ogImage] },
+    robots: { index: true, follow: true },
+  }
+}
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID

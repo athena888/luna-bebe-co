@@ -18,11 +18,11 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   { key: 'story.value.3', label: 'Story — Value 3',      group: 'Story', ratio: '1:1',  hint: 'Square, ~800×800' },
 
   // Build category banners
-  { key: 'build.banner.swaddle',  label: 'Build — Swaddle & Blanket banner', group: 'Build', ratio: '3:4', hint: 'Portrait, ~900×1200' },
-  { key: 'build.banner.garment',  label: 'Build — Baby Garment banner',      group: 'Build', ratio: '3:4', hint: 'Portrait, ~900×1200' },
-  { key: 'build.banner.bath',     label: 'Build — Bath & Skincare banner',   group: 'Build', ratio: '3:4', hint: 'Portrait, ~900×1200' },
-  { key: 'build.banner.keepsake', label: 'Build — Keepsake & Toy banner',    group: 'Build', ratio: '3:4', hint: 'Portrait, ~900×1200' },
-  { key: 'build.banner.mom',      label: "Build — Mama's Gift banner",       group: 'Build', ratio: '3:4', hint: 'Portrait, ~900×1200' },
+  { key: 'build.banner.swaddle',  label: 'Build — Swaddle & Blanket banner', group: 'Build', ratio: '21:9', hint: 'Wide band, ~2000×860' },
+  { key: 'build.banner.garment',  label: 'Build — Baby Garment banner',      group: 'Build', ratio: '21:9', hint: 'Wide band, ~2000×860' },
+  { key: 'build.banner.bath',     label: 'Build — Bath & Skincare banner',   group: 'Build', ratio: '21:9', hint: 'Wide band, ~2000×860' },
+  { key: 'build.banner.keepsake', label: 'Build — Keepsake & Toy banner',    group: 'Build', ratio: '21:9', hint: 'Wide band, ~2000×860' },
+  { key: 'build.banner.mom',      label: "Build — Mama's Gift banner",       group: 'Build', ratio: '21:9', hint: 'Wide band, ~2000×860' },
 
   // Guide + misc
   { key: 'guide.hero',     label: 'Gift Guide — Hero',     group: 'Guide', ratio: '16:9', hint: 'Wide banner, ~2000×1100' },
