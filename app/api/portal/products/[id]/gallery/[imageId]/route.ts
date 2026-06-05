@@ -40,7 +40,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string; imageId: string }> }
 ) {
   const { id, imageId } = await params
-  const body = await req.json().catch(() => ({})) as { action?: string }
+  const body = await req.json().catch(() => ({})) as { action?: string; label?: string }
 
   const { data: image } = await supabaseAdmin
     .from('product_gallery')
@@ -50,6 +50,12 @@ export async function PATCH(
     .single()
 
   if (!image) return NextResponse.json({ error: 'Image not found' }, { status: 404 })
+
+  // Save alt text / caption for this photo
+  if (typeof body.label === 'string') {
+    await supabaseAdmin.from('product_gallery').update({ label: body.label }).eq('id', imageId)
+    return NextResponse.json({ ok: true })
+  }
 
   // Hover: one image per product flagged as the hover image (toggle off others)
   if (body.action === 'hover') {

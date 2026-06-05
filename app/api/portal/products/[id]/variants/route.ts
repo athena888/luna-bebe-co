@@ -79,5 +79,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       .in('id', toDelete.map((r: { id: string }) => r.id))
   }
 
+  // Surface failures so the editor can warn instead of silently losing edits.
+  if (errors.length && saved === 0) {
+    return NextResponse.json({ saved, deleted: toDelete.length, errors }, { status: 500 })
+  }
   return NextResponse.json({ saved, deleted: toDelete.length, errors })
 }

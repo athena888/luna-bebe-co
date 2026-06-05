@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
-import { Upload, CheckCircle, Loader, Video, RotateCcw } from 'lucide-react'
-import { FEATURED_IDS, getProductById, CATEGORY_LABELS } from '@/lib/products'
+import { Upload, CheckCircle, Loader, Video, RotateCcw, Trash2 } from 'lucide-react'
+import { CATEGORY_LABELS } from '@/lib/products'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 
@@ -214,24 +214,36 @@ function VideoSlotCard({ slotKey, label, description }: { slotKey: string; label
   )
 }
 
-function BestsellerCard({ productId }: { productId: string }) {
-  const product = getProductById(productId)
-  if (!product) return null
+interface BestsellerItem { id: string; name: string; category: string; image: string | null; featured: boolean }
 
+function BestsellerCard({ item, curated, onRemove }: { item: BestsellerItem; curated: boolean; onRemove: (id: string) => void }) {
+  const productId = item.id
   const [uploadState, setUploadState] = useState<UploadState>('idle')
   const [overrideUrl, setOverrideUrl] = useState<string | null>(null)
   const [hasOverride, setHasOverride] = useState(true)
   const [resetting, setResetting] = useState(false)
+  const [removing, setRemoving] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const carouselSlot = `carousel-${productId}`
   const carouselStorageUrl = `${SUPABASE_URL}/storage/v1/object/public/home-images/${carouselSlot}.jpg`
-  const productDefaultUrl = `${SUPABASE_URL}/storage/v1/object/public/product-images/${productId}.jpg`
+  const productDefaultUrl = item.image || `${SUPABASE_URL}/storage/v1/object/public/product-images/${productId}.jpg`
 
-  // What to display: override → product default → emoji
+  // What to display: override → product default → placeholder
   const [imgPhase, setImgPhase] = useState(0)
   const displayUrl = overrideUrl ?? (hasOverride ? carouselStorageUrl : productDefaultUrl)
+
+  async function removeFromList() {
+    setRemoving(true)
+    try {
+      await fetch('/api/portal/bestsellers', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: productId, featured: false }),
+      })
+      onRemove(productId)
+    } finally { setRemoving(false) }
+  }
 
   async function handleFile(file: File) {
     setUploadState('uploading')
@@ -293,7 +305,7 @@ function BestsellerCard({ productId }: { productId: string }) {
         {displayUrl && imgPhase < 2 && (
           <Image
             src={displayUrl}
-            alt={product.name}
+            alt={item.name}
             fill
             className="object-cover"
             unoptimized
@@ -308,8 +320,8 @@ function BestsellerCard({ productId }: { productId: string }) {
           />
         )}
         {imgPhase >= 2 && (
-          <div className="absolute inset-0 flex items-center justify-center bg-cream-100" style={{ fontSize: '4rem' }}>
-            {product.imageEmoji}
+          <div className="absolute inset-0 flex items-center justify-center bg-cream-100 font-sans text-[10px] tracking-[0.2em] uppercase text-bark-300">
+            No photo
           </div>
         )}
 
@@ -353,28 +365,103 @@ function BestsellerCard({ productId }: { productId: string }) {
       {/* Info + actions */}
       <div className="px-3 py-3">
         <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-gold-500 mb-0.5">
-          {CATEGORY_LABELS[product.category as keyof typeof CATEGORY_LABELS]}
+          {CATEGORY_LABELS[item.category as keyof typeof CATEGORY_LABELS] ?? item.category}
         </p>
-        <p className="font-sans text-xs font-medium text-bark-600 leading-snug mb-2">{product.name}</p>
+        <p className="font-sans text-xs font-medium text-bark-600 leading-snug mb-2">{item.name}</p>
 
-        <button
-          onClick={resetToDefault}
-          disabled={resetting || (!overrideUrl && !hasOverride)}
-          className="flex items-center gap-1.5 font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-        >
-          {resetting
-            ? <Loader size={10} className="animate-spin" />
-            : <RotateCcw size={10} />}
-          Reset to default
-        </button>
+        <div className="flex items-center justify-between gap-2">
+          <button
+            onClick={resetToDefault}
+            disabled={resetting || (!overrideUrl && !hasOverride)}
+            className="flex items-center gap-1.5 font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            {resetting ? <Loader size={10} className="animate-spin" /> : <RotateCcw size={10} />}
+            Reset photo
+          </button>
+          <button
+            onClick={removeFromList}
+            disabled={removing || !curated}
+            title={curated ? 'Remove from bestsellers' : 'Pick at least one bestseller to curate the list'}
+            className="flex items-center gap-1.5 font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 hover:text-red-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            {removing ? <Loader size={10} className="animate-spin" /> : <Trash2 size={10} />}
+            Remove
+          </button>
+        </div>
 
         {uploadState === 'error' && (
           <p className="font-sans text-[10px] text-red-500 mt-1">{errorMsg ?? 'Upload failed'}</p>
         )}
         {uploadState === 'done' && (
-          <p className="font-sans text-[10px] text-sage-500 mt-1">Override live on homepage</p>
+          <p className="font-sans text-[10px] text-sage-500 mt-1">Photo live on homepage</p>
         )}
       </div>
+    </div>
+  )
+}
+
+function BestsellerManager() {
+  const [items, setItems] = useState<BestsellerItem[]>([])
+  const [addable, setAddable] = useState<Array<{ id: string; name: string; category: string }>>([])
+  const [curated, setCurated] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [adding, setAdding] = useState(false)
+
+  async function load() {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/portal/bestsellers')
+      const data = await res.json()
+      setItems(data.items ?? [])
+      setAddable(data.addable ?? [])
+      setCurated(!!data.curated)
+    } finally { setLoading(false) }
+  }
+  useEffect(() => { load() }, [])
+
+  async function addProduct(id: string) {
+    if (!id) return
+    setAdding(true)
+    try {
+      await fetch('/api/portal/bestsellers', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, featured: true }),
+      })
+      await load()
+    } finally { setAdding(false) }
+  }
+
+  return (
+    <div className="mb-10">
+      <SectionHeader
+        label="Bestsellers Carousel"
+        note={curated
+          ? "These are exactly the products shown in the homepage carousel. Remove any, add more below, or upload a photo override per product."
+          : "No bestsellers picked yet — the carousel is auto-filled by top sales. Add products below to curate the exact list shown."}
+      />
+      <div className="flex items-center gap-2 mb-4">
+        <select
+          defaultValue=""
+          disabled={adding}
+          onChange={e => { addProduct(e.target.value); e.target.value = '' }}
+          className="px-3 py-2 border border-cream-300 bg-white rounded text-sm text-bark-600 focus:outline-none focus:border-bark-400 max-w-xs"
+        >
+          <option value="">+ Add a product to bestsellers…</option>
+          {addable.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+        </select>
+        {adding && <Loader size={14} className="animate-spin text-bark-400" />}
+      </div>
+      {loading ? (
+        <div className="flex items-center gap-2 font-sans text-sm text-bark-400 py-8"><Loader size={14} className="animate-spin" /> Loading…</div>
+      ) : items.length === 0 ? (
+        <p className="font-sans text-sm text-bark-400 py-4">No products to show.</p>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {items.map(item => (
+            <BestsellerCard key={item.id} item={item} curated={curated} onRemove={() => load()} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -399,15 +486,7 @@ export default function HomeImagesPage() {
       </div>
 
       {/* ── Bestsellers Carousel ── */}
-      <div className="mb-10">
-        <SectionHeader
-          label="Bestsellers Carousel"
-          note="Upload a photo override for any product. Falls back to the product's own photo, then the emoji. Click 'Reset to default' to remove the override."
-        />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {FEATURED_IDS.map(id => <BestsellerCard key={id} productId={id} />)}
-        </div>
-      </div>
+      <BestsellerManager />
 
       {/* ── 1. Hero ── */}
       <div className="mb-10">

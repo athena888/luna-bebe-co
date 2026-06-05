@@ -104,4 +104,59 @@ create policy card_styles_service_write on card_styles for all to service_role u
 
 alter table orders add column if not exists card_style text;
 
+-- 9) FIX variant saving: remove stale RPC overloads, keep one canonical set.
+alter table product_variants add column if not exists style text not null default '';
+alter table product_variants drop constraint if exists product_variants_product_id_color_size_key;
+do $$ begin
+  if not exists (select 1 from pg_constraint where conname = 'product_variants_pcss_key') then
+    alter table product_variants add constraint product_variants_pcss_key unique (product_id, color, size, style);
+  end if;
+end $$;
+drop function if exists set_product_variant(text,text,text,integer,text,integer);
+drop function if exists set_product_variant(text,text,text,integer,text,integer,text);
+drop function if exists set_product_variant(text,text,text,integer,text,integer,text,text);
+drop function if exists upsert_product_variant(text,text,text,integer);
+drop function if exists upsert_product_variant(text,text,text,integer,text,integer);
+drop function if exists upsert_product_variant(text,text,text,integer,text,integer,text);
+drop function if exists upsert_product_variant(text,text,text,integer,text,integer,text,text);
+drop function if exists decrement_variant(text,text,text);
+drop function if exists decrement_variant(text,text,text,text);
+create function upsert_product_variant(
+  p_product_id text, p_color text, p_size text, p_quantity integer,
+  p_color_hex text default null, p_unit_price integer default null,
+  p_color_code text default null, p_style text default ''
+) returns void as $$
+begin
+  insert into product_variants (product_id, color, size, style, quantity, color_hex, unit_price, color_code)
+  values (p_product_id, p_color, p_size, coalesce(p_style,''), p_quantity, p_color_hex, p_unit_price, p_color_code)
+  on conflict (product_id, color, size, style) do update set
+    quantity = product_variants.quantity + excluded.quantity,
+    color_hex = coalesce(excluded.color_hex, product_variants.color_hex),
+    unit_price = coalesce(excluded.unit_price, product_variants.unit_price),
+    color_code = coalesce(excluded.color_code, product_variants.color_code),
+    updated_at = now();
+end; $$ language plpgsql security definer;
+create function set_product_variant(
+  p_product_id text, p_color text, p_size text, p_quantity integer,
+  p_color_hex text default null, p_unit_price integer default null,
+  p_color_code text default null, p_style text default ''
+) returns void as $$
+begin
+  insert into product_variants (product_id, color, size, style, quantity, color_hex, unit_price, color_code)
+  values (p_product_id, p_color, p_size, coalesce(p_style,''), p_quantity, p_color_hex, p_unit_price, p_color_code)
+  on conflict (product_id, color, size, style) do update set
+    quantity = excluded.quantity,
+    color_hex = coalesce(excluded.color_hex, product_variants.color_hex),
+    unit_price = coalesce(excluded.unit_price, product_variants.unit_price),
+    color_code = coalesce(excluded.color_code, product_variants.color_code),
+    updated_at = now();
+end; $$ language plpgsql security definer;
+create function decrement_variant(
+  p_product_id text, p_color text, p_size text, p_style text default ''
+) returns void as $$
+begin
+  update product_variants set quantity = greatest(0, quantity - 1), updated_at = now()
+  where product_id = p_product_id and color = p_color and size = p_size and style = coalesce(p_style,'');
+end; $$ language plpgsql security definer;
+
 -- Done.

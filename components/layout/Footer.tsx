@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { ArrowRight, Package, Leaf, PenLine, Heart } from 'lucide-react'
-import { SlotBackground } from '@/components/ui/SlotBackground'
 
 const TRUST_BADGES = [
   { icon: Package, label: 'Free Shipping', sub: '$150+' },
@@ -58,7 +57,7 @@ export function Footer() {
   return (
     <footer>
       {/* Main footer */}
-      <SlotBackground slotKey="footer.bg" scrim="bg-cream-100/88" className="bg-cream-100 border-t border-cream-300">
+      <div className="bg-cream-100 border-t border-cream-300">
         <div className="max-w-6xl mx-auto px-6 py-16">
 
           {/* Logo + tagline */}
@@ -113,7 +112,7 @@ export function Footer() {
           </div>
 
         </div>
-      </SlotBackground>
+      </div>
 
       {/* Bottom bar */}
       <div className="bg-cream-50 border-t border-cream-300 py-5 px-6">

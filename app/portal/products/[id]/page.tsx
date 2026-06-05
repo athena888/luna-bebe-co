@@ -8,7 +8,7 @@ import { PRODUCT_TAGS } from '@/lib/product-tags'
 import type { ProductCategory } from '@/types'
 import { resizeImage } from '@/lib/image-resize'
 import type { CertDef, ProductCert } from '@/lib/certifications'
-import { ArrowLeft, Upload, Trash2, Star, Loader, Check, Plus, Minus, X, ShieldCheck, Wand2 } from 'lucide-react'
+import { ArrowLeft, Upload, Trash2, Star, Loader, Check, Plus, Minus, X, ShieldCheck, Wand2, Sparkles } from 'lucide-react'
 
 type GalleryImage = {
   id: string
@@ -111,6 +111,7 @@ export default function ProductDetailPage() {
   const [certs, setCerts] = useState<ProductCert[]>([])
   const [certLibrary, setCertLibrary] = useState<CertDef[]>([])
   const [certUploading, setCertUploading] = useState<string | null>(null)
+  const [altBusy, setAltBusy] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
@@ -194,19 +195,24 @@ export default function ProductDetailPage() {
     // Save variants when this product uses them.
     // Fall back to the hex value as the color name when none is typed,
     // so a row with only a swatch still saves instead of being dropped.
+    let variantError = ''
     if (hasVariants) {
       const variantsToSave = variants
         .map(v => ({ ...v, color: (v.color.trim() || v.color_hex?.trim() || '') }))
         .filter(v => v.color && v.size.trim())
-      await fetch(`/api/portal/products/${id}/variants`, {
+      const vRes = await fetch(`/api/portal/products/${id}/variants`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ variants: variantsToSave }),
       })
+      if (!vRes.ok) {
+        const d = await vRes.json().catch(() => ({}))
+        variantError = d.errors?.[0] || 'Variants failed to save'
+      }
     }
     setSaving(false)
-    setSaveMsg(res.ok ? 'Saved' : 'Error saving')
-    setTimeout(() => setSaveMsg(''), 2000)
+    setSaveMsg(variantError ? `Error: ${variantError}` : res.ok ? 'Saved' : 'Error saving')
+    setTimeout(() => setSaveMsg(''), variantError ? 6000 : 2000)
   }
 
   // Approve (keep) or revert (undo the added qty) imported stock changes
@@ -327,8 +333,11 @@ export default function ProductDetailPage() {
   async function uploadCertImage(key: string, file: File) {
     setCertUploading(key)
     try {
+      // Shrink large photos client-side first (PDFs pass through unchanged) so
+      // the upload is fast and stays under the serverless body limit.
+      const prepared = await resizeImage(file, 1600, 0.85)
       const form = new FormData()
-      form.append('file', file)
+      form.append('file', prepared)
       form.append('certKey', key)
       const res = await fetch(`/api/portal/products/${id}/certificate`, { method: 'POST', body: form })
       const data = await res.json()
@@ -458,6 +467,24 @@ export default function ProductDetailPage() {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'hover' }),
     })
     setGallery(g => g.map(img => ({ ...img, is_hover: img.id === imageId })))
+  }
+
+  // AI: generate alt text for a single gallery photo (Claude vision) and save it.
+  async function aiAltForImage(img: GalleryImage) {
+    setAltBusy(img.id)
+    try {
+      const res = await fetch('/api/portal/site-images/alt-suggest', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: img.image_url, context: product?.name }),
+      })
+      const data = await res.json()
+      if (data.altText) {
+        await fetch(`/api/portal/products/${id}/gallery/${img.id}`, {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ label: data.altText }),
+        })
+        setGallery(g => g.map(x => x.id === img.id ? { ...x, label: data.altText } : x))
+      }
+    } finally { setAltBusy(null) }
   }
 
   // Drag-to-reorder gallery photos
@@ -683,6 +710,14 @@ export default function ProductDetailPage() {
                         }`}
                       >
                         H
+                      </button>
+                      <button
+                        onClick={() => aiAltForImage(img)}
+                        disabled={altBusy === img.id}
+                        title="Generate alt text with AI"
+                        className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-gold-100 transition-colors disabled:opacity-50"
+                      >
+                        {altBusy === img.id ? <Loader size={14} className="text-bark-600 animate-spin" /> : <Sparkles size={14} className="text-gold-500" />}
                       </button>
                       <button
                         onClick={() => handleDelete(img.id)}

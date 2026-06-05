@@ -16,7 +16,6 @@ function SlotCard({ slot, current, onSaved }: { slot: ImageSlot; current?: Curre
   const inputRef = useRef<HTMLInputElement>(null)
 
   async function upload(file: File) {
-    if (!alt.trim()) { setMsg('Add alt text first (required for SEO)'); setTimeout(() => setMsg(''), 2500); return }
     setBusy(true); setMsg('')
     try {
       const resized = await resizeImage(file, 2000, 0.9)
@@ -29,8 +28,9 @@ function SlotCard({ slot, current, onSaved }: { slot: ImageSlot; current?: Curre
       if (!res.ok || !data.url) { setMsg(data.error || 'Upload failed'); return }
       setUrl(data.url + `?t=${Date.now()}`)
       onSaved(slot.key, { public_url: data.url, alt_text: alt.trim() })
-      setMsg('Saved')
-      setTimeout(() => setMsg(''), 2000)
+      // Image is live; nudge for alt text if it's still missing (use the ✨ AI button).
+      setMsg(alt.trim() ? 'Saved' : 'Uploaded — add alt text (or click ✨)')
+      setTimeout(() => setMsg(''), alt.trim() ? 2000 : 4000)
     } finally { setBusy(false) }
   }
 
