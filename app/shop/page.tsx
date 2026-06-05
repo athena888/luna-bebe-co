@@ -9,6 +9,7 @@ import { boxItemTotal } from '@/lib/prebuilt-boxes'
 import type { ResolvedBox } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE, CATEGORY_LABELS } from '@/lib/products'
 import type { BoxSelection } from '@/types'
+import { SlotBackground } from '@/components/ui/SlotBackground'
 
 function formatPrice(cents: number) {
   return `$${(cents / 100).toFixed(0)}`
@@ -39,13 +40,13 @@ export default function ShopPage() {
       <main className="min-h-screen bg-cream-50">
 
         {/* Hero */}
-        <div className="border-b border-cream-300 px-6 py-16 text-center">
+        <SlotBackground slotKey="shop.header_bg" className="border-b border-cream-300 px-6 py-16 text-center">
           <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">Curated Styles</p>
           <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-4">Gift Box Catalog</h1>
-          <p className="font-sans text-sm text-bark-400 max-w-md mx-auto leading-relaxed">
+          <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">
             Every box is thoughtfully assembled, gift-wrapped, and sealed with our signature wax stamp. Choose a curated style or build your own.
           </p>
-        </div>
+        </SlotBackground>
 
         {/* Box cards */}
         <div className="max-w-5xl mx-auto px-6 py-16">

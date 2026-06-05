@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/Footer'
 import { boxItemTotal } from '@/lib/prebuilt-boxes'
 import { getBoxes } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
+import { SlotBackground } from '@/components/ui/SlotBackground'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,13 +32,13 @@ export default async function BoxesPage() {
       <main className="min-h-screen bg-cream-100">
 
         {/* Page header */}
-        <div className="bg-cream-50 border-b border-cream-300 py-16 px-6 text-center">
+        <SlotBackground slotKey="boxes.header_bg" className="bg-cream-50 border-b border-cream-300 py-16 px-6 text-center">
           <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-4">Curated Styles</p>
           <h1 className="font-serif text-[2.5rem] sm:text-[3.5rem] text-bark-600 mb-4">Shop by Aesthetic</h1>
-          <p className="font-sans text-sm text-bark-400 max-w-md mx-auto leading-relaxed">
+          <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">
             Three styles, two editions each — 7 curated items per box. Every detail already decided.
           </p>
-        </div>
+        </SlotBackground>
 
         {/* Grouped by style */}
         <div className="max-w-6xl mx-auto px-6 py-14 space-y-16">

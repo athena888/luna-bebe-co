@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { ArrowRight, Package, Leaf, PenLine, Heart } from 'lucide-react'
+import { SlotBackground } from '@/components/ui/SlotBackground'
 
 const TRUST_BADGES = [
   { icon: Package, label: 'Free Shipping', sub: '$150+' },
@@ -57,7 +58,7 @@ export function Footer() {
   return (
     <footer>
       {/* Main footer */}
-      <div className="bg-cream-100 border-t border-cream-300">
+      <SlotBackground slotKey="footer.bg" scrim="bg-cream-100/88" className="bg-cream-100 border-t border-cream-300">
         <div className="max-w-6xl mx-auto px-6 py-16">
 
           {/* Logo + tagline */}
@@ -112,12 +113,12 @@ export function Footer() {
           </div>
 
         </div>
-      </div>
+      </SlotBackground>
 
       {/* Bottom bar */}
-      <div className="bg-cream-50 border-t border-cream-300 py-6 px-6">
+      <div className="bg-cream-50 border-t border-cream-300 py-5 px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <p className="font-sans text-[10px] text-bark-400/60">© {new Date().getFullYear()} Petite Lavande. Made in Seattle. Sent with love.</p>
             <div className="flex flex-wrap items-center gap-4 font-sans text-[10px] text-bark-400/60">
               <Link href="/legal/privacy" className="hover:text-bark-400 transition-colors">Privacy</Link>

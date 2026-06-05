@@ -24,8 +24,15 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   { key: 'build.banner.keepsake', label: 'Build — Keepsake & Toy banner',    group: 'Build', ratio: '21:9', hint: 'Wide band, ~2000×860' },
   { key: 'build.banner.mom',      label: "Build — Mama's Gift banner",       group: 'Build', ratio: '21:9', hint: 'Wide band, ~2000×860' },
 
-  // Guide + misc
-  { key: 'guide.hero',     label: 'Gift Guide — Hero',     group: 'Guide', ratio: '16:9', hint: 'Wide banner, ~2000×1100' },
+  // Page header backgrounds — the title text sits on top of these, so choose
+  // soft / lighter images. A translucent scrim is applied for legibility.
+  { key: 'boxes.header_bg',     label: 'Shop by Aesthetic — Header background', group: 'Page Backgrounds', ratio: '21:9', hint: 'Wide & soft, ~2000×860' },
+  { key: 'shop.header_bg',      label: 'Gift Box Catalog — Header background',  group: 'Page Backgrounds', ratio: '21:9', hint: 'Wide & soft, ~2000×860' },
+  { key: 'giftcards.header_bg', label: 'Gift Cards — Header background',        group: 'Page Backgrounds', ratio: '21:9', hint: 'Wide & soft, ~2000×860' },
+  { key: 'guide.header_bg',     label: 'Gift Guide — Header background',        group: 'Page Backgrounds', ratio: '21:9', hint: 'Wide & soft, ~2000×860' },
+  { key: 'footer.bg',           label: 'Footer — Background',                   group: 'Page Backgrounds', ratio: '16:9', hint: 'Subtle texture, ~2000×1100' },
+
+  // Misc
   { key: 'giftcard.visual', label: 'Gift Card — Visual',   group: 'Misc',  ratio: '3:2',  hint: 'Gift card art, ~1200×800' },
   { key: 'global.og_image', label: 'Global — Social share image (OG)', group: 'Misc', ratio: '1.91:1', hint: 'Link preview, 1200×630' },
 ]

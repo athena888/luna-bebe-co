@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Gift, Lock } from 'lucide-react'
 import { SlotImage } from '@/components/ui/SlotImage'
+import { SlotBackground } from '@/components/ui/SlotBackground'
 
 const AMOUNTS = [
   { value: 5000,  label: '$50',  popular: false },
@@ -53,13 +54,13 @@ export default function GiftCardsPage() {
     <>
       <Header />
       <main className="min-h-screen bg-cream-50">
-        <div className="border-b border-cream-300 px-6 py-12 text-center">
+        <SlotBackground slotKey="giftcards.header_bg" className="border-b border-cream-300 px-6 py-12 text-center">
           <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">The Perfect Gift</p>
           <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-2">Gift Cards</h1>
-          <p className="font-sans text-sm text-bark-400 max-w-md mx-auto leading-relaxed">
+          <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">
             Can't decide? Give the gift of choice. Your recipient builds their own Petite Lavande box with your love.
           </p>
-        </div>
+        </SlotBackground>
 
         <div className="max-w-4xl mx-auto px-6 py-14">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-14">

@@ -28,7 +28,7 @@ function homeImg(slot: string) {
 const TESTIMONIALS = [
   { quote: "I've never seen a gift box this beautiful. My best friend cried when she opened it. The handwritten letter was the most special part.", name: 'Camille R.', context: 'Gifted to her sister' },
   { quote: "Ordered rush shipping and it arrived the next day. Gorgeous box, everything so soft and organic. Worth every penny.", name: 'Maya T.', context: 'Baby shower gift' },
-  { quote: "Everyone at the shower was asking where the box was from. The AI guide helped me pick perfectly for someone I barely know.", name: 'Priya N.', context: 'Office baby shower' },
+  { quote: "Everyone at the shower was asking where the box was from. The gift guide helped me pick perfectly for someone I barely know.", name: 'Priya N.', context: 'Office baby shower' },
 ]
 
 async function getBestsellers(): Promise<Product[]> {

@@ -9,7 +9,12 @@ import { Badge } from '@/components/ui/Badge'
 import { Sparkles, ChevronRight, RefreshCw, ArrowRight } from 'lucide-react'
 import type { GiftGuideAnswers, Product } from '@/types'
 import { CATEGORY_LABELS } from '@/lib/products'
-import { SlotImage } from '@/components/ui/SlotImage'
+import { SlotBackground } from '@/components/ui/SlotBackground'
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+function productImage(p: Product): string | null {
+  return p.image ?? (SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${p.id}.jpg` : null)
+}
 
 const QUESTIONS = [
   { key: 'relationship' as keyof GiftGuideAnswers, question: "What's your relationship to the mama-to-be?", options: ['Best friend / close friend', 'Sister / family', 'Coworker / acquaintance', 'Partner / spouse'] },
@@ -63,14 +68,13 @@ export default function GuidePage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-cream-100 py-12 px-4 sm:px-6">
-        <div className="max-w-2xl mx-auto">
-          <SlotImage slotKey="guide.hero" className="w-full aspect-[16/9] rounded-2xl overflow-hidden mb-8 border border-cream-200" />
-          <div className="text-center mb-10">
-            <p className="text-xs font-sans font-semibold uppercase tracking-widest text-gold-400 mb-2">AI Gift Guide</p>
-            <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-2">Find the Perfect Box</h1>
-            <p className="font-sans text-sm text-bark-400">Answer 4 quick questions. Luna will curate the perfect combination just for her.</p>
-          </div>
+      <main className="min-h-screen bg-cream-100">
+        <SlotBackground slotKey="guide.header_bg" className="px-4 sm:px-6 pt-14 pb-10 text-center">
+          <p className="text-[10px] font-sans font-semibold uppercase tracking-[0.35em] text-gold-400 mb-3">Gift Guide</p>
+          <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-3">Find the Perfect Box</h1>
+          <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">Answer 4 quick questions. Luna will curate the perfect combination just for her.</p>
+        </SlotBackground>
+        <div className="max-w-2xl mx-auto py-12 px-4 sm:px-6">
           {!isComplete && (
             <div className="flex gap-1 mb-10">
               {QUESTIONS.map((_, i) => <div key={i} className={`h-1.5 flex-1 rounded-full transition-all ${i < step ? 'bg-gold-400' : i === step ? 'bg-gold-200' : 'bg-cream-300'}`} />)}
@@ -80,10 +84,16 @@ export default function GuidePage() {
             <div className="bg-cream-50 rounded-2xl border border-cream-200 p-8 sm:p-10">
               <div className="mb-2 text-xs font-sans text-bark-400 uppercase tracking-widest">Question {step + 1} of {QUESTIONS.length}</div>
               <h2 className="font-serif text-2xl sm:text-3xl text-bark-600 mb-8">{currentQ.question}</h2>
-              <div className="grid grid-cols-1 gap-3">
+              <div className="grid grid-cols-1 gap-2.5">
                 {currentQ.options.map((option) => (
-                  <button key={option} onClick={() => handleAnswer(option)} className="w-full text-left px-5 py-4 rounded-xl border-2 border-cream-300 bg-cream-100 text-bark-600 font-sans text-sm hover:border-gold-400 hover:bg-gold-100/30 transition-all group flex items-center justify-between">
-                    {option}<ChevronRight size={16} className="text-bark-400/40 group-hover:text-gold-400 transition-colors" />
+                  <button
+                    key={option}
+                    onClick={() => handleAnswer(option)}
+                    className="group relative w-full text-left pl-6 pr-5 py-4 rounded-lg border border-cream-300 bg-white/70 text-bark-600 font-sans text-sm flex items-center justify-between transition-all duration-200 hover:border-gold-300 hover:bg-white hover:shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
+                  >
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 h-0 w-[2px] bg-gold-400 rounded-full transition-all duration-200 group-hover:h-8" aria-hidden="true" />
+                    <span className="tracking-wide">{option}</span>
+                    <ChevronRight size={16} className="text-bark-300 group-hover:text-gold-400 group-hover:translate-x-0.5 transition-all" />
                   </button>
                 ))}
               </div>
@@ -105,18 +115,30 @@ export default function GuidePage() {
               </div>
               {recommendation.products.length > 0 && (
                 <div className="space-y-3 mb-6">
-                  {recommendation.products.map((product) => (
-                    <div key={product.id} className="flex items-start gap-4 p-4 bg-cream-50 rounded-xl border border-cream-200">
-                      <span className="text-3xl">{product.imageEmoji}</span>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="font-sans font-medium text-sm text-bark-600">{product.name}</p>
-                          {product.tag && <Badge variant="gold">{product.tag}</Badge>}
+                  {recommendation.products.map((product) => {
+                    const src = productImage(product)
+                    return (
+                      <a
+                        key={product.id}
+                        href={`/products/${product.id}`}
+                        className="group flex items-center gap-4 p-3 bg-cream-50 rounded-xl border border-cream-200 hover:border-bark-300 hover:shadow-sm transition-all"
+                      >
+                        <div className="relative w-16 h-20 shrink-0 rounded-lg overflow-hidden bg-cream-100 border border-cream-200">
+                          {src
+                            ? <img src={src} alt={product.name} className="w-full h-full object-cover" />
+                            : <span className="absolute inset-0 flex items-center justify-center text-2xl">{product.imageEmoji}</span>}
                         </div>
-                        <p className="font-sans text-xs text-bark-400">{CATEGORY_LABELS[product.category]} · ${(product.price / 100).toFixed(0)}</p>
-                      </div>
-                    </div>
-                  ))}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="font-sans font-medium text-sm text-bark-600 truncate">{product.name}</p>
+                            {product.tag && <Badge variant="gold">{product.tag}</Badge>}
+                          </div>
+                          <p className="font-sans text-xs text-bark-400">{CATEGORY_LABELS[product.category]} · ${(product.price / 100).toFixed(0)}</p>
+                        </div>
+                        <ChevronRight size={16} className="text-bark-300 group-hover:text-gold-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                      </a>
+                    )
+                  })}
                 </div>
               )}
               {recommendation.reasoning && (

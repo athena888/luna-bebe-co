@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { anthropic, LUNA_SYSTEM_PROMPT } from '@/lib/anthropic'
-import { getAllProducts, getProductById } from '@/lib/products'
+import { getAllProducts, getProductById, BOX_BASE_PRICE, SHIPPING } from '@/lib/products'
 import { rateLimitByIp } from '@/lib/rate-limit'
 import type { GiftGuideAnswers } from '@/types'
 
@@ -21,31 +21,44 @@ export async function POST(req: NextRequest) {
       .map((p) => `ID: ${p.id} | Category: ${p.category} | Name: ${p.name} | Price: $${(p.price / 100).toFixed(0)} | Tag: ${p.tag || 'none'} | Description: ${p.description}`)
       .join('\n')
 
+    // The customer's budget covers the whole order, so reserve the fixed box &
+    // packaging fee plus standard shipping; the rest is what we can spend on items.
+    const boxFee = Math.round(BOX_BASE_PRICE / 100)
+    const shipFee = Math.round(SHIPPING.standard.price / 100)
+    const overhead = boxFee + shipFee
+
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 600,
+      max_tokens: 700,
       system: LUNA_SYSTEM_PROMPT,
       messages: [
         {
           role: 'user',
-          content: `You are curating a luxury baby gift box based on someone's answers. Select exactly one product per category (swaddle, garment, bath, keepsake, mom).
+          content: `You are curating a luxury baby gift box from real, in-stock products based on someone's answers.
 
 Customer answers:
 - Relationship: ${answers.relationship}
 - Style: ${answers.style}
-- Budget: ${answers.budget}
+- Budget (covers items + box + shipping): ${answers.budget}
 - Priority: ${answers.priority}
 
-Available products:
+Pricing context: a fixed box & packaging fee of $${boxFee} plus ~$${shipFee} standard shipping is added on top of the items. So the amount available for ITEMS is the customer's budget minus about $${overhead}.
+
+Available products (choose ONLY from these — never invent items):
 ${productList}
 
-Respond with ONLY valid JSON in this exact format (no markdown, no explanation before or after):
-{
-  "productIds": ["id1", "id2", "id3", "id4", "id5"],
-  "reasoning": "A 2-3 sentence warm explanation of why you chose these items, written as Luna speaking directly to the gift-giver."
-}
+How to curate:
+- The five categories are: swaddle, garment, bath, keepsake, mom.
+- Aim for ONE item per category (a complete box) when the item budget allows.
+- The total price of the items you pick PLUS $${overhead} must stay within the customer's budget. If money is tight, include FEWER items (skip lower-priority categories) rather than going over budget — a smaller, beautiful box is better than an over-budget one.
+- If the budget is generous ("Surprise me with the best" or "$220+"), pick the strongest one-per-category set.
+- Never pick two items from the same category. Match the chosen style and priority.
 
-Select products that best match the style, budget, and priority. One product per category.`,
+Respond with ONLY valid JSON (no markdown, no text before or after):
+{
+  "productIds": ["id", "..."],
+  "reasoning": "2-3 warm sentences as Luna speaking directly to the gift-giver, noting how this fits their budget and her style."
+}`,
         },
       ],
     })
@@ -59,9 +72,17 @@ Select products that best match the style, budget, and priority. One product per
       return NextResponse.json({ products: [], reasoning: 'Unable to generate recommendations at this time.' })
     }
 
+    // Resolve to real products, drop unknowns, and keep at most one per category.
+    const seenCategories = new Set<string>()
     const products = (parsed.productIds || [])
       .map((id: string) => getProductById(id))
-      .filter(Boolean)
+      .filter((p): p is NonNullable<typeof p> => Boolean(p))
+      .filter((p) => {
+        if (seenCategories.has(p.category)) return false
+        seenCategories.add(p.category)
+        return true
+      })
+      .slice(0, 5)
 
     return NextResponse.json({ products, reasoning: parsed.reasoning })
   } catch (error) {
