@@ -23,13 +23,13 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(BASE),
     title: { default: "Petite Lavande — Luxury Curated Baby Gift Boxes", template: "%s | Petite Lavande" },
-    description: "Build a bespoke luxury baby shower gift box. Choose 5 premium organic items, add a handwritten letter, and deliver an unforgettable unboxing experience.",
+    description: "Build a bespoke luxury baby shower gift box. Choose 5 premium organic items, add a personalized printed card, and deliver an unforgettable unboxing experience.",
     keywords: ["baby gift box", "luxury baby shower gift", "organic baby gifts", "newborn gift basket", "custom baby box"],
     openGraph: {
       type: "website",
       siteName: "Petite Lavande",
       title: "Petite Lavande — Luxury Curated Baby Gift Boxes",
-      description: "Build a bespoke luxury baby shower gift box. Premium organic items, handwritten letter, unforgettable unboxing.",
+      description: "Build a bespoke luxury baby shower gift box. Premium organic items, personalized printed card, unforgettable unboxing.",
       url: BASE,
       images: [{ url: ogImage, width: 1200, height: 630, alt: ogAlt }],
     },

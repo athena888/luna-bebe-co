@@ -10,7 +10,7 @@ import { CheckCircle, Package, Pen, Truck, Phone } from 'lucide-react'
 
 const NEXT_STEPS = [
   { icon: <Package size={20} className="text-gold-400" />, title: 'Box Assembly', body: 'Our team begins handpicking and assembling your items within 24 hours of your order.' },
-  { icon: <Pen size={20} className="text-gold-400" />, title: 'Letter Writing', body: 'Your personal letter is carefully handwritten on premium linen card stock using archival ink.' },
+  { icon: <Pen size={20} className="text-gold-400" />, title: 'Your Card', body: 'Your personal message is printed on the card design you chose and tucked into the box.' },
   { icon: <Truck size={20} className="text-gold-400" />, title: 'Shipped with Care', body: 'Your box is packed with dried lavender, sealed with wax, and sent via your chosen shipping method.' },
 ]
 

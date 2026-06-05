@@ -81,4 +81,27 @@ begin
 end;
 $$;
 
+-- 7) Multiple photos per pre-built box (gallery)
+alter table prebuilt_boxes add column if not exists images jsonb not null default '[]'::jsonb;
+
+-- 8) Customizable printed card styles + per-order chosen style
+create table if not exists card_styles (
+  id          uuid primary key default gen_random_uuid(),
+  name        text not null,
+  image_url   text not null,
+  alt_text    text not null default '',
+  size_label  text not null default '',
+  word_limit  int  not null default 100,
+  sort_order  int  not null default 0,
+  active      boolean not null default true,
+  created_at  timestamptz not null default now()
+);
+alter table card_styles enable row level security;
+drop policy if exists card_styles_public_read on card_styles;
+create policy card_styles_public_read on card_styles for select using (true);
+drop policy if exists card_styles_service_write on card_styles;
+create policy card_styles_service_write on card_styles for all to service_role using (true) with check (true);
+
+alter table orders add column if not exists card_style text;
+
 -- Done.

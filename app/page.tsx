@@ -12,7 +12,7 @@ import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
 
 export const metadata: Metadata = {
   title: 'Petite Lavande — Luxury Curated Baby Gift Boxes',
-  description: 'Build a bespoke luxury baby shower gift box. Choose 5 premium organic items, add a handwritten letter, and deliver an unforgettable unboxing experience.',
+  description: 'Build a bespoke luxury baby shower gift box. Choose 5 premium organic items, add a personalized printed card, and deliver an unforgettable unboxing experience.',
   openGraph: { title: 'Petite Lavande', description: 'Luxury curated organic baby gift boxes — built item by item, shipped with love.' },
 }
 
@@ -26,7 +26,7 @@ function homeImg(slot: string) {
 
 
 const TESTIMONIALS = [
-  { quote: "I've never seen a gift box this beautiful. My best friend cried when she opened it. The handwritten letter was the most special part.", name: 'Camille R.', context: 'Gifted to her sister' },
+  { quote: "I've never seen a gift box this beautiful. My best friend cried when she opened it. The personal card was the most special part.", name: 'Camille R.', context: 'Gifted to her sister' },
   { quote: "Ordered rush shipping and it arrived the next day. Gorgeous box, everything so soft and organic. Worth every penny.", name: 'Maya T.', context: 'Baby shower gift' },
   { quote: "Everyone at the shower was asking where the box was from. The gift guide helped me pick perfectly for someone I barely know.", name: 'Priya N.', context: 'Office baby shower' },
 ]
@@ -308,7 +308,7 @@ export default async function HomePage() {
               {[
                 { n: '01', title: 'Take the Guide', body: 'Answer 4 questions. Get a personalized box recommendation instantly.' },
                 { n: '02', title: 'Build Your Box', body: 'Choose from curated organic items across 5 thoughtful categories.' },
-                { n: '03', title: 'Craft Your Letter', body: 'We hand-write your personal note on premium linen card stock.' },
+                { n: '03', title: 'Customize Your Card', body: 'Pick a card design and your message — we print it on premium card stock.' },
                 { n: '04', title: 'We Ship With Care', body: 'Arrives sealed with a wax stamp, ribbon pull, and dried lavender.' },
               ].map(({ n, title, body }) => (
                 <div key={n} className="text-center">

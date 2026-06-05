@@ -32,6 +32,7 @@ export default function CheckoutPage() {
   const [recipientName, setRecipientName] = useState('')
   const [specialNote, setSpecialNote] = useState('')
   const [letterVersion, setLetterVersion] = useState<1 | 2>(1)
+  const [cardStyle, setCardStyle] = useState('')
 
   const [promoCode, setPromoCode] = useState('')
   const [promoState, setPromoState] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle')
@@ -55,6 +56,8 @@ export default function CheckoutPage() {
     if (storedLetter) setLetter(storedLetter)
     if (storedRecipient) setRecipientName(storedRecipient)
     if (storedVersion) setLetterVersion(parseInt(storedVersion) as 1 | 2)
+    const storedCardStyle = sessionStorage.getItem('pl_card_style')
+    if (storedCardStyle) setCardStyle(storedCardStyle)
   }, [router])
 
   async function applyPromo() {
@@ -107,6 +110,7 @@ export default function CheckoutPage() {
           selectedItems,
           letterContent: letter,
           letterVersion: letter ? letterVersion : undefined,
+          cardStyle: cardStyle || undefined,
           shippingType,
           promoId: promoId || undefined,
           preferredAssemblyImage: null,
@@ -314,7 +318,7 @@ export default function CheckoutPage() {
                     </div>
                     {letter && (
                       <div className="flex justify-between font-sans text-xs text-bark-400">
-                        <span>Handwritten Letter</span><span>Included</span>
+                        <span>{cardStyle ? `Card — ${cardStyle}` : 'Personalized Card'}</span><span>Included</span>
                       </div>
                     )}
                     <div className="flex justify-between font-sans text-sm text-bark-600 pt-2 border-t border-cream-200">

@@ -21,6 +21,7 @@ const STATUS_STYLES: Record<string, string> = {
 interface ExtendedOrder extends Order {
   preferred_assembly_image?: string | null
   preferred_assembly_style?: string | null
+  card_style?: string | null
 }
 
 export function OrdersTable({ orders: initial }: { orders: ExtendedOrder[] }) {
@@ -176,7 +177,9 @@ export function OrdersTable({ orders: initial }: { orders: ExtendedOrder[] }) {
                           )}
                           {order.letter_content && (
                             <div className="mt-4 p-3 bg-cream-100 border border-cream-300">
-                              <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-1">Handwritten Letter</p>
+                              <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-1">
+                                Card Message{order.card_style ? ` · ${order.card_style}` : ''}
+                              </p>
                               <p className="font-sans text-xs text-bark-500 leading-relaxed line-clamp-3">{order.letter_content}</p>
                             </div>
                           )}

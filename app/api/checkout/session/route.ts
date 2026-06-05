@@ -10,6 +10,7 @@ export async function POST(req: NextRequest) {
       selectedItems,
       letterContent,
       letterVersion,
+      cardStyle,
       shippingType,
       shippingAddress,
       recipientName,
@@ -26,6 +27,7 @@ export async function POST(req: NextRequest) {
       selectedItems: Product[]
       letterContent: string
       letterVersion?: 1 | 2
+      cardStyle?: string
       shippingType: ShippingType
       shippingAddress: {
         name: string
@@ -60,7 +62,7 @@ export async function POST(req: NextRequest) {
       {
         price_data: {
           currency: 'usd',
-          product_data: { name: 'Petite Lavande Box Experience', description: 'Premium magnetic box, satin ribbon, wax seal, dried lavender, handwritten letter' },
+          product_data: { name: 'Petite Lavande Box Experience', description: 'Premium magnetic box, satin ribbon, wax seal, dried lavender, personalized printed card' },
           unit_amount: BOX_BASE_PRICE,
         },
         quantity: 1,
@@ -107,6 +109,7 @@ export async function POST(req: NextRequest) {
         selected_items: selectedItems,
         letter_content: letterContent || null,
         letter_version: letterVersion || null,
+        card_style: cardStyle || null,
         shipping_type: shippingType,
         shipping_address: shippingAddress,
         tracking_number: trackingNumber,

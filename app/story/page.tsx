@@ -97,7 +97,7 @@ export default async function StoryPage() {
                 {
                   emoji: '✉️',
                   title: 'Every Detail',
-                  body: 'Wax-sealed boxes, handwritten letters, tissue and ribbon — because the unboxing is part of the gift. We believe in the beauty of ceremony.',
+                  body: 'Wax-sealed boxes, personalized cards, tissue and ribbon — because the unboxing is part of the gift. We believe in the beauty of ceremony.',
                 },
               ].map(({ emoji, title, body }, i) => {
                 const vi = valueImgs[i]
@@ -136,7 +136,7 @@ export default async function StoryPage() {
                   context: 'First-time parents',
                 },
                 {
-                  quote: 'The attention to detail is unreal. The wax seal, the tissue paper, the handwritten card — it felt like unwrapping something from a Parisian boutique.',
+                  quote: 'The attention to detail is unreal. The wax seal, the tissue paper, the personalized card — it felt like unwrapping something from a Parisian boutique.',
                   name: 'Margot T.',
                   context: 'Gifted to a colleague',
                 },
