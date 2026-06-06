@@ -39,6 +39,7 @@ export default function BoxEditorPage() {
   const [uploadErr, setUploadErr] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
   const [featured, setFeatured] = useState(true)
+  const [active, setActive] = useState(true)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
@@ -57,6 +58,7 @@ export default function BoxEditorPage() {
       setCustomPrice(box.customPrice != null ? (box.customPrice / 100).toFixed(2) : '')
       setImages(box.images ?? (box.image ? [box.image] : []))
       setFeatured(box.featured)
+      setActive(box.active !== false)
       // Convert selectionRefs map to slots array
       const slotRefs = box.selectionRefs ?? {}
       const newSlots: BoxSlot[] = Object.entries(slotRefs).map(([key, ref]) => {
@@ -158,6 +160,7 @@ export default function BoxEditorPage() {
         name,
         images,
         featured,
+        active,
         customPrice: customPrice ? Math.round(parseFloat(customPrice) * 100) : null,
         selection,
       }),
@@ -263,7 +266,11 @@ export default function BoxEditorPage() {
             </div>
           </div>
 
-          <div className="flex items-end pb-1">
+          <div className="flex flex-wrap items-center gap-6 pb-1">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={active} onChange={e => setActive(e.target.checked)} className="accent-bark-600 w-4 h-4" />
+              <span className="font-sans text-sm text-bark-500">Show on site</span>
+            </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={featured} onChange={e => setFeatured(e.target.checked)} className="accent-bark-600 w-4 h-4" />
               <span className="font-sans text-sm text-bark-500">Featured on homepage</span>

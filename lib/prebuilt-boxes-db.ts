@@ -163,6 +163,7 @@ export interface UpdateBoxInput {
   description?: string
   aesthetic?: string
   featured?: boolean
+  active?: boolean
   image?: string | null
   images?: string[]
   customPrice?: number | null
@@ -179,6 +180,7 @@ export async function updateBox(slug: string, input: UpdateBoxInput): Promise<vo
   if (input.description !== undefined) patch.description = input.description
   if (input.aesthetic !== undefined) patch.aesthetic = input.aesthetic
   if (input.featured !== undefined) patch.featured = input.featured
+  if (input.active !== undefined) patch.active = input.active
   if (input.images !== undefined) {
     patch.images = input.images
     patch.image = input.images[0] ?? null   // keep legacy cover in sync
