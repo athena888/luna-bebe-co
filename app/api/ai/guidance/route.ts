@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { anthropic, LUNA_SYSTEM_PROMPT } from '@/lib/anthropic'
-import { getAllProducts, getProductById, BOX_BASE_PRICE, SHIPPING } from '@/lib/products'
+import { BOX_BASE_PRICE, SHIPPING } from '@/lib/products'
+import { getCatalog } from '@/lib/products-db'
 import { rateLimitByIp } from '@/lib/rate-limit'
 import type { GiftGuideAnswers } from '@/types'
 
@@ -16,7 +17,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing answers' }, { status: 400 })
     }
 
-    const allProducts = getAllProducts()
+    // Pull from the live, managed catalog (active products only) so the guide
+    // never recommends deleted or obsolete items.
+    const allProducts = await getCatalog({ activeOnly: true })
+    const byId = new Map(allProducts.map(p => [p.id, p]))
     const productList = allProducts
       .map((p) => `ID: ${p.id} | Category: ${p.category} | Name: ${p.name} | Price: $${(p.price / 100).toFixed(0)} | Tag: ${p.tag || 'none'} | Description: ${p.description}`)
       .join('\n')
@@ -82,7 +86,7 @@ Respond with ONLY valid JSON (no markdown, no text before or after):
     // Resolve to real products, drop unknowns, and keep at most one per category.
     const seenCategories = new Set<string>()
     const products = (parsed.productIds || [])
-      .map((id: string) => getProductById(id))
+      .map((id: string) => byId.get(id))
       .filter((p): p is NonNullable<typeof p> => Boolean(p))
       .filter((p) => {
         if (seenCategories.has(p.category)) return false

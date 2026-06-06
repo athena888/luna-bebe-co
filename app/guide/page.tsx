@@ -124,9 +124,8 @@ export default function GuidePage() {
                         className="group flex items-center gap-4 p-3 bg-cream-50 rounded-xl border border-cream-200 hover:border-bark-300 hover:shadow-sm transition-all"
                       >
                         <div className="relative w-16 h-20 shrink-0 rounded-lg overflow-hidden bg-cream-100 border border-cream-200">
-                          {src
-                            ? <img src={src} alt={product.name} className="w-full h-full object-cover" />
-                            : <span className="absolute inset-0 flex items-center justify-center text-2xl">{product.imageEmoji}</span>}
+                          <span className="absolute inset-0 flex items-center justify-center text-2xl">{product.imageEmoji}</span>
+                          {src && <img src={src} alt={product.name} className="relative w-full h-full object-cover" onError={e => { e.currentTarget.style.display = 'none' }} />}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
