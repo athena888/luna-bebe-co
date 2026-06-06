@@ -170,56 +170,45 @@ export default async function HomePage() {
         {/* ── 5. Editorial strip — video or image ── */}
         <EditorialStrip />
 
-        {/* ── 6 + 6b. Editorial pair — flush, no gap ── */}
-        <section>
+        {/* ── 6 + 6b. Editorial pair — unified, contained ── */}
+        <section className="border-t border-cream-300 bg-cream-50 py-16 sm:py-24">
+          <div className="max-w-6xl mx-auto px-6 space-y-16 sm:space-y-24">
 
-          {/* Row 1: image left · text right */}
-          <div className="grid grid-cols-1 md:grid-cols-2">
-            <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[60vh] order-1">
-              <Image
-                src={homeImg('brand')}
-                alt="Petite Lavande brand story"
-                fill
-                className="object-cover object-center"
-                             />
-            </div>
-            <div className="bg-cream-100 flex items-center justify-center px-8 sm:px-16 py-16 sm:py-24 order-2">
-              <div className="max-w-sm">
-                <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-6">For the Giver</p>
-                <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600 leading-[1.05] mb-6">
+            {/* Block 1: image left · text right */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-14 items-center">
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-cream-200">
+                <Image src={homeImg('brand')} alt="Petite Lavande brand story" fill className="object-cover object-center" />
+              </div>
+              <div className="md:max-w-md">
+                <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">For the Giver</p>
+                <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-bark-600 leading-[1.05] mb-5">
                   Not a gift basket.<br />Something for her.
                 </h2>
-                <p className="font-cormorant text-lg text-bark-400 leading-loose mb-10">
+                <p className="font-cormorant text-lg text-bark-400 leading-loose mb-8">
                   You&apos;re here because someone you love is becoming a mother. You want to send something that says <em>I see you. I see how much love you carry.</em> Every box we send is built around one question: what would the most thoughtful person in her life choose?
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Link
-                    href="/build"
-                    className="bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-bark-700 transition-colors"
-                  >
+                  <Link href="/build" className="bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-bark-700 transition-colors">
                     Build Your Box
                   </Link>
-                  <Link
-                    href="/guide"
-                    className="border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-bark-600 hover:text-cream-50 transition-colors"
-                  >
+                  <Link href="/guide" className="border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-bark-600 hover:text-cream-50 transition-colors">
                     Take the Guide
                   </Link>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Row 2: text left · image right — reversed, flush below row 1 */}
-          <div className="grid grid-cols-1 md:grid-cols-2">
-            {/* Text — always renders first in DOM for mobile, shown left on desktop */}
-            <div className="bg-cream-100 flex items-center justify-center px-8 sm:px-16 py-16 sm:py-24 order-2 md:order-1">
-              <div className="max-w-sm">
-                <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-6">Traced to the Source</p>
-                <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600 leading-[1.05] mb-6">
+            {/* Block 2: text left · image right (reversed on desktop) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-14 items-center">
+              <div className="md:order-2 relative aspect-[4/3] rounded-2xl overflow-hidden bg-cream-200">
+                <Image src={homeImg('inside')} alt="What's inside a Petite Lavande box" fill className="object-cover object-center" />
+              </div>
+              <div className="md:order-1 md:max-w-md md:ml-auto">
+                <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">Traced to the Source</p>
+                <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-bark-600 leading-[1.05] mb-5">
                   From the source,<br />to her.
                 </h2>
-                <p className="font-cormorant text-lg text-bark-400 leading-loose mb-4">
+                <p className="font-cormorant text-lg text-bark-400 leading-loose mb-6">
                   Every ingredient, every material — traced to its origin. Provence lavender fields. Pacific Northwest farms. Small American makers. Everything chosen the way a daughter would choose for her own mother.
                 </p>
                 <ul className="space-y-2.5">
@@ -232,17 +221,8 @@ export default async function HomePage() {
                 </ul>
               </div>
             </div>
-            {/* Image — shown right on desktop */}
-            <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[65vh] order-1 md:order-2">
-              <Image
-                src={homeImg('inside')}
-                alt="What's inside a Petite Lavande box"
-                fill
-                className="object-cover object-center"
-                             />
-            </div>
-          </div>
 
+          </div>
         </section>
 
         {/* ── 6c. The Box — photo gallery scroll ── */}
