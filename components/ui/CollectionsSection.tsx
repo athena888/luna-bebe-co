@@ -234,7 +234,8 @@ export function CollectionsSection({ initial }: { initial?: CollectionsInitial }
                 alt={cat.label}
                 fill
                 className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
-                             />
+                unoptimized
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-bark-800/50 via-transparent to-transparent" />
               <div className="absolute top-4 left-0 right-0 text-center px-3 hidden sm:block">
                 <p className="font-sans text-[8px] tracking-[0.35em] uppercase text-white/70">{cat.sub}</p>
