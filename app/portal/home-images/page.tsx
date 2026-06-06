@@ -24,11 +24,25 @@ function ImageSlotCard({
   const [state, setState] = useState<UploadState>('idle')
   const [url, setUrl] = useState<string | null>(null)
   const [hasExisting, setHasExisting] = useState(true)
+  const [removing, setRemoving] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const displayUrl = url ?? (hasExisting ? getStorageUrl(slotKey) : null)
   const ratio = wide ? '16/9' : '4/3'
+
+  async function removeFile() {
+    if (!confirm('Remove this photo? The homepage section will be empty until you upload a new one.')) return
+    setRemoving(true)
+    setErrorMsg(null)
+    try {
+      const res = await fetch('/api/portal/home-images/delete', {
+        method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slot: slotKey }),
+      })
+      if (!res.ok) { const d = await res.json().catch(() => ({})); setErrorMsg(d.error || 'Delete failed'); setState('error'); return }
+      setUrl(null); setHasExisting(false); setState('idle')
+    } finally { setRemoving(false) }
+  }
 
   async function handleFile(file: File) {
     setState('uploading')
@@ -116,8 +130,22 @@ function ImageSlotCard({
       </div>
 
       <div className="px-4 py-3">
-        <p className="font-sans text-xs font-medium text-bark-600">{label}</p>
-        <p className="font-sans text-[10px] text-bark-400 mt-0.5 leading-relaxed">{description}</p>
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="font-sans text-xs font-medium text-bark-600">{label}</p>
+            <p className="font-sans text-[10px] text-bark-400 mt-0.5 leading-relaxed">{description}</p>
+          </div>
+          {displayUrl && (
+            <button
+              type="button"
+              onClick={removeFile}
+              disabled={removing}
+              className="shrink-0 inline-flex items-center gap-1 font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 hover:text-red-500 transition-colors disabled:opacity-40"
+            >
+              {removing ? <Loader size={10} className="animate-spin" /> : <Trash2 size={10} />} Remove
+            </button>
+          )}
+        </div>
         {state === 'error' && <p className="font-sans text-[10px] text-red-500 mt-1">{errorMsg ?? 'Upload failed'}</p>}
         {state === 'done' && <p className="font-sans text-[10px] text-sage-500 mt-1">Uploaded — live on homepage</p>}
       </div>
