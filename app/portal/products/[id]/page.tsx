@@ -997,9 +997,19 @@ export default function ProductDetailPage() {
 
             {hasVariants ? (
               <>
-                <p className="font-sans text-[10px] text-bark-400/70 mb-4">
-                  Each row is one color + size with its own stock. Customers choose from these; sizes with 0 stock show as unavailable.
-                </p>
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                  <p className="font-sans text-[10px] text-bark-400/70 max-w-md">
+                    Each row is one color + size with its own stock. Customers choose from these; sizes with 0 stock show as unavailable.
+                  </p>
+                  {(() => {
+                    const total = variants.reduce((s, v) => s + (Number(v.quantity) || 0), 0)
+                    return (
+                      <span className={`shrink-0 font-sans text-[11px] tracking-[0.1em] uppercase px-3 py-1.5 rounded-full ${total > 0 ? 'bg-sage-100 text-sage-700' : 'bg-cream-200 text-bark-400'}`}>
+                        In stock: {total}
+                      </span>
+                    )
+                  })()}
+                </div>
 
                 {/* Color detection */}
                 <div className="mb-4 p-4 bg-cream-50 rounded-lg border border-cream-200">
