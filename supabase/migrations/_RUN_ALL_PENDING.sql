@@ -159,4 +159,16 @@ begin
   where product_id = p_product_id and color = p_color and size = p_size and style = coalesce(p_style,'');
 end; $$ language plpgsql security definer;
 
+-- 10) Ensure the single-product stock table exists (it only lived in the
+-- initial schema.sql, so migration-only databases were missing it — which made
+-- the "Stock" number on non-variant products silently fail to save).
+create table if not exists inventory (
+  product_id text primary key,
+  quantity   integer not null default 0,
+  updated_at timestamptz not null default now()
+);
+alter table inventory enable row level security;
+drop policy if exists inventory_service_all on inventory;
+create policy inventory_service_all on inventory for all to service_role using (true) with check (true);
+
 -- Done.

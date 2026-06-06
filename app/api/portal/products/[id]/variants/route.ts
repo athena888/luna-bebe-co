@@ -49,16 +49,27 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const unitCents =
       v.unit_price != null && !isNaN(Number(v.unit_price)) ? Math.round(Number(v.unit_price) * 100) : null
 
-    const { error } = await supabaseAdmin.rpc('set_product_variant', {
-      p_product_id: id,
-      p_color: color,
-      p_size: size,
-      p_quantity: Math.max(0, Math.round(v.quantity) || 0),
-      p_color_hex: v.color_hex?.trim() || null,
-      p_unit_price: unitCents,
-      p_color_code: v.color_code?.trim() || null,
-      p_style: style,
-    })
+    // Write directly to the table (manual upsert keyed by color/size/style).
+    // Avoids the set_product_variant RPC, whose overloaded signatures caused
+    // saves to silently fail when migrations were out of sync.
+    const row = {
+      product_id: id,
+      color,
+      size,
+      style,
+      quantity: Math.max(0, Math.round(v.quantity) || 0),
+      color_hex: v.color_hex?.trim() || null,
+      unit_price: unitCents,
+      color_code: v.color_code?.trim() || null,
+    }
+    const { data: existing } = await supabaseAdmin
+      .from('product_variants')
+      .select('id')
+      .eq('product_id', id).eq('color', color).eq('size', size).eq('style', style)
+      .limit(1).maybeSingle()
+    const { error } = existing
+      ? await supabaseAdmin.from('product_variants').update(row).eq('id', existing.id)
+      : await supabaseAdmin.from('product_variants').insert(row)
     if (error) errors.push(`${color} ${size}: ${error.message}`)
     else { saved++; keep.push({ color, size, style }) }
   }

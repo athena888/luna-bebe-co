@@ -85,9 +85,17 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   }
 
   if (inventoryQuantity !== undefined) {
-    await supabaseAdmin
-      .from('inventory')
-      .upsert({ product_id: id, quantity: inventoryQuantity }, { onConflict: 'product_id' })
+    const qty = Math.max(0, Math.round(Number(inventoryQuantity)) || 0)
+    // Manual update-or-insert (no onConflict) + surface errors so a failed
+    // stock save no longer silently reports "Saved".
+    const { data: existed } = await supabaseAdmin
+      .from('inventory').select('product_id').eq('product_id', id).maybeSingle()
+    const { error: invErr } = existed
+      ? await supabaseAdmin.from('inventory').update({ quantity: qty }).eq('product_id', id)
+      : await supabaseAdmin.from('inventory').insert({ product_id: id, quantity: qty })
+    if (invErr) {
+      return NextResponse.json({ error: `Stock didn't save: ${invErr.message}` }, { status: 500 })
+    }
   }
 
   return NextResponse.json({ ok: true })

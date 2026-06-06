@@ -192,6 +192,8 @@ export default function ProductDetailPage() {
     })
     if (opts?.active !== undefined) setPublished(opts.active)
     if (opts?.needsReview !== undefined) setNeedsReview(opts.needsReview)
+    let detailError = ''
+    if (!res.ok) { const d = await res.json().catch(() => ({})); detailError = d.error || 'Error saving' }
     // Save variants when this product uses them.
     // Fall back to the hex value as the color name when none is typed,
     // so a row with only a swatch still saves instead of being dropped.
@@ -211,8 +213,9 @@ export default function ProductDetailPage() {
       }
     }
     setSaving(false)
-    setSaveMsg(variantError ? `Error: ${variantError}` : res.ok ? 'Saved' : 'Error saving')
-    setTimeout(() => setSaveMsg(''), variantError ? 6000 : 2000)
+    const anyError = detailError || variantError
+    setSaveMsg(anyError ? `Error: ${anyError}` : 'Saved')
+    setTimeout(() => setSaveMsg(''), anyError ? 6000 : 2000)
   }
 
   // Approve (keep) or revert (undo the added qty) imported stock changes
