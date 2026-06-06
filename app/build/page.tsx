@@ -233,6 +233,23 @@ export default function BuildPage() {
       if (found) setSelected(prev => { const next = new Map(prev); next.set(found.id, { ...found, lineKey: found.id }); return next })
       sessionStorage.removeItem('pl_pending_add')
     }
+    // Coming from the Gift Guide's "Build This Box" — load the recommended
+    // items straight into the bag and open it.
+    const rec = sessionStorage.getItem('pl_recommended')
+    if (rec) {
+      try {
+        const items = JSON.parse(rec) as Product[]
+        if (Array.isArray(items) && items.length) {
+          setSelected(prev => {
+            const next = new Map(prev)
+            items.forEach(p => { if (p?.id) next.set(p.id, { ...p, lineKey: p.id } as SelectedItem) })
+            return next
+          })
+          setBagOpen(true)
+        }
+      } catch { /* ignore */ }
+      sessionStorage.removeItem('pl_recommended')
+    }
   }, [])
 
   // Load certs for all products in catalog

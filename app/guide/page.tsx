@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Badge } from '@/components/ui/Badge'
-import { ChevronRight, RefreshCw, ArrowRight } from 'lucide-react'
+import { ChevronRight, RefreshCw, ArrowRight, X } from 'lucide-react'
 import type { GiftGuideAnswers, Product } from '@/types'
 import { CATEGORY_LABELS } from '@/lib/products'
 import { SlotBackground } from '@/components/ui/SlotBackground'
@@ -29,6 +29,7 @@ export default function GuidePage() {
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<Partial<GiftGuideAnswers>>({})
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null)
+  const [modalProduct, setModalProduct] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const currentQ = QUESTIONS[step]
   const isComplete = step >= QUESTIONS.length
@@ -118,10 +119,11 @@ export default function GuidePage() {
                   {recommendation.products.map((product) => {
                     const src = productImage(product)
                     return (
-                      <a
+                      <button
                         key={product.id}
-                        href={`/products/${product.id}`}
-                        className="group flex items-center gap-4 p-3 bg-cream-50 rounded-xl border border-cream-200 hover:border-bark-300 hover:shadow-sm transition-all"
+                        type="button"
+                        onClick={() => setModalProduct(product)}
+                        className="group w-full text-left flex items-center gap-4 p-3 bg-cream-50 rounded-xl border border-cream-200 hover:border-bark-300 hover:shadow-sm transition-all"
                       >
                         <div className="relative w-16 h-20 shrink-0 rounded-lg overflow-hidden bg-cream-100 border border-cream-200">
                           <span className="absolute inset-0 flex items-center justify-center text-2xl">{product.imageEmoji}</span>
@@ -135,7 +137,7 @@ export default function GuidePage() {
                           <p className="font-sans text-xs text-bark-400">{CATEGORY_LABELS[product.category]} · ${(product.price / 100).toFixed(0)}</p>
                         </div>
                         <ChevronRight size={16} className="text-bark-300 group-hover:text-gold-400 group-hover:translate-x-0.5 transition-all shrink-0" />
-                      </a>
+                      </button>
                     )
                   })}
                 </div>
@@ -164,6 +166,53 @@ export default function GuidePage() {
           )}
         </div>
       </main>
+
+      {/* Product detail modal */}
+      {modalProduct && (() => {
+        const src = productImage(modalProduct)
+        return (
+          <div
+            className="fixed inset-0 z-[60] bg-bark-800/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-6"
+            onClick={() => setModalProduct(null)}
+          >
+            <div
+              className="bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl max-h-[90vh] overflow-y-auto relative"
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setModalProduct(null)}
+                className="absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center bg-white/90 rounded-full text-bark-400 hover:text-bark-600 shadow-sm"
+                aria-label="Close"
+              >
+                <X size={16} />
+              </button>
+              <div className="relative w-full aspect-[4/3] bg-cream-100">
+                <span className="absolute inset-0 flex items-center justify-center text-5xl">{modalProduct.imageEmoji}</span>
+                {src && <img src={src} alt={modalProduct.name} className="relative w-full h-full object-cover" onError={e => { e.currentTarget.style.display = 'none' }} />}
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-gold-400">{CATEGORY_LABELS[modalProduct.category]}</p>
+                  {modalProduct.tag && <Badge variant="gold">{modalProduct.tag}</Badge>}
+                </div>
+                <h3 className="font-serif text-2xl text-bark-600 mb-1">{modalProduct.name}</h3>
+                <p className="font-sans text-lg text-bark-500 mb-4">${(modalProduct.price / 100).toFixed(0)}</p>
+                {modalProduct.description && <p className="font-sans text-sm text-bark-600 leading-relaxed mb-4">{modalProduct.description}</p>}
+                {modalProduct.ingredients && (
+                  <p className="font-sans text-xs text-bark-400 mb-5"><span className="font-medium">Materials:</span> {modalProduct.ingredients}</p>
+                )}
+                <a
+                  href={`/products/${modalProduct.id}`}
+                  className="inline-flex items-center gap-2 border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-6 py-3 rounded-lg hover:bg-bark-600 hover:text-cream-50 transition-colors"
+                >
+                  View full details <ArrowRight size={14} />
+                </a>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
+
       <Footer />
     </>
   )
