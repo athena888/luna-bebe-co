@@ -4,9 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
-import { Sparkles, ChevronRight, RefreshCw, ArrowRight } from 'lucide-react'
+import { ChevronRight, RefreshCw, ArrowRight } from 'lucide-react'
 import type { GiftGuideAnswers, Product } from '@/types'
 import { CATEGORY_LABELS } from '@/lib/products'
 import { SlotBackground } from '@/components/ui/SlotBackground'
@@ -72,7 +71,7 @@ export default function GuidePage() {
         <SlotBackground slotKey="guide.header_bg" className="px-4 sm:px-6 pt-14 pb-10 text-center">
           <p className="text-[10px] font-sans font-semibold uppercase tracking-[0.35em] text-gold-400 mb-3">Gift Guide</p>
           <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-3">Find the Perfect Box</h1>
-          <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">Answer 4 quick questions. Luna will curate the perfect combination just for her.</p>
+          <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">Answer 4 quick questions and we&rsquo;ll curate the perfect combination just for her.</p>
         </SlotBackground>
         <div className="max-w-2xl mx-auto py-12 px-4 sm:px-6">
           {!isComplete && (
@@ -102,16 +101,17 @@ export default function GuidePage() {
           )}
           {isComplete && isLoading && (
             <div className="text-center py-20">
-              <div className="inline-flex items-center gap-3 text-bark-600"><RefreshCw size={20} className="animate-spin text-gold-400" /><span className="font-serif text-xl">Luna is curating your box...</span></div>
+              <div className="inline-flex items-center gap-3 text-bark-600"><RefreshCw size={20} className="animate-spin text-gold-400" /><span className="font-serif text-xl">Curating your box…</span></div>
               <p className="font-sans text-sm text-bark-400 mt-2">This takes just a moment.</p>
             </div>
           )}
           {isComplete && !isLoading && recommendation && (
             <div>
               <div className="text-center mb-8">
-                <div className="text-4xl mb-4">✨</div>
-                <h2 className="font-serif text-3xl text-bark-600 mb-2">Your Curated Box</h2>
-                <p className="font-sans text-sm text-bark-400">Based on your answers, Luna recommends:</p>
+                <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 mb-3">Curated For Her</p>
+                <h2 className="font-serif text-3xl sm:text-4xl text-bark-600 mb-3">Your Curated Box</h2>
+                <div className="w-12 h-px bg-gold-400 mx-auto mb-3" />
+                <p className="font-sans text-sm text-bark-400">Based on your answers, here&rsquo;s what we suggest:</p>
               </div>
               {recommendation.products.length > 0 && (
                 <div className="space-y-3 mb-6">
@@ -142,14 +142,24 @@ export default function GuidePage() {
                 </div>
               )}
               {recommendation.reasoning && (
-                <div className="bg-gold-100/50 border border-gold-200 rounded-xl p-5 mb-6">
-                  <div className="flex items-center gap-2 mb-2"><Sparkles size={14} className="text-gold-500" /><span className="font-sans text-xs font-semibold uppercase tracking-wider text-gold-500">Luna&apos;s Note</span></div>
-                  <p className="font-sans text-sm text-bark-600 leading-relaxed italic">{recommendation.reasoning}</p>
+                <div className="bg-cream-50 border border-cream-300 rounded-xl p-5 mb-6">
+                  <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-gold-500 mb-2">A Note</p>
+                  <p className="font-cormorant text-base text-bark-600 leading-relaxed italic">{recommendation.reasoning}</p>
                 </div>
               )}
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button variant="gold" size="lg" onClick={handleBuildWithRecs} className="flex-1">Build This Box <ArrowRight size={16} /></Button>
-                <Button variant="outline" size="md" onClick={restart}><RefreshCw size={14} /> Retake</Button>
+                <button
+                  onClick={handleBuildWithRecs}
+                  className="flex-1 inline-flex items-center justify-center gap-2 bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-4 rounded-lg hover:bg-bark-700 transition-colors"
+                >
+                  Build This Box <ArrowRight size={15} />
+                </button>
+                <button
+                  onClick={restart}
+                  className="inline-flex items-center justify-center gap-2 border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-4 rounded-lg hover:bg-bark-600 hover:text-cream-50 transition-colors"
+                >
+                  <RefreshCw size={14} /> Retake
+                </button>
               </div>
             </div>
           )}

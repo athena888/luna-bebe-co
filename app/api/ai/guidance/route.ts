@@ -57,7 +57,7 @@ How to curate:
 Respond with ONLY valid JSON (no markdown, no text before or after):
 {
   "productIds": ["id", "..."],
-  "reasoning": "2-3 warm sentences as Luna speaking directly to the gift-giver, noting how this fits their budget and her style."
+  "reasoning": "2-3 warm sentences speaking directly to the gift-giver, noting how this fits their budget and her style."
 }`,
         },
       ],
@@ -65,9 +65,16 @@ Respond with ONLY valid JSON (no markdown, no text before or after):
 
     const responseText = message.content[0].type === 'text' ? message.content[0].text.trim() : '{}'
 
+    // Models sometimes wrap JSON in ```fences``` or add prose — extract the
+    // object before parsing so a stray character doesn't blank the results.
     let parsed: { productIds: string[]; reasoning: string }
     try {
-      parsed = JSON.parse(responseText)
+      const fenced = responseText.match(/```(?:json)?\s*([\s\S]*?)```/i)
+      const body = fenced ? fenced[1] : responseText
+      const start = body.indexOf('{')
+      const end = body.lastIndexOf('}')
+      const jsonStr = start >= 0 && end > start ? body.slice(start, end + 1) : body
+      parsed = JSON.parse(jsonStr)
     } catch {
       return NextResponse.json({ products: [], reasoning: 'Unable to generate recommendations at this time.' })
     }
