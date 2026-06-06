@@ -1086,7 +1086,7 @@ export default function ProductDetailPage() {
                         value={v.color_code || ''}
                         onChange={e => updateVariant(i, 'color_code', e.target.value)}
                         placeholder="code"
-                        className="w-16 px-2 py-1.5 border border-cream-300 rounded text-xs text-bark-600 text-center focus:outline-none focus:border-bark-400 shrink-0"
+                        className="flex-1 min-w-[3.5rem] lg:flex-none lg:w-16 px-2 py-1.5 border border-cream-300 rounded text-xs text-bark-600 text-center focus:outline-none focus:border-bark-400"
                         title="Supplier color code"
                       />
                       <input
@@ -1094,7 +1094,7 @@ export default function ProductDetailPage() {
                         value={v.color_hex || ''}
                         onChange={e => updateVariant(i, 'color_hex', e.target.value)}
                         placeholder="#hex"
-                        className="w-20 px-2 py-1.5 border border-cream-300 rounded text-xs text-bark-600 text-center focus:outline-none focus:border-bark-400 shrink-0"
+                        className="flex-1 min-w-[4rem] lg:flex-none lg:w-20 px-2 py-1.5 border border-cream-300 rounded text-xs text-bark-600 text-center focus:outline-none focus:border-bark-400"
                         title="Hex color code"
                       />
                       <input
@@ -1109,13 +1109,13 @@ export default function ProductDetailPage() {
                         value={v.style || ''}
                         onChange={e => updateVariant(i, 'style', e.target.value)}
                         placeholder="style"
-                        className="w-24 px-2 py-1.5 border border-cream-300 rounded text-xs text-bark-600 text-center focus:outline-none focus:border-bark-400 shrink-0"
+                        className="flex-1 min-w-[4rem] lg:flex-none lg:w-24 px-2 py-1.5 border border-cream-300 rounded text-xs text-bark-600 text-center focus:outline-none focus:border-bark-400"
                         title="Optional shape/style, e.g. Star or Moon"
                       />
                       <select
                         value={v.size}
                         onChange={e => updateVariant(i, 'size', e.target.value)}
-                        className="w-20 px-1 py-1.5 border border-cream-300 rounded text-sm text-bark-600 focus:outline-none focus:border-bark-400 shrink-0"
+                        className="flex-1 min-w-[4rem] lg:flex-none lg:w-20 px-1 py-1.5 border border-cream-300 rounded text-sm text-bark-600 focus:outline-none focus:border-bark-400"
                       >
                         {VARIANT_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
                       </select>
@@ -1125,7 +1125,7 @@ export default function ProductDetailPage() {
                         value={v.quantity === 0 ? '' : v.quantity}
                         placeholder="0"
                         onChange={e => updateVariant(i, 'quantity', parseInt(e.target.value) || 0)}
-                        className="w-16 px-2 py-1.5 border border-cream-300 rounded text-sm text-bark-600 text-center focus:outline-none focus:border-bark-400 shrink-0"
+                        className="flex-1 min-w-[3.5rem] lg:flex-none lg:w-16 px-2 py-1.5 border border-cream-300 rounded text-sm text-bark-600 text-center focus:outline-none focus:border-bark-400"
                         title="Quantity in stock"
                       />
                       <button

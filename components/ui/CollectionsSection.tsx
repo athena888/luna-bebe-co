@@ -95,7 +95,7 @@ function CollectionModal({ cat, byCategory, boxes, onClose }: {
       })()
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-6" onClick={onClose}>
+    <div className="fixed inset-0 z-[60] bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-6" onClick={onClose}>
       <div className="bg-cream-50 w-full sm:max-w-3xl max-h-[88vh] flex flex-col overflow-hidden rounded-t-2xl sm:rounded-2xl shadow-2xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-start justify-between p-6 pb-4 border-b border-cream-300 shrink-0">
           <div>

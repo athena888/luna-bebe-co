@@ -540,7 +540,7 @@ export default function BuildPage() {
       {/* ── Product Modal ── */}
       {modalProduct && (
         <div
-          className="fixed inset-0 z-50 bg-bark-800/60 backdrop-blur-sm flex items-center justify-center p-4 lg:p-10"
+          className="fixed inset-0 z-[60] bg-bark-800/60 backdrop-blur-sm flex items-center justify-center p-4 lg:p-10"
           onClick={() => setModalProduct(null)}
         >
           <div

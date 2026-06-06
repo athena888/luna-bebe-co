@@ -126,7 +126,7 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 sm:p-8"
+      className="fixed inset-0 z-[60] bg-black/70 flex items-center justify-center p-4 sm:p-8"
       onClick={onClose}
     >
       <div

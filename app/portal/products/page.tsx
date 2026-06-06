@@ -711,7 +711,7 @@ export default function ProductsPortalPage() {
             Click a card to swap the photo. Use <Settings size={12} className="inline mb-0.5" /> to edit details, or <Trash2 size={12} className="inline mb-0.5" /> to delete.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end sm:flex-1 sm:min-w-0">
           <button
             onClick={() => setReviewOnly(v => !v)}
             className={`font-sans text-[11px] tracking-[0.2em] uppercase px-4 py-2 rounded border transition-colors whitespace-nowrap ${

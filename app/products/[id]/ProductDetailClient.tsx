@@ -280,7 +280,7 @@ export default function ProductDetailClient() {
       {/* Lightbox */}
       {lightboxIdx !== null && allImages[lightboxIdx] && (
         <div
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center"
           onClick={() => setLightboxIdx(null)}
         >
           {/* Close */}

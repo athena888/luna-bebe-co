@@ -17,6 +17,21 @@ export async function GET() {
   return NextResponse.json({ images })
 }
 
+// Remove a slot image (clears it so the page falls back to its default).
+export async function DELETE(req: NextRequest) {
+  const slotKey = req.nextUrl.searchParams.get('slotKey')
+  if (!slotKey) return NextResponse.json({ error: 'slotKey required' }, { status: 400 })
+  // Best-effort: remove the stored files for this slot, then the rows.
+  const { data: rows } = await supabaseAdmin.from('site_images').select('path').eq('slot_key', slotKey)
+  const paths = (rows ?? []).map(r => r.path).filter(Boolean)
+  if (paths.length) {
+    try { await supabaseAdmin.storage.from(SLOT_BUCKET).remove(paths) } catch { /* ignore */ }
+  }
+  const { error } = await supabaseAdmin.from('site_images').delete().eq('slot_key', slotKey)
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ ok: true })
+}
+
 // Upload/replace a slot image (+ alt text). Admin-guarded by middleware.
 export async function POST(req: NextRequest) {
   try {

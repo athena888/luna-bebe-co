@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Loader, Upload, Check, Sparkles } from 'lucide-react'
+import { Loader, Upload, Check, Sparkles, Trash2 } from 'lucide-react'
 import { IMAGE_SLOTS, slotsByGroup, type ImageSlot } from '@/lib/image-slots'
 import { resizeImage } from '@/lib/image-resize'
 
@@ -44,6 +44,18 @@ function SlotCard({ slot, current, onSaved }: { slot: ImageSlot; current?: Curre
       await fetch('/api/portal/site-images', { method: 'POST', body: form })
       onSaved(slot.key, { public_url: url, alt_text: text.trim() })
       setMsg('Alt saved'); setTimeout(() => setMsg(''), 2000)
+    } finally { setBusy(false) }
+  }
+
+  async function remove() {
+    if (!confirm('Remove this image? The page will fall back to its default.')) return
+    setBusy(true); setMsg('')
+    try {
+      const res = await fetch(`/api/portal/site-images?slotKey=${encodeURIComponent(slot.key)}`, { method: 'DELETE' })
+      if (!res.ok) { const d = await res.json().catch(() => ({})); setMsg(d.error || 'Delete failed'); return }
+      setUrl(''); setAlt('')
+      onSaved(slot.key, { public_url: '', alt_text: '' })
+      setMsg('Removed'); setTimeout(() => setMsg(''), 2000)
     } finally { setBusy(false) }
   }
 
@@ -101,7 +113,21 @@ function SlotCard({ slot, current, onSaved }: { slot: ImageSlot; current?: Curre
           <span className="text-[10px] tracking-[0.1em] uppercase hidden sm:inline">AI</span>
         </button>
       </div>
-      {msg && <p className={`font-sans text-[10px] mt-1 ${msg.includes('fail') || msg.includes('alt text first') ? 'text-red-500' : 'text-sage-600'}`}>{msg === 'Saved' ? <span className="inline-flex items-center gap-1"><Check size={10} /> Saved</span> : msg}</p>}
+      <div className="flex items-center justify-between mt-1.5">
+        {msg
+          ? <p className={`font-sans text-[10px] ${msg.includes('fail') || msg.includes('alt text first') ? 'text-red-500' : 'text-sage-600'}`}>{msg === 'Saved' ? <span className="inline-flex items-center gap-1"><Check size={10} /> Saved</span> : msg}</p>
+          : <span />}
+        {url && (
+          <button
+            type="button"
+            onClick={remove}
+            disabled={busy}
+            className="shrink-0 inline-flex items-center gap-1 font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 hover:text-red-500 transition-colors disabled:opacity-40"
+          >
+            <Trash2 size={10} /> Remove
+          </button>
+        )}
+      </div>
     </div>
   )
 }
