@@ -12,9 +12,11 @@ export function SlotBackground({
   scrim = 'bg-cream-50/70',
 }: {
   slotKey: string
-  children: React.ReactNode
+  // children can be plain content, or a function that adapts to whether an
+  // image is set (e.g. switch to light text only when a photo is present).
+  children: React.ReactNode | ((hasImage: boolean) => React.ReactNode)
   className?: string
-  scrim?: string
+  scrim?: string  // pass '' to show the photo with no opaque overlay
 }) {
   const [img, setImg] = useState<{ public_url: string; alt_text: string } | null>(null)
 
@@ -27,15 +29,17 @@ export function SlotBackground({
     return () => { alive = false }
   }, [slotKey])
 
+  const content = typeof children === 'function' ? children(!!img) : children
+
   return (
     <div className={`relative ${className}`}>
       {img && (
         <>
           <img src={img.public_url} alt={img.alt_text} className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
-          <div className={`absolute inset-0 ${scrim}`} aria-hidden="true" />
+          {scrim && <div className={`absolute inset-0 ${scrim}`} aria-hidden="true" />}
         </>
       )}
-      <div className="relative">{children}</div>
+      <div className="relative">{content}</div>
     </div>
   )
 }

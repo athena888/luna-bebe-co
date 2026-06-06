@@ -12,6 +12,7 @@ import { memo, useCallback, useMemo, useState as useLocalState } from 'react'
 import { toggleWishlist, isWishlisted } from '@/lib/wishlist'
 import { CertBadges } from '@/components/ui/CertBadges'
 import { SlotImage } from '@/components/ui/SlotImage'
+import { SlotBackground } from '@/components/ui/SlotBackground'
 import type { ProductCert, CertDef } from '@/lib/certifications'
 
 type ResolvedCert = ProductCert & Partial<CertDef>
@@ -370,10 +371,14 @@ export default function BuildPage() {
       <Header />
       <main className="min-h-screen bg-cream-50 pb-16 lg:pb-0">
 
-        <div className="border-b border-cream-300 bg-cream-50 px-6 py-10 text-center">
-          <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-2">Build Your Box</h1>
-          <p className="font-sans text-xs text-bark-400 tracking-wide">Click any item to explore — add as many as you like.</p>
-        </div>
+        <SlotBackground slotKey="build.header_bg" scrim="" className="border-b border-cream-300 bg-cream-50 px-6 py-14 sm:py-20 text-center">
+          {(hasImage) => (
+            <div style={hasImage ? { textShadow: '0 1px 12px rgba(0,0,0,0.35)' } : undefined}>
+              <h1 className={`font-serif text-4xl sm:text-5xl mb-2 ${hasImage ? 'text-cream-50' : 'text-bark-600'}`}>Build Your Box</h1>
+              <p className={`font-sans text-xs tracking-wide ${hasImage ? 'text-cream-100/90' : 'text-bark-500'}`}>Click any item to explore — add as many as you like.</p>
+            </div>
+          )}
+        </SlotBackground>
 
         <div className="w-full py-12 space-y-14">
           {activeCategories.map((cat) => (
