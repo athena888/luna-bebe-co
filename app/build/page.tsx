@@ -6,7 +6,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { PRODUCTS, CATEGORY_LABELS, CATEGORY_ORDER, getAllProducts } from '@/lib/products'
 import type { Product, ProductCategory } from '@/types'
-import { Check, X, Plus, ShoppingBag, Heart, ShieldCheck } from 'lucide-react'
+import { Check, X, Plus, ShoppingBag, Heart, ShieldCheck, Leaf } from 'lucide-react'
 import Image from 'next/image'
 import { memo, useCallback, useMemo, useState as useLocalState } from 'react'
 import { toggleWishlist, isWishlisted } from '@/lib/wishlist'
@@ -16,6 +16,23 @@ import { SlotBackground } from '@/components/ui/SlotBackground'
 import type { ProductCert, CertDef } from '@/lib/certifications'
 
 type ResolvedCert = ProductCert & Partial<CertDef>
+
+// We don't display the official GOTS logo (we're not GOTS-certified ourselves) —
+// GOTS-tagged items show our own "Organic" leaf instead. The GOTS-certified-maker
+// claim is made in text on the product detail/modal.
+function isGots(c: ResolvedCert): boolean {
+  return /gots|global organic textile/i.test(`${c.key ?? ''} ${c.name ?? ''}`)
+}
+function isOrganicText(s?: string | null): boolean {
+  return /organic\s+cotton/i.test(s ?? '')
+}
+function cleanGots(s?: string | null): string {
+  return (s ?? '')
+    .replace(/GOTS[-‑\s]*certified\s*/gi, '')
+    .replace(/\bGOTS\b[-\s]*/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim()
+}
 
 const CATEGORY_SUBTITLES: Record<string, string> = {
   swaddle: 'Wrap them in softness from day one.',
@@ -123,20 +140,30 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
           </div>
         )}
 
-        {/* Cert logos — overlay on bottom-left of image */}
-        {certs && certs.length > 0 && (
-          <div className="absolute bottom-2 left-2 flex items-center gap-1 z-10">
-            {certs.slice(0, 4).map(cert => (
-              <div key={cert.key} className="w-5 h-5 relative bg-white/90 rounded-full p-0.5 backdrop-blur-sm" title={cert.name || cert.key}>
-                {cert.iconUrl ? (
-                  <Image src={cert.iconUrl} alt={cert.name || cert.key} fill className="object-contain" />
-                ) : (
-                  <ShieldCheck size={14} className="text-gold-400" />
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+        {/* Cert logos — overlay; GOTS shown as our Organic leaf, not the official logo */}
+        {(() => {
+          const list = (certs ?? []).filter(c => !isGots(c))
+          const showOrganic = !!product.organic || (certs ?? []).some(isGots)
+          if (!showOrganic && list.length === 0) return null
+          return (
+            <div className="absolute bottom-2 left-2 flex items-center gap-1 z-10">
+              {showOrganic && (
+                <div className="w-5 h-5 rounded-full bg-sage-500 flex items-center justify-center shadow-sm" title="Made with organic cotton">
+                  <Leaf size={12} className="text-white" />
+                </div>
+              )}
+              {list.slice(0, 3).map(cert => (
+                <div key={cert.key} className="w-5 h-5 relative bg-white/90 rounded-full p-0.5 backdrop-blur-sm" title={cert.name || cert.key}>
+                  {cert.iconUrl ? (
+                    <Image src={cert.iconUrl} alt={cert.name || cert.key} fill className="object-contain" />
+                  ) : (
+                    <ShieldCheck size={14} className="text-gold-400" />
+                  )}
+                </div>
+              ))}
+            </div>
+          )
+        })()}
       </button>
 
       <div className={`pb-1 ${soldOut ? 'opacity-40' : ''}`}>
@@ -641,14 +668,19 @@ export default function BuildPage() {
               )}
               <div className="border-t border-cream-300 pt-4 mb-4">
                 <p className="text-base text-bark-600 leading-relaxed" style={{ fontFamily: 'var(--font-cormorant)' }}>
-                  {modalProduct.description}
+                  {cleanGots(modalProduct.description)}
                 </p>
               </div>
               {modalProduct.ingredients && (
                 <div className="mb-4">
                   <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mr-2">Materials</span>
-                  <span className="font-sans text-xs text-bark-400">{modalProduct.ingredients}</span>
+                  <span className="font-sans text-xs text-bark-400">{cleanGots(modalProduct.ingredients)}</span>
                 </div>
+              )}
+              {isOrganicText(`${modalProduct.ingredients ?? ''} ${modalProduct.description ?? ''}`) && (
+                <p className="font-sans text-xs text-bark-400 mb-4 leading-relaxed">
+                  Made with <span className="text-bark-600">GOTS-certified organic cotton</span> from a GOTS-certified manufacturer.
+                </p>
               )}
               {/* Variant pickers (color + size) */}
               {modalHasVariants && !allVariantsOut && (

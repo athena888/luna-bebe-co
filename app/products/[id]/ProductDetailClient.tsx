@@ -279,7 +279,7 @@ export default function ProductDetailClient() {
                   <div className="border-t border-cream-300">
                     <div className="py-3.5 flex items-start gap-2">
                       <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
-                      <span className="font-sans text-xs text-bark-400">Made with GOTS-certified organic cotton from a GOTS-certified maker.</span>
+                      <span className="font-sans text-xs text-bark-400">Made with GOTS-certified organic cotton from a GOTS-certified manufacturer.</span>
                     </div>
                   </div>
                 )}
