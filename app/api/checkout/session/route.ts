@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
         quantity: 1,
       },
       ...selectedItems.map((item) => {
-        const v = item as Product & { selectedColor?: string; selectedSize?: string; selectedStyle?: string }
+        const v = item as Product & { selectedColor?: string; selectedSize?: string; selectedStyle?: string; qty?: number }
         const stylePart = v.selectedStyle ? ` · ${v.selectedStyle}` : ''
         const variantSuffix = v.selectedColor && v.selectedSize ? ` — ${v.selectedColor} · ${v.selectedSize}${stylePart}` : ''
         return {
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
             },
             unit_amount: item.price,
           },
-          quantity: 1,
+          quantity: Math.max(1, Math.round(v.qty ?? 1)),
         }
       }),
       {

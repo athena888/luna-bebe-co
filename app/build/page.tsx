@@ -6,7 +6,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { PRODUCTS, CATEGORY_LABELS, CATEGORY_ORDER, getAllProducts } from '@/lib/products'
 import type { Product, ProductCategory } from '@/types'
-import { Check, X, Plus, ShoppingBag, Heart, ShieldCheck, Leaf } from 'lucide-react'
+import { Check, X, Plus, Minus, ShoppingBag, Heart, ShieldCheck, Leaf } from 'lucide-react'
 import Image from 'next/image'
 import { memo, useCallback, useMemo, useState as useLocalState } from 'react'
 import { toggleWishlist, isWishlisted } from '@/lib/wishlist'
@@ -53,7 +53,7 @@ type BuildProduct = Product & { has_variants?: boolean }
 interface VariantOpt { color: string; color_hex: string | null; style?: string; size: string; quantity: number }
 
 // A selected line in the box — a product plus its chosen variant (if any)
-type SelectedItem = Product & { selectedColor?: string; selectedSize?: string; selectedStyle?: string; colorHex?: string; lineKey: string }
+type SelectedItem = Product & { selectedColor?: string; selectedSize?: string; selectedStyle?: string; colorHex?: string; lineKey: string; qty: number }
 
 function variantKey(id: string, color?: string, size?: string, style?: string) {
   return color && size ? `${id}:${color}:${size}:${style || ''}` : id
@@ -254,7 +254,7 @@ export default function BuildPage() {
     const pendingId = sessionStorage.getItem('pl_pending_add')
     if (pendingId) {
       const found = getAllProducts().find(p => p.id === pendingId)
-      if (found) setSelected(prev => { const next = new Map(prev); next.set(found.id, { ...found, lineKey: found.id }); return next })
+      if (found) setSelected(prev => { const next = new Map(prev); next.set(found.id, { ...found, lineKey: found.id, qty: 1 }); return next })
       sessionStorage.removeItem('pl_pending_add')
     }
     // Coming from the Gift Guide's "Build This Box" — load the recommended
@@ -266,7 +266,7 @@ export default function BuildPage() {
         if (Array.isArray(items) && items.length) {
           setSelected(prev => {
             const next = new Map(prev)
-            items.forEach(p => { if (p?.id) next.set(p.id, { ...p, lineKey: p.id } as SelectedItem) })
+            items.forEach(p => { if (p?.id) next.set(p.id, { ...p, lineKey: p.id, qty: (p as SelectedItem).qty ?? 1 } as SelectedItem) })
             return next
           })
           setBagOpen(true)
@@ -319,7 +319,7 @@ export default function BuildPage() {
     setSelected(prev => {
       const next = new Map(prev)
       if (next.has(product.id)) next.delete(product.id)
-      else next.set(product.id, { ...product, lineKey: product.id })
+      else next.set(product.id, { ...product, lineKey: product.id, qty: 1 })
       return next
     })
   }, [])
@@ -330,13 +330,23 @@ export default function BuildPage() {
     setSelected(prev => {
       const next = new Map(prev)
       if (next.has(key)) next.delete(key)
-      else next.set(key, { ...product, selectedColor: color, selectedSize: size, selectedStyle: style || undefined, colorHex: hex ?? undefined, lineKey: key })
+      else next.set(key, { ...product, selectedColor: color, selectedSize: size, selectedStyle: style || undefined, colorHex: hex ?? undefined, lineKey: key, qty: 1 })
       return next
     })
   }, [])
 
   const removeItem = useCallback((key: string) => {
     setSelected(prev => { const next = new Map(prev); next.delete(key); return next })
+  }, [])
+
+  // Adjust quantity for a line (min 1; never below 1 — use Remove to delete).
+  const changeQty = useCallback((key: string, delta: number) => {
+    setSelected(prev => {
+      const next = new Map(prev)
+      const item = next.get(key)
+      if (item) next.set(key, { ...item, qty: Math.max(1, (item.qty ?? 1) + delta) })
+      return next
+    })
   }, [])
 
   // Is any variant (or the plain product) of this id in the box?
@@ -374,7 +384,7 @@ export default function BuildPage() {
   }, [])
 
   const selectedList = useMemo(() => Array.from(selected.values()), [selected])
-  const subtotal = useMemo(() => selectedList.reduce((s, p) => s + p.price, 0), [selectedList])
+  const subtotal = useMemo(() => selectedList.reduce((s, p) => s + p.price * (p.qty ?? 1), 0), [selectedList])
   const hasItems = selected.size > 0
 
   const modalMainSrc = modalProduct
@@ -552,13 +562,26 @@ export default function BuildPage() {
                     {variantLabel && (
                       <p className="font-sans text-[11px] text-bark-400 capitalize mb-1">{variantLabel}</p>
                     )}
-                    <p className="font-sans text-sm text-bark-500 mb-3">{formatPrice(product.price)}</p>
-                    <button
-                      onClick={() => removeItem(product.lineKey)}
-                      className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-700 transition-colors"
-                    >
-                      Remove
-                    </button>
+                    <p className="font-sans text-sm text-bark-500 mb-3">{formatPrice(product.price * (product.qty ?? 1))}{(product.qty ?? 1) > 1 && <span className="text-bark-400/70 text-xs"> ({formatPrice(product.price)} ea)</span>}</p>
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center border border-cream-300 rounded">
+                        <button onClick={() => changeQty(product.lineKey, -1)} disabled={(product.qty ?? 1) <= 1}
+                          className="w-7 h-7 flex items-center justify-center text-bark-500 hover:bg-cream-100 disabled:opacity-30 transition-colors" aria-label="Decrease quantity">
+                          <Minus size={13} />
+                        </button>
+                        <span className="w-7 text-center font-sans text-sm text-bark-600">{product.qty ?? 1}</span>
+                        <button onClick={() => changeQty(product.lineKey, 1)}
+                          className="w-7 h-7 flex items-center justify-center text-bark-500 hover:bg-cream-100 transition-colors" aria-label="Increase quantity">
+                          <Plus size={13} />
+                        </button>
+                      </div>
+                      <button
+                        onClick={() => removeItem(product.lineKey)}
+                        className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-700 transition-colors"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
                 </div>
               )

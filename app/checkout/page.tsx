@@ -10,7 +10,7 @@ import { Lock } from 'lucide-react'
 import Image from 'next/image'
 
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
-function boxItemTotal(selection: BoxSelection) { return Object.values(selection).reduce((sum, p) => sum + (p?.price ?? 0), 0) }
+function boxItemTotal(selection: BoxSelection) { return Object.values(selection).reduce((sum, p) => sum + (p?.price ?? 0) * ((p as { qty?: number })?.qty ?? 1), 0) }
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 function productImage(p: { id: string; image?: string | null }): string | null {
@@ -294,15 +294,15 @@ export default function CheckoutPage() {
                   <div className="px-6 py-5 border-b border-cream-300">
                     <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-4">Your Selection</p>
                     <div className="space-y-3">
-                      {(Object.values(selection).filter(Boolean) as Array<NonNullable<typeof selection.swaddle> & { selectedColor?: string; selectedSize?: string }>).map((item, idx) => item && (
+                      {(Object.values(selection).filter(Boolean) as Array<NonNullable<typeof selection.swaddle> & { selectedColor?: string; selectedSize?: string; qty?: number }>).map((item, idx) => item && (
                         <div key={`${item.id}-${idx}`} className="flex justify-between items-start">
                           <p className="font-sans text-xs text-bark-600 leading-snug pr-3">
-                            {item.name}
+                            {item.name}{(item.qty ?? 1) > 1 && <span className="text-bark-400"> × {item.qty}</span>}
                             {item.selectedColor && item.selectedSize && (
                               <span className="block text-[10px] text-bark-400 capitalize">{item.selectedColor} · {item.selectedSize}</span>
                             )}
                           </p>
-                          <span className="font-sans text-xs text-bark-400 shrink-0">{formatPrice(item.price)}</span>
+                          <span className="font-sans text-xs text-bark-400 shrink-0">{formatPrice(item.price * (item.qty ?? 1))}</span>
                         </div>
                       ))}
                     </div>

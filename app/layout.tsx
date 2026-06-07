@@ -15,9 +15,19 @@ const jost = Jost({ subsets: ["latin"], weight: ["300", "400", "500", "600"], va
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
+// Cache the OG-image lookup so we don't hit the DB on every page render
+// (it rarely changes). 5-minute TTL, shared per server instance.
+let ogCache: { at: number; val: { public_url: string; alt_text: string } | null } | null = null
+async function cachedOgImage() {
+  if (ogCache && Date.now() - ogCache.at < 300_000) return ogCache.val
+  const val = await getSiteImage('global.og_image')
+  ogCache = { at: Date.now(), val }
+  return val
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   // Owner-managed social-share image (portal → Site Images), else default.
-  const og = await getSiteImage('global.og_image')
+  const og = await cachedOgImage()
   const ogImage = og?.public_url || '/og-image.jpg'
   const ogAlt = og?.alt_text || 'Petite Lavande gift box'
   return {
