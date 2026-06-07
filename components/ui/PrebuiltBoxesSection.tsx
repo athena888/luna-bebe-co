@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { boxItemTotal } from '@/lib/prebuilt-boxes'
 import type { ResolvedBox } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
 import { ChevronDown } from 'lucide-react'
@@ -14,8 +13,8 @@ function fmt(cents: number) {
 
 function BoxCard({ box }: { box: ResolvedBox }) {
   const [expanded, setExpanded] = useState(false)
-  const items = Object.values(box.selection).filter(Boolean) as NonNullable<typeof box.selection.swaddle>[]
-  const total = box.customPrice ?? (BOX_BASE_PRICE + boxItemTotal(box.selection))
+  const items = box.items
+  const total = box.customPrice ?? (BOX_BASE_PRICE + items.reduce((s, p) => s + (p?.price ?? 0), 0))
 
   return (
     <div className="bg-cream-50 border border-cream-300 rounded-xl overflow-hidden hover:border-gold-300 transition-colors">

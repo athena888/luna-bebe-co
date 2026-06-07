@@ -5,19 +5,17 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { boxItemTotal } from '@/lib/prebuilt-boxes'
 import type { ResolvedBox } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE, CATEGORY_LABELS } from '@/lib/products'
-import type { BoxSelection } from '@/types'
+import type { Product } from '@/types'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 
 function formatPrice(cents: number) {
   return `$${(cents / 100).toFixed(0)}`
 }
 
-function shopThisBox(selection: BoxSelection) {
-  // Store only the non-empty items as an array (matches the build-page format)
-  const items = Object.values(selection).filter(Boolean)
+function shopThisBox(items: Product[]) {
+  // Store the box's full item list as an array (matches the build-page format)
   sessionStorage.setItem('pl_box_selection', JSON.stringify(items))
 }
 
@@ -61,8 +59,8 @@ export default function ShopPage() {
           ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {boxes.map(box => {
-              const items = Object.values(box.selection).filter(Boolean) as NonNullable<typeof box.selection.swaddle>[]
-              const total = box.customPrice ?? (boxItemTotal(box.selection) + BOX_BASE_PRICE)
+              const items = box.items
+              const total = box.customPrice ?? (items.reduce((s, p) => s + (p?.price ?? 0), 0) + BOX_BASE_PRICE)
 
               return (
                 <div key={box.slug} className="flex flex-col border border-cream-200 bg-white">
@@ -108,13 +106,13 @@ export default function ShopPage() {
 
                   <div className="px-6 py-5 flex flex-col gap-2.5">
                     <button
-                      onClick={() => { shopThisBox(box.selection); router.push('/checkout') }}
+                      onClick={() => { shopThisBox(box.items); router.push('/checkout') }}
                       className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-bark-700 transition-colors"
                     >
                       Shop This Style
                     </button>
                     <button
-                      onClick={() => { shopThisBox(box.selection); router.push('/build') }}
+                      onClick={() => { shopThisBox(box.items); router.push('/build') }}
                       className="w-full border border-cream-300 text-bark-500 font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:border-bark-400 hover:text-bark-600 transition-colors"
                     >
                       Customize

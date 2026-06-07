@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Loader, Check, Plus, Trash2, Upload, Star, Package } from 'lucide-react'
+import { ArrowLeft, Loader, Check, Plus, Trash2, Upload, Star, Package, ChevronDown } from 'lucide-react'
 import Image from 'next/image'
 import type { ResolvedBox, SlotRef } from '@/lib/prebuilt-boxes-db'
 import { resizeImage } from '@/lib/image-resize'
@@ -22,6 +22,53 @@ const SLOT_TEMPLATES: Array<{ key: string; label: string }> = [
 
 const inputCls = "w-full px-3 py-2.5 border border-cream-300 bg-white font-sans text-sm text-bark-600 focus:outline-none focus:border-bark-400 transition-colors rounded"
 const labelCls = "block font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-1.5"
+
+// Visual product picker — searchable list with thumbnails (replaces the
+// plain <select> so you can see what you're adding to the box).
+function ProductPicker({ products, value, onChange }: { products: CatalogProduct[]; value: string | null; onChange: (id: string) => void }) {
+  const [open, setOpen] = useState(false)
+  const [q, setQ] = useState('')
+  const selected = products.find(p => p.id === value)
+  const ql = q.trim().toLowerCase()
+  const filtered = ql ? products.filter(p => p.name.toLowerCase().includes(ql) || p.category.toLowerCase().includes(ql)) : products
+
+  return (
+    <div className="relative">
+      <button type="button" onClick={() => setOpen(o => !o)} className={inputCls + ' flex items-center justify-between gap-2 cursor-pointer'}>
+        <span className={`truncate ${selected ? 'text-bark-600' : 'text-bark-400'}`}>{selected ? selected.name : '— Empty —'}</span>
+        <ChevronDown size={14} className="text-bark-400 shrink-0" />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-20" onClick={() => { setOpen(false); setQ('') }} />
+          <div className="absolute z-30 mt-1 w-full max-h-72 overflow-y-auto bg-white border border-cream-300 rounded-lg shadow-xl">
+            <div className="p-2 sticky top-0 bg-white border-b border-cream-200">
+              <input autoFocus value={q} onChange={e => setQ(e.target.value)} placeholder="Search products…"
+                className="w-full px-2 py-1.5 border border-cream-300 rounded text-sm text-bark-600 focus:outline-none focus:border-bark-400" />
+            </div>
+            <button type="button" onClick={() => { onChange(''); setOpen(false); setQ('') }}
+              className="w-full text-left px-3 py-2 font-sans text-sm text-bark-400 hover:bg-cream-50">— Empty —</button>
+            {filtered.map(p => (
+              <button key={p.id} type="button" onClick={() => { onChange(p.id); setOpen(false); setQ('') }}
+                className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-cream-50 ${p.id === value ? 'bg-cream-100' : ''}`}>
+                <div className="w-9 h-9 rounded bg-cream-100 border border-cream-200 overflow-hidden shrink-0 flex items-center justify-center">
+                  {p.image
+                    ? <Image src={p.image} alt={p.name} width={36} height={36} className="w-full h-full object-cover" unoptimized />
+                    : <Package size={14} className="text-bark-300" />}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-sans text-sm text-bark-600 truncate">{p.name}</p>
+                  <p className="font-sans text-[10px] text-bark-400 capitalize">{p.category} · ${(p.price / 100).toFixed(2)}</p>
+                </div>
+              </button>
+            ))}
+            {filtered.length === 0 && <p className="px-3 py-3 font-sans text-xs text-bark-400">No matches</p>}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
 
 export default function BoxEditorPage() {
   const params = useParams()
@@ -357,16 +404,7 @@ export default function BoxEditorPage() {
                     <span className="font-sans text-xs text-bark-400 w-32 shrink-0 truncate">{slot.label}</span>
                     {product && Number.isFinite(product.price) && <span className="text-[10px] text-bark-500/60">• ${(product.price / 100).toFixed(2)}</span>}
                   </div>
-                  <select
-                    value={slot.product_id ?? ''}
-                    onChange={e => updateSlotProduct(slot.key, e.target.value)}
-                    className={inputCls + ' cursor-pointer'}
-                  >
-                    <option value="">— Empty —</option>
-                    {products.map(p => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                  </select>
+                  <ProductPicker products={products} value={slot.product_id} onChange={id => updateSlotProduct(slot.key, id)} />
                 </div>
                 <button
                   type="button"

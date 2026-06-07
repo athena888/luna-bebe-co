@@ -58,7 +58,7 @@ export default function BoxesPortalPage() {
               <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-4 pb-2 border-b border-cream-300">{style} Edition</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {items.map(box => {
-                  const itemCount = Object.values(box.selection).filter(Boolean).length
+                  const itemCount = box.items.length
                   return (
                     <div key={box.slug} className={`bg-white border rounded-xl overflow-hidden transition-colors ${box.active ? 'border-cream-300' : 'border-cream-300 opacity-70'}`}>
                       <Link href={`/portal/boxes/${box.slug}`} className="block group">

@@ -25,6 +25,7 @@ export interface ResolvedBox {
   sortOrder: number
   active: boolean
   selection: BoxSelection
+  items: Product[]               // every slot's resolved product (fixed + custom), in order
   selectionRefs: SelectionJson   // raw refs (product_id + optional color/size) for the editor
 }
 
@@ -98,15 +99,20 @@ function resolveRow(row: BoxRow, productById: Map<string, Product>): ResolvedBox
     }
   }
 
-  // For dynamic slots, also include them in selection if they use standard slots
-  for (const [key, ref] of Object.entries(refs)) {
-    if (!SLOTS.includes(key as Slot) && ref?.product_id) {
-      const product = productById.get(ref.product_id)
-      if (product) {
-        // Add dynamic slots to a type-safe way (assign to 'extra1' or 'extra2' if available)
-        // or we could extend BoxSelection type, but for now stick with fixed slots
-      }
-    }
+  // Full item list across EVERY slot (fixed + custom), in insertion order. The
+  // storefront uses this so items added via "Add Item" (custom slot keys) show
+  // up and count toward the price — the fixed BoxSelection above is kept only
+  // for back-compat.
+  const items: Product[] = []
+  for (const [, ref] of Object.entries(refs)) {
+    if (!ref?.product_id) continue
+    const product = productById.get(ref.product_id)
+    if (!product) continue
+    items.push(
+      ref.color && ref.size
+        ? ({ ...product, selectedColor: ref.color, selectedSize: ref.size } as Product)
+        : product
+    )
   }
 
   // Gallery: prefer the images array; fall back to the legacy single image.
@@ -129,6 +135,7 @@ function resolveRow(row: BoxRow, productById: Map<string, Product>): ResolvedBox
     sortOrder: row.sort_order,
     active: row.active,
     selection,
+    items,
     selectionRefs: refs,
   }
 }

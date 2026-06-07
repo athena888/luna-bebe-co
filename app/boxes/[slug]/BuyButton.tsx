@@ -1,13 +1,13 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import type { BoxSelection } from '@/types'
+import type { Product } from '@/types'
 
-export function BuyButton({ selection }: { selection: BoxSelection }) {
+export function BuyButton({ items }: { items: Product[] }) {
   const router = useRouter()
 
   function handleBuy() {
-    sessionStorage.setItem('pl_box_selection', JSON.stringify(selection))
+    sessionStorage.setItem('pl_box_selection', JSON.stringify(items))
     sessionStorage.removeItem('pl_letter')
     router.push('/checkout')
   }

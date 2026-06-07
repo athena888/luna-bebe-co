@@ -1,4 +1,3 @@
-import { boxItemTotal } from '@/lib/prebuilt-boxes'
 import { getBox } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
 import { Header } from '@/components/layout/Header'
@@ -32,8 +31,8 @@ export default async function BoxPage({ params }: { params: Promise<{ slug: stri
 
   if (!box) notFound()
 
-  const items = Object.values(box.selection).filter(Boolean) as Array<NonNullable<typeof box.selection.swaddle> & { selectedColor?: string; selectedSize?: string }>
-  const total = box.customPrice ?? (BOX_BASE_PRICE + boxItemTotal(box.selection))
+  const items = box.items as Array<(typeof box.items)[number] & { selectedColor?: string; selectedSize?: string }>
+  const total = box.customPrice ?? (BOX_BASE_PRICE + items.reduce((s, p) => s + (p?.price ?? 0), 0))
 
   return (
     <>
@@ -66,7 +65,7 @@ export default async function BoxPage({ params }: { params: Promise<{ slug: stri
               </div>
 
               <div className="w-full sm:max-w-xs">
-                <BuyButton selection={box.selection} />
+                <BuyButton items={box.items} />
               </div>
             </div>
           </div>

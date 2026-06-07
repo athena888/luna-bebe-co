@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { boxItemTotal } from '@/lib/prebuilt-boxes'
 import { getBoxes } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
 import { SlotBackground } from '@/components/ui/SlotBackground'
@@ -55,8 +54,8 @@ export default async function BoxesPage() {
               </div>
               <div className="grid grid-cols-1 gap-6">
                 {boxes.map((box) => {
-                  const items = Object.values(box.selection).filter(Boolean) as Array<NonNullable<typeof box.selection.swaddle> & { selectedColor?: string; selectedSize?: string }>
-                  const total = box.customPrice ?? (BOX_BASE_PRICE + boxItemTotal(box.selection))
+                  const items = box.items as Array<(typeof box.items)[number] & { selectedColor?: string; selectedSize?: string }>
+                  const total = box.customPrice ?? (BOX_BASE_PRICE + items.reduce((s, p) => s + (p?.price ?? 0), 0))
                   return (
                     <Link
                       key={box.slug}
