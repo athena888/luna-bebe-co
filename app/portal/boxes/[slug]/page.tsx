@@ -27,21 +27,32 @@ const labelCls = "block font-sans text-[10px] tracking-[0.2em] uppercase text-ba
 // plain <select> so you can see what you're adding to the box).
 function ProductPicker({ products, value, onChange }: { products: CatalogProduct[]; value: string | null; onChange: (id: string) => void }) {
   const [open, setOpen] = useState(false)
+  const [dropUp, setDropUp] = useState(false)
   const [q, setQ] = useState('')
+  const btnRef = useRef<HTMLButtonElement>(null)
   const selected = products.find(p => p.id === value)
   const ql = q.trim().toLowerCase()
   const filtered = ql ? products.filter(p => p.name.toLowerCase().includes(ql) || p.category.toLowerCase().includes(ql)) : products
 
+  function toggle() {
+    if (!open && btnRef.current) {
+      // Open upward when there isn't room below, so the list always stays on screen.
+      const rect = btnRef.current.getBoundingClientRect()
+      setDropUp(window.innerHeight - rect.bottom < 320 && rect.top > window.innerHeight / 2)
+    }
+    setOpen(o => !o)
+  }
+
   return (
     <div className="relative">
-      <button type="button" onClick={() => setOpen(o => !o)} className={inputCls + ' flex items-center justify-between gap-2 cursor-pointer'}>
+      <button ref={btnRef} type="button" onClick={toggle} className={inputCls + ' flex items-center justify-between gap-2 cursor-pointer'}>
         <span className={`truncate ${selected ? 'text-bark-600' : 'text-bark-400'}`}>{selected ? selected.name : '— Empty —'}</span>
         <ChevronDown size={14} className="text-bark-400 shrink-0" />
       </button>
       {open && (
         <>
           <div className="fixed inset-0 z-20" onClick={() => { setOpen(false); setQ('') }} />
-          <div className="absolute z-30 mt-1 w-full max-h-72 overflow-y-auto bg-white border border-cream-300 rounded-lg shadow-xl">
+          <div className={`absolute z-30 w-full max-h-72 overflow-y-auto bg-white border border-cream-300 rounded-lg shadow-xl ${dropUp ? 'bottom-full mb-1' : 'top-full mt-1'}`}>
             <div className="p-2 sticky top-0 bg-white border-b border-cream-200">
               <input autoFocus value={q} onChange={e => setQ(e.target.value)} placeholder="Search products…"
                 className="w-full px-2 py-1.5 border border-cream-300 rounded text-sm text-bark-600 focus:outline-none focus:border-bark-400" />
