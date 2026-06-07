@@ -1,20 +1,28 @@
 'use client'
 
 import { useState } from 'react'
-import { X, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, ShieldCheck, Leaf } from 'lucide-react'
 import Image from 'next/image'
 import type { ProductCert, CertDef } from '@/lib/certifications'
 
 // Certs passed here are already resolved (ProductCert merged with CertDef from the API)
 type ResolvedCert = ProductCert & Partial<CertDef>
 
-export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
+// We don't display the official GOTS logo (we're not GOTS-certified ourselves);
+// a GOTS-tagged item is shown with our own "Organic" leaf badge instead.
+function isGots(c: ResolvedCert): boolean {
+  return /gots|global organic textile/i.test(`${c.key ?? ''} ${c.name ?? ''}`)
+}
+
+export function CertBadges({ certs, organic }: { certs: ResolvedCert[]; organic?: boolean }) {
   const [openIdx, setOpenIdx] = useState<number | null>(null)
   // When multiple cert tabs exist, the paperwork stays hidden until a tab is clicked
   const [docRevealed, setDocRevealed] = useState(false)
 
-  const active = certs.filter(c => c.name)
-  if (active.length === 0) return null
+  // Hide GOTS from the cert row; OEKO-TEX, CE, etc. stay as-is.
+  const active = certs.filter(c => c.name && !isGots(c))
+  const showOrganic = !!organic || certs.some(c => c.name && isGots(c))
+  if (active.length === 0 && !showOrganic) return null
 
   const opened = openIdx !== null ? active[openIdx] : null
   const hasTabs = active.length > 1
@@ -30,6 +38,12 @@ export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
     <>
       {/* Badge row — icon next to text */}
       <div className="flex items-center gap-2 flex-wrap">
+        {showOrganic && (
+          <span className="flex items-center gap-2 border border-sage-200 bg-sage-50 px-3 py-2 rounded-lg" title="Made with organic cotton">
+            <span className="w-[22px] h-[22px] rounded-full bg-sage-500 flex items-center justify-center shrink-0"><Leaf size={13} className="text-white" /></span>
+            <span className="font-sans text-[11px] tracking-[0.08em] uppercase text-sage-700 whitespace-nowrap">Organic</span>
+          </span>
+        )}
         {active.map((cert, idx) => (
           <button
             key={cert.key}
@@ -45,12 +59,14 @@ export function CertBadges({ certs }: { certs: ResolvedCert[] }) {
           </button>
         ))}
       </div>
-      <button
-        onClick={() => openModal(0)}
-        className="font-sans text-[9px] text-bark-400/70 hover:text-bark-500 transition-colors underline underline-offset-2 mt-1.5"
-      >
-        What are these certifications?
-      </button>
+      {active.length > 0 && (
+        <button
+          onClick={() => openModal(0)}
+          className="font-sans text-[9px] text-bark-400/70 hover:text-bark-500 transition-colors underline underline-offset-2 mt-1.5"
+        >
+          What are these certifications?
+        </button>
+      )}
 
       {/* Modal */}
       {opened && (
