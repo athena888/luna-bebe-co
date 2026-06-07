@@ -23,9 +23,6 @@ type ResolvedCert = ProductCert & Partial<CertDef>
 function isGots(c: ResolvedCert): boolean {
   return /gots|global organic textile/i.test(`${c.key ?? ''} ${c.name ?? ''}`)
 }
-function isOrganicText(s?: string | null): boolean {
-  return /organic\s+cotton/i.test(s ?? '')
-}
 function cleanGots(s?: string | null): string {
   return (s ?? '')
     .replace(/GOTS[-‑\s]*certified\s*/gi, '')
@@ -677,7 +674,7 @@ export default function BuildPage() {
                   <span className="font-sans text-xs text-bark-400">{cleanGots(modalProduct.ingredients)}</span>
                 </div>
               )}
-              {isOrganicText(`${modalProduct.ingredients ?? ''} ${modalProduct.description ?? ''}`) && (
+              {modalCerts.some(isGots) && (
                 <p className="font-sans text-xs text-bark-400 mb-4 leading-relaxed">
                   Made with <span className="text-bark-600">GOTS-certified organic cotton</span> from a GOTS-certified manufacturer.
                 </p>

@@ -36,9 +36,10 @@ function clean(s?: string | null): string {
     .replace(/\s{2,}/g, ' ')
     .trim()
 }
-// Only cotton items get the GOTS-cotton claim.
-function isOrganicCotton(s?: string | null): boolean {
-  return /organic\s+cotton/i.test(s ?? '')
+// The GOTS-cotton claim shows only when the GOTS certification is attached to
+// the product (controlled in the admin Certifications section).
+function hasGotsCert(p: { certifications?: Array<{ key?: string; name?: string }> } | null): boolean {
+  return (p?.certifications ?? []).some(c => /gots|global organic textile/i.test(`${c.key ?? ''} ${c.name ?? ''}`))
 }
 
 function Spinner() {
@@ -274,8 +275,8 @@ export default function ProductDetailClient() {
                   </div>
                 )}
 
-                {/* Scoped, substantiated GOTS claim — cotton items only */}
-                {isOrganicCotton(`${product.ingredients ?? ''} ${product.description ?? ''}`) && (
+                {/* Scoped GOTS claim — shown when the GOTS cert is attached */}
+                {hasGotsCert(product as unknown as { certifications?: Array<{ key?: string; name?: string }> }) && (
                   <div className="border-t border-cream-300">
                     <div className="py-3.5 flex items-start gap-2">
                       <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
