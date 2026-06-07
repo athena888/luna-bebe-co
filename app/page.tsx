@@ -74,8 +74,22 @@ async function getCollectionsData() {
   }
 }
 
+// Dynamic "The Box" gallery — any number of photos managed in the portal.
+// Falls back to the legacy fixed gallery-1..4 slots when none are uploaded.
+async function getBoxGallery(): Promise<string[]> {
+  try {
+    const { supabaseAdmin } = await import('@/lib/supabase')
+    const { data } = await supabaseAdmin.storage.from('home-images').list('box-gallery', { limit: 100, sortBy: { column: 'name', order: 'asc' } })
+    const urls = (data ?? [])
+      .filter(f => f.name && !f.name.startsWith('.'))
+      .map(f => supabaseAdmin.storage.from('home-images').getPublicUrl(`box-gallery/${f.name}`).data.publicUrl)
+    if (urls.length) return urls
+  } catch { /* fall through */ }
+  return ['gallery-1', 'gallery-2', 'gallery-3', 'gallery-4'].map(homeImg)
+}
+
 export default async function HomePage() {
-  const [featured, collectionsData] = await Promise.all([getBestsellers(), getCollectionsData()])
+  const [featured, collectionsData, boxGallery] = await Promise.all([getBestsellers(), getCollectionsData(), getBoxGallery()])
 
   return (
     <>
@@ -234,14 +248,14 @@ export default async function HomePage() {
             <p className="font-serif italic text-bark-400 text-base mt-1">Every detail, made with love.</p>
           </div>
           <div className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory gap-3 pl-6 sm:pl-9">
-            {(['gallery-1', 'gallery-2', 'gallery-3', 'gallery-4'] as const).map(slot => (
+            {boxGallery.map((url, i) => (
               <div
-                key={slot}
+                key={`${url}-${i}`}
                 className="relative shrink-0 w-[80vw] sm:w-[55vw] lg:w-[40vw] snap-start overflow-hidden bg-cream-200"
                 style={{ aspectRatio: '4/3' }}
               >
                 <Image
-                  src={homeImg(slot)}
+                  src={url}
                   alt="Petite Lavande box"
                   fill
                   className="object-cover object-center"
