@@ -2,14 +2,20 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { ChevronLeft, ChevronRight, X, ShoppingBag, Leaf } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import type { Product } from '@/types'
 import type { ProductCert, CertDef } from '@/lib/certifications'
 import { CATEGORY_LABELS } from '@/lib/products'
-import { CertBadges } from '@/components/ui/CertBadges'
+import { CertBadges, isGots } from '@/components/ui/CertBadges'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+
+// Strip blanket GOTS wording so the scoped cotton claim is the only GOTS mention.
+function clean(s?: string | null): string {
+  return (s ?? '').replace(/GOTS[-‑\s]*certified\s*/gi, '').replace(/\bGOTS\b[-\s]*/gi, '').replace(/\s{2,}/g, ' ').trim()
+}
 const CLONES = 3
 
 type GalleryImage = {
@@ -203,28 +209,28 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
           </div>
           <h2 className="font-sans text-2xl text-bark-600 leading-tight mb-1">{product.name}</h2>
           <p className="font-sans text-base text-bark-400 mb-5">{formatPrice(product.price)}</p>
-          <p className="font-sans text-sm text-bark-500 leading-relaxed mb-5">{desc}</p>
+          <p className="font-sans text-sm text-bark-500 leading-relaxed mb-5">{clean(desc)}</p>
 
           {/* Variant picker — color then size */}
           {hasVariants && (
             <div className="border-t border-cream-300 pt-4 mb-5 space-y-3">
               <div>
-                <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-2">Color</p>
+                <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-2">
+                  Color{pickColor ? <span className="text-bark-600 capitalize">: {pickColor}</span> : ''}
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {colors.map(({ color, color_hex }) => {
                     const inStock = variants.some(v => v.color === color && v.quantity > 0)
+                    const active = pickColor === color
                     return (
                       <button
                         key={color}
                         onClick={() => { setPickColor(color); setPickSize(null) }}
                         disabled={!inStock}
-                        className={`flex items-center gap-1.5 border px-2.5 py-1.5 rounded font-sans text-xs transition-colors disabled:opacity-40 ${
-                          pickColor === color ? 'border-bark-600 bg-bark-600 text-white' : 'border-cream-300 text-bark-500 hover:border-bark-400'
-                        }`}
-                      >
-                        {color_hex && <span className="w-3 h-3 rounded-full border border-black/10" style={{ backgroundColor: color_hex }} />}
-                        {color}
-                      </button>
+                        title={color}
+                        className={`w-8 h-8 rounded-full border-2 transition-all disabled:opacity-30 ${active ? 'border-bark-600 scale-110' : 'border-cream-300 hover:border-bark-400'}`}
+                        style={{ backgroundColor: color_hex || '#e5e0d8' }}
+                      />
                     )
                   })}
                 </div>
@@ -252,10 +258,15 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
           )}
 
           {ingredients && (
-            <div className="border-t border-cream-300 pt-4 mb-5">
+            <div className="border-t border-cream-300 pt-4 mb-3">
               <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-1">Materials</p>
-              <p className="font-sans text-xs text-bark-500">{ingredients}</p>
+              <p className="font-sans text-xs text-bark-500">{clean(ingredients)}</p>
             </div>
+          )}
+          {certs.some(isGots) && (
+            <p className="font-sans text-xs text-bark-400 leading-relaxed mb-5">
+              Made with <span className="text-bark-600">GOTS-certified organic cotton</span> from a GOTS-certified manufacturer.
+            </p>
           )}
 
           <div className="mt-auto pt-4 space-y-2.5">
@@ -266,12 +277,12 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
               <ShoppingBag size={14} />
               Add to Box
             </button>
-            <button
-              onClick={onClose}
-              className="w-full border border-cream-300 text-bark-400 font-sans text-[11px] tracking-[0.2em] uppercase py-3 hover:border-bark-400 hover:text-bark-600 transition-colors"
+            <Link
+              href={`/products/${product.id}`}
+              className="block w-full text-center border border-cream-300 text-bark-500 font-sans text-[11px] tracking-[0.2em] uppercase py-3 hover:border-bark-400 hover:text-bark-700 transition-colors"
             >
-              Keep Browsing
-            </button>
+              View Full Details
+            </Link>
           </div>
         </div>
       </div>
@@ -439,6 +450,8 @@ export function ProductCarousel({ products }: { products: Product[] }) {
                         src={src}
                         alt={product.name}
                         fill
+                        sizes="(max-width: 640px) 80vw, 420px"
+                        unoptimized
                         className={`object-cover transition-transform duration-[8000ms] ease-in-out ${isCenter ? 'scale-110' : 'scale-100'}`}
                                                onError={() => setImgPhase(p => ({ ...p, [phaseKey]: (p[phaseKey] ?? 0) + 1 }))}
                       />

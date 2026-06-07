@@ -95,7 +95,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
         {showImage ? (
           <Image src={storageSrc} alt={product.name} fill
             className={`object-cover transition-all duration-500 ${soldOut ? 'grayscale brightness-[0.35]' : ''}`}
-            sizes="(max-width: 640px) 176px, 208px" onError={() => setImgFailed(true)} />
+            sizes="(max-width: 640px) 60vw, 320px" onError={() => setImgFailed(true)} />
         ) : (
           <div className={`absolute inset-0 flex items-center justify-center text-5xl
             ${soldOut ? 'bg-cream-200 grayscale brightness-50' : selected ? 'bg-terra-100' : 'bg-cream-200 group-hover:bg-cream-300'}`}>

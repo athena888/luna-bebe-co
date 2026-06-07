@@ -38,9 +38,9 @@ export default async function BoxPage({ params }: { params: Promise<{ slug: stri
     <>
       <Header />
       <main className="min-h-screen bg-cream-100">
-        <div className="border-b border-cream-300 bg-cream-50 sticky top-[68px] z-10">
+        <div className="border-b border-cream-300 bg-cream-50">
           <div className="max-w-6xl mx-auto px-6 sm:px-9 py-4">
-            <Link href="/" className="flex items-center gap-2 text-bark-400 hover:text-bark-600 transition-colors">
+            <Link href="/boxes" className="flex items-center gap-2 text-bark-400 hover:text-bark-600 transition-colors">
               <ArrowLeft size={16} />
               <span className="font-sans text-sm">Back</span>
             </Link>

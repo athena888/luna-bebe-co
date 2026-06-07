@@ -83,17 +83,18 @@ Respond with ONLY valid JSON (no markdown, no text before or after):
       return NextResponse.json({ products: [], reasoning: 'Unable to generate recommendations at this time.' })
     }
 
-    // Resolve to real products, drop unknowns, and keep at most one per category.
-    const seenCategories = new Set<string>()
+    // Resolve to real products, dropping unknowns/duplicates. Keep every item
+    // Claude chose (deduped by id) so the list matches its written reasoning.
+    const seenIds = new Set<string>()
     const products = (parsed.productIds || [])
       .map((id: string) => byId.get(id))
       .filter((p): p is NonNullable<typeof p> => Boolean(p))
       .filter((p) => {
-        if (seenCategories.has(p.category)) return false
-        seenCategories.add(p.category)
+        if (seenIds.has(p.id)) return false
+        seenIds.add(p.id)
         return true
       })
-      .slice(0, 5)
+      .slice(0, 7)
 
     return NextResponse.json({ products, reasoning: parsed.reasoning })
   } catch (error) {

@@ -153,8 +153,8 @@ export default function GiftCardsPage() {
                 {message && (
                   <p className="font-serif italic text-cream-300/70 text-sm leading-relaxed border-t border-bark-600 pt-4 mt-4">&ldquo;{message}&rdquo;</p>
                 )}
-                <div className="mt-6 pt-6 border-t border-bark-600">
-                  <p className="font-sans text-[10px] text-cream-400/60 leading-relaxed">
+                <div className="mt-6 pt-6 border-t border-bark-600/60">
+                  <p className="font-sans text-[10px] text-cream-200/90 leading-relaxed tracking-wide">
                     Delivered instantly by email · Valid forever · Redeemable at checkout
                   </p>
                 </div>
