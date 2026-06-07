@@ -13,6 +13,7 @@ export async function GET() {
     ])
     const products = catalog.map(p => ({
       id: p.id, name: p.name, category: p.category, has_variants: p.has_variants,
+      price: p.price, image: p.image ?? null,
     }))
     return NextResponse.json({ boxes, products })
   } catch (error) {

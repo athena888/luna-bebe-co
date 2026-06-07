@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Loader, Check, Plus, Trash2, Upload, Star } from 'lucide-react'
+import { ArrowLeft, Loader, Check, Plus, Trash2, Upload, Star, Package } from 'lucide-react'
 import Image from 'next/image'
 import type { ResolvedBox, SlotRef } from '@/lib/prebuilt-boxes-db'
 import { resizeImage } from '@/lib/image-resize'
 
-type CatalogProduct = { id: string; name: string; category: string; has_variants?: boolean; price: number }
+type CatalogProduct = { id: string; name: string; category: string; has_variants?: boolean; price: number; image?: string | null }
 type BoxSlot = { key: string; label: string; product_id: string | null; color?: string | null; size?: string | null }
 
 const SLOT_TEMPLATES: Array<{ key: string; label: string }> = [
@@ -346,10 +346,16 @@ export default function BoxEditorPage() {
             const product = products.find(p => p.id === slot.product_id)
             return (
               <div key={slot.key} className="flex items-center gap-3">
-                <div className="flex-1">
+                {/* Thumbnail of the picked product */}
+                <div className="w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-cream-100 border border-cream-200 flex items-center justify-center">
+                  {product?.image
+                    ? <Image src={product.image} alt={product.name} width={56} height={56} className="w-full h-full object-cover" unoptimized />
+                    : <Package size={16} className="text-bark-300" />}
+                </div>
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-sans text-xs text-bark-400 w-32 shrink-0">{slot.label}</span>
-                    {product && <span className="text-[10px] text-bark-500/60">• ${(product.price / 100).toFixed(2)}</span>}
+                    <span className="font-sans text-xs text-bark-400 w-32 shrink-0 truncate">{slot.label}</span>
+                    {product && Number.isFinite(product.price) && <span className="text-[10px] text-bark-500/60">• ${(product.price / 100).toFixed(2)}</span>}
                   </div>
                   <select
                     value={slot.product_id ?? ''}
