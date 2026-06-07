@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import type { ResolvedBox } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
-import { ChevronDown, Package } from 'lucide-react'
+import { Package } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import type { Product } from '@/types'
 
@@ -29,7 +29,6 @@ function useReveal<T extends HTMLElement>() {
 }
 
 function BoxCard({ box, index }: { box: ResolvedBox; index: number }) {
-  const [expanded, setExpanded] = useState(false)
   const { ref, shown } = useReveal<HTMLDivElement>()
   const items = box.items
   const total = box.customPrice ?? (BOX_BASE_PRICE + items.reduce((s, p) => s + (p?.price ?? 0), 0))
@@ -40,8 +39,8 @@ function BoxCard({ box, index }: { box: ResolvedBox; index: number }) {
       style={{ transitionDelay: `${index * 120}ms` }}
       className={`flex flex-col md:flex-row bg-cream-50 border border-cream-300 overflow-hidden transition-all duration-700 ease-out ${shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
     >
-      {/* Image — large, left */}
-      <Link href={`/boxes/${box.slug}`} className="relative md:w-1/2 lg:w-[55%] shrink-0 aspect-[4/3] md:aspect-auto md:min-h-[380px] bg-cream-200 block group">
+      {/* Image — large, fills the card height (image-first) */}
+      <Link href={`/boxes/${box.slug}`} className="relative md:w-1/2 lg:w-[52%] shrink-0 aspect-[4/3] md:aspect-auto md:min-h-[460px] bg-cream-200 block group">
         {box.image
           ? <Image src={box.image} alt={box.name} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" unoptimized />
           : <div className="absolute inset-0 flex items-center justify-center text-bark-300"><Package size={36} /></div>}
@@ -49,34 +48,26 @@ function BoxCard({ box, index }: { box: ResolvedBox; index: number }) {
       </Link>
 
       {/* Details — right */}
-      <div className="md:w-1/2 lg:w-[45%] p-7 sm:p-9 flex flex-col">
+      <div className="md:w-1/2 lg:w-[48%] p-7 sm:p-9 flex flex-col">
         <h3 className="font-serif text-3xl text-bark-600 mb-1.5">{box.name}</h3>
         <p className="font-cormorant text-lg italic text-bark-400 mb-2 leading-snug">{box.tagline}</p>
         <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-300 mb-5">{box.aesthetic}</p>
 
-        {/* What's inside — with item images */}
-        <button
-          onClick={() => setExpanded(e => !e)}
-          className="w-full flex items-center justify-between py-2 border-t border-cream-200 text-left"
-        >
-          <span className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-600">What&rsquo;s inside · {items.length} items</span>
-          <ChevronDown size={15} className={`text-bark-400 transition-transform ${expanded ? 'rotate-180' : ''}`} />
-        </button>
-        {expanded && (
-          <ul className="space-y-2.5 mt-2 mb-2">
-            {items.map(item => {
-              const src = productImg(item)
-              return (
-                <li key={item.id} className="flex items-center gap-3">
-                  <div className="w-11 h-11 shrink-0 bg-cream-100 border border-cream-200 overflow-hidden flex items-center justify-center">
-                    {src ? <img src={src} alt={item.name} className="w-full h-full object-cover" /> : <span className="text-base">{item.imageEmoji}</span>}
-                  </div>
-                  <span className="font-sans text-xs text-bark-600 leading-snug">{item.name}</span>
-                </li>
-              )
-            })}
-          </ul>
-        )}
+        {/* What's inside — always shown, two columns to use the width */}
+        <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500 mb-3 pt-4 border-t border-cream-200">What&rsquo;s inside · {items.length} items</p>
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2.5 mb-6">
+          {items.map(item => {
+            const src = productImg(item)
+            return (
+              <li key={item.id} className="flex items-center gap-2.5 min-w-0">
+                <div className="w-10 h-10 shrink-0 bg-cream-100 border border-cream-200 overflow-hidden flex items-center justify-center">
+                  {src ? <img src={src} alt={item.name} className="w-full h-full object-cover" /> : <span className="text-sm">{item.imageEmoji}</span>}
+                </div>
+                <span className="font-sans text-[11px] text-bark-600 leading-snug truncate">{item.name}</span>
+              </li>
+            )
+          })}
+        </ul>
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-4 mt-auto border-t border-cream-200">

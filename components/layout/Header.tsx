@@ -20,7 +20,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
 export function Header() {
   const [open, setOpen] = useState(false)
   return (
-    <header className="sticky top-0 z-50 bg-white">
+    <header className="relative z-40 bg-white">
       {/* Nav bar */}
       <div className="border-b border-cream-300">
         <div className="relative w-full pl-4 sm:pl-9 pr-16 sm:pr-6 h-[68px] flex items-center justify-between">
