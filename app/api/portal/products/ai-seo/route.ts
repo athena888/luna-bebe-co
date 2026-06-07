@@ -34,7 +34,7 @@ Return STRICT JSON only (no markdown) with this exact shape:
   "faqs": [{"q":"question","a":"answer"}, {"q":"...","a":"..."}, {"q":"...","a":"..."}]
 }
 
-Rules: never invent certifications, materials, sizes, or origin that aren't in the verified specs. FAQs should answer real organic/safety/sizing/gifting questions. Keep titleTag truly <=60 characters.`
+Rules: never invent certifications, materials, sizes, or origin that aren't in the verified specs. NEVER write "GOTS certified", "certified organic", or "100% organic" for a product or the brand — for cotton items just say "organic cotton". FAQs should answer real organic/safety/sizing/gifting questions. Keep titleTag truly <=60 characters.`
 
     const content: Anthropic.MessageParam['content'] = []
     if (file) {

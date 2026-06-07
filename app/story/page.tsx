@@ -87,7 +87,7 @@ export default async function StoryPage() {
                 {
                   emoji: '🌿',
                   title: 'Purely Organic',
-                  body: 'Every textile is GOTS-certified or equivalent. Every skincare ingredient is clean, tested, and safe from day one. No exceptions.',
+                  body: 'Our cotton garments are made with GOTS-certified organic cotton from a GOTS-certified maker, and we choose organic, natural materials across the box wherever we can.',
                 },
                 {
                   emoji: '🤍',

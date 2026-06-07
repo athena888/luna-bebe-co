@@ -6,7 +6,7 @@ import { ArrowRight, Package, Leaf, PenLine, Heart } from 'lucide-react'
 
 const TRUST_BADGES = [
   { icon: Package, label: 'Free Shipping', sub: '$150+' },
-  { icon: Leaf, label: 'Organic', sub: 'Certified' },
+  { icon: Leaf, label: 'Organic Cotton', sub: 'GOTS-certified maker' },
   { icon: PenLine, label: 'Handcrafted', sub: 'Always' },
   { icon: Heart, label: 'Giving Back', sub: '1% Donated' },
 ]

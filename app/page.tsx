@@ -124,7 +124,7 @@ export default async function HomePage() {
             {[
               { label: 'Free Shipping', sub: 'On orders over $150' },
               { label: 'Personalized Card', sub: 'Printed for every box' },
-              { label: '100% Organic', sub: 'GOTS-certified materials' },
+              { label: 'Organic Cotton', sub: 'From a GOTS-certified maker' },
               { label: 'Gift-Ready', sub: 'Wax seal & ribbon, always' },
             ].map(({ label, sub }, i) => (
               <div key={label} className={`text-center py-5 px-4 border-cream-300

@@ -26,6 +26,21 @@ function formatPrice(cents: number) {
   return `$${(cents / 100).toFixed(2)}`
 }
 
+// Strip blanket GOTS wording from owner/AI copy so the only GOTS claim shown is
+// the scoped, substantiated line below. "100% GOTS Organic Cotton" → "100%
+// Organic Cotton"; "GOTS-certified cotton" → "cotton".
+function clean(s?: string | null): string {
+  return (s ?? '')
+    .replace(/GOTS[-‑\s]*certified\s*/gi, '')
+    .replace(/\bGOTS\b[-\s]*/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim()
+}
+// Only cotton items get the GOTS-cotton claim.
+function isOrganicCotton(s?: string | null): boolean {
+  return /organic\s+cotton/i.test(s ?? '')
+}
+
 function Spinner() {
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
@@ -244,7 +259,7 @@ export default function ProductDetailClient() {
                       className="pb-4 text-base text-bark-600 leading-relaxed"
                       style={{ fontFamily: 'var(--font-cormorant)' }}
                     >
-                      {product.description}
+                      {clean(product.description)}
                     </p>
                   )}
                 </div>
@@ -254,7 +269,17 @@ export default function ProductDetailClient() {
                   <div className="border-t border-cream-300">
                     <div className="py-3.5 flex items-start gap-2">
                       <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
-                      <span className="font-sans text-xs text-bark-400">{product.ingredients}</span>
+                      <span className="font-sans text-xs text-bark-400">{clean(product.ingredients)}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Scoped, substantiated GOTS claim — cotton items only */}
+                {isOrganicCotton(`${product.ingredients ?? ''} ${product.description ?? ''}`) && (
+                  <div className="border-t border-cream-300">
+                    <div className="py-3.5 flex items-start gap-2">
+                      <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
+                      <span className="font-sans text-xs text-bark-400">Made with GOTS-certified organic cotton from a GOTS-certified maker.</span>
                     </div>
                   </div>
                 )}

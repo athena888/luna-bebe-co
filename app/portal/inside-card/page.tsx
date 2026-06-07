@@ -123,7 +123,7 @@ const ITEMS: Array<{ title: string; lines: Array<{ k: string; v: string }>; note
     title: 'For Baby',
     lines: [
       { k: 'Includes:', v: 'Two onesie sets, muslin, bib, comfort toy' },
-      { k: 'Material:', v: '100% GOTS-certified organic cotton' },
+      { k: 'Material:', v: '100% organic cotton — made with GOTS-certified organic cotton from a GOTS-certified maker' },
       { k: 'Care:', v: 'Machine wash cold, tumble dry low. Wash before first use.' },
       { k: 'Safety:', v: 'CPSIA-compliant. No harmful dyes or finishes.' },
     ],

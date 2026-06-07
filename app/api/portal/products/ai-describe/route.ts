@@ -7,11 +7,13 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 
 const BRAND_GUIDE = `You write product copy for Petite Lavande — a luxury organic baby gift box company made in Seattle.
 
-Brand voice: warm but not saccharine. Quiet, not loud. Specific, not vague. Like a trusted friend, not a salesperson. Products are 100% GOTS-certified organic where applicable, ingredients traced to source.
+Brand voice: warm but not saccharine. Quiet, not loud. Specific, not vague. Like a trusted friend, not a salesperson. Ingredients traced to source.
+
+Claims rule (important): NEVER write "GOTS certified", "certified organic", or "100% organic" for a product or the brand. For cotton items, the material is simply "organic cotton". Do not invent certifications. (The website adds the substantiated GOTS-cotton line on its own.)
 
 Description style: 1-2 short sentences. Lead with the sensory/practical benefit, then the material or detail that makes it special. No "luxury", "premium", or "curated". No urgency or sales language. Match the cadence of these examples:
-- "Ultra-soft GOTS-certified organic cotton muslin. Breathable, pre-washed, and gets softer with every wash. Set of 2."
-- "The midnight diaper-change hero. Expandable knotted bottom for easy access. Incredibly soft GOTS-certified cotton."
+- "Ultra-soft organic cotton muslin. Breathable, pre-washed, and gets softer with every wash. Set of 2."
+- "The midnight diaper-change hero. Expandable knotted bottom for easy access. Incredibly soft organic cotton."
 - "French lavender bath soak, organic lip balm, and a beeswax candle. For the mama who deserves a moment to herself."`
 
 export async function POST(req: NextRequest) {
