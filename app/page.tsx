@@ -117,20 +117,30 @@ export default async function HomePage() {
               <p className="font-serif italic text-cream-200/80 text-sm sm:text-base leading-relaxed mb-6 sm:mb-8">This is the moment Petite Lavande was made for.</p>
               <div className="flex flex-col gap-2 items-end">
                 <Link
-                  href="/guide"
+                  href="/build"
                   className="bg-cream-50 text-bark-600 font-sans text-[9px] tracking-[0.2em] uppercase px-6 sm:px-9 py-3 sm:py-3.5 hover:bg-cream-100 transition-colors"
                 >
-                  Take the Gift Guide
+                  Build Your Own Box
                 </Link>
                 <Link
-                  href="/build"
+                  href="/boxes"
                   className="border border-cream-50/70 text-cream-50 font-sans text-[9px] tracking-[0.2em] uppercase px-6 sm:px-9 py-3 sm:py-3.5 hover:bg-cream-50/10 transition-colors"
                 >
-                  Build a Box
+                  Shop Ready-Made
                 </Link>
               </div>
             </div>
           </div>
+        </section>
+
+        {/* ── Shop by Occasion — first section below the hero ── */}
+        <section className="border-t border-cream-300 py-14 sm:py-16">
+          <div className="pl-6 sm:pl-9 pr-6 mb-10">
+            <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Collections</p>
+            <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">Shop by Occasion</h2>
+            <p className="font-sans text-xs text-bark-400 mt-2 tracking-wide">Tap any collection to see what&apos;s inside</p>
+          </div>
+          <CollectionsSection initial={collectionsData ?? undefined} />
         </section>
 
         {/* ── 2. Perks bar ── */}
@@ -155,16 +165,6 @@ export default async function HomePage() {
 
         {/* ── 2b. Pre-assembled boxes ── */}
         <PrebuiltBoxesSection />
-
-        {/* ── 3. Collections — click to see items inside ── */}
-        <section className="border-t border-cream-300 py-16">
-          <div className="pl-6 sm:pl-9 pr-6 mb-10">
-            <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Collections</p>
-            <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">Shop by Occasion</h2>
-            <p className="font-sans text-xs text-bark-400 mt-2 tracking-wide">Tap any collection to see what&apos;s inside</p>
-          </div>
-          <CollectionsSection initial={collectionsData ?? undefined} />
-        </section>
 
         {/* ── 4. Featured products — center-snap looping carousel ── */}
         <section className="border-t border-cream-300 pt-16 pb-12">
@@ -202,8 +202,8 @@ export default async function HomePage() {
               <Link href="/build" className="bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-bark-700 transition-colors">
                 Build Your Box
               </Link>
-              <Link href="/guide" className="border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-bark-600 hover:text-cream-50 transition-colors">
-                Take the Guide
+              <Link href="/boxes" className="border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-bark-600 hover:text-cream-50 transition-colors">
+                Shop Ready-Made
               </Link>
             </div>
           </EditorialFeature>
@@ -257,18 +257,17 @@ export default async function HomePage() {
         </section>
 
         {/* ── 7. How it works ── */}
-        <section id="how-it-works" className="py-14 sm:py-28 px-6 sm:px-8 bg-cream-100 border-t border-b border-cream-300">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
+        <section id="how-it-works" className="py-12 sm:py-16 px-6 sm:px-8 bg-cream-100 border-t border-b border-cream-300">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-10">
               <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">The Process</p>
-              <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">Four Simple Steps</h2>
+              <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">Three Simple Steps</h2>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
               {[
-                { n: '01', title: 'Take the Guide', body: 'Answer 4 questions. Get a personalized box recommendation instantly.' },
-                { n: '02', title: 'Build Your Box', body: 'Choose from curated organic items across 5 thoughtful categories.' },
-                { n: '03', title: 'Customize Your Card', body: 'Pick a card design and your message — we print it on premium card stock.' },
-                { n: '04', title: 'We Ship With Care', body: 'Arrives sealed with a wax stamp, ribbon pull, and dried lavender.' },
+                { n: '01', title: 'Build Your Box', body: 'Choose from curated organic items across thoughtful categories — or start from a ready-made set.' },
+                { n: '02', title: 'Customize Your Card', body: 'Pick a card design and your message — we print it on premium card stock.' },
+                { n: '03', title: 'We Ship With Care', body: 'Arrives sealed with a wax stamp, ribbon pull, and dried lavender.' },
               ].map(({ n, title, body }) => (
                 <div key={n} className="text-center">
                   <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-5">{n}</p>
@@ -321,16 +320,16 @@ export default async function HomePage() {
             <p className="font-script text-4xl text-gold-300 mb-14">unforgettable.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="/guide"
+                href="/build"
                 className="bg-cream-50 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-cream-100 transition-colors"
               >
-                Take the Gift Guide
+                Build Your Own Box
               </Link>
               <Link
-                href="/build"
+                href="/boxes"
                 className="border border-cream-300/40 text-cream-300 font-sans text-[10px] tracking-[0.25em] uppercase px-10 py-4 hover:border-cream-50 hover:text-cream-50 transition-colors"
               >
-                Build a Box
+                Shop Ready-Made
               </Link>
             </div>
           </div>

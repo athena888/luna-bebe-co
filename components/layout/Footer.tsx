@@ -76,7 +76,6 @@ export function Footer() {
                 <li><Link href="/boxes" className="text-bark-400 hover:text-bark-600 transition-colors">Ready-Made Boxes</Link></li>
                 <li><Link href="/build" className="text-bark-400 hover:text-bark-600 transition-colors">Build Your Own Box</Link></li>
                 <li><Link href="/gift-cards" className="text-bark-400 hover:text-bark-600 transition-colors">Gift Cards</Link></li>
-                <li><Link href="/guide" className="text-bark-400 hover:text-bark-600 transition-colors">Gift Guide</Link></li>
               </ul>
             </div>
 
