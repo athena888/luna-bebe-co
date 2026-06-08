@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Menu, X, User, Heart } from 'lucide-react'
 
 function MobileMenu({ onClose }: { onClose: () => void }) {
@@ -17,10 +17,33 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
   )
 }
 
+const ANNOUNCEMENTS = [
+  'Free shipping on orders over $150 · Handcrafted with care',
+  'Every box includes a personalized printed card',
+]
+
+function AnnouncementBar() {
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setI(p => (p + 1) % ANNOUNCEMENTS.length), 4500)
+    return () => clearInterval(t)
+  }, [])
+  return (
+    <div className="bg-terra-100 border-b border-cream-300 overflow-hidden">
+      <p key={i} className="pl-fade text-bark-600 font-sans text-[10px] tracking-[0.3em] uppercase text-center py-2.5 px-4">
+        {ANNOUNCEMENTS[i]}
+      </p>
+    </div>
+  )
+}
+
 export function Header() {
   const [open, setOpen] = useState(false)
   return (
     <header className="relative z-40 bg-white">
+      {/* Announcement bar — above the logo, rotating messages */}
+      <AnnouncementBar />
+
       {/* Nav bar */}
       <div className="border-b border-cream-300">
         <div className="relative w-full pl-4 sm:pl-9 pr-16 sm:pr-6 h-[68px] flex items-center justify-between">
@@ -70,11 +93,6 @@ export function Header() {
             </button>
           </div>
         </div>
-      </div>
-
-      {/* Announcement bar */}
-      <div className="bg-terra-100 border-b border-cream-300 text-bark-600 font-sans text-[10px] tracking-[0.3em] uppercase text-center py-2.5 px-4">
-        Free shipping on orders over $150 · Handcrafted with care
       </div>
 
       {/* Mobile menu */}

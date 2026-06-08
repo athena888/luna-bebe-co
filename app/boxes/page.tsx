@@ -60,7 +60,7 @@ export default async function BoxesPage() {
                     <Link
                       key={box.slug}
                       href={`/boxes/${box.slug}`}
-                      className="bg-cream-50 border border-cream-200 rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-[minmax(0,46%)_1fr] group hover:border-bark-300 hover:shadow-sm transition-all"
+                      className="bg-cream-50 border border-cream-200 overflow-hidden grid grid-cols-1 md:grid-cols-[minmax(0,46%)_1fr] group hover:border-bark-300 hover:shadow-sm transition-all"
                     >
                       {/* Left — box cover photo (large) */}
                       <div className="relative aspect-[4/3] md:aspect-auto md:h-[85vh] min-h-[460px] bg-cream-200">

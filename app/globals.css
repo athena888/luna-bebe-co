@@ -92,3 +92,7 @@ html { scroll-behavior: smooth; }
 .ribbon-pull { animation: ribbonPull 1.2s ease-in-out forwards; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* Rotating announcement bar message fade-in */
+@keyframes plFade { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+.pl-fade { animation: plFade 0.5s ease; }
