@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/Footer'
 import { getBoxes } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
 import { SlotBackground } from '@/components/ui/SlotBackground'
+import { Leaf } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -40,7 +41,7 @@ export default async function BoxesPage() {
           <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-4">Curated Styles</p>
           <h1 className="font-serif text-[2.5rem] sm:text-[3.5rem] text-bark-600 mb-4">Shop by Aesthetic</h1>
           <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">
-            Three styles, two editions each — 7 curated items per box. Every detail already decided.
+            Seasonal editions, thoughtfully assembled — every detail already decided.
           </p>
         </SlotBackground>
 
@@ -98,10 +99,14 @@ export default async function BoxesPage() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="font-sans text-xs font-medium text-bark-600 truncate">{item.name}</p>
-                                  {item.description && <p className="font-sans text-[10px] text-bark-400 leading-snug line-clamp-1">{item.description}</p>}
-                                  {(color || size) && (
-                                    <p className="font-sans text-[10px] text-bark-400 capitalize">{[size, color].filter(Boolean).join(' · ')}</p>
-                                  )}
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    {(color || size) && (
+                                      <p className="font-sans text-[10px] text-bark-400 capitalize">{[size, color].filter(Boolean).join(' · ')}</p>
+                                    )}
+                                    {item.organic && (
+                                      <span className="inline-flex items-center gap-0.5 text-sage-600"><Leaf size={9} /><span className="font-sans text-[8px] tracking-[0.1em] uppercase">Organic</span></span>
+                                    )}
+                                  </div>
                                 </div>
                                 <span className="font-sans text-[11px] text-bark-500 shrink-0">{fmt(item.price)}</span>
                               </div>

@@ -6,9 +6,11 @@ import type { BoxSelection, Product } from '@/types'
 const SLOTS = ['swaddle', 'garment', 'bath', 'keepsake', 'mom', 'extra1', 'extra2'] as const
 type Slot = typeof SLOTS[number]
 
-export type SlotRef = { product_id: string; color?: string | null; size?: string | null }
+export type Audience = 'baby' | 'mama'
+export type SlotRef = { product_id: string; color?: string | null; size?: string | null; audience?: Audience | null }
 // SelectionJson now supports arbitrary keys for dynamic slots
 type SelectionJson = Record<string, SlotRef | null>
+export type BoxItem = Product & { audience?: Audience | null }
 
 export interface ResolvedBox {
   slug: string
@@ -25,7 +27,7 @@ export interface ResolvedBox {
   sortOrder: number
   active: boolean
   selection: BoxSelection
-  items: Product[]               // every slot's resolved product (fixed + custom), in order
+  items: BoxItem[]               // every slot's resolved product (fixed + custom), in order
   selectionRefs: SelectionJson   // raw refs (product_id + optional color/size) for the editor
 }
 
@@ -103,16 +105,15 @@ function resolveRow(row: BoxRow, productById: Map<string, Product>): ResolvedBox
   // storefront uses this so items added via "Add Item" (custom slot keys) show
   // up and count toward the price — the fixed BoxSelection above is kept only
   // for back-compat.
-  const items: Product[] = []
+  const items: BoxItem[] = []
   for (const [, ref] of Object.entries(refs)) {
     if (!ref?.product_id) continue
     const product = productById.get(ref.product_id)
     if (!product) continue
-    items.push(
-      ref.color && ref.size
-        ? ({ ...product, selectedColor: ref.color, selectedSize: ref.size } as Product)
-        : product
-    )
+    const base = ref.color && ref.size
+      ? ({ ...product, selectedColor: ref.color, selectedSize: ref.size } as Product)
+      : product
+    items.push({ ...base, audience: ref.audience ?? null })
   }
 
   // Gallery: prefer the images array; fall back to the legacy single image.

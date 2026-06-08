@@ -4,11 +4,11 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Loader, Check, Plus, Trash2, Upload, Star, Package, ChevronDown } from 'lucide-react'
 import Image from 'next/image'
-import type { ResolvedBox, SlotRef } from '@/lib/prebuilt-boxes-db'
+import type { ResolvedBox, SlotRef, Audience } from '@/lib/prebuilt-boxes-db'
 import { resizeImage } from '@/lib/image-resize'
 
 type CatalogProduct = { id: string; name: string; category: string; has_variants?: boolean; price: number; image?: string | null }
-type BoxSlot = { key: string; label: string; product_id: string | null; color?: string | null; size?: string | null }
+type BoxSlot = { key: string; label: string; product_id: string | null; color?: string | null; size?: string | null; audience?: Audience | null }
 
 const SLOT_TEMPLATES: Array<{ key: string; label: string }> = [
   { key: 'swaddle', label: 'Swaddle / Blanket' },
@@ -127,6 +127,7 @@ export default function BoxEditorPage() {
           product_id: (ref as SlotRef)?.product_id ?? null,
           color: (ref as SlotRef)?.color ?? undefined,
           size: (ref as SlotRef)?.size ?? undefined,
+          audience: (ref as SlotRef)?.audience ?? null,
         }
       })
       setSlots(newSlots.length > 0 ? newSlots : [])
@@ -144,6 +145,10 @@ export default function BoxEditorPage() {
   function updateSlotProduct(slotKey: string, productId: string) {
     setSlots(prev => prev.map(s => s.key === slotKey ? { ...s, product_id: productId || null } : s))
     setCategoryWarning(null)
+  }
+
+  function updateSlotAudience(slotKey: string, audience: Audience | null) {
+    setSlots(prev => prev.map(s => s.key === slotKey ? { ...s, audience } : s))
   }
 
   function addSlot() {
@@ -206,6 +211,7 @@ export default function BoxEditorPage() {
           product_id: slot.product_id,
           color: slot.color || undefined,
           size: slot.size || undefined,
+          audience: slot.audience ?? undefined,
         }
       } else {
         selection[slot.key] = null
@@ -416,6 +422,19 @@ export default function BoxEditorPage() {
                     {product && Number.isFinite(product.price) && <span className="text-[10px] text-bark-500/60">• ${(product.price / 100).toFixed(2)}</span>}
                   </div>
                   <ProductPicker products={products} value={slot.product_id} onChange={id => updateSlotProduct(slot.key, id)} />
+                  {/* For Baby / For Mama — optional grouping shown on the box page */}
+                  <div className="flex items-center gap-1 mt-1.5">
+                    {([['baby', 'For Baby'], ['mama', 'For Mama']] as const).map(([val, lbl]) => (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => updateSlotAudience(slot.key, slot.audience === val ? null : val)}
+                        className={`font-sans text-[9px] tracking-[0.1em] uppercase px-2 py-1 rounded border transition-colors ${slot.audience === val ? 'border-bark-600 bg-bark-600 text-white' : 'border-cream-300 text-bark-400 hover:border-bark-400'}`}
+                      >
+                        {lbl}
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 <button
                   type="button"

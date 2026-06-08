@@ -16,17 +16,15 @@ export function BoxGallery({ images, name }: { images: string[]; name: string })
   }
   const current = images[Math.min(active, images.length - 1)]
   return (
-    <div>
-      <div className="relative aspect-square bg-cream-200 overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={current} alt={name} className="absolute inset-0 w-full h-full object-cover" />
-      </div>
+    <div className="flex gap-3">
+      {/* Thumbnail rail — left */}
       {images.length > 1 && (
-        <div className="mt-3 grid grid-cols-5 gap-2">
+        <div className="flex flex-col gap-2 w-16 sm:w-20 shrink-0 max-h-[640px] overflow-y-auto scrollbar-hide">
           {images.map((url, i) => (
             <button
               key={url}
               type="button"
+              onMouseEnter={() => setActive(i)}
               onClick={() => setActive(i)}
               className={`relative aspect-square overflow-hidden border transition-all ${i === active ? 'border-bark-600 ring-1 ring-bark-600' : 'border-cream-300 hover:border-bark-400'}`}
             >
@@ -36,6 +34,11 @@ export function BoxGallery({ images, name }: { images: string[]; name: string })
           ))}
         </div>
       )}
+      {/* Main image */}
+      <div className="relative flex-1 aspect-square bg-cream-200 overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={current} alt={name} className="absolute inset-0 w-full h-full object-cover" />
+      </div>
     </div>
   )
 }
