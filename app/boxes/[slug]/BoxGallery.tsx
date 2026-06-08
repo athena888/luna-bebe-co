@@ -7,7 +7,7 @@ export function BoxGallery({ images, name }: { images: string[]; name: string })
   const [active, setActive] = useState(0)
   if (!images.length) {
     return (
-      <div className="relative aspect-square bg-cream-200 rounded-xl overflow-hidden flex flex-col items-center justify-center gap-3 text-bark-300">
+      <div className="relative aspect-square bg-cream-200 overflow-hidden flex flex-col items-center justify-center gap-3 text-bark-300">
         <div className="w-10 h-px bg-gold-400" />
         <span className="font-script text-3xl text-bark-400">Petite Lavande</span>
         <div className="w-10 h-px bg-gold-400" />
@@ -17,7 +17,7 @@ export function BoxGallery({ images, name }: { images: string[]; name: string })
   const current = images[Math.min(active, images.length - 1)]
   return (
     <div>
-      <div className="relative aspect-square bg-cream-200 rounded-xl overflow-hidden">
+      <div className="relative aspect-square bg-cream-200 overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={current} alt={name} className="absolute inset-0 w-full h-full object-cover" />
       </div>
@@ -28,7 +28,7 @@ export function BoxGallery({ images, name }: { images: string[]; name: string })
               key={url}
               type="button"
               onClick={() => setActive(i)}
-              className={`relative aspect-square rounded-lg overflow-hidden border transition-all ${i === active ? 'border-bark-600 ring-1 ring-bark-600' : 'border-cream-300 hover:border-bark-400'}`}
+              className={`relative aspect-square overflow-hidden border transition-all ${i === active ? 'border-bark-600 ring-1 ring-bark-600' : 'border-cream-300 hover:border-bark-400'}`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={url} alt={`${name} photo ${i + 1}`} className="w-full h-full object-cover" />

@@ -7,6 +7,7 @@ import { getProductById, FEATURED_IDS } from '@/lib/products'
 import type { Product } from '@/types'
 import { ProductCarousel } from '@/components/ui/ProductCarousel'
 import { EditorialStrip } from '@/components/ui/EditorialStrip'
+import { EditorialFeature } from '@/components/ui/EditorialFeature'
 import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
 
@@ -185,59 +186,47 @@ export default async function HomePage() {
         {/* ── 5. Editorial strip — video or image ── */}
         <EditorialStrip />
 
-        {/* ── 6 + 6b. Editorial pair — unified, contained ── */}
-        <section className="border-t border-cream-300 bg-cream-50 py-16 sm:py-24">
-          <div className="max-w-6xl mx-auto px-6 space-y-16 sm:space-y-24">
+        {/* ── 6 + 6b. Editorial pair — full-bleed, edge-attached, fly in/out ── */}
+        <section className="border-t border-cream-300 bg-cream-50">
 
-            {/* Block 1: image left · text right */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-14 items-center">
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-cream-200">
-                <Image src={homeImg('brand')} alt="Petite Lavande brand story" fill className="object-cover object-center" unoptimized />
-              </div>
-              <div className="md:max-w-md">
-                <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">For the Giver</p>
-                <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-bark-600 leading-[1.05] mb-5">
-                  Not a gift basket.<br />Something for her.
-                </h2>
-                <p className="font-cormorant text-lg text-bark-400 leading-loose mb-8">
-                  You&apos;re here because someone you love is becoming a mother. You want to send something that says <em>I see you. I see how much love you carry.</em> Every box we send is built around one question: what would the most thoughtful person in her life choose?
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Link href="/build" className="bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-bark-700 transition-colors">
-                    Build Your Box
-                  </Link>
-                  <Link href="/guide" className="border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-bark-600 hover:text-cream-50 transition-colors">
-                    Take the Guide
-                  </Link>
-                </div>
-              </div>
+          {/* Block 1: image flush LEFT · text right */}
+          <EditorialFeature image={homeImg('brand')} alt="Petite Lavande brand story" side="left">
+            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">For the Giver</p>
+            <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-bark-600 leading-[1.05] mb-5">
+              Not a gift basket.<br />Something for her.
+            </h2>
+            <p className="font-cormorant text-lg text-bark-400 leading-loose mb-8">
+              You&apos;re here because someone you love is becoming a mother. You want to send something that says <em>I see you. I see how much love you carry.</em> Every box we send is built around one question: what would the most thoughtful person in her life choose?
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link href="/build" className="bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-bark-700 transition-colors">
+                Build Your Box
+              </Link>
+              <Link href="/guide" className="border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-bark-600 hover:text-cream-50 transition-colors">
+                Take the Guide
+              </Link>
             </div>
+          </EditorialFeature>
 
-            {/* Block 2: text left · image right (reversed on desktop) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-14 items-center">
-              <div className="md:order-2 relative aspect-[4/3] rounded-2xl overflow-hidden bg-cream-200">
-                <Image src={homeImg('inside')} alt="What's inside a Petite Lavande box" fill className="object-cover object-center" unoptimized />
-              </div>
-              <div className="md:order-1 md:max-w-md md:ml-auto">
-                <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">Traced to the Source</p>
-                <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-bark-600 leading-[1.05] mb-5">
-                  From the source,<br />to her.
-                </h2>
-                <p className="font-cormorant text-lg text-bark-400 leading-loose mb-6">
-                  Every ingredient, every material — traced to its origin. Provence lavender fields. Pacific Northwest farms. Small American makers. Everything chosen the way a daughter would choose for her own mother.
-                </p>
-                <ul className="space-y-2.5">
-                  {['5 curated organic items', 'Personalized printed card', 'Dried lavender & wax seal', 'Satin ribbon & gift-ready box'].map(item => (
-                    <li key={item} className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 flex items-center gap-3">
-                      <span className="w-4 h-px bg-gold-400 shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+          {/* Block 2: image flush RIGHT · text left */}
+          <EditorialFeature image={homeImg('inside')} alt="What's inside a Petite Lavande box" side="right">
+            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">Traced to the Source</p>
+            <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-bark-600 leading-[1.05] mb-5">
+              From the source,<br />to her.
+            </h2>
+            <p className="font-cormorant text-lg text-bark-400 leading-loose mb-6">
+              Every ingredient, every material — traced to its origin. Provence lavender fields. Pacific Northwest farms. Small American makers. Everything chosen the way a daughter would choose for her own mother.
+            </p>
+            <ul className="space-y-2.5">
+              {['5 curated organic items', 'Personalized printed card', 'Dried lavender & wax seal', 'Satin ribbon & gift-ready box'].map(item => (
+                <li key={item} className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 flex items-center gap-3">
+                  <span className="w-4 h-px bg-gold-400 shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </EditorialFeature>
 
-          </div>
         </section>
 
         {/* ── 6c. The Box — photo gallery scroll ── */}

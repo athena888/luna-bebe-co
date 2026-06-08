@@ -32,24 +32,28 @@ export default async function BoxPage({ params }: { params: Promise<{ slug: stri
   if (!box) notFound()
 
   const items = box.items as Array<(typeof box.items)[number] & { selectedColor?: string; selectedSize?: string }>
-  const total = box.customPrice ?? (BOX_BASE_PRICE + items.reduce((s, p) => s + (p?.price ?? 0), 0))
+  const contentsValue = items.reduce((s, p) => s + (p?.price ?? 0), 0)
+  const regular = BOX_BASE_PRICE + contentsValue          // value if bought separately
+  const price = box.customPrice ?? regular                 // what we charge
+  const saving = box.customPrice != null && regular > box.customPrice
 
   return (
     <>
       <Header />
       <main className="min-h-screen bg-cream-100">
-        <div className="border-b border-cream-300 bg-cream-50">
-          <div className="max-w-6xl mx-auto px-6 sm:px-9 py-4">
-            <Link href="/boxes" className="flex items-center gap-2 text-bark-400 hover:text-bark-600 transition-colors">
-              <ArrowLeft size={16} />
-              <span className="font-sans text-sm">Back</span>
-            </Link>
-          </div>
-        </div>
-
         <div className="max-w-6xl mx-auto px-6 sm:px-9 py-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-            <BoxGallery images={box.images} name={box.name} />
+            {/* Gallery with a minimal back arrow on the photo */}
+            <div className="relative">
+              <Link
+                href="/boxes"
+                aria-label="Back to all boxes"
+                className="absolute top-3 left-3 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm text-bark-600 hover:bg-white transition-colors shadow-sm"
+              >
+                <ArrowLeft size={16} />
+              </Link>
+              <BoxGallery images={box.images} name={box.name} />
+            </div>
 
             <div className="flex flex-col justify-center">
               <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-gold-400 mb-3">{box.style}</p>
@@ -60,7 +64,10 @@ export default async function BoxPage({ params }: { params: Promise<{ slug: stri
 
               <div className="mb-8">
                 <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">Price</p>
-                <p className="font-serif text-4xl text-bark-600">${(total / 100).toFixed(2)}</p>
+                <div className="flex items-baseline gap-3 flex-wrap">
+                  {saving && <span className="font-serif text-2xl text-bark-400 line-through">${(regular / 100).toFixed(2)}</span>}
+                  <span className="font-serif text-4xl text-bark-600">${(price / 100).toFixed(2)}</span>
+                </div>
                 <p className="font-sans text-[11px] text-bark-400 mt-1">Includes box, packaging &amp; wax seal · letter added at checkout</p>
               </div>
 
@@ -70,7 +77,7 @@ export default async function BoxPage({ params }: { params: Promise<{ slug: stri
             </div>
           </div>
 
-          <div className="bg-white border border-cream-300 rounded-xl p-6 sm:p-8">
+          <div className="bg-white border border-cream-300 p-6 sm:p-8">
             <h2 className="font-serif text-3xl text-bark-600 mb-8">What&apos;s Included</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
@@ -84,7 +91,7 @@ export default async function BoxPage({ params }: { params: Promise<{ slug: stri
                     href={`/products/${item.id}`}
                     className="group flex items-start gap-4 pb-6 border-b border-cream-200 last:border-b-0 md:[&:nth-last-child(2)]:border-b-0"
                   >
-                    <div className="relative w-20 h-24 shrink-0 rounded-lg overflow-hidden bg-cream-100 border border-cream-200">
+                    <div className="relative w-20 h-24 shrink-0 overflow-hidden bg-cream-100 border border-cream-200">
                       {src
                         ? <img src={src} alt={item.name} className="w-full h-full object-cover" />
                         : <span className="absolute inset-0 flex items-center justify-center text-3xl">{item.imageEmoji}</span>}

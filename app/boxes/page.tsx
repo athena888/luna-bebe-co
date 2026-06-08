@@ -45,7 +45,7 @@ export default async function BoxesPage() {
         </SlotBackground>
 
         {/* Grouped by style */}
-        <div className="max-w-6xl mx-auto px-6 py-14 space-y-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 space-y-16">
           {byStyle.map(({ style, boxes }) => (
             <div key={style}>
               <div className="mb-6 pb-4 border-b border-cream-300 flex items-baseline gap-4">
@@ -60,10 +60,10 @@ export default async function BoxesPage() {
                     <Link
                       key={box.slug}
                       href={`/boxes/${box.slug}`}
-                      className="bg-cream-50 border border-cream-200 rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-[300px_1fr] group hover:border-bark-300 hover:shadow-sm transition-all"
+                      className="bg-cream-50 border border-cream-200 rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-[minmax(0,46%)_1fr] group hover:border-bark-300 hover:shadow-sm transition-all"
                     >
-                      {/* Left — box cover photo */}
-                      <div className="relative aspect-[4/3] md:aspect-auto md:h-full min-h-[220px] bg-cream-200">
+                      {/* Left — box cover photo (large) */}
+                      <div className="relative aspect-[4/3] md:aspect-auto md:h-[85vh] min-h-[460px] bg-cream-200">
                         {box.image ? (
                           <img src={box.image} alt={box.name} className="absolute inset-0 w-full h-full object-cover" />
                         ) : (
@@ -79,7 +79,7 @@ export default async function BoxesPage() {
                       </div>
 
                       {/* Right — details + product list */}
-                      <div className="p-6 sm:p-8 flex flex-col">
+                      <div className="p-6 sm:p-10 flex flex-col justify-center">
                         <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 mb-1">{style}</p>
                         <h2 className="font-serif text-2xl text-bark-600 mb-1">{box.name}</h2>
                         <p className="font-cormorant text-base italic text-bark-400 mb-4 leading-snug">{box.tagline}</p>
@@ -109,7 +109,7 @@ export default async function BoxesPage() {
                           })}
                         </div>
 
-                        <div className="flex items-center justify-between mt-auto pt-1">
+                        <div className="flex items-center justify-between mt-6 pt-1">
                           <div>
                             <span className="font-serif text-xl text-bark-600">{fmt(total)}</span>
                             <span className="font-sans text-[10px] text-bark-400 ml-2">all-in</span>
