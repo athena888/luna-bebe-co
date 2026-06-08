@@ -274,6 +274,24 @@ export default function BuildPage() {
       } catch { /* ignore */ }
       sessionStorage.removeItem('pl_recommended')
     }
+    // Restore the cart (e.g. items added from Shop by Occasion) into the bag.
+    const cart = sessionStorage.getItem('pl_box_selection')
+    if (cart) {
+      try {
+        const items = JSON.parse(cart) as SelectedItem[]
+        if (Array.isArray(items) && items.length) {
+          setSelected(prev => {
+            const next = new Map(prev)
+            items.forEach(p => {
+              if (!p?.id) return
+              const key = p.lineKey ?? variantKey(p.id, p.selectedColor, p.selectedSize, p.selectedStyle)
+              if (!next.has(key)) next.set(key, { ...p, lineKey: key, qty: p.qty ?? 1 })
+            })
+            return next
+          })
+        }
+      } catch { /* ignore */ }
+    }
   }, [])
 
   // Load certs for all products in catalog

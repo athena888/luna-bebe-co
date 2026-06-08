@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { X, ArrowRight } from 'lucide-react'
+import { X, ArrowRight, Plus, Check } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { CATEGORY_LABELS, CATEGORY_ORDER } from '@/lib/products'
 import type { Product, ProductCategory } from '@/types'
 import type { CollectionDef } from '@/lib/collections-db'
+import { addToCart } from '@/lib/cart'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 
@@ -39,6 +40,13 @@ const OCCASION_CATEGORIES: Record<string, ProductCategory[]> = {
 // ─── Modal ───────────────────────────────────────────────────────────────────
 
 function ProductTile({ product }: { product: Product }) {
+  const [added, setAdded] = useState(false)
+  function add(e: React.MouseEvent) {
+    e.stopPropagation()
+    addToCart(product)
+    setAdded(true)
+    setTimeout(() => setAdded(false), 1600)
+  }
   return (
     <div className="group">
       <div className="relative aspect-[3/4] bg-cream-100 mb-2 overflow-hidden rounded-sm">
@@ -57,6 +65,12 @@ function ProductTile({ product }: { product: Product }) {
         <div className="absolute inset-0 items-center justify-center text-4xl hidden" style={{ display: 'none' }}>
           {product.imageEmoji}
         </div>
+        <button
+          onClick={add}
+          className={`absolute bottom-2 right-2 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full font-sans text-[9px] tracking-[0.1em] uppercase shadow-sm transition-colors ${added ? 'bg-sage-500 text-white' : 'bg-white/95 text-bark-600 hover:bg-white'}`}
+        >
+          {added ? <><Check size={11} /> Added</> : <><Plus size={11} /> Add</>}
+        </button>
       </div>
       <p className="font-sans text-xs font-medium text-bark-600 leading-snug">{product.name}</p>
       <p className="font-sans text-[10px] text-bark-400 mt-0.5">${(product.price / 100).toFixed(2)}</p>
