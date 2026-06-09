@@ -68,14 +68,24 @@ export function dataUrlToFile(dataUrl: string, filename: string): File {
   return new File([arr], filename, { type: mime })
 }
 
-// Browser-only: downscale + re-encode an image to JPEG before upload.
+// Browser-only: downscale + re-encode an image before upload.
 // Phone photos are often 3–12 MB (and sometimes HEIC), which exceeds Vercel's
 // ~4.5 MB serverless request-body limit. Resizing client-side keeps uploads
-// small and converts to a universally-accepted JPEG.
+// small. Transparency is preserved: PNG/WebP re-encode to PNG, and SVG (vector)
+// is passed through untouched. Only opaque photos become JPEG — encoding a
+// transparent image as JPEG would flatten its alpha to solid black.
 export async function resizeImage(file: File, maxDim = 1600, quality = 0.85): Promise<File> {
   // Only attempt on images; if anything fails, fall back to the original file.
-  const looksLikeImage = file.type.startsWith('image/') || /\.(jpe?g|png|webp|heic|heif)$/i.test(file.name)
+  const looksLikeImage = file.type.startsWith('image/') || /\.(jpe?g|png|webp|heic|heif|svg)$/i.test(file.name)
   if (!looksLikeImage) return file
+
+  // SVG is vector — rasterizing it would lose scalability (and alpha). Pass through.
+  if (file.type === 'image/svg+xml' || /\.svg$/i.test(file.name)) return file
+
+  // PNG/WebP can carry transparency → re-encode to PNG (lossless, keeps alpha).
+  const keepsAlpha = /png|webp/i.test(file.type) || /\.(png|webp)$/i.test(file.name)
+  const outType = keepsAlpha ? 'image/png' : 'image/jpeg'
+  const outExt = keepsAlpha ? 'png' : 'jpg'
 
   try {
     const dataUrl: string = await new Promise((resolve, reject) => {
@@ -106,11 +116,11 @@ export async function resizeImage(file: File, maxDim = 1600, quality = 0.85): Pr
     if (!ctx) return file
     ctx.drawImage(img, 0, 0, width, height)
 
-    const blob: Blob | null = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality))
+    const blob: Blob | null = await new Promise(resolve => canvas.toBlob(resolve, outType, quality))
     if (!blob) return file
 
-    const newName = file.name.replace(/\.[^.]+$/, '') + '.jpg'
-    return new File([blob], newName, { type: 'image/jpeg', lastModified: file.lastModified })
+    const newName = file.name.replace(/\.[^.]+$/, '') + '.' + outExt
+    return new File([blob], newName, { type: outType, lastModified: file.lastModified })
   } catch {
     return file
   }

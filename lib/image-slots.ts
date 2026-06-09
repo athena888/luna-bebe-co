@@ -32,6 +32,7 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   { key: 'guide.header_bg',     label: 'Gift Guide — Header background',        group: 'Page Backgrounds', ratio: '21:9', hint: 'Wide & soft, ~2000×860' },
   { key: 'build.header_bg',     label: 'Build Your Box — Header background',    group: 'Page Backgrounds', ratio: '21:9', hint: 'Wide & soft, ~2000×860' },
   { key: 'boxes.custom_cta_bg', label: 'Ready-Made — "Build your own" CTA background', group: 'Page Backgrounds', ratio: '21:9', hint: 'Wide & soft, ~2000×860' },
+  { key: 'footer.bg',           label: 'Footer — Background',                   group: 'Page Backgrounds', ratio: '21:9', hint: 'Wide & soft, ~2000×860 — sits behind the whole footer' },
 
   // Misc
   { key: 'giftcard.visual', label: 'Gift Card — Visual',   group: 'Misc',  ratio: '3:2',  hint: 'Gift card art, ~1200×800' },

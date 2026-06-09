@@ -57,44 +57,28 @@ function ItemEntry({ item }: { item: BoxItem }) {
   )
 }
 
-// Contents split into clear For Baby / For Mama parts (two columns on wider
-// space, stacked on phones). Falls back to a plain grid when no audience set.
+// Contents split into clear "For Baby" / "For Mama" parts (two columns on wider
+// space, stacked on phones). Uses the item's audience when the box editor set
+// it; otherwise infers Mama from the product category (mom / postpartum / etc.).
 function ItemColumns({ box }: { box: ResolvedBox }) {
-  const baby = box.items.filter(i => i.audience === 'baby')
-  const mama = box.items.filter(i => i.audience === 'mama')
-  const other = box.items.filter(i => !i.audience)
-  const grouped = baby.length > 0 || mama.length > 0
-
-  if (!grouped) {
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-3">
-        {other.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} />)}
-      </div>
-    )
-  }
+  const isMama = (i: BoxItem) =>
+    i.audience === 'mama' ||
+    (!i.audience && /\b(mom|mama|mother|matern|postpartum|self.?care)\b/i.test(i.category ?? ''))
+  const baby = box.items.filter(i => !isMama(i))
+  const mama = box.items.filter(isMama)
 
   return (
-    <div className="space-y-5">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-5">
-        {baby.length > 0 && (
-          <div className="space-y-3">
-            <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gold-400 pb-1.5 border-b border-cream-200">For Baby</p>
-            {baby.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} />)}
-          </div>
-        )}
-        {mama.length > 0 && (
-          <div className="space-y-3">
-            <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gold-400 pb-1.5 border-b border-cream-200">For Mama</p>
-            {mama.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} />)}
-          </div>
-        )}
-      </div>
-      {other.length > 0 && (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-5">
+      {baby.length > 0 && (
         <div className="space-y-3">
-          <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gold-400 pb-1.5 border-b border-cream-200">Also Included</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-3">
-            {other.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} />)}
-          </div>
+          <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gold-400 pb-1.5 border-b border-cream-200">For Baby</p>
+          {baby.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} />)}
+        </div>
+      )}
+      {mama.length > 0 && (
+        <div className="space-y-3">
+          <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gold-400 pb-1.5 border-b border-cream-200">For Mama</p>
+          {mama.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} />)}
         </div>
       )}
     </div>
@@ -174,7 +158,7 @@ function BoxCard({ box, style, onOpenItems }: { box: ResolvedBox; style: string;
         {/* Right — contents (scroll, capped to image height) + price + buy */}
         <div className="flex flex-col h-full p-8 xl:p-10">
           <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-4 shrink-0">What&apos;s Inside</p>
-          <div className="flex-1 overflow-y-auto scrollbar-hide -mr-2 pr-2">
+          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide -mr-2 pr-2">
             <ItemColumns box={box} />
           </div>
           <div className="shrink-0 pt-5 mt-5 border-t border-cream-200 space-y-4">

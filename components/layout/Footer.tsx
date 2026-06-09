@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { LogoMark } from '@/components/ui/LogoMark'
+import { SlotBackground } from '@/components/ui/SlotBackground'
 
 function EmailSignup() {
   const [email, setEmail] = useState('')
@@ -50,8 +51,9 @@ function EmailSignup() {
 export function Footer() {
   return (
     <footer>
-      {/* Main footer */}
-      <div className="bg-cream-100 border-t border-cream-300">
+      {/* Main footer — optional owner-managed background sits behind everything;
+          a translucent scrim keeps the cream look (and text legible) when set. */}
+      <SlotBackground slotKey="footer.bg" scrim="bg-cream-100/88" className="bg-cream-100 border-t border-cream-300">
         <div className="max-w-6xl mx-auto px-6 py-16">
 
           {/* Logo + tagline */}
@@ -113,24 +115,22 @@ export function Footer() {
 
           </div>
 
-        </div>
-      </div>
-
-      {/* Bottom bar */}
-      <div className="bg-cream-50 border-t border-cream-300 py-5 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <p className="font-sans text-[10px] text-bark-400/60">© {new Date().getFullYear()} Petite Lavande. Made in Seattle. Sent with love.</p>
-            <div className="flex flex-wrap items-center gap-4 font-sans text-[10px] text-bark-400/60">
-              <Link href="/legal/privacy" className="hover:text-bark-400 transition-colors">Privacy</Link>
-              <span className="text-bark-300/30">·</span>
-              <Link href="/legal/terms" className="hover:text-bark-400 transition-colors">Terms</Link>
-              <span className="text-bark-300/30">·</span>
-              <Link href="/legal/returns" className="hover:text-bark-400 transition-colors">Returns</Link>
+          {/* Copyright + legal — same container, separated by a divider */}
+          <div className="pt-6 border-t border-cream-300">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <p className="font-sans text-[10px] text-bark-400/60">© {new Date().getFullYear()} Petite Lavande. Made in Seattle. Sent with love.</p>
+              <div className="flex flex-wrap items-center gap-4 font-sans text-[10px] text-bark-400/60">
+                <Link href="/legal/privacy" className="hover:text-bark-400 transition-colors">Privacy</Link>
+                <span className="text-bark-300/30">·</span>
+                <Link href="/legal/terms" className="hover:text-bark-400 transition-colors">Terms</Link>
+                <span className="text-bark-300/30">·</span>
+                <Link href="/legal/returns" className="hover:text-bark-400 transition-colors">Returns</Link>
+              </div>
             </div>
           </div>
+
         </div>
-      </div>
+      </SlotBackground>
     </footer>
   )
 }
