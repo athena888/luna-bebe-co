@@ -10,6 +10,7 @@ import { EditorialStrip } from '@/components/ui/EditorialStrip'
 import { EditorialFeature } from '@/components/ui/EditorialFeature'
 import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
+import { getHomeContent } from '@/lib/home-content'
 
 export const metadata: Metadata = {
   title: 'Petite Lavande — Luxury Curated Baby Gift Boxes',
@@ -25,12 +26,6 @@ function homeImg(slot: string) {
   return `${SUPABASE_URL}/storage/v1/object/public/home-images/${slot}.jpg`
 }
 
-
-const TESTIMONIALS = [
-  { quote: "I've never seen a gift box this beautiful. My best friend cried when she opened it. The personal card was the most special part.", name: 'Camille R.', context: 'Gifted to her sister' },
-  { quote: "Ordered rush shipping and it arrived the next day. Gorgeous box, everything so soft and organic. Worth every penny.", name: 'Maya T.', context: 'Baby shower gift' },
-  { quote: "Everyone at the shower was asking where the box was from. Building it myself meant I picked perfectly for someone I barely know.", name: 'Priya N.', context: 'Office baby shower' },
-]
 
 async function getBestsellers(): Promise<Product[]> {
   try {
@@ -76,7 +71,7 @@ async function getCollectionsData() {
 }
 
 export default async function HomePage() {
-  const [featured, collectionsData] = await Promise.all([getBestsellers(), getCollectionsData()])
+  const [featured, collectionsData, content] = await Promise.all([getBestsellers(), getCollectionsData(), getHomeContent()])
 
   return (
     <>
@@ -122,12 +117,7 @@ export default async function HomePage() {
         {/* ── Perks bar — attached directly under the hero ── */}
         <section className="bg-terra-100 border-b border-cream-300">
           <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4">
-            {[
-              { label: 'Free Shipping', sub: 'On orders over $150' },
-              { label: 'Personalized Card', sub: 'Printed for every box' },
-              { label: 'Organic Cotton', sub: 'From a GOTS-certified maker' },
-              { label: 'Gift-Ready', sub: 'Wax seal & ribbon, always' },
-            ].map(({ label, sub }, i) => (
+            {content.perks.map(({ label, sub }, i) => (
               <div key={label} className={`text-center py-5 px-4 border-cream-300
                 ${i % 2 === 0 ? 'border-r' : ''}
                 ${i < 2 ? 'border-b md:border-b-0' : ''}
@@ -155,18 +145,13 @@ export default async function HomePage() {
         {/* ── Why families choose Petite Lavande ── */}
         <section className="border-t border-cream-300 bg-cream-50 py-16 sm:py-24 px-6 sm:px-8">
           <div className="max-w-5xl mx-auto text-center">
-            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">Why Petite Lavande</p>
-            <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600 leading-tight mb-5">What makes it special</h2>
+            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">{content.why.eyebrow}</p>
+            <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600 leading-tight mb-5">{content.why.title}</h2>
             <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose max-w-2xl mx-auto mb-14">
-              Anyone can send a gift. We help you send a moment — every box built around the mother, not just the baby, and finished by hand as if a daughter chose it herself.
+              {content.why.intro}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-8 text-left">
-              {[
-                { t: 'Chosen for her, not just baby', b: 'Most gifts forget the mother. Every box carries something for her too — a quiet reminder that she is seen.' },
-                { t: 'Organic, traced to the source', b: 'Soft on new skin and gentle on the planet — cotton made with GOTS-certified organic cotton from a GOTS-certified maker, ingredients traced to their origin.' },
-                { t: 'Finished by hand', b: 'Sealed with a wax stamp, tied with satin ribbon, tucked with dried lavender, and a card printed just for them.' },
-                { t: 'Built your way', b: 'Start from a ready-made set or build your own — pick exactly what goes inside. No two boxes alike.' },
-              ].map(({ t, b }) => (
+              {content.why.items.map(({ t, b }) => (
                 <div key={t}>
                   <div className="w-8 h-px bg-gold-400 mb-5" />
                   <h3 className="font-serif text-lg text-bark-600 mb-3 leading-snug">{t}</h3>
@@ -276,14 +261,14 @@ export default async function HomePage() {
         <section className="py-14 sm:py-28 px-6 sm:px-8">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-4">
-              <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">Stories</p>
-              <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">Loved by Gift-Givers</h2>
+              <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">{content.reviews.eyebrow}</p>
+              <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">{content.reviews.title}</h2>
             </div>
             <p className="font-sans text-[11px] tracking-[0.2em] text-gold-400 text-center mb-14">
-              ★★★★★&nbsp;&nbsp;5.0 · Over 300 happy orders
+              {content.reviews.ratingLine}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-cream-300">
-              {TESTIMONIALS.map(({ quote, name, context }) => (
+              {content.reviews.items.map(({ quote, name, context }) => (
                 <div key={name} className="py-10 md:py-0 md:px-10 first:pl-0 last:pr-0 text-center">
                   <p className="font-sans text-[10px] tracking-[0.25em] text-gold-400 mb-5">★★★★★</p>
                   <p className="font-serif text-sm text-bark-600 leading-relaxed italic mb-8">&ldquo;{quote}&rdquo;</p>

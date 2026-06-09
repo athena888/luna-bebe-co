@@ -54,7 +54,7 @@ export default function GiftCardsPage() {
     <>
       <Header />
       <main className="min-h-screen bg-cream-50">
-        <SlotBackground slotKey="giftcards.header_bg" className="border-b border-cream-300 px-6 py-24 sm:py-32 text-center">
+        <SlotBackground slotKey="giftcards.header_bg" scrim="" className="border-b border-cream-300 px-6 py-24 sm:py-32 text-center">
           <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">The Perfect Gift</p>
           <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-2">Gift Cards</h1>
           <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">

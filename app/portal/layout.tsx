@@ -19,6 +19,7 @@ const NAV = [
   { href: '/portal/stock-insights', label: 'Stock Insights', icon: <LineChart size={16} /> },
   { href: '/portal/webhooks', label: 'Webhooks', icon: <Webhook size={16} /> },
   { href: '/portal/home-images', label: 'Home Images', icon: <Home size={16} /> },
+  { href: '/portal/home-content', label: 'Home Content', icon: <Home size={16} /> },
   { href: '/portal/site-images', label: 'Site Images', icon: <Images size={16} /> },
   { href: '/portal/social', label: 'Social Feed', icon: <Camera size={16} /> },
   { href: '/portal/analytics', label: 'Analytics', icon: <TrendingUp size={16} /> },

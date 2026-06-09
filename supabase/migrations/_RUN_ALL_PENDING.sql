@@ -183,4 +183,17 @@ values
   ('rose-dhiver',     'Rose d''Hiver',    'Winter', 'girl',    'Blush and wool-soft warmth for her first winter''s hush.', 'Tender warm layers, gentle care, and soft keepsakes to welcome her in the cold months.', 'Blush · Warm · Tender', false, null, null, 22, false, '{}'::jsonb)
 on conflict (slug) do nothing;
 
+-- 12) Editable homepage copy (perks bar, "What makes it special", reviews).
+-- One row per block, value is JSON. Missing rows fall back to in-code defaults.
+create table if not exists site_content (
+  key        text primary key,
+  value      jsonb not null,
+  updated_at timestamptz not null default now()
+);
+alter table site_content enable row level security;
+drop policy if exists site_content_public_read on site_content;
+create policy site_content_public_read on site_content for select using (true);
+drop policy if exists site_content_service_write on site_content;
+create policy site_content_service_write on site_content for all to service_role using (true) with check (true);
+
 -- Done.
