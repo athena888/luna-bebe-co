@@ -3,7 +3,9 @@ import { Footer } from '@/components/layout/Footer'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { getSiteImages } from '@/lib/site-images'
+import { getStoryContent } from '@/lib/story-content'
 import { LogoMark } from '@/components/ui/LogoMark'
+import { SlotImage } from '@/components/ui/SlotImage'
 import { SocialFeed } from '@/components/ui/SocialFeed'
 
 export const metadata: Metadata = {
@@ -13,9 +15,13 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
+const VALUE_EMOJI = ['🌿', '🤍', '✉️']
+
 export default async function StoryPage() {
-  const imgs = await getSiteImages(['story.hero', 'story.founder', 'story.value.1', 'story.value.2', 'story.value.3'])
-  const hero = imgs['story.hero']
+  const [imgs, content] = await Promise.all([
+    getSiteImages(['story.founder', 'story.value.1', 'story.value.2', 'story.value.3']),
+    getStoryContent(),
+  ])
   const founder = imgs['story.founder']
   const valueImgs = [imgs['story.value.1'], imgs['story.value.2'], imgs['story.value.3']]
 
@@ -24,23 +30,19 @@ export default async function StoryPage() {
       <Header />
       <main className="min-h-screen bg-cream-50">
 
-        {/* Hero image (optional, managed in portal → Site Images) */}
-        {hero && (
-          <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] overflow-hidden">
-            <img src={hero.public_url} alt={hero.alt_text} className="w-full h-full object-cover" />
-          </div>
-        )}
+        {/* Hero image (optional, managed in Portal → Story; mobile crop supported) */}
+        <SlotImage slotKey="story.hero" className="relative block w-full aspect-[16/9] sm:aspect-[21/9] overflow-hidden" imgClassName="w-full h-full object-cover" />
 
         {/* Hero */}
         <div className="border-b border-cream-300 bg-white">
           <div className="max-w-3xl mx-auto px-6 py-20 text-center">
             <LogoMark className="h-20 w-auto mx-auto mb-6" style={{ color: '#574540' }} alt="Petite Lavande" />
-            <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-4">Our Story</p>
+            <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-4">{content.hero.eyebrow}</p>
             <h1
               className="text-5xl sm:text-6xl text-bark-600 mb-6 leading-tight"
               style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 400 }}
             >
-              Born from a belief that <em>beginnings</em> deserve to be beautiful
+              {content.hero.heading}
             </h1>
             <div className="w-12 h-px bg-gold-400 mx-auto" />
           </div>
@@ -56,27 +58,14 @@ export default async function StoryPage() {
             </div>
           )}
           <div className="space-y-6">
-            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400">A Letter from the Founder</p>
-            <p
-              className="text-xl text-bark-600 leading-loose"
-              style={{ fontFamily: 'var(--font-cormorant)' }}
-            >
-              When my daughter was born, I found myself surrounded by well-meaning gifts — synthetic fabrics in shrieking plastic packaging, items that felt like they were designed for a big-box store, not for a baby I'd carry in my heart forever.
-            </p>
-            <p className="font-sans text-sm text-bark-500 leading-relaxed">
-              I wanted something different. Something that felt like it was made with intention — organic, artisan, beautiful. Something the mother would open and feel, for a moment, that she was being celebrated too. I couldn't find it. So I built it.
-            </p>
-            <p className="font-sans text-sm text-bark-500 leading-relaxed">
-              Petite Lavande started at my kitchen table, sourcing directly from makers who share our values: no shortcuts, no synthetics, no compromises on what touches a newborn's skin. Every item in every box is something I would give my own child.
-            </p>
-            <p className="font-sans text-sm text-bark-500 leading-relaxed">
-              We seal every box with our signature wax stamp, wrap every letter by hand, and ship every order with the care it deserves. Because a birth is not just a delivery — it's a beginning. And beginnings deserve to be luminous.
-            </p>
-            <p
-              className="text-2xl text-bark-500"
-              style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}
-            >
-              — Émilie, Founder
+            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400">{content.founder.eyebrow}</p>
+            {content.founder.paragraphs.map((para, i) => (
+              i === 0
+                ? <p key={i} className="text-xl text-bark-600 leading-loose" style={{ fontFamily: 'var(--font-cormorant)' }}>{para}</p>
+                : <p key={i} className="font-sans text-sm text-bark-500 leading-relaxed">{para}</p>
+            ))}
+            <p className="text-2xl text-bark-500" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>
+              {content.founder.signature}
             </p>
           </div>
         </div>
@@ -86,32 +75,16 @@ export default async function StoryPage() {
           <div className="max-w-4xl mx-auto px-6 py-20">
             <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-bark-400 text-center mb-12">What We Stand For</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
-              {[
-                {
-                  emoji: '🌿',
-                  title: 'Purely Organic',
-                  body: 'Our cotton garments are made with GOTS-certified organic cotton from a GOTS-certified maker, and we choose organic, natural materials across the box wherever we can.',
-                },
-                {
-                  emoji: '🤍',
-                  title: 'Artisan-Made',
-                  body: 'We source from small makers and family studios. The hands that made your gift cared deeply about it — and that\'s not something you can mass-produce.',
-                },
-                {
-                  emoji: '✉️',
-                  title: 'Every Detail',
-                  body: 'Wax-sealed boxes, personalized cards, tissue and ribbon — because the unboxing is part of the gift. We believe in the beauty of ceremony.',
-                },
-              ].map(({ emoji, title, body }, i) => {
+              {content.values.map(({ title, body }, i) => {
                 const vi = valueImgs[i]
                 return (
-                  <div key={title} className="text-center">
+                  <div key={i} className="text-center">
                     {vi ? (
                       <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden border border-cream-300">
                         <img src={vi.public_url} alt={vi.alt_text} className="w-full h-full object-cover" />
                       </div>
                     ) : (
-                      <div className="text-3xl mb-4">{emoji}</div>
+                      <div className="text-3xl mb-4">{VALUE_EMOJI[i] ?? '🌿'}</div>
                     )}
                     <h3 className="font-sans text-xs tracking-[0.2em] uppercase text-bark-600 mb-3">{title}</h3>
                     <p className="font-sans text-sm text-bark-400 leading-relaxed">{body}</p>
@@ -125,15 +98,15 @@ export default async function StoryPage() {
         {/* We don't curate. We trace. */}
         <div className="border-t border-cream-300">
           <div className="max-w-2xl mx-auto px-6 py-20 text-center">
-            <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-gold-400 mb-5">Traced to the Source</p>
+            <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-gold-400 mb-5">{content.traced.eyebrow}</p>
             <p
               className="text-3xl sm:text-4xl text-bark-600 mb-6"
               style={{ fontFamily: 'var(--font-cormorant)' }}
             >
-              We don&rsquo;t curate. We <em>trace</em>.
+              {content.traced.heading}
             </p>
             <p className="font-sans text-sm text-bark-500 leading-relaxed">
-              Every ingredient, every material — traced to its origin. Provence lavender fields. Pacific Northwest farms. Small American makers, ethical European sources. Everything tagged. Everything traceable. Everything chosen the way a daughter would choose for her own mother.
+              {content.traced.body}
             </p>
           </div>
         </div>
@@ -141,15 +114,15 @@ export default async function StoryPage() {
         {/* Why Simple */}
         <div className="border-t border-cream-300 bg-white">
           <div className="max-w-2xl mx-auto px-6 py-20">
-            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">Why Simple</p>
+            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">{content.whySimple.eyebrow}</p>
             <p className="font-sans text-base text-bark-600 leading-relaxed mb-6">
-              We don&rsquo;t add what doesn&rsquo;t belong. We don&rsquo;t pad the box with filler. Every item here exists because a new mother will actually use it, hold it, drink it, or dress her baby in it.
+              {content.whySimple.body}
             </p>
             <p
               className="text-2xl text-bark-500"
               style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}
             >
-              Simplicity isn&rsquo;t a shortcut. It&rsquo;s the harder choice.
+              {content.whySimple.tagline}
             </p>
           </div>
         </div>
@@ -157,18 +130,15 @@ export default async function StoryPage() {
         {/* French Apothecary Soul, PNW Heart */}
         <div className="border-t border-cream-300">
           <div className="max-w-2xl mx-auto px-6 py-20">
-            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">French Apothecary Soul, PNW Heart</p>
-            <p className="font-sans text-sm text-bark-500 leading-relaxed mb-5">
-              The aesthetic comes from old French apothecaries — kraft paper, glass tubes, wax seals, twine, dried herbs. A time when remedies came with care, and care came with beauty.
-            </p>
-            <p className="font-sans text-sm text-bark-500 leading-relaxed mb-5">
-              The ingredients come from two worlds — Provence lavender fields, Pacific Northwest farms, small American makers, ethical European sources.
-            </p>
+            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">{content.french.eyebrow}</p>
+            {content.french.paragraphs.map((para, i) => (
+              <p key={i} className="font-sans text-sm text-bark-500 leading-relaxed mb-5">{para}</p>
+            ))}
             <p
               className="text-xl text-bark-500"
               style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}
             >
-              A gift that feels both somewhere far away and grown close to home.
+              {content.french.tagline}
             </p>
           </div>
         </div>
