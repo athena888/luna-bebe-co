@@ -4,17 +4,23 @@ import { notFound } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { JsonLd } from '@/components/ui/JsonLd'
-import { JOURNAL_POSTS, getJournalPost, type Block } from '@/lib/journal'
+import { type Block } from '@/lib/journal'
+import { getJournalPostBySlug, getJournalPosts } from '@/lib/journal-db'
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
-export function generateStaticParams() {
-  return JOURNAL_POSTS.map(p => ({ slug: p.slug }))
+// New posts can be published at any time, so render unknown slugs on demand.
+export const dynamicParams = true
+export const revalidate = 300
+
+export async function generateStaticParams() {
+  const posts = await getJournalPosts()
+  return posts.map(p => ({ slug: p.slug }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const post = getJournalPost(slug)
+  const post = await getJournalPostBySlug(slug)
   if (!post) return { title: 'Not Found' }
   const url = `${BASE}/journal/${post.slug}`
   return {
@@ -42,7 +48,7 @@ function renderBlock(b: Block, i: number) {
 
 export default async function JournalPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const post = getJournalPost(slug)
+  const post = await getJournalPostBySlug(slug)
   if (!post) notFound()
   const url = `${BASE}/journal/${post.slug}`
 

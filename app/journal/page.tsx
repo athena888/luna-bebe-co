@@ -2,9 +2,12 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { JOURNAL_POSTS } from '@/lib/journal'
+import { getJournalPosts } from '@/lib/journal-db'
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
+
+// Posts come from the DB (merged with built-in starters); refresh periodically.
+export const revalidate = 300
 
 export const metadata: Metadata = {
   title: { absolute: 'The Journal — Gift Guides & New-Parent Notes | Petite Lavande' },
@@ -13,8 +16,8 @@ export const metadata: Metadata = {
   openGraph: { title: 'The Journal | Petite Lavande', description: 'Gift guides and new-parent notes from Petite Lavande.', url: `${BASE}/journal`, type: 'website' },
 }
 
-export default function JournalIndex() {
-  const posts = [...JOURNAL_POSTS].sort((a, b) => (a.date < b.date ? 1 : -1))
+export default async function JournalIndex() {
+  const posts = await getJournalPosts()
   return (
     <>
       <Header />
