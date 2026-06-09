@@ -86,7 +86,7 @@ function BoxModal({ box, onClose }: { box: ResolvedBox; onClose: () => void }) {
               <span className="font-serif text-2xl text-bark-600">{fmt(boxTotal(box))}</span>
               <span className="font-sans text-[10px] text-bark-400 ml-2">all-in</span>
             </div>
-            <Link href={`/boxes/${box.slug}`} className="bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.2em] uppercase px-6 py-3 hover:bg-bark-700 transition-colors">
+            <Link href={`/boxes#box-${box.slug}`} onClick={onClose} className="bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.2em] uppercase px-6 py-3 hover:bg-bark-700 transition-colors">
               View Full Box →
             </Link>
           </div>

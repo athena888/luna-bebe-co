@@ -118,7 +118,7 @@ export function Footer() {
           {/* Copyright + legal — same container, separated by a divider */}
           <div className="pt-6 border-t border-cream-300">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <p className="font-sans text-[10px] text-espresso">© {new Date().getFullYear()} Petite Lavande. Made in Seattle. Sent with love.</p>
+              <p className="font-sans text-[10px] text-espresso">© {new Date().getFullYear()} Petite Lavande. Sent with love.</p>
               <div className="flex flex-wrap items-center gap-4 font-sans text-[10px] text-espresso">
                 <Link href="/legal/privacy" className="hover:text-espresso transition-colors">Privacy</Link>
                 <span className="text-espresso/40">·</span>

@@ -147,7 +147,7 @@ export default function SiteImagesPage() {
       <p className="font-sans text-sm text-bark-400 mb-8 max-w-2xl">
         Upload or replace any standalone image slot — Story, Build banners, Gift Guide, gift card, and the social-share image.
         Changes go live within a minute. <strong>Alt text is required</strong> (it&rsquo;s read by search engines &amp; screen readers).
-        Home page tiles are managed under <a href="/portal/home-images" className="text-gold-500 underline">Home Images</a>.
+        Home page photos &amp; copy are managed under <a href="/portal/home-content" className="text-gold-500 underline">Homepage</a>.
       </p>
 
       {loading ? (

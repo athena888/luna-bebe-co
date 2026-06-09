@@ -1,5 +1,10 @@
 'use client'
 
+// Homepage media widgets — image slots, the editorial video slot, and the
+// bestsellers-carousel manager. Extracted from the old Home Images portal page
+// so the merged "Homepage" panel can interleave them with the text editors,
+// in the same order they appear on the homepage. API endpoints are unchanged.
+
 import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { Upload, CheckCircle, Loader, Video, RotateCcw, Trash2 } from 'lucide-react'
@@ -13,7 +18,7 @@ function getStorageUrl(slot: string) {
 
 type UploadState = 'idle' | 'uploading' | 'done' | 'error'
 
-function ImageSlotCard({
+export function ImageSlotCard({
   slotKey, label, description, wide = false,
 }: {
   slotKey: string
@@ -153,7 +158,7 @@ function ImageSlotCard({
   )
 }
 
-function VideoSlotCard({ slotKey, label, description }: { slotKey: string; label: string; description: string }) {
+export function VideoSlotCard({ slotKey, label, description }: { slotKey: string; label: string; description: string }) {
   const [state, setState] = useState<UploadState>('idle')
   const [videoUrl, setVideoUrl] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
@@ -258,7 +263,6 @@ function BestsellerCard({ item, curated, onRemove }: { item: BestsellerItem; cur
   const carouselStorageUrl = `${SUPABASE_URL}/storage/v1/object/public/home-images/${carouselSlot}.jpg`
   const productDefaultUrl = item.image || `${SUPABASE_URL}/storage/v1/object/public/product-images/${productId}.jpg`
 
-  // What to display: override → product default → placeholder
   const [imgPhase, setImgPhase] = useState(0)
   const displayUrl = overrideUrl ?? (hasOverride ? carouselStorageUrl : productDefaultUrl)
 
@@ -318,7 +322,6 @@ function BestsellerCard({ item, curated, onRemove }: { item: BestsellerItem; cur
 
   return (
     <div className="bg-cream-50 border border-cream-200 rounded-xl overflow-hidden">
-      {/* Image preview */}
       <div
         className="relative bg-cream-200 cursor-pointer group"
         style={{ aspectRatio: '3/4' }}
@@ -353,7 +356,6 @@ function BestsellerCard({ item, curated, onRemove }: { item: BestsellerItem; cur
           </div>
         )}
 
-        {/* Override badge */}
         {isOverrideActive && imgPhase < 2 && (
           <div className="absolute top-2 left-2 bg-gold-400/90 text-bark-800 font-sans text-[8px] tracking-[0.15em] uppercase px-2 py-0.5 rounded-full">
             Override active
@@ -390,7 +392,6 @@ function BestsellerCard({ item, curated, onRemove }: { item: BestsellerItem; cur
         />
       </div>
 
-      {/* Info + actions */}
       <div className="px-3 py-3">
         <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-gold-500 mb-0.5">
           {CATEGORY_LABELS[item.category as keyof typeof CATEGORY_LABELS] ?? item.category}
@@ -428,7 +429,7 @@ function BestsellerCard({ item, curated, onRemove }: { item: BestsellerItem; cur
   )
 }
 
-function BestsellerManager() {
+export function BestsellerManager() {
   const [items, setItems] = useState<BestsellerItem[]>([])
   const [addable, setAddable] = useState<Array<{ id: string; name: string; category: string }>>([])
   const [curated, setCurated] = useState(false)
@@ -460,13 +461,12 @@ function BestsellerManager() {
   }
 
   return (
-    <div className="mb-10">
-      <SectionHeader
-        label="Bestsellers Carousel"
-        note={curated
-          ? "These are exactly the products shown in the homepage carousel. Remove any, add more below, or upload a photo override per product."
-          : "No bestsellers picked yet — the carousel is auto-filled by top sales. Add products below to curate the exact list shown."}
-      />
+    <div>
+      <p className="font-sans text-[10px] text-bark-400/80 mb-4">
+        {curated
+          ? 'These are exactly the products shown in the homepage carousel. Remove any, add more below, or upload a photo override per product.'
+          : 'No bestsellers picked yet — the carousel is auto-filled by top sales. Add products below to curate the exact list shown.'}
+      </p>
       <div className="flex items-center gap-2 mb-4">
         <select
           defaultValue=""
@@ -490,91 +490,6 @@ function BestsellerManager() {
           ))}
         </div>
       )}
-    </div>
-  )
-}
-
-function SectionHeader({ label, note }: { label: string; note?: string }) {
-  return (
-    <div className="mb-4 pb-3 border-b border-cream-300">
-      <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400">{label}</p>
-      {note && <p className="font-sans text-[10px] text-bark-400/70 mt-1">{note}</p>}
-    </div>
-  )
-}
-
-export default function HomeImagesPage() {
-  return (
-    <div className="p-8 max-w-5xl">
-      <div className="mb-10">
-        <h1 className="font-serif text-3xl text-bark-600">Homepage Photos</h1>
-        <p className="font-sans text-sm text-bark-400 mt-1">
-          Click or drag a photo onto any slot to replace it. Goes live instantly.
-        </p>
-      </div>
-
-      {/* ── Bestsellers Carousel ── */}
-      <BestsellerManager />
-
-      {/* ── 1. Hero ── */}
-      <div className="mb-10">
-        <SectionHeader label="1 · Hero" note="Full-width banner at the top of the homepage." />
-        <div className="max-w-2xl">
-          <ImageSlotCard wide slotKey="hero" label="Hero Image" description="Landscape — the box centered, lifestyle feel. Recommended: 2400 × 1400px." />
-        </div>
-      </div>
-
-      {/* ── 2. Collection Cards ── */}
-      <div className="mb-10">
-        <SectionHeader label="2 · Shop by Occasion cards" note="Four cards in the 'Shop by Occasion' grid. Vertical / portrait format." />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <ImageSlotCard slotKey="newborn" label="Newborn Gifts"      description="Baby in white eyelet romper" />
-          <ImageSlotCard slotKey="mama"    label="For Mama"           description="Mom + baby, soft pink tones" />
-          <ImageSlotCard slotKey="bundle"  label="Mama & Baby Bundle" description="Mom holding newborn, box on table" />
-          <ImageSlotCard slotKey="custom"  label="Custom Box"         description="Baby on rug with bunny blanket" />
-        </div>
-      </div>
-
-      {/* ── 3. Editorial Strip ── */}
-      <div className="mb-10">
-        <SectionHeader label="3 · Editorial Strip — &quot;Every detail, intentional.&quot;" note="Full-width cinematic section. Upload a video to make it loop; the photo is used as fallback." />
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
-          <ImageSlotCard wide slotKey="kraft" label="Editorial Photo" description="Fallback if no video — open box, cinematic crop. Recommended: 2000 × 1100px." />
-          <VideoSlotCard slotKey="kraft" label="Editorial Video" description="Looping video overlay. MP4, MOV, or WebM — keep under 20 MB." />
-        </div>
-      </div>
-
-      {/* ── 4. Editorial — "Something for her" ── */}
-      <div className="mb-10">
-        <SectionHeader label="4 · Editorial — &quot;Not a gift basket. Something for her.&quot;" note="Left half of the two-column editorial pair (image flush-left, flies in)." />
-        <div className="max-w-xs">
-          <ImageSlotCard slotKey="brand" label="Editorial — left" description="Portrait — baby in wicker basket with lavender. Recommended: 900 × 1100px." />
-        </div>
-      </div>
-
-      {/* ── 5. Editorial — "From the source, to her" ── */}
-      <div className="mb-10">
-        <SectionHeader label="5 · Editorial — &quot;From the source, to her.&quot;" note="Right half of the two-column editorial pair (image flush-right, flies in)." />
-        <div className="max-w-xs">
-          <ImageSlotCard slotKey="inside" label="Editorial — right" description="Open box with letter, hello world disc. Recommended: 900 × 1100px." />
-        </div>
-      </div>
-
-      {/* ── 6. CTA Background ── */}
-      <div className="mb-10">
-        <SectionHeader label="6 · Final CTA background — &quot;Create Something Unforgettable&quot;" note="Dark full-width section near the bottom of the page. Image appears at 40% opacity." />
-        <div className="max-w-xs">
-          <ImageSlotCard slotKey="box" label="CTA Background" description="Cream box with ribbon — dark/moody works best. Recommended: 1600 × 900px." />
-        </div>
-      </div>
-
-      <div className="p-5 bg-cream-200/50 border border-cream-300 rounded-xl">
-        <p className="font-sans text-xs text-bark-400 leading-loose">
-          <span className="font-medium text-bark-600">All images are stored in Supabase Storage</span> under the{' '}
-          <code className="bg-cream-300/60 px-1 rounded">home-images</code> bucket (photos) and{' '}
-          <code className="bg-cream-300/60 px-1 rounded">home-videos</code> bucket (video). Changes go live immediately.
-        </p>
-      </div>
     </div>
   )
 }

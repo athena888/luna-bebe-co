@@ -1,6 +1,5 @@
 import type { MetadataRoute } from 'next'
 import { getCatalog } from '@/lib/products-db'
-import { getBoxes } from '@/lib/prebuilt-boxes-db'
 import { LANDING_PAGES } from '@/lib/landing-pages'
 import { JOURNAL_POSTS } from '@/lib/journal'
 
@@ -38,13 +37,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       urls.push({ url: `${base}/products/${p.id}`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 })
     }
   } catch { /* sitemap still returns the static routes */ }
-  // Ready-made box pages (best-effort)
-  try {
-    const boxes = await getBoxes({ activeOnly: true })
-    for (const b of boxes) {
-      urls.push({ url: `${base}/boxes/${b.slug}`, lastModified: now, changeFrequency: 'weekly', priority: 0.75 })
-    }
-  } catch { /* ignore */ }
-
   return urls
 }

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { Leaf, X } from 'lucide-react'
+import { Leaf, X, ChevronDown } from 'lucide-react'
 import type { ResolvedBox, BoxItem } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
 
@@ -141,17 +141,20 @@ function ItemsModal({ box, onClose }: { box: ResolvedBox; onClose: () => void })
 function BoxCard({ box, style, onOpenItems }: { box: ResolvedBox; style: string; onOpenItems: (b: ResolvedBox) => void }) {
   const src = box.image
   return (
-    <div className="bg-cream-50 border border-cream-200 overflow-hidden">
+    <div id={`box-${box.slug}`} className="bg-cream-50 border border-cream-200 overflow-hidden scroll-mt-24">
 
-      {/* ── Desktop: name+description · image · contents ── */}
-      <div className="hidden lg:grid lg:grid-cols-[0.85fr_1.2fr_1.25fr] lg:grid-rows-[minmax(0,1fr)] h-[82vh] max-h-[760px]">
-        {/* Left — name + description */}
-        <div className="flex flex-col justify-center overflow-y-auto scrollbar-hide p-8 xl:p-10">
-          <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 mb-2">{style}</p>
-          <h2 className="font-serif text-4xl text-bark-600 mb-3 leading-tight">{box.name}</h2>
-          <p className="font-cormorant text-xl italic text-bark-400 mb-5 leading-snug">{box.tagline}</p>
-          {box.description && <p className="font-sans text-sm text-bark-600 leading-relaxed">{box.description}</p>}
-          {box.aesthetic && <p className="font-sans text-[11px] text-bark-300 mt-4 tracking-wide">{box.aesthetic}</p>}
+      {/* ── Desktop: contents · image · name+description ── */}
+      <div className="hidden lg:grid lg:grid-cols-[1.25fr_1.2fr_0.85fr] lg:grid-rows-[minmax(0,1fr)] h-[82vh] max-h-[760px]">
+        {/* Left — contents (scrollable) + price + buy */}
+        <div className="flex flex-col h-full min-h-0 p-8 xl:p-10">
+          <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-4 shrink-0">What&apos;s Inside</p>
+          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide -mr-2 pr-2">
+            <ItemColumns box={box} />
+          </div>
+          <div className="shrink-0 pt-5 mt-5 border-t border-cream-200 space-y-4">
+            <PriceBlock box={box} />
+            <BuyBox items={box.items} />
+          </div>
         </div>
 
         {/* Middle — image (fixed height, object-cover → uniform regardless of upload) */}
@@ -162,16 +165,13 @@ function BoxCard({ box, style, onOpenItems }: { box: ResolvedBox; style: string;
           <span className={`absolute top-3 right-3 font-sans text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-full capitalize ${variantBadge(box.variant)}`}>{box.variant}</span>
         </div>
 
-        {/* Right — contents (scroll, capped to image height) + price + buy */}
-        <div className="flex flex-col h-full min-h-0 p-8 xl:p-10">
-          <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-4 shrink-0">What&apos;s Inside</p>
-          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide -mr-2 pr-2">
-            <ItemColumns box={box} />
-          </div>
-          <div className="shrink-0 pt-5 mt-5 border-t border-cream-200 space-y-4">
-            <PriceBlock box={box} />
-            <BuyBox items={box.items} />
-          </div>
+        {/* Right — name + description */}
+        <div className="flex flex-col justify-center overflow-y-auto scrollbar-hide p-8 xl:p-10">
+          <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 mb-2">{style}</p>
+          <h2 className="font-serif text-4xl text-bark-600 mb-3 leading-tight">{box.name}</h2>
+          <p className="font-cormorant text-xl italic text-bark-400 mb-5 leading-snug">{box.tagline}</p>
+          {box.description && <p className="font-sans text-sm text-bark-600 leading-relaxed">{box.description}</p>}
+          {box.aesthetic && <p className="font-sans text-[11px] text-bark-300 mt-4 tracking-wide">{box.aesthetic}</p>}
         </div>
       </div>
 
@@ -200,12 +200,48 @@ function BoxCard({ box, style, onOpenItems }: { box: ResolvedBox; style: string;
   )
 }
 
+// Anchor-safe slug for a style/edition name ("All Season" → "all-season").
+function editionSlug(s: string) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
 export function AestheticBoxes({ byStyle }: { byStyle: Array<{ style: string; boxes: ResolvedBox[] }> }) {
   const [openBox, setOpenBox] = useState<ResolvedBox | null>(null)
+  const [jumpOpen, setJumpOpen] = useState(false)
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-14 space-y-12">
+      {/* Edition jump menu — only when there's more than one edition to jump between */}
+      {byStyle.length > 1 && (
+        <div className="sticky top-3 z-30 flex justify-end -mb-6">
+          <div className="relative">
+            <button
+              onClick={() => setJumpOpen(o => !o)}
+              onBlur={() => setTimeout(() => setJumpOpen(false), 120)}
+              className="inline-flex items-center gap-2 bg-cream-50 border border-bark-300 px-5 py-2.5 font-sans text-[10px] tracking-[0.25em] uppercase text-bark-600 hover:border-bark-500 shadow-sm transition-colors"
+            >
+              Jump to edition
+              <ChevronDown size={14} className={`transition-transform ${jumpOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {jumpOpen && (
+              <div className="absolute right-0 mt-2 z-30 bg-cream-50 border border-cream-200 shadow-xl min-w-[200px] py-1">
+                {byStyle.map(({ style }) => (
+                  <a
+                    key={style}
+                    href={`#edition-${editionSlug(style)}`}
+                    onClick={() => setJumpOpen(false)}
+                    className="block px-5 py-2.5 font-sans text-xs text-bark-600 hover:bg-cream-100 transition-colors capitalize"
+                  >
+                    {style}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {byStyle.map(({ style, boxes }) => (
-        <div key={style}>
+        <div key={style} id={`edition-${editionSlug(style)}`} className="scroll-mt-24">
           <div className="mb-6 pb-4 border-b border-cream-300 flex items-baseline gap-4">
             <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400">{style}</p>
             <p className="font-sans text-[10px] text-bark-300">{boxes[0]?.aesthetic}</p>
