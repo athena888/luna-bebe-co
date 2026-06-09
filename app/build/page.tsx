@@ -6,7 +6,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { PRODUCTS, CATEGORY_LABELS, CATEGORY_ORDER, getAllProducts } from '@/lib/products'
 import type { Product, ProductCategory } from '@/types'
-import { Check, X, Plus, Minus, ShieldCheck, Leaf } from 'lucide-react'
+import { Check, X, Plus, Minus, ShieldCheck, Leaf, ZoomIn } from 'lucide-react'
 import Image from 'next/image'
 import { memo, useCallback, useMemo, useState as useLocalState } from 'react'
 import { CertBadges } from '@/components/ui/CertBadges'
@@ -211,6 +211,7 @@ export default function BuildPage() {
   const [pickSize, setPickSize] = useState<string | null>(null)
   const [pickStyle, setPickStyle] = useState<string | null>(null)
   const [modalLoading, setModalLoading] = useState(false)
+  const [lightbox, setLightbox] = useState<string | null>(null)
   const galleryCache = useRef<Record<string, GalleryImage[]>>({})
 
   useEffect(() => {
@@ -614,15 +615,28 @@ export default function BuildPage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-3">
-                  {(modalGallery.length > 0 ? modalGallery : [null]).map((img, idx) => (
-                    <div key={img?.id ?? idx} className="relative w-full overflow-hidden bg-cream-200" style={{ aspectRatio: '3/4' }}>
-                      {img
-                        ? <Image src={img.image_url} alt={img.label ?? modalProduct.name} fill className="object-cover" sizes="(max-width:1023px) 50vw, 28vw" />
-                        : modalMainSrc
-                          ? <Image src={modalMainSrc} alt={modalProduct.name} fill className="object-cover" sizes="(max-width:1023px) 50vw, 28vw" />
+                  {(modalGallery.length > 0 ? modalGallery : [null]).map((img, idx) => {
+                    const cellSrc = img ? img.image_url : modalMainSrc
+                    return (
+                      <button
+                        key={img?.id ?? idx}
+                        type="button"
+                        onClick={() => cellSrc && setLightbox(cellSrc)}
+                        disabled={!cellSrc}
+                        className="group relative w-full overflow-hidden bg-cream-200 cursor-zoom-in disabled:cursor-default"
+                        style={{ aspectRatio: '3/4' }}
+                      >
+                        {cellSrc
+                          ? <Image src={cellSrc} alt={img?.label ?? modalProduct.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width:1023px) 50vw, 28vw" />
                           : <div className="absolute inset-0 flex items-center justify-center text-7xl"><span className="select-none">{modalProduct.imageEmoji}</span></div>}
-                    </div>
-                  ))}
+                        {cellSrc && (
+                          <span className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-cream-50/85 text-bark-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <ZoomIn size={13} />
+                          </span>
+                        )}
+                      </button>
+                    )
+                  })}
                   {modalVideo && (
                     <div className="relative w-full overflow-hidden bg-cream-200" style={{ aspectRatio: '3/4' }}>
                       <video src={modalVideo} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover" />
@@ -646,7 +660,7 @@ export default function BuildPage() {
               {/* Certificate collection — in the trust-banner position, keeping the
                   dividers. Falls back to the shipping/handcrafted/gift-ready badges
                   for products without certifications. */}
-              <div className="border-t border-b border-cream-300 py-4 mb-4">
+              <div className="border-t border-b border-cream-300 py-4">
                 {(modalCerts.length > 0 || modalProduct.organic) ? (
                   <CertBadges certs={modalCerts} organic={modalProduct.organic} />
                 ) : (
@@ -661,25 +675,27 @@ export default function BuildPage() {
                 )}
               </div>
 
-              <div className="mb-4">
+              {/* Description / Materials / Cotton — each divided like the detail page */}
+              <div className="border-t border-cream-300 py-3.5">
                 <p className="text-base text-bark-600 leading-relaxed" style={{ fontFamily: 'var(--font-cormorant)' }}>
                   {cleanGots(modalProduct.description)}
                 </p>
               </div>
               {modalProduct.ingredients && (
-                <div className="mb-4">
-                  <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mr-2">Materials</span>
+                <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
+                  <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
                   <span className="font-sans text-xs text-bark-400">{cleanGots(modalProduct.ingredients)}</span>
                 </div>
               )}
               {modalCerts.some(isGots) && (
-                <p className="font-sans text-xs text-bark-400 mb-4 leading-relaxed">
-                  Made with <span className="text-bark-600">GOTS-certified organic cotton</span> from a GOTS-certified manufacturer.
-                </p>
+                <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
+                  <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
+                  <span className="font-sans text-xs text-bark-400">Made with <span className="text-bark-600">GOTS-certified organic cotton</span> from a GOTS-certified manufacturer.</span>
+                </div>
               )}
               {/* Variant pickers (color + size) */}
               {modalHasVariants && !allVariantsOut && (
-                <div className="space-y-4 mb-4">
+                <div className="border-t border-cream-300 pt-4 space-y-4 mb-4">
                   <div>
                     <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">
                       Color{pickColor ? <span className="text-bark-600 capitalize">: {pickColor}</span> : ''}
@@ -796,6 +812,24 @@ export default function BuildPage() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Image lightbox — click any modal photo to enlarge */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-[70] bg-bark-900/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-10 cursor-zoom-out"
+          onClick={() => setLightbox(null)}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={lightbox} alt="" className="max-h-[92vh] max-w-[92vw] w-auto h-auto object-contain shadow-2xl" />
+          <button
+            onClick={() => setLightbox(null)}
+            className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center text-cream-50/80 hover:text-cream-50 bg-bark-900/40 rounded-full"
+            aria-label="Close"
+          >
+            <X size={20} />
+          </button>
         </div>
       )}
     </>
