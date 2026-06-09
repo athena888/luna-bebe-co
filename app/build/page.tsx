@@ -439,7 +439,7 @@ export default function BuildPage() {
       <Header />
       <main className="min-h-screen bg-cream-50 pb-16 lg:pb-0">
 
-        <SlotBackground slotKey="build.header_bg" scrim="" className="border-b border-cream-300 bg-cream-50 px-6 py-14 sm:py-20 text-center">
+        <SlotBackground slotKey="build.header_bg" scrim="" className="border-b border-cream-300 bg-cream-50 px-6 py-14 sm:py-20 min-h-[80vh] flex flex-col items-center justify-center text-center">
           {(hasImage) => (
             <div style={hasImage ? { textShadow: '0 1px 12px rgba(0,0,0,0.35)' } : undefined}>
               <h1 className={`font-serif text-4xl sm:text-5xl mb-2 ${hasImage ? 'text-cream-50' : 'text-bark-600'}`}>Build Your Box</h1>
