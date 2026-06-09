@@ -29,7 +29,7 @@ function homeImg(slot: string) {
 const TESTIMONIALS = [
   { quote: "I've never seen a gift box this beautiful. My best friend cried when she opened it. The personal card was the most special part.", name: 'Camille R.', context: 'Gifted to her sister' },
   { quote: "Ordered rush shipping and it arrived the next day. Gorgeous box, everything so soft and organic. Worth every penny.", name: 'Maya T.', context: 'Baby shower gift' },
-  { quote: "Everyone at the shower was asking where the box was from. The gift guide helped me pick perfectly for someone I barely know.", name: 'Priya N.', context: 'Office baby shower' },
+  { quote: "Everyone at the shower was asking where the box was from. Building it myself meant I picked perfectly for someone I barely know.", name: 'Priya N.', context: 'Office baby shower' },
 ]
 
 async function getBestsellers(): Promise<Product[]> {
@@ -75,22 +75,8 @@ async function getCollectionsData() {
   }
 }
 
-// Dynamic "The Box" gallery — any number of photos managed in the portal.
-// Falls back to the legacy fixed gallery-1..4 slots when none are uploaded.
-async function getBoxGallery(): Promise<string[]> {
-  try {
-    const { supabaseAdmin } = await import('@/lib/supabase')
-    const { data } = await supabaseAdmin.storage.from('home-images').list('box-gallery', { limit: 100, sortBy: { column: 'name', order: 'asc' } })
-    const urls = (data ?? [])
-      .filter(f => f.name && !f.name.startsWith('.'))
-      .map(f => supabaseAdmin.storage.from('home-images').getPublicUrl(`box-gallery/${f.name}`).data.publicUrl)
-    if (urls.length) return urls
-  } catch { /* fall through */ }
-  return ['gallery-1', 'gallery-2', 'gallery-3', 'gallery-4'].map(homeImg)
-}
-
 export default async function HomePage() {
-  const [featured, collectionsData, boxGallery] = await Promise.all([getBestsellers(), getCollectionsData(), getBoxGallery()])
+  const [featured, collectionsData] = await Promise.all([getBestsellers(), getCollectionsData()])
 
   return (
     <>
@@ -133,17 +119,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── Shop by Occasion — first section below the hero ── */}
-        <section className="border-t border-cream-300 py-14 sm:py-16">
-          <div className="pl-6 sm:pl-9 pr-6 mb-10">
-            <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Collections</p>
-            <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">Shop by Occasion</h2>
-            <p className="font-sans text-xs text-bark-400 mt-2 tracking-wide">Tap any collection to see what&apos;s inside</p>
-          </div>
-          <CollectionsSection initial={collectionsData ?? undefined} />
-        </section>
-
-        {/* ── 2. Perks bar ── */}
+        {/* ── Perks bar — attached directly under the hero ── */}
         <section className="bg-terra-100 border-b border-cream-300">
           <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4">
             {[
@@ -163,10 +139,56 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── 2b. Pre-assembled boxes ── */}
+        {/* ── Shop by Occasion ── */}
+        <section className="py-14 sm:py-16">
+          <div className="pl-6 sm:pl-9 pr-6 mb-10">
+            <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Collections</p>
+            <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">Shop by Occasion</h2>
+            <p className="font-sans text-xs text-bark-400 mt-2 tracking-wide">Tap any collection to see what&apos;s inside</p>
+          </div>
+          <CollectionsSection initial={collectionsData ?? undefined} />
+        </section>
+
+        {/* ── Curated Gift Sets ── */}
         <PrebuiltBoxesSection />
 
-        {/* ── 4. Featured products — center-snap looping carousel ── */}
+        {/* ── Why families choose Petite Lavande ── */}
+        <section className="border-t border-cream-300 bg-cream-50 py-16 sm:py-24 px-6 sm:px-8">
+          <div className="max-w-5xl mx-auto text-center">
+            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">Why Petite Lavande</p>
+            <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600 leading-tight mb-5">What makes it special</h2>
+            <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose max-w-2xl mx-auto mb-14">
+              Anyone can send a gift. We help you send a moment — every box built around the mother, not just the baby, and finished by hand as if a daughter chose it herself.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-8 text-left">
+              {[
+                { t: 'Chosen for her, not just baby', b: 'Most gifts forget the mother. Every box carries something for her too — a quiet reminder that she is seen.' },
+                { t: 'Organic, traced to the source', b: 'Soft on new skin and gentle on the planet — cotton made with GOTS-certified organic cotton from a GOTS-certified maker, ingredients traced to their origin.' },
+                { t: 'Finished by hand', b: 'Sealed with a wax stamp, tied with satin ribbon, tucked with dried lavender, and a card printed just for them.' },
+                { t: 'Built your way', b: 'Start from a ready-made set or build your own — pick exactly what goes inside. No two boxes alike.' },
+              ].map(({ t, b }) => (
+                <div key={t}>
+                  <div className="w-8 h-px bg-gold-400 mb-5" />
+                  <h3 className="font-serif text-lg text-bark-600 mb-3 leading-snug">{t}</h3>
+                  <p className="font-sans text-xs text-bark-400 leading-loose">{b}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-14 flex flex-col sm:flex-row gap-3 justify-center">
+              <Link href="/build" className="inline-block bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-bark-700 transition-colors">
+                Build Your Box
+              </Link>
+              <Link href="/boxes" className="inline-block border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-bark-600 hover:text-cream-50 transition-colors">
+                Shop Ready-Made
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Editorial strip — video or image ── */}
+        <EditorialStrip />
+
+        {/* ── Bestsellers — center-snap looping carousel, below the editorial strip ── */}
         <section className="border-t border-cream-300 pt-16 pb-12">
           <div className="pl-6 sm:pl-9 pr-6 mb-10 flex items-end justify-between">
             <div>
@@ -182,9 +204,6 @@ export default async function HomePage() {
           </div>
           <ProductCarousel products={featured} />
         </section>
-
-        {/* ── 5. Editorial strip — video or image ── */}
-        <EditorialStrip />
 
         {/* ── 6 + 6b. Editorial pair — full-bleed, edge-attached, fly in/out ── */}
         <section className="border-t border-cream-300 bg-cream-50">
@@ -227,33 +246,6 @@ export default async function HomePage() {
             </ul>
           </EditorialFeature>
 
-        </section>
-
-        {/* ── 6c. The Box — photo gallery scroll ── */}
-        <section className="border-t border-cream-300 py-16">
-          <div className="pl-6 sm:pl-9 pr-6 mb-8">
-            <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Petite Lavande</p>
-            <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">The Box</h2>
-            <p className="font-serif italic text-bark-400 text-base mt-1">Every detail, made with love.</p>
-          </div>
-          <div className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory gap-3 pl-6 sm:pl-9">
-            {boxGallery.map((url, i) => (
-              <div
-                key={`${url}-${i}`}
-                className="relative shrink-0 w-[80vw] sm:w-[55vw] lg:w-[40vw] snap-start overflow-hidden bg-cream-200"
-                style={{ aspectRatio: '4/3' }}
-              >
-                <Image
-                  src={url}
-                  alt="Petite Lavande box"
-                  fill
-                  className="object-cover object-center"
-                  unoptimized
-                />
-              </div>
-            ))}
-            <div className="shrink-0 w-6 sm:w-9" />
-          </div>
         </section>
 
         {/* ── 7. How it works ── */}
