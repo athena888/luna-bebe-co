@@ -144,7 +144,7 @@ function BoxCard({ box, style, onOpenItems }: { box: ResolvedBox; style: string;
     <div className="bg-cream-50 border border-cream-200 overflow-hidden">
 
       {/* ── Desktop: name+description · image · contents ── */}
-      <div className="hidden lg:grid lg:grid-cols-[0.85fr_1.2fr_1.25fr] h-[82vh] max-h-[760px]">
+      <div className="hidden lg:grid lg:grid-cols-[0.85fr_1.2fr_1.25fr] lg:grid-rows-[minmax(0,1fr)] h-[82vh] max-h-[760px]">
         {/* Left — name + description */}
         <div className="flex flex-col justify-center overflow-y-auto scrollbar-hide p-8 xl:p-10">
           <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 mb-2">{style}</p>
@@ -163,7 +163,7 @@ function BoxCard({ box, style, onOpenItems }: { box: ResolvedBox; style: string;
         </div>
 
         {/* Right — contents (scroll, capped to image height) + price + buy */}
-        <div className="flex flex-col h-full p-8 xl:p-10">
+        <div className="flex flex-col h-full min-h-0 p-8 xl:p-10">
           <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-4 shrink-0">What&apos;s Inside</p>
           <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide -mr-2 pr-2">
             <ItemColumns box={box} />
