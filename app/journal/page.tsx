@@ -1,0 +1,46 @@
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
+import { JOURNAL_POSTS } from '@/lib/journal'
+
+const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
+
+export const metadata: Metadata = {
+  title: { absolute: 'The Journal — Gift Guides & New-Parent Notes | Petite Lavande' },
+  description: 'Gift guides, postpartum notes and new-parent ideas from Petite Lavande — thoughtful reading on organic baby gifts and caring for mom.',
+  alternates: { canonical: `${BASE}/journal` },
+  openGraph: { title: 'The Journal | Petite Lavande', description: 'Gift guides and new-parent notes from Petite Lavande.', url: `${BASE}/journal`, type: 'website' },
+}
+
+export default function JournalIndex() {
+  const posts = [...JOURNAL_POSTS].sort((a, b) => (a.date < b.date ? 1 : -1))
+  return (
+    <>
+      <Header />
+      <main className="bg-cream-50 min-h-screen">
+        <section className="border-b border-cream-300 px-6 sm:px-8 py-16 sm:py-20 text-center">
+          <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">The Journal</p>
+          <h1 className="font-serif text-[2.5rem] sm:text-[3.5rem] text-bark-600 leading-tight">Gift guides &amp; new-parent notes</h1>
+          <p className="font-cormorant text-lg sm:text-xl text-bark-400 mt-4 max-w-2xl mx-auto leading-loose">
+            Thoughtful reading on organic baby gifts, postpartum care, and the small details that make a present feel personal.
+          </p>
+        </section>
+
+        <section className="max-w-4xl mx-auto px-6 sm:px-8 py-14 grid gap-10">
+          {posts.map(post => (
+            <Link key={post.slug} href={`/journal/${post.slug}`} className="group border-b border-cream-300 pb-10 last:border-0">
+              <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-gold-400 mb-2">
+                {new Date(post.date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} · {post.readMins} min read
+              </p>
+              <h2 className="font-serif text-2xl sm:text-3xl text-bark-600 leading-snug mb-2 group-hover:text-bark-800 transition-colors">{post.title}</h2>
+              <p className="font-cormorant text-lg text-bark-400 leading-relaxed mb-3">{post.excerpt}</p>
+              <span className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500 border-b border-bark-400 pb-0.5">Read more →</span>
+            </Link>
+          ))}
+        </section>
+      </main>
+      <Footer />
+    </>
+  )
+}

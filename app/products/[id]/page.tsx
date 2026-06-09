@@ -32,6 +32,16 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       images: img ? [{ url: img, width: 1200, height: 1600, alt: p.name }] : undefined,
     },
     twitter: { card: 'summary_large_image' },
+    // Product/price tags so Pinterest can build Product Rich Pins (and other
+    // crawlers can read price + availability).
+    other: {
+      'og:type': 'product',
+      'product:price:amount': (p.price / 100).toFixed(2),
+      'product:price:currency': 'USD',
+      'product:availability': p.active ? 'in stock' : 'out of stock',
+      'og:price:amount': (p.price / 100).toFixed(2),
+      'og:price:currency': 'USD',
+    },
   }
 }
 

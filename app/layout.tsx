@@ -45,11 +45,15 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: { card: "summary_large_image", title: "Petite Lavande", description: "Luxury curated organic baby gift boxes.", images: [ogImage] },
     robots: { index: true, follow: true },
-    // Google Search Console "HTML tag" verification — set the code in Vercel
-    // env var NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION (omitted if unset).
-    verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
-      ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
-      : undefined,
+    // Site verification, all env-gated (omitted when unset):
+    //  · Google Search Console  → NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    //  · Pinterest (Rich Pins)  → NEXT_PUBLIC_PINTEREST_VERIFICATION
+    verification: {
+      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+      other: process.env.NEXT_PUBLIC_PINTEREST_VERIFICATION
+        ? { 'p:domain_verify': process.env.NEXT_PUBLIC_PINTEREST_VERIFICATION }
+        : {},
+    },
   }
 }
 

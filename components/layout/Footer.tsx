@@ -61,13 +61,20 @@ export function Footer() {
         <div className="max-w-6xl mx-auto px-6 py-16">
 
           {/* Logo + tagline */}
-          <div className="mb-12 text-center">
+          <div className="mb-10 text-center">
             <div className="font-serif text-2xl tracking-[0.15em] uppercase text-bark-600 mb-2">Petite Lavande</div>
             <p className="font-serif italic text-bark-400 text-sm">Fait avec amour, pour vous.</p>
           </div>
 
-          {/* 3 column grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 mb-12 text-center">
+          {/* Email signup — 10% off the first order */}
+          <div className="max-w-md mx-auto text-center mb-14">
+            <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500 mb-2 font-medium">Join our list — 10% off your first box</p>
+            <p className="font-sans text-xs text-bark-400 mb-4 leading-relaxed">New-parent gift guides, quiet launches, and a welcome code for your first order.</p>
+            <EmailSignup />
+          </div>
+
+          {/* Link columns */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-12 text-center">
 
             {/* Shop */}
             <div>
@@ -79,11 +86,23 @@ export function Footer() {
               </ul>
             </div>
 
+            {/* Gift Guides (search-intent landing pages) */}
+            <div>
+              <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-4 font-medium">Gift Guides</p>
+              <ul className="space-y-2.5 text-xs font-sans">
+                <li><Link href="/gifts/organic-newborn-gift-box" className="text-bark-400 hover:text-bark-600 transition-colors">Organic Newborn Box</Link></li>
+                <li><Link href="/gifts/gender-neutral-baby-gift-box" className="text-bark-400 hover:text-bark-600 transition-colors">Gender-Neutral Box</Link></li>
+                <li><Link href="/gifts/postpartum-care-package" className="text-bark-400 hover:text-bark-600 transition-colors">Postpartum Care</Link></li>
+                <li><Link href="/gifts/luxury-baby-shower-gift" className="text-bark-400 hover:text-bark-600 transition-colors">Luxury Shower Gift</Link></li>
+              </ul>
+            </div>
+
             {/* About */}
             <div>
               <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-4 font-medium">About</p>
               <ul className="space-y-2.5 text-xs font-sans">
                 <li><Link href="/story" className="text-bark-400 hover:text-bark-600 transition-colors">Our Story</Link></li>
+                <li><Link href="/journal" className="text-bark-400 hover:text-bark-600 transition-colors">The Journal</Link></li>
                 <li><Link href="/track" className="text-bark-400 hover:text-bark-600 transition-colors">Track Order</Link></li>
                 <li><Link href="/account" className="text-bark-400 hover:text-bark-600 transition-colors">My Account</Link></li>
               </ul>
