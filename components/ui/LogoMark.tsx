@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react'
 import { LavenderSprig } from '@/components/ui/LavenderSprig'
 
-// The brand mark. Prefers the owner-uploaded seal (Site Images → "Global — Logo"),
-// falls back to whatever is in the global OG image slot, and finally to the
-// hand-drawn sprig so the header/footer always render something on-brand.
+// The brand mark. Uses ONLY the owner-uploaded seal (Site Images → "Global — Logo / Seal"),
+// and otherwise falls back to the hand-drawn sprig. (We deliberately do NOT fall back to
+// the OG / social-share image — that's a dark card and would show as a dark box.)
 // className controls sizing (e.g. "h-9 w-auto"); style.color tints the sprig fallback.
 export function LogoMark({
   className = '',
@@ -20,11 +20,11 @@ export function LogoMark({
 
   useEffect(() => {
     let alive = true
-    fetch('/api/site-images?keys=global.logo,global.og_image')
+    fetch('/api/site-images?keys=global.logo')
       .then(r => r.json())
       .then(d => {
         if (!alive) return
-        const url = d.images?.['global.logo']?.public_url || d.images?.['global.og_image']?.public_url
+        const url = d.images?.['global.logo']?.public_url
         if (url) setSrc(url)
       })
       .catch(() => {})
