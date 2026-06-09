@@ -211,21 +211,7 @@ export default function BuildPage() {
   const [pickSize, setPickSize] = useState<string | null>(null)
   const [pickStyle, setPickStyle] = useState<string | null>(null)
   const [modalLoading, setModalLoading] = useState(false)
-  const [modalImgIdx, setModalImgIdx] = useState(0)
   const galleryCache = useRef<Record<string, GalleryImage[]>>({})
-  const modalScrollRef = useRef<HTMLDivElement>(null)
-
-  function scrollToSlide(idx: number) {
-    const el = modalScrollRef.current
-    if (!el) return
-    el.scrollTo({ left: idx * el.clientWidth, behavior: 'smooth' })
-  }
-
-  function handleModalScroll() {
-    const el = modalScrollRef.current
-    if (!el) return
-    setModalImgIdx(Math.round(el.scrollLeft / el.clientWidth))
-  }
 
   useEffect(() => {
     fetch('/api/inventory').then(r => r.json()).then(d => setInventory(d.inventory ?? {}))
@@ -313,18 +299,15 @@ export default function BuildPage() {
   }, [catalog, productCerts])
 
   const modalVideo = modalProduct ? hoverMedia[modalProduct.id]?.video : undefined
-  const totalSlides = modalGallery.length + (modalVideo ? 1 : 0) || 1
 
   useEffect(() => {
     if (!modalProduct) return
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') setModalProduct(null)
-      if (e.key === 'ArrowRight') setModalImgIdx(i => { const n = Math.min(i + 1, totalSlides - 1); scrollToSlide(n); return n })
-      if (e.key === 'ArrowLeft') setModalImgIdx(i => { const n = Math.max(i - 1, 0); scrollToSlide(n); return n })
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [modalProduct, totalSlides])
+  }, [modalProduct])
 
   const isSoldOut = useCallback((id: string) => {
     if (!(id in inventory)) return false
@@ -374,7 +357,6 @@ export default function BuildPage() {
 
   const openModal = useCallback(async (product: BuildProduct) => {
     setModalProduct(product)
-    setModalImgIdx(0)
     setModalVariants([])
     setModalCerts([])
     setPickColor(null)
@@ -439,7 +421,7 @@ export default function BuildPage() {
       <Header />
       <main className="min-h-screen bg-cream-50 pb-16 lg:pb-0">
 
-        <SlotBackground slotKey="build.header_bg" scrim="" fit="natural" className="border-b border-cream-300 bg-cream-50 px-6 py-14 sm:py-20 min-h-[55vh] flex flex-col items-center justify-center text-center">
+        <SlotBackground slotKey="build.header_bg" scrim="" className="border-b border-cream-300 bg-cream-50 px-6 py-14 sm:py-20 min-h-[80vh] flex flex-col items-center justify-center text-center">
           {(hasImage) => (
             <div style={hasImage ? { textShadow: '0 1px 12px rgba(0,0,0,0.35)' } : undefined}>
               <h1 className={`font-serif text-4xl sm:text-5xl mb-2 ${hasImage ? 'text-cream-50' : 'text-bark-600'}`}>Build Your Box</h1>
@@ -624,55 +606,28 @@ export default function BuildPage() {
               <X size={16} />
             </button>
 
-            {/* Image panel — fixed height on mobile, fills height on desktop */}
-            <div className="relative lg:w-[55%] shrink-0 bg-cream-100 flex flex-col">
-              {/* Image slides */}
-              <div
-                ref={modalScrollRef}
-                onScroll={handleModalScroll}
-                className="relative flex overflow-x-auto scrollbar-hide snap-x snap-mandatory aspect-[3/4] w-full"
-              >
-                {modalLoading && (
-                  <div className="absolute inset-0 flex items-center justify-center z-10 bg-cream-100">
-                    <div className="w-6 h-6 border-2 border-cream-300 border-t-bark-600 rounded-full animate-spin" />
-                  </div>
-                )}
-                {!modalLoading && modalGallery.length === 0 && (
-                  <div className="shrink-0 w-full h-full snap-start relative">
-                    {modalMainSrc
-                      ? <Image src={modalMainSrc} alt={modalProduct.name} fill className="object-cover" sizes="(max-width:1023px) 100vw, 55vw" />
-                      : <div className="absolute inset-0 flex items-center justify-center text-8xl bg-cream-100">
-                          <span className="select-none">{modalProduct.imageEmoji}</span>
-                        </div>
-                    }
-                  </div>
-                )}
-                {modalGallery.map((img) => (
-                  <div key={img.id} className="shrink-0 w-full h-full snap-start relative">
-                    <Image src={img.image_url} alt={img.label ?? modalProduct.name} fill className="object-cover" sizes="(max-width:1023px) 100vw, 55vw" />
-                  </div>
-                ))}
-                {modalVideo && (
-                  <div className="shrink-0 w-full h-full snap-start relative">
-                    <video src={modalVideo} autoPlay muted loop playsInline className="w-full h-full object-cover" />
-                  </div>
-                )}
-              </div>
-
-              {/* Slide dots */}
-              {totalSlides > 1 && (
-                <div className="shrink-0 flex items-center justify-center gap-1.5 py-2.5">
-                  {Array.from({ length: totalSlides }).map((_, i) => (
-                    <button key={i} onClick={() => scrollToSlide(i)}
-                      className={`rounded-full transition-all duration-200 ${modalImgIdx === i ? 'w-4 h-1.5 bg-bark-600' : 'w-1.5 h-1.5 bg-bark-300'}`} />
-                  ))}
+            {/* Image panel — 2-column photo grid, like the product detail page */}
+            <div className="lg:w-[55%] shrink-0 bg-cream-50 p-4 lg:p-5 lg:overflow-y-auto">
+              {modalLoading ? (
+                <div className="aspect-[3/4] flex items-center justify-center bg-cream-100">
+                  <div className="w-6 h-6 border-2 border-cream-300 border-t-bark-600 rounded-full animate-spin" />
                 </div>
-              )}
-
-              {/* Cert badges — below the photo, above the info text */}
-              {modalCerts.length > 0 && (
-                <div className="px-5 pb-2 pt-2 border-t border-cream-100">
-                  <CertBadges certs={modalCerts} />
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  {(modalGallery.length > 0 ? modalGallery : [null]).map((img, idx) => (
+                    <div key={img?.id ?? idx} className="relative w-full overflow-hidden bg-cream-200" style={{ aspectRatio: '3/4' }}>
+                      {img
+                        ? <Image src={img.image_url} alt={img.label ?? modalProduct.name} fill className="object-cover" sizes="(max-width:1023px) 50vw, 28vw" />
+                        : modalMainSrc
+                          ? <Image src={modalMainSrc} alt={modalProduct.name} fill className="object-cover" sizes="(max-width:1023px) 50vw, 28vw" />
+                          : <div className="absolute inset-0 flex items-center justify-center text-7xl"><span className="select-none">{modalProduct.imageEmoji}</span></div>}
+                    </div>
+                  ))}
+                  {modalVideo && (
+                    <div className="relative w-full overflow-hidden bg-cream-200" style={{ aspectRatio: '3/4' }}>
+                      <video src={modalVideo} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover" />
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -687,7 +642,26 @@ export default function BuildPage() {
                   {modalProduct.tag}
                 </span>
               )}
-              <div className="border-t border-cream-300 pt-4 mb-4">
+
+              {/* Certificate collection — in the trust-banner position, keeping the
+                  dividers. Falls back to the shipping/handcrafted/gift-ready badges
+                  for products without certifications. */}
+              <div className="border-t border-b border-cream-300 py-4 mb-4">
+                {(modalCerts.length > 0 || modalProduct.organic) ? (
+                  <CertBadges certs={modalCerts} organic={modalProduct.organic} />
+                ) : (
+                  <div className="flex items-start justify-between">
+                    {[{ label: 'Free Shipping', sub: '$150+' }, { label: 'Handcrafted', sub: 'with care' }, { label: 'Gift Ready', sub: 'wax seal' }].map(({ label, sub }) => (
+                      <div key={label} className="flex-1 text-center">
+                        <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
+                        <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="mb-4">
                 <p className="text-base text-bark-600 leading-relaxed" style={{ fontFamily: 'var(--font-cormorant)' }}>
                   {cleanGots(modalProduct.description)}
                 </p>

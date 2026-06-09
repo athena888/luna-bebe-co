@@ -34,6 +34,12 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   { key: 'boxes.custom_cta_bg', label: 'Ready-Made — "Build your own" CTA background', group: 'Page Backgrounds', ratio: '21:9', hint: 'Wide & soft, ~2000×860' },
   { key: 'footer.bg',           label: 'Footer — Background',                   group: 'Page Backgrounds', ratio: '21:9', hint: 'Wide & soft, ~2000×860 — sits behind the whole footer' },
 
+  // Ready-Made (/boxes) per-edition full-screen backgrounds — stay fixed while
+  // each edition's box cards scroll over them (desktop). One per edition.
+  { key: 'boxes.bg.summer',     label: 'Ready-Made — Summer edition background',     group: 'Ready-Made Editions', ratio: '16:9', hint: 'Full-screen backdrop, ~2400×1600' },
+  { key: 'boxes.bg.all-season', label: 'Ready-Made — All Season edition background', group: 'Ready-Made Editions', ratio: '16:9', hint: 'Full-screen backdrop, ~2400×1600' },
+  { key: 'boxes.bg.winter',     label: 'Ready-Made — Winter edition background',     group: 'Ready-Made Editions', ratio: '16:9', hint: 'Full-screen backdrop, ~2400×1600' },
+
   // Misc
   { key: 'giftcard.visual', label: 'Gift Card — Visual',   group: 'Misc',  ratio: '3:2',  hint: 'Gift card art, ~1200×800' },
   { key: 'global.logo',     label: 'Global — Logo / Seal', group: 'Misc',  ratio: '1:1',  hint: 'Square seal/logo, transparent PNG, ~600×600 — shown in the header & footer' },

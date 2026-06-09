@@ -90,6 +90,7 @@ export default function BoxEditorPage() {
   const [products, setProducts] = useState<CatalogProduct[]>([])
   const [slots, setSlots] = useState<BoxSlot[]>([])
   const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
   const [customPrice, setCustomPrice] = useState('')
   const [showCustomPrice, setShowCustomPrice] = useState(true) // toggle: custom vs calculated
   const [images, setImages] = useState<string[]>([])
@@ -113,6 +114,7 @@ export default function BoxEditorPage() {
       const { box } = await boxRes.json()
       setBox(box)
       setName(box.name)
+      setDescription(box.description ?? '')
       setCustomPrice(box.customPrice != null ? (box.customPrice / 100).toFixed(2) : '')
       setImages(box.images ?? (box.image ? [box.image] : []))
       setFeatured(box.featured)
@@ -222,6 +224,7 @@ export default function BoxEditorPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name,
+        description,
         images,
         featured,
         active,
@@ -266,6 +269,20 @@ export default function BoxEditorPage() {
           <div>
             <label className={labelCls}>Name</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)} className={inputCls} />
+          </div>
+          <div>
+            <div className="flex items-center justify-between">
+              <label className={labelCls}>Description (shown on the /boxes card)</label>
+              <span className={`font-sans text-[10px] ${description.length > 240 ? 'text-red-500' : 'text-bark-400'}`}>{description.length}/240</span>
+            </div>
+            <textarea
+              value={description}
+              onChange={e => setDescription(e.target.value.slice(0, 240))}
+              maxLength={240}
+              rows={3}
+              placeholder="A short, evocative line or two — kept brief so it fits the card without scrolling."
+              className={inputCls + ' resize-none leading-relaxed'}
+            />
           </div>
           <div>
             <label className={labelCls}>Pricing</label>

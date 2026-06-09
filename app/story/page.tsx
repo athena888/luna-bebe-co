@@ -4,6 +4,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { getSiteImages } from '@/lib/site-images'
 import { LogoMark } from '@/components/ui/LogoMark'
+import { SocialFeed } from '@/components/ui/SocialFeed'
 
 export const metadata: Metadata = {
   title: 'Our Story',
@@ -238,6 +239,9 @@ export default async function StoryPage() {
             </a>
           </div>
         </div>
+
+        {/* Social feed — merged in from the old /social page */}
+        <SocialFeed />
 
         {/* Final CTA */}
         <div className="border-t border-cream-300 bg-bark-600">

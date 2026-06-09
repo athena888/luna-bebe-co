@@ -2,8 +2,9 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Leaf, X, ChevronDown } from 'lucide-react'
+import { SlotImage } from './SlotImage'
 import type { ResolvedBox, BoxItem } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
 
@@ -167,14 +168,14 @@ function ItemsModal({ box, onClose }: { box: ResolvedBox; onClose: () => void })
 function BoxCard({ box, style, onOpenItems }: { box: ResolvedBox; style: string; onOpenItems: (b: ResolvedBox) => void }) {
   const src = box.image
   return (
-    <div id={`box-${box.slug}`} className="bg-cream-50 border border-cream-200 overflow-hidden scroll-mt-24">
+    <div id={`box-${box.slug}`} className="snap-center bg-cream-50 border border-cream-200 overflow-hidden scroll-mt-24 shadow-sm">
 
       {/* ── Desktop: What's Inside (1-col scroll) · square gallery · name+desc+price+buy ── */}
       <div className="hidden lg:grid lg:grid-cols-[1fr_1.5fr_1.05fr] lg:grid-rows-[minmax(0,1fr)] h-[82vh] max-h-[760px]">
-        {/* Left — What's Inside, single column, bigger thumbnails, scrollable */}
+        {/* Left — What's Inside, single column, bigger thumbnails, scrollable (visible scrollbar) */}
         <div className="flex flex-col h-full min-h-0 p-8 xl:p-10 border-r border-cream-200">
           <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-4 shrink-0">What&apos;s Inside</p>
-          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide -mr-2 pr-2">
+          <div className="flex-1 min-h-0 overflow-y-auto pr-3">
             <ItemColumns box={box} big />
           </div>
         </div>
@@ -184,16 +185,14 @@ function BoxCard({ box, style, onOpenItems }: { box: ResolvedBox; style: string;
           <BoxGallery images={box.images?.length ? box.images : (src ? [src] : [])} name={box.name} variant={box.variant} />
         </div>
 
-        {/* Right — name + description + price + buy */}
-        <div className="flex flex-col h-full min-h-0 p-8 xl:p-10 border-l border-cream-200">
-          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide flex flex-col justify-center">
-            <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 mb-2">{style}</p>
-            <h2 className="font-serif text-4xl text-bark-600 mb-3 leading-tight">{box.name}</h2>
-            <p className="font-cormorant text-xl italic text-bark-400 mb-5 leading-snug">{box.tagline}</p>
-            {box.description && <p className="font-sans text-sm text-bark-600 leading-relaxed">{box.description}</p>}
-            {box.aesthetic && <p className="font-sans text-[11px] text-bark-300 mt-4 tracking-wide">{box.aesthetic}</p>}
-          </div>
-          <div className="shrink-0 pt-5 mt-5 border-t border-cream-200 space-y-4">
+        {/* Right — name + description + price + buy, vertically centered so it fits without scrolling */}
+        <div className="flex flex-col justify-center h-full overflow-hidden p-8 xl:p-10 border-l border-cream-200">
+          <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 mb-2">{style}</p>
+          <h2 className="font-serif text-4xl text-bark-600 mb-3 leading-tight">{box.name}</h2>
+          <p className="font-cormorant text-xl italic text-bark-400 mb-4 leading-snug">{box.tagline}</p>
+          {box.description && <p className="font-sans text-sm text-bark-600 leading-relaxed">{box.description}</p>}
+          {box.aesthetic && <p className="font-sans text-[11px] text-bark-300 mt-3 tracking-wide">{box.aesthetic}</p>}
+          <div className="mt-6 pt-5 border-t border-cream-200 space-y-4">
             <PriceBlock box={box} />
             <BuyBox items={box.items} />
           </div>
@@ -233,12 +232,25 @@ function editionSlug(s: string) {
 export function AestheticBoxes({ byStyle }: { byStyle: Array<{ style: string; boxes: ResolvedBox[] }> }) {
   const [openBox, setOpenBox] = useState<ResolvedBox | null>(null)
   const [jumpOpen, setJumpOpen] = useState(false)
+
+  // Desktop only: gently snap box cards to center (proximity keeps scrolling
+  // free). Set on the page scroller; restore on unmount. Skipped on mobile and
+  // when the visitor prefers reduced motion.
+  useEffect(() => {
+    if (!window.matchMedia('(min-width: 1024px)').matches) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const el = document.documentElement
+    const prev = el.style.scrollSnapType
+    el.style.scrollSnapType = 'y proximity'
+    return () => { el.style.scrollSnapType = prev }
+  }, [])
+
   return (
-    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-14 space-y-12">
-      {/* Edition jump menu — only when there's more than one edition to jump between */}
+    <div className="relative">
+      {/* Edition jump menu — floats top-right, doesn't block the page below it */}
       {byStyle.length > 1 && (
-        <div className="sticky top-3 z-30 flex justify-end -mb-6">
-          <div className="relative">
+        <div className="sticky top-3 z-40 max-w-[1600px] mx-auto px-4 sm:px-6 flex justify-end pointer-events-none">
+          <div className="relative pointer-events-auto">
             <button
               onClick={() => setJumpOpen(o => !o)}
               onBlur={() => setTimeout(() => setJumpOpen(false), 120)}
@@ -248,7 +260,7 @@ export function AestheticBoxes({ byStyle }: { byStyle: Array<{ style: string; bo
               <ChevronDown size={14} className={`transition-transform ${jumpOpen ? 'rotate-180' : ''}`} />
             </button>
             {jumpOpen && (
-              <div className="absolute right-0 mt-2 z-30 bg-cream-50 border border-cream-200 shadow-xl min-w-[200px] py-1">
+              <div className="absolute right-0 mt-2 z-40 bg-cream-50 border border-cream-200 shadow-xl min-w-[200px] py-1">
                 {byStyle.map(({ style }) => (
                   <a
                     key={style}
@@ -265,17 +277,31 @@ export function AestheticBoxes({ byStyle }: { byStyle: Array<{ style: string; bo
         </div>
       )}
 
-      {byStyle.map(({ style, boxes }) => (
-        <div key={style} id={`edition-${editionSlug(style)}`} className="scroll-mt-24">
-          <div className="mb-6 pb-4 border-b border-cream-300 flex items-baseline gap-4">
-            <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400">{style}</p>
-            <p className="font-sans text-[10px] text-bark-300">{boxes[0]?.aesthetic}</p>
-          </div>
-          <div className="space-y-10">
-            {boxes.map(box => <BoxCard key={box.slug} box={box} style={style} onOpenItems={setOpenBox} />)}
-          </div>
-        </div>
-      ))}
+      {byStyle.map(({ style, boxes }) => {
+        const slug = editionSlug(style)
+        return (
+          <section key={style} id={`edition-${slug}`} className="relative scroll-mt-4">
+            {/* Per-edition background — owner-managed (Site Images: boxes.bg.<edition>).
+                Desktop only: stays put (sticky) while the cards scroll, then the next
+                edition's background takes over. Cream fallback when unset. */}
+            <div className="hidden lg:block sticky top-0 h-screen overflow-hidden bg-cream-100">
+              <SlotImage slotKey={`boxes.bg.${slug}`} className="absolute inset-0" imgClassName="w-full h-full object-cover" />
+            </div>
+            {/* Cards pulled up over the background (desktop); normal flow on mobile. */}
+            <div className="relative z-10 lg:-mt-[100vh]">
+              <div className="max-w-[1600px] mx-auto px-4 sm:px-6 pt-8 lg:pt-16 pb-12 lg:pb-16">
+                <div className="mb-6 inline-flex items-baseline gap-4 bg-cream-50/90 backdrop-blur-sm px-5 py-3 rounded-lg shadow-sm">
+                  <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-500">{style}</p>
+                  {boxes[0]?.aesthetic && <p className="font-sans text-[10px] text-bark-400">{boxes[0].aesthetic}</p>}
+                </div>
+                <div className="space-y-10">
+                  {boxes.map(box => <BoxCard key={box.slug} box={box} style={style} onOpenItems={setOpenBox} />)}
+                </div>
+              </div>
+            </div>
+          </section>
+        )
+      })}
       {openBox && <ItemsModal box={openBox} onClose={() => setOpenBox(null)} />}
     </div>
   )
