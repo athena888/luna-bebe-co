@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { getProductById, FEATURED_IDS } from '@/lib/products'
@@ -10,7 +9,10 @@ import { EditorialFeature } from '@/components/ui/EditorialFeature'
 import { EditorialStrip } from '@/components/ui/EditorialStrip'
 import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
+import { RotatingImage } from '@/components/ui/RotatingImage'
+import { ParallaxLayer } from '@/components/ui/ParallaxLayer'
 import { getHomeContent } from '@/lib/home-content'
+import { getHomeGalleries } from '@/lib/site-images'
 import { Package, PenLine, Leaf, Heart, Truck } from 'lucide-react'
 
 // Icons for the under-hero perks bar, mapped by index to the default perks.
@@ -76,7 +78,9 @@ async function getCollectionsData() {
 }
 
 export default async function HomePage() {
-  const [featured, collectionsData, content] = await Promise.all([getBestsellers(), getCollectionsData(), getHomeContent()])
+  const [featured, collectionsData, content, galleries] = await Promise.all([
+    getBestsellers(), getCollectionsData(), getHomeContent(), getHomeGalleries(['hero', 'box', 'brand', 'inside']),
+  ])
 
   return (
     <>
@@ -85,14 +89,9 @@ export default async function HomePage() {
 
         {/* ── 1. Hero ── */}
         <section className="relative w-full min-h-[85vh] sm:min-h-[92vh] bg-cream-200 flex items-end overflow-hidden">
-          <Image
-            src={homeImg('hero')}
-            alt="Petite Lavande — Timeless Moments, Made With Love"
-            fill
-            className="object-cover object-center"
-            priority
-            unoptimized
-          />
+          <ParallaxLayer>
+            <RotatingImage urls={galleries.hero} alt="Petite Lavande — Timeless Moments, Made With Love" />
+          </ParallaxLayer>
           <div className="absolute inset-0 bg-gradient-to-t from-bark-800/40 via-transparent to-transparent" />
           <div className="relative z-10 w-full px-6 sm:px-12 pb-10 sm:pb-14 flex justify-end">
             <div className="w-full max-w-[300px] sm:max-w-sm text-right">
@@ -168,7 +167,7 @@ export default async function HomePage() {
           {content.why.features.map((f, i) => {
             const bullets = f.bullets.filter(b => b.trim())
             return (
-              <EditorialFeature key={i} image={homeImg(f.slot)} alt={f.eyebrow || 'Petite Lavande'} side={i % 2 === 0 ? 'left' : 'right'}>
+              <EditorialFeature key={i} images={galleries[f.slot] ?? [homeImg(f.slot)]} alt={f.eyebrow || 'Petite Lavande'} side={i % 2 === 0 ? 'left' : 'right'}>
                 {f.eyebrow && <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">{f.eyebrow}</p>}
                 <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-bark-600 leading-[1.05] mb-5 whitespace-pre-line">{f.title}</h2>
                 <p className="font-cormorant text-lg text-bark-400 leading-loose whitespace-pre-line">{f.body}</p>
@@ -233,13 +232,7 @@ export default async function HomePage() {
 
         {/* ── 9. Dark CTA — now carries the three steps ── */}
         <section className="relative py-10 sm:py-14 px-6 text-center overflow-hidden bg-bark-600">
-          <Image
-            src={homeImg('box')}
-            alt="Petite Lavande gift box"
-            fill
-            className="object-cover object-center opacity-40"
-            unoptimized
-          />
+          <RotatingImage urls={galleries.box} alt="Petite Lavande gift box" className="opacity-40" />
           <div className="relative z-10 max-w-3xl mx-auto">
             <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-5">Begin</p>
             <h2 className="font-serif text-4xl sm:text-5xl text-cream-50 leading-tight mb-2">

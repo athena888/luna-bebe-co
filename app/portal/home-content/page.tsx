@@ -1,11 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { Loader, Plus, Trash2, Check, Upload, Sparkles } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Loader, Plus, Trash2, Check, Sparkles } from 'lucide-react'
 import type { HomeContent, Perk, FeatureBlock, Review } from '@/lib/home-content'
-import { ImageSlotCard, VideoSlotCard, BestsellerManager } from '@/components/portal/HomeMediaWidgets'
-
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+import { ImageSlotCard, VideoSlotCard, BestsellerManager, GallerySlot } from '@/components/portal/HomeMediaWidgets'
 
 // ── AI copy assistant ────────────────────────────────────────────────────────
 // A small ✨ button that asks Claude (brand voice) for a few on-brand options
@@ -136,44 +134,6 @@ function SectionTitle({ n, title, note }: { n: string; title: string; note?: str
   )
 }
 
-// Inline photo uploader for an editorial feature — writes straight to the
-// home-images slot so the picture sits next to its copy.
-function FeatureImage({ slot }: { slot: string }) {
-  const [url, setUrl] = useState(`${SUPABASE_URL}/storage/v1/object/public/home-images/${slot}.jpg`)
-  const [exists, setExists] = useState(true)
-  const [busy, setBusy] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  async function handleFile(file: File) {
-    setBusy(true)
-    try {
-      const form = new FormData()
-      form.append('file', file)
-      form.append('slot', slot)
-      const res = await fetch('/api/portal/home-images/upload', { method: 'POST', body: form })
-      const data = await res.json()
-      if (data.url) { setUrl(data.url + `?t=${Date.now()}`); setExists(true) }
-    } finally { setBusy(false) }
-  }
-
-  return (
-    <div
-      className="relative aspect-[3/4] bg-cream-100 rounded-lg overflow-hidden cursor-pointer border border-cream-200 group"
-      onClick={() => inputRef.current?.click()}
-      onDragOver={e => e.preventDefault()}
-      onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f) }}
-    >
-      {exists
-        ? <img src={url} alt="" className="w-full h-full object-cover" onError={() => setExists(false)} />
-        : <div className="absolute inset-0 flex items-center justify-center text-bark-300"><Upload size={20} /></div>}
-      <div className="absolute inset-0 bg-bark-600/0 group-hover:bg-bark-600/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-        {busy ? <Loader size={18} className="text-white animate-spin" /> : <span className="font-sans text-[10px] tracking-[0.2em] uppercase text-white">{exists ? 'Replace' : 'Upload'}</span>}
-      </div>
-      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = '' }} />
-    </div>
-  )
-}
-
 // ── Box picker — which prebuilt boxes appear in the homepage carousel ────────
 interface BoxLite { slug: string; name: string; variant: string; image?: string | null; featured: boolean; active: boolean; style: string }
 
@@ -266,8 +226,8 @@ function HomepageEditor() {
     <>
       {/* 1 · Hero */}
       <section className="mb-12">
-        <SectionTitle n="1" title="Hero" note="Full-width banner at the very top of the homepage." />
-        <div className="max-w-2xl"><ImageSlotCard wide slotKey="hero" label="Hero Image" description="Landscape — the box centered, lifestyle feel. ~2400×1400." /></div>
+        <SectionTitle n="1" title="Hero" note="Full-width banner at the very top of the homepage. Add several photos to cross-fade them." />
+        <div className="max-w-2xl"><GallerySlot wide slot="hero" label="Hero Image(s)" description="Landscape — the box centered, lifestyle feel. ~2400×1400." /></div>
       </section>
 
       {/* 2 · Perks bar */}
@@ -311,12 +271,8 @@ function HomepageEditor() {
         </div>
         <div className="space-y-4">
           {c.why.features.map((f, i) => (
-            <div key={i} className="bg-white border border-cream-200 rounded-lg p-4 grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-4">
-              <div>
-                <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400">Photo {i + 1}{i === 0 ? ' · left' : ' · right'}</span>
-                <div className="mt-1.5"><FeatureImage slot={f.slot} /></div>
-                <p className="font-sans text-[9px] text-bark-400/70 mt-1.5">Click or drop a photo — saves instantly.</p>
-              </div>
+            <div key={i} className="bg-white border border-cream-200 rounded-lg p-4 space-y-4">
+              <GallerySlot slot={f.slot} label={`Photo${' '}${i + 1} · shown ${i === 0 ? 'left' : 'right'}`} description="Add one or more — they cross-fade on the homepage." />
               <div className="space-y-3">
                 <Field label="Eyebrow (small caps)" value={f.eyebrow} onChange={v => setFeature(i, { eyebrow: v })} ai={{ kind: 'eyebrow', context: 'the eyebrow label for an editorial feature block' }} />
                 <Area label="Title (press Enter for a line break)" value={f.title} onChange={v => setFeature(i, { title: v })} rows={2} ai={{ kind: 'title', context: 'the headline for an editorial feature block about the brand' }} />
@@ -366,8 +322,8 @@ function HomepageEditor() {
 
       {/* 9 · Final CTA */}
       <section className="mb-12">
-        <SectionTitle n="9" title="Final CTA background" note="Dark full-width section near the bottom — image shows at ~40% opacity." />
-        <div className="max-w-xs"><ImageSlotCard slotKey="box" label="CTA Background" description="Cream box with ribbon — dark/moody works best. ~1600×900." /></div>
+        <SectionTitle n="9" title="Final CTA background" note="Dark full-width section near the bottom — image shows at ~40% opacity. Add several to cross-fade." />
+        <div className="max-w-md"><GallerySlot slot="box" label="CTA Background(s)" description="Cream box with ribbon — dark/moody works best. ~1600×900." /></div>
       </section>
 
       {/* Save bar (text only — photos & box picker save on their own) */}

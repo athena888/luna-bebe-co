@@ -34,18 +34,19 @@ function BuyBox({ items }: { items: BoxItem[] }) {
 }
 
 // One product line — the whole row links to the product page (the "shortcut").
-function ItemEntry({ item }: { item: BoxItem }) {
+// `big` enlarges the thumbnail + name for the single-column desktop list.
+function ItemEntry({ item, big = false }: { item: BoxItem; big?: boolean }) {
   const src = productImg(item)
   return (
     <Link href={`/products/${item.id}`} className="group flex items-center gap-3">
-      <div className="relative w-14 h-16 shrink-0 overflow-hidden bg-cream-100 border border-cream-200">
+      <div className={`relative ${big ? 'w-24 h-28' : 'w-14 h-16'} shrink-0 overflow-hidden bg-cream-100 border border-cream-200`}>
         {src
           ? <img src={src} alt={item.name} className="w-full h-full object-cover" />
           : <span className="absolute inset-0 flex items-center justify-center text-lg">{item.imageEmoji}</span>}
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-2">
-          <p className="font-sans text-xs text-bark-600 leading-snug group-hover:text-bark-800 line-clamp-2">{item.name}</p>
+          <p className={`font-sans ${big ? 'text-sm' : 'text-xs'} text-bark-600 leading-snug group-hover:text-bark-800 line-clamp-2`}>{item.name}</p>
           <span className="font-sans text-[11px] text-bark-500 shrink-0">{fmt(item.price)}</span>
         </div>
         <div className="flex items-center gap-2 flex-wrap mt-0.5">
@@ -60,33 +61,58 @@ function ItemEntry({ item }: { item: BoxItem }) {
 // Contents split into clear "For Baby" / "For Mama" parts (two columns on wider
 // space, stacked on phones). Uses the item's audience when the box editor set
 // it; otherwise infers Mama from the product category (mom / postpartum / etc.).
-function ItemColumns({ box }: { box: ResolvedBox }) {
+function ItemColumns({ box, big = false }: { box: ResolvedBox; big?: boolean }) {
   const isMama = (i: BoxItem) =>
     i.audience === 'mama' ||
     (!i.audience && /\b(mom|mama|mother|matern|postpartum|self.?care)\b/i.test(i.category ?? ''))
   const baby = box.items.filter(i => !isMama(i))
   const mama = box.items.filter(isMama)
 
-  // Audience sections stack vertically (For Baby, then For Mama); within each
-  // section the items flow in two columns. Keeps each section compact even when
-  // one audience has far more items than the other.
+  // Audience sections stack vertically (For Baby, then For Mama). `big` (desktop
+  // left rail) forces a single column with larger thumbnails; otherwise items
+  // flow in two columns (mobile modal) to stay compact.
+  const grid = big ? 'grid grid-cols-1 gap-y-4' : 'grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-3'
   return (
     <div className="space-y-6">
       {baby.length > 0 && (
         <div>
           <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">For Baby</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-3">
-            {baby.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} />)}
+          <div className={grid}>
+            {baby.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} big={big} />)}
           </div>
         </div>
       )}
       {mama.length > 0 && (
         <div>
           <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">For Mama</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-3">
-            {mama.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} />)}
+          <div className={grid}>
+            {mama.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} big={big} />)}
           </div>
         </div>
+      )}
+    </div>
+  )
+}
+
+// Square, swipeable photo gallery for a box — consistent (aspect-square) size to
+// match the old detail page; horizontal scroll-snap reveals extra uploaded photos.
+function BoxGallery({ images, name, variant }: { images: string[]; name: string; variant: ResolvedBox['variant'] }) {
+  return (
+    <div className="relative w-full aspect-square max-h-full bg-cream-200">
+      {images.length > 0 ? (
+        <div className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scrollbar-hide">
+          {images.map((src, i) => (
+            <img key={i} src={src} alt={`${name} — photo ${i + 1}`} className="w-full h-full shrink-0 snap-center object-cover" />
+          ))}
+        </div>
+      ) : (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-bark-300">
+          <div className="w-8 h-px bg-gold-400" /><span className="font-script text-2xl text-bark-400">Petite Lavande</span><div className="w-8 h-px bg-gold-400" />
+        </div>
+      )}
+      <span className={`absolute top-3 right-3 font-sans text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-full capitalize ${variantBadge(variant)}`}>{variant}</span>
+      {images.length > 1 && (
+        <span className="absolute bottom-3 right-3 bg-cream-50/85 text-bark-600 font-sans text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-full">{images.length} photos · swipe →</span>
       )}
     </div>
   )
@@ -143,35 +169,34 @@ function BoxCard({ box, style, onOpenItems }: { box: ResolvedBox; style: string;
   return (
     <div id={`box-${box.slug}`} className="bg-cream-50 border border-cream-200 overflow-hidden scroll-mt-24">
 
-      {/* ── Desktop: contents · image · name+description ── */}
-      <div className="hidden lg:grid lg:grid-cols-[1.25fr_1.2fr_0.85fr] lg:grid-rows-[minmax(0,1fr)] h-[82vh] max-h-[760px]">
-        {/* Left — contents (scrollable) + price + buy */}
-        <div className="flex flex-col h-full min-h-0 p-8 xl:p-10">
+      {/* ── Desktop: What's Inside (1-col scroll) · square gallery · name+desc+price+buy ── */}
+      <div className="hidden lg:grid lg:grid-cols-[1fr_1.5fr_1.05fr] lg:grid-rows-[minmax(0,1fr)] h-[82vh] max-h-[760px]">
+        {/* Left — What's Inside, single column, bigger thumbnails, scrollable */}
+        <div className="flex flex-col h-full min-h-0 p-8 xl:p-10 border-r border-cream-200">
           <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-4 shrink-0">What&apos;s Inside</p>
           <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide -mr-2 pr-2">
-            <ItemColumns box={box} />
+            <ItemColumns box={box} big />
+          </div>
+        </div>
+
+        {/* Middle — square photo gallery (consistent size, swipeable) */}
+        <div className="h-full bg-cream-200 flex items-center justify-center overflow-hidden">
+          <BoxGallery images={box.images?.length ? box.images : (src ? [src] : [])} name={box.name} variant={box.variant} />
+        </div>
+
+        {/* Right — name + description + price + buy */}
+        <div className="flex flex-col h-full min-h-0 p-8 xl:p-10 border-l border-cream-200">
+          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide flex flex-col justify-center">
+            <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 mb-2">{style}</p>
+            <h2 className="font-serif text-4xl text-bark-600 mb-3 leading-tight">{box.name}</h2>
+            <p className="font-cormorant text-xl italic text-bark-400 mb-5 leading-snug">{box.tagline}</p>
+            {box.description && <p className="font-sans text-sm text-bark-600 leading-relaxed">{box.description}</p>}
+            {box.aesthetic && <p className="font-sans text-[11px] text-bark-300 mt-4 tracking-wide">{box.aesthetic}</p>}
           </div>
           <div className="shrink-0 pt-5 mt-5 border-t border-cream-200 space-y-4">
             <PriceBlock box={box} />
             <BuyBox items={box.items} />
           </div>
-        </div>
-
-        {/* Middle — image (fixed height, object-cover → uniform regardless of upload) */}
-        <div className="relative h-full bg-cream-200">
-          {src
-            ? <img src={src} alt={box.name} className="absolute inset-0 w-full h-full object-cover" />
-            : <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-bark-300"><div className="w-8 h-px bg-gold-400" /><span className="font-script text-2xl text-bark-400">Petite Lavande</span><div className="w-8 h-px bg-gold-400" /></div>}
-          <span className={`absolute top-3 right-3 font-sans text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-full capitalize ${variantBadge(box.variant)}`}>{box.variant}</span>
-        </div>
-
-        {/* Right — name + description */}
-        <div className="flex flex-col justify-center overflow-y-auto scrollbar-hide p-8 xl:p-10">
-          <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 mb-2">{style}</p>
-          <h2 className="font-serif text-4xl text-bark-600 mb-3 leading-tight">{box.name}</h2>
-          <p className="font-cormorant text-xl italic text-bark-400 mb-5 leading-snug">{box.tagline}</p>
-          {box.description && <p className="font-sans text-sm text-bark-600 leading-relaxed">{box.description}</p>}
-          {box.aesthetic && <p className="font-sans text-[11px] text-bark-300 mt-4 tracking-wide">{box.aesthetic}</p>}
         </div>
       </div>
 

@@ -38,7 +38,7 @@ export default function ShopPage() {
       <main className="min-h-screen bg-cream-50">
 
         {/* Hero */}
-        <SlotBackground slotKey="shop.header_bg" className="border-b border-cream-300 px-6 py-16 text-center">
+        <SlotBackground slotKey="shop.header_bg" parallax className="border-b border-cream-300 px-6 py-16 text-center">
           <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">Curated Styles</p>
           <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-4">Gift Box Catalog</h1>
           <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">

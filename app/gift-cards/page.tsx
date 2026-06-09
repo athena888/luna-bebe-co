@@ -54,16 +54,18 @@ export default function GiftCardsPage() {
     <>
       <Header />
       <main className="min-h-screen bg-cream-50">
-        <SlotBackground slotKey="giftcards.header_bg" scrim="bg-cream-50/85" className="border-b border-cream-300 px-6 py-24 sm:py-32 text-center">
-          <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">The Perfect Gift</p>
-          <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-2">Gift Cards</h1>
-          <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">
-            Can't decide? Give the gift of choice. Your recipient builds their own Petite Lavande box with your love.
-          </p>
-        </SlotBackground>
-
-        <div className="max-w-4xl mx-auto px-6 py-14">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-14">
+        <SlotBackground slotKey="giftcards.header_bg" scrim="bg-cream-50/55" className="px-6 pt-16 pb-14 sm:pt-20">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center">
+              <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">The Perfect Gift</p>
+              <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-2">Gift Cards</h1>
+              <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">
+                Can't decide? Give the gift of choice. Your recipient builds their own Petite Lavande box with your love.
+              </p>
+            </div>
+            {/* single divider between the intro and the form — one panel, no second band */}
+            <div className="my-10 border-t border-cream-300" />
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-14">
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-8">
@@ -161,8 +163,9 @@ export default function GiftCardsPage() {
                 </div>
               </div>
             </div>
+            </div>
           </div>
-        </div>
+        </SlotBackground>
       </main>
       <Footer />
     </>

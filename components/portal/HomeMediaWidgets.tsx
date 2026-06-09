@@ -7,7 +7,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
-import { Upload, CheckCircle, Loader, Video, RotateCcw, Trash2 } from 'lucide-react'
+import { Upload, CheckCircle, Loader, Video, RotateCcw, Trash2, Plus, ArrowUp } from 'lucide-react'
 import { CATEGORY_LABELS } from '@/lib/products'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
@@ -17,6 +17,102 @@ function getStorageUrl(slot: string) {
 }
 
 type UploadState = 'idle' | 'uploading' | 'done' | 'error'
+
+// A rotating gallery slot — add several photos, choose which shows first, and
+// they cross-fade on the homepage every few seconds. Backed by the per-slot
+// /api/portal/home-gallery endpoint (site_images rows under `home.<slot>`).
+export function GallerySlot({ slot, label, description, wide = false }: {
+  slot: string
+  label: string
+  description: string
+  wide?: boolean
+}) {
+  const [images, setImages] = useState<{ id: string; url: string }[]>([])
+  const [loading, setLoading] = useState(true)
+  const [busy, setBusy] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const ratio = wide ? '16/9' : '4/3'
+
+  async function load() {
+    setLoading(true)
+    try {
+      const r = await fetch(`/api/portal/home-gallery?slot=${encodeURIComponent(slot)}`)
+      const d = await r.json()
+      setImages(d.images ?? [])
+    } finally { setLoading(false) }
+  }
+  useEffect(() => { load() }, [slot]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function add(file: File) {
+    setBusy(true)
+    try {
+      const form = new FormData(); form.append('file', file); form.append('slot', slot)
+      await fetch('/api/portal/home-gallery', { method: 'POST', body: form })
+      await load()
+    } finally { setBusy(false) }
+  }
+  async function remove(id: string) {
+    setBusy(true)
+    try {
+      await fetch('/api/portal/home-gallery', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+      await load()
+    } finally { setBusy(false) }
+  }
+  async function makeFirst(id: string) {
+    const order = [id, ...images.filter(i => i.id !== id).map(i => i.id)]
+    setBusy(true)
+    try {
+      await fetch('/api/portal/home-gallery', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ order }) })
+      await load()
+    } finally { setBusy(false) }
+  }
+
+  return (
+    <div className="bg-cream-50 border border-cream-200 rounded-xl p-4">
+      <div className="flex items-start justify-between gap-2 mb-3">
+        <div className="min-w-0">
+          <p className="font-sans text-xs font-medium text-bark-600">{label}</p>
+          {description && <p className="font-sans text-[10px] text-bark-400 mt-0.5 leading-relaxed">{description}</p>}
+        </div>
+        {images.length > 1 && <span className="font-sans text-[9px] tracking-[0.15em] uppercase text-gold-500 shrink-0">Rotates · 5s</span>}
+      </div>
+      {loading ? (
+        <div className="flex items-center gap-2 text-bark-400 py-4 text-xs"><Loader size={12} className="animate-spin" /> Loading…</div>
+      ) : (
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          {images.map((img, i) => (
+            <div key={img.id} className="relative group rounded-lg overflow-hidden border border-cream-200" style={{ aspectRatio: ratio }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={img.url} alt="" className="w-full h-full object-cover" />
+              {i === 0 && <span className="absolute top-1 left-1 bg-gold-400/90 text-bark-800 font-sans text-[7px] tracking-[0.1em] uppercase px-1.5 py-0.5 rounded-full">First</span>}
+              <div className="absolute inset-0 bg-bark-700/0 group-hover:bg-bark-700/45 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                {i !== 0 && (
+                  <button type="button" onClick={() => makeFirst(img.id)} title="Make first" className="bg-cream-50/90 rounded-full p-1.5 text-bark-600 hover:text-bark-800">
+                    <ArrowUp size={12} />
+                  </button>
+                )}
+                <button type="button" onClick={() => remove(img.id)} title="Remove" className="bg-cream-50/90 rounded-full p-1.5 text-bark-600 hover:text-red-500">
+                  <Trash2 size={12} />
+                </button>
+              </div>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={busy}
+            className="flex flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-cream-300 text-bark-400 hover:border-bark-400 hover:text-bark-600 transition-colors disabled:opacity-50"
+            style={{ aspectRatio: ratio }}
+          >
+            {busy ? <Loader size={16} className="animate-spin" /> : <><Plus size={16} /><span className="font-sans text-[9px] tracking-[0.15em] uppercase">Add</span></>}
+          </button>
+        </div>
+      )}
+      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) add(f); e.target.value = '' }} />
+      <p className="font-sans text-[9px] text-bark-400/70 mt-2">Add several to cross-fade them. “First” shows before it rotates. Saves instantly.</p>
+    </div>
+  )
+}
 
 export function ImageSlotCard({
   slotKey, label, description, wide = false,

@@ -69,7 +69,7 @@ export default function GuidePage() {
     <>
       <Header />
       <main className="min-h-screen bg-cream-100">
-        <SlotBackground slotKey="guide.header_bg" className="px-4 sm:px-6 pt-14 pb-10 text-center">
+        <SlotBackground slotKey="guide.header_bg" parallax className="px-4 sm:px-6 pt-14 pb-10 text-center">
           <p className="text-[10px] font-sans font-semibold uppercase tracking-[0.35em] text-gold-400 mb-3">Gift Guide</p>
           <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-3">Find the Perfect Box</h1>
           <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">Answer 4 quick questions and we&rsquo;ll curate the perfect combination just for her.</p>

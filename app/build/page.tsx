@@ -146,7 +146,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
         })()}
       </button>
 
-      <div className={`pb-1 ${soldOut ? 'opacity-40' : ''}`}>
+      <div className={`pt-3.5 pb-1 ${soldOut ? 'opacity-40' : ''}`}>
         <h3 className="font-sans text-sm text-bark-600 leading-snug mb-1">{product.name}</h3>
         <div className="flex items-center justify-between gap-1">
           <span className={`font-sans text-xs text-bark-400 ${soldOut ? 'line-through' : ''}`}>{formatPrice(product.price)}</span>
@@ -439,7 +439,7 @@ export default function BuildPage() {
       <Header />
       <main className="min-h-screen bg-cream-50 pb-16 lg:pb-0">
 
-        <SlotBackground slotKey="build.header_bg" scrim="" className="border-b border-cream-300 bg-cream-50 px-6 py-14 sm:py-20 min-h-[80vh] flex flex-col items-center justify-center text-center">
+        <SlotBackground slotKey="build.header_bg" scrim="" fit="natural" className="border-b border-cream-300 bg-cream-50 px-6 py-14 sm:py-20 min-h-[55vh] flex flex-col items-center justify-center text-center">
           {(hasImage) => (
             <div style={hasImage ? { textShadow: '0 1px 12px rgba(0,0,0,0.35)' } : undefined}>
               <h1 className={`font-serif text-4xl sm:text-5xl mb-2 ${hasImage ? 'text-cream-50' : 'text-bark-600'}`}>Build Your Box</h1>
@@ -459,10 +459,10 @@ export default function BuildPage() {
               <div
                 ref={el => { if (el) scrollRefs.current.set(cat, el); else scrollRefs.current.delete(cat) }}
                 onScroll={() => handleCategoryScroll(cat)}
-                className="flex overflow-x-auto scrollbar-hide gap-5 pl-6 sm:pl-9 pb-2"
+                className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-pl-6 sm:scroll-pl-9 gap-5 px-6 sm:px-9 pb-2"
               >
                 {(catalog[cat] ?? []).map(product => (
-                  <div key={product.id} className="shrink-0 w-[180px] sm:w-[240px]">
+                  <div key={product.id} className="snap-start shrink-0 w-[calc((100%-1.25rem)/2)] sm:w-[calc((100%-3.75rem)/4)]">
                     <ProductCard
                       product={product}
                       selected={isProductSelected(product.id)}
