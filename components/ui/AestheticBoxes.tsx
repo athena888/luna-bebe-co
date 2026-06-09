@@ -119,7 +119,7 @@ function ItemsModal({ box, onClose }: { box: ResolvedBox; onClose: () => void })
           </div>
           <button onClick={onClose} aria-label="Close" className="text-bark-400 hover:text-bark-600 transition-colors -mt-1"><X size={18} /></button>
         </div>
-        <div className="flex-1 overflow-y-auto px-6 py-5">
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5">
           <ItemColumns box={box} />
         </div>
         <div className="shrink-0 px-6 py-4 border-t border-cream-200 space-y-3">
@@ -137,7 +137,7 @@ function BoxCard({ box, style, onOpenItems }: { box: ResolvedBox; style: string;
     <div className="bg-cream-50 border border-cream-200 overflow-hidden">
 
       {/* ── Desktop: name+description · image · contents ── */}
-      <div className="hidden lg:grid lg:grid-cols-[0.85fr_1.2fr_1.25fr] h-[90vh]">
+      <div className="hidden lg:grid lg:grid-cols-[0.85fr_1.2fr_1.25fr] h-[82vh] max-h-[760px]">
         {/* Left — name + description */}
         <div className="flex flex-col justify-center overflow-y-auto scrollbar-hide p-8 xl:p-10">
           <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 mb-2">{style}</p>
