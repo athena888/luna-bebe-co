@@ -6,7 +6,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { PRODUCTS, CATEGORY_LABELS, CATEGORY_ORDER, getAllProducts } from '@/lib/products'
 import type { Product, ProductCategory } from '@/types'
-import { Check, X, Plus, Minus, ShoppingBag, Heart, ShieldCheck, Leaf } from 'lucide-react'
+import { Check, X, Plus, Minus, Heart, ShieldCheck, Leaf } from 'lucide-react'
 import Image from 'next/image'
 import { memo, useCallback, useMemo, useState as useLocalState } from 'react'
 import { toggleWishlist, isWishlisted } from '@/lib/wishlist'
@@ -294,6 +294,22 @@ export default function BuildPage() {
     }
   }, [])
 
+  // The header cart icon opens the bag in place when we're on /build.
+  useEffect(() => {
+    const open = () => setBagOpen(true)
+    window.addEventListener('pl:open-bag', open)
+    return () => window.removeEventListener('pl:open-bag', open)
+  }, [])
+
+  // Keep the persisted cart in sync as the box changes, so the header badge is
+  // always accurate and the selection survives navigation away from /build.
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('pl_box_selection', JSON.stringify(Array.from(selected.values())))
+      window.dispatchEvent(new Event('pl:cart'))
+    } catch { /* ignore */ }
+  }, [selected])
+
   // Load certs for all products in catalog
   useEffect(() => {
     const allProducts = Object.values(catalog).flat()
@@ -493,22 +509,6 @@ export default function BuildPage() {
         </div>
       </main>
       <Footer />
-
-      {/* ── Bag icon — fixed over header right ── */}
-      <button
-        onClick={() => setBagOpen(true)}
-        className="fixed top-0 right-14 sm:right-6 z-[51] h-[68px] flex items-center gap-1 text-bark-600 hover:text-bark-800 transition-colors"
-        aria-label="Open your box"
-      >
-        <div className="relative">
-          <ShoppingBag size={22} strokeWidth={1.5} />
-          {hasItems && (
-            <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-bark-600 text-cream-50 rounded-full text-[9px] font-sans flex items-center justify-center leading-none">
-              {selected.size}
-            </span>
-          )}
-        </div>
-      </button>
 
       {/* ── Bag drawer backdrop ── */}
       <div

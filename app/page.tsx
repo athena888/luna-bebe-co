@@ -142,32 +142,48 @@ export default async function HomePage() {
         {/* ── Curated Gift Sets ── */}
         <PrebuiltBoxesSection />
 
-        {/* ── Why families choose Petite Lavande ── */}
-        <section className="border-t border-cream-300 bg-cream-50 py-16 sm:py-24 px-6 sm:px-8">
-          <div className="max-w-5xl mx-auto text-center">
+        {/* ── What makes it special — editable intro + editorial features, one section ── */}
+        <section className="border-t border-cream-300 bg-cream-50">
+
+          {/* Editable intro */}
+          <div className="max-w-3xl mx-auto text-center px-6 sm:px-8 pt-16 sm:pt-24 pb-6 sm:pb-10">
             <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">{content.why.eyebrow}</p>
             <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600 leading-tight mb-5">{content.why.title}</h2>
-            <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose max-w-2xl mx-auto mb-14">
+            <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose">
               {content.why.intro}
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-8 text-left">
-              {content.why.items.map(({ t, b }) => (
-                <div key={t}>
-                  <div className="w-8 h-px bg-gold-400 mb-5" />
-                  <h3 className="font-serif text-lg text-bark-600 mb-3 leading-snug">{t}</h3>
-                  <p className="font-sans text-xs text-bark-400 leading-loose">{b}</p>
-                </div>
-              ))}
-            </div>
-            <div className="mt-14 flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/build" className="inline-block bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-bark-700 transition-colors">
-                Build Your Box
-              </Link>
-              <Link href="/boxes" className="inline-block border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-bark-600 hover:text-cream-50 transition-colors">
-                Shop Ready-Made
-              </Link>
-            </div>
           </div>
+
+          {/* Feature 1: image flush LEFT — a gift for mama */}
+          <EditorialFeature image={homeImg('brand')} alt="A gift chosen for her" side="left">
+            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">For Mama</p>
+            <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-bark-600 leading-[1.05] mb-5">
+              Not a gift basket.<br />Something for her.
+            </h2>
+            <p className="font-cormorant text-lg text-bark-400 leading-loose">
+              You&apos;re here because someone you love is becoming a mother. Most gifts forget her — ours are built around her. A botanical lavender bouquet to slow the morning down. Quiet French luxuries she&apos;d never buy herself. The kind of gift a daughter would choose for her own mother.
+            </p>
+          </EditorialFeature>
+
+          {/* Feature 2: image flush RIGHT — what's inside */}
+          <EditorialFeature image={homeImg('inside')} alt="Inside a Petite Lavande box" side="right">
+            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">Made With Love</p>
+            <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-bark-600 leading-[1.05] mb-5">
+              From the source,<br />to her.
+            </h2>
+            <p className="font-cormorant text-lg text-bark-400 leading-loose mb-6">
+              Every piece chosen with care and traced to its origin — natural, luxurious, and quietly French. Nothing rushed, nothing filler.
+            </p>
+            <ul className="space-y-2.5">
+              {['A gift for mom', 'Organic baby clothing', 'Botanical lavender bouquet', 'Customized card', 'Wax seal & linen ribbon'].map(item => (
+                <li key={item} className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 flex items-center gap-3">
+                  <span className="w-4 h-px bg-gold-400 shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </EditorialFeature>
+
         </section>
 
         {/* ── Editorial strip — video or image ── */}
@@ -188,73 +204,6 @@ export default async function HomePage() {
             </Link>
           </div>
           <ProductCarousel products={featured} />
-        </section>
-
-        {/* ── 6 + 6b. Editorial pair — full-bleed, edge-attached, fly in/out ── */}
-        <section className="border-t border-cream-300 bg-cream-50">
-
-          {/* Block 1: image flush LEFT · text right */}
-          <EditorialFeature image={homeImg('brand')} alt="Petite Lavande brand story" side="left">
-            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">For the Giver</p>
-            <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-bark-600 leading-[1.05] mb-5">
-              Not a gift basket.<br />Something for her.
-            </h2>
-            <p className="font-cormorant text-lg text-bark-400 leading-loose mb-8">
-              You&apos;re here because someone you love is becoming a mother. You want to send something that says <em>I see you. I see how much love you carry.</em> Every box we send is built around one question: what would the most thoughtful person in her life choose?
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/build" className="bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-bark-700 transition-colors">
-                Build Your Box
-              </Link>
-              <Link href="/boxes" className="border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-bark-600 hover:text-cream-50 transition-colors">
-                Shop Ready-Made
-              </Link>
-            </div>
-          </EditorialFeature>
-
-          {/* Block 2: image flush RIGHT · text left */}
-          <EditorialFeature image={homeImg('inside')} alt="What's inside a Petite Lavande box" side="right">
-            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">Traced to the Source</p>
-            <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-bark-600 leading-[1.05] mb-5">
-              From the source,<br />to her.
-            </h2>
-            <p className="font-cormorant text-lg text-bark-400 leading-loose mb-6">
-              Every ingredient, every material — traced to its origin. Provence lavender fields. Pacific Northwest farms. Small American makers. Everything chosen the way a daughter would choose for her own mother.
-            </p>
-            <ul className="space-y-2.5">
-              {['5 curated organic items', 'Personalized printed card', 'Dried lavender & wax seal', 'Satin ribbon & gift-ready box'].map(item => (
-                <li key={item} className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 flex items-center gap-3">
-                  <span className="w-4 h-px bg-gold-400 shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </EditorialFeature>
-
-        </section>
-
-        {/* ── 7. How it works ── */}
-        <section id="how-it-works" className="py-12 sm:py-16 px-6 sm:px-8 bg-cream-100 border-t border-b border-cream-300">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-10">
-              <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">The Process</p>
-              <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">Three Simple Steps</h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
-              {[
-                { n: '01', title: 'Build Your Box', body: 'Choose from curated organic items across thoughtful categories — or start from a ready-made set.' },
-                { n: '02', title: 'Customize Your Card', body: 'Pick a card design and your message — we print it on premium card stock.' },
-                { n: '03', title: 'We Ship With Care', body: 'Arrives sealed with a wax stamp, ribbon pull, and dried lavender.' },
-              ].map(({ n, title, body }) => (
-                <div key={n} className="text-center">
-                  <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-5">{n}</p>
-                  <div className="w-8 h-px bg-cream-300 mx-auto mb-5" />
-                  <h3 className="font-serif text-lg text-bark-600 mb-3">{title}</h3>
-                  <p className="font-sans text-xs text-bark-400 leading-loose">{body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
         </section>
 
         {/* ── 8. Testimonials ── */}
@@ -280,8 +229,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── 9. Dark CTA ── */}
-        <section className="relative py-24 sm:py-40 px-6 text-center overflow-hidden bg-bark-600">
+        {/* ── 9. Dark CTA — now carries the three steps ── */}
+        <section className="relative py-24 sm:py-32 px-6 text-center overflow-hidden bg-bark-600">
           <Image
             src={homeImg('box')}
             alt="Petite Lavande gift box"
@@ -289,12 +238,29 @@ export default async function HomePage() {
             className="object-cover object-center opacity-40"
             unoptimized
           />
-          <div className="relative z-10 max-w-xl mx-auto">
+          <div className="relative z-10 max-w-3xl mx-auto">
             <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-8">Begin</p>
             <h2 className="font-serif text-4xl sm:text-5xl text-cream-50 leading-tight mb-3">
               Create Something
             </h2>
             <p className="font-script text-4xl text-gold-300 mb-14">unforgettable.</p>
+
+            {/* Three simple steps */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-8 mb-14 text-center">
+              {[
+                { n: '01', title: 'Build Your Box', body: 'Choose from curated organic items across thoughtful categories — or start from a ready-made set.' },
+                { n: '02', title: 'Customize Your Card', body: 'Pick a card design and your message — we print it on premium card stock.' },
+                { n: '03', title: 'We Ship With Care', body: 'Arrives sealed with a wax stamp, ribbon pull, and dried lavender.' },
+              ].map(({ n, title, body }) => (
+                <div key={n}>
+                  <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-300 mb-4">{n}</p>
+                  <div className="w-8 h-px bg-cream-300/30 mx-auto mb-4" />
+                  <h3 className="font-serif text-lg text-cream-50 mb-2.5">{title}</h3>
+                  <p className="font-sans text-xs text-cream-200/70 leading-loose">{body}</p>
+                </div>
+              ))}
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/build"

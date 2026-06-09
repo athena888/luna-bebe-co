@@ -23,7 +23,11 @@ export function readCart(): CartItem[] {
 }
 
 export function writeCart(items: CartItem[]) {
-  try { sessionStorage.setItem(KEY, JSON.stringify(items)) } catch { /* ignore */ }
+  try {
+    sessionStorage.setItem(KEY, JSON.stringify(items))
+    // Let the header cart badge (and anything else) update immediately.
+    if (typeof window !== 'undefined') window.dispatchEvent(new Event('pl:cart'))
+  } catch { /* ignore */ }
 }
 
 // Add a plain (non-variant) product to the cart; bumps qty if already present.
