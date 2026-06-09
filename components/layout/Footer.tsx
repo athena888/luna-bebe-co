@@ -53,7 +53,7 @@ export function Footer() {
     <footer>
       {/* Main footer — optional owner-managed background sits behind everything;
           a translucent scrim keeps the cream look (and text legible) when set. */}
-      <SlotBackground slotKey="footer.bg" scrim="bg-cream-100/88" className="bg-cream-100 border-t border-cream-300">
+      <SlotBackground slotKey="footer.bg" scrim="bg-cream-100/30" className="bg-cream-100 border-t border-cream-300">
         <div className="max-w-6xl mx-auto px-6 py-16">
 
           {/* Logo + tagline */}
