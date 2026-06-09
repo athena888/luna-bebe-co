@@ -139,7 +139,7 @@ export default async function HomePage() {
         </section>
 
         {/* ── Shop by Occasion ── */}
-        <section className="pt-14 sm:pt-16 pb-2">
+        <section className="pt-14 sm:pt-16 pb-0">
           <div className="pl-6 sm:pl-9 pr-6 mb-8">
             <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Collections</p>
             <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">Shop by Occasion</h2>
@@ -155,7 +155,7 @@ export default async function HomePage() {
         <section className="border-t border-cream-300 bg-cream-50">
 
           {/* Editable intro */}
-          <div className="max-w-3xl mx-auto text-center px-6 sm:px-8 pt-16 sm:pt-24 pb-6 sm:pb-10">
+          <div className="max-w-3xl mx-auto text-center px-6 sm:px-8 pt-10 sm:pt-14 pb-6 sm:pb-10">
             <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">{content.why.eyebrow}</p>
             <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600 leading-tight mb-5">{content.why.title}</h2>
             <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose">
