@@ -2,14 +2,8 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { ArrowRight, Package, Leaf, PenLine, Heart } from 'lucide-react'
-
-const TRUST_BADGES = [
-  { icon: Package, label: 'Free Shipping', sub: '$150+' },
-  { icon: Leaf, label: 'Organic Cotton', sub: 'GOTS-certified maker' },
-  { icon: PenLine, label: 'Handcrafted', sub: 'Always' },
-  { icon: Heart, label: 'Giving Back', sub: '1% Donated' },
-]
+import { ArrowRight } from 'lucide-react'
+import { LogoMark } from '@/components/ui/LogoMark'
 
 function EmailSignup() {
   const [email, setEmail] = useState('')
@@ -62,6 +56,7 @@ export function Footer() {
 
           {/* Logo + tagline */}
           <div className="mb-10 text-center">
+            <LogoMark className="h-14 w-auto mx-auto mb-3" style={{ color: '#574540' }} alt="Petite Lavande" />
             <div className="font-serif text-2xl tracking-[0.15em] uppercase text-bark-600 mb-2">Petite Lavande</div>
             <p className="font-serif italic text-bark-400 text-sm">Fait avec amour, pour vous.</p>
           </div>
@@ -116,17 +111,6 @@ export function Footer() {
               </ul>
             </div>
 
-          </div>
-
-          {/* Trust badges */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-12 border-t border-cream-300">
-            {TRUST_BADGES.map(({ icon: Icon, label, sub }) => (
-              <div key={label} className="text-center">
-                <Icon size={18} className="text-bark-400 mb-2 mx-auto" strokeWidth={1.5} />
-                <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-600">{label}</p>
-                <p className="font-sans text-[9px] text-bark-400">{sub}</p>
-              </div>
-            ))}
           </div>
 
         </div>

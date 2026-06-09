@@ -436,7 +436,7 @@ export function ProductCarousel({ products }: { products: Product[] }) {
                 onClick={() => isCenter ? setModal(product) : scrollTo(idx)}
                 className="cursor-pointer"
               >
-                <div className="relative w-full overflow-hidden rounded-sm" style={{ aspectRatio: '3/4' }}>
+                <div className="relative w-full overflow-hidden" style={{ aspectRatio: '3/4' }}>
                   {product.hoverVideo ? (
                     <video
                       ref={el => { videoRefs.current[idx] = el }}

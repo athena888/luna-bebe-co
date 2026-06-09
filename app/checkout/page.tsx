@@ -262,7 +262,7 @@ export default function CheckoutPage() {
                       const items = Object.values(selection).filter(Boolean) as Array<NonNullable<typeof selection.swaddle>>
                       if (items.length === 0) {
                         return (
-                          <div className="aspect-square w-full bg-cream-100 relative flex flex-col items-center justify-center gap-3 rounded-lg">
+                          <div className="aspect-square w-full bg-cream-100 relative flex flex-col items-center justify-center gap-3">
                             <div className="w-8 h-px bg-gold-400" />
                             <p className="font-script text-2xl text-bark-400">Petite Lavande</p>
                             <div className="w-8 h-px bg-gold-400" />
@@ -276,7 +276,7 @@ export default function CheckoutPage() {
                             {items.map((item, idx) => {
                               const src = productImage(item)
                               return (
-                                <div key={`${item.id}-${idx}`} className="relative aspect-square overflow-hidden rounded-md bg-cream-100 border border-cream-200">
+                                <div key={`${item.id}-${idx}`} className="relative aspect-square overflow-hidden bg-cream-100 border border-cream-200">
                                   {src
                                     ? <Image src={src} alt={item.name} fill className="object-cover" unoptimized sizes="120px" />
                                     : <span className="absolute inset-0 flex items-center justify-center text-2xl">{item.imageEmoji}</span>}

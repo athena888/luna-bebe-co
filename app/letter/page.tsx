@@ -118,7 +118,7 @@ export default function CardPage() {
                       key={s.id}
                       type="button"
                       onClick={() => setStyleId(s.id)}
-                      className={`text-left rounded-xl overflow-hidden border transition-all ${active ? 'border-bark-600 ring-1 ring-bark-600' : 'border-cream-300 hover:border-bark-400'}`}
+                      className={`text-left overflow-hidden border transition-all ${active ? 'border-bark-600 ring-1 ring-bark-600' : 'border-cream-300 hover:border-bark-400'}`}
                     >
                       <div className="relative aspect-[3/2] bg-cream-100">
                         <img src={s.image_url} alt={s.alt_text || s.name} className="w-full h-full object-cover" />

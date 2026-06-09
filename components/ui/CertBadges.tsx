@@ -111,7 +111,7 @@ export function CertBadges({ certs, organic }: { certs: ResolvedCert[]; organic?
 
             <div className="px-5 py-4">
               {showDoc && opened.certificateUrl && (
-                <div className="mb-3 border border-cream-200 rounded-xl overflow-hidden bg-cream-50">
+                <div className="mb-3 border border-cream-200 overflow-hidden bg-cream-50">
                   {opened.certificateUrl.endsWith('.pdf') ? (
                     <a href={opened.certificateUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-4 font-sans text-sm text-gold-500 hover:text-gold-600 transition-colors">
                       <ShieldCheck size={16} /> View {openedGots ? 'scope certificate' : 'certificate'} PDF →

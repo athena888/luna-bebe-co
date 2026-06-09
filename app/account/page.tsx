@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { supabaseBrowser as supabase } from '@/lib/supabase-browser'
 import { Button } from '@/components/ui/Button'
-import { Package, LogOut, Heart, MapPin } from 'lucide-react'
+import { Package, LogOut, MapPin } from 'lucide-react'
 import type { User } from '@supabase/supabase-js'
 
 type Order = {
@@ -128,10 +128,9 @@ export default function AccountPage() {
       </div>
 
       {/* Quick links */}
-      <div className="grid grid-cols-3 gap-4 mb-12">
+      <div className="grid grid-cols-2 gap-4 mb-12">
         {[
           { icon: <Package size={18} />, label: 'Orders', href: '#orders' },
-          { icon: <Heart size={18} />, label: 'Wishlist', href: '/wishlist' },
           { icon: <MapPin size={18} />, label: 'Track Order', href: '/track' },
         ].map(({ icon, label, href }) => (
           <a

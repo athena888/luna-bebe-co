@@ -49,7 +49,7 @@ function ProductTile({ product }: { product: Product }) {
   }
   return (
     <div className="group">
-      <div className="relative aspect-[3/4] bg-cream-100 mb-2 overflow-hidden rounded-sm">
+      <div className="relative aspect-[3/4] bg-cream-100 mb-2 overflow-hidden">
         <Image
           src={product.image || productImg(product.id)}
           alt={product.name}
@@ -127,7 +127,7 @@ function CollectionModal({ cat, byCategory, boxes, onClose }: {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {boxes.map(box => (
                   <button key={box.slug} onClick={() => { router.push(`/boxes/${box.slug}`); onClose() }} className="group text-left">
-                    <div className="relative aspect-[4/3] bg-cream-100 mb-2 overflow-hidden rounded-sm">
+                    <div className="relative aspect-[4/3] bg-cream-100 mb-2 overflow-hidden">
                       {box.image && <Image src={box.image} alt={box.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />}
                     </div>
                     <p className="font-sans text-sm font-medium text-bark-600 leading-snug">{box.name}</p>

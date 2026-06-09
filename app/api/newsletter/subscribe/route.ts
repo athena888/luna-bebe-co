@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { resend } from '@/lib/resend'
+import { resend, sendWelcomeEmail } from '@/lib/resend'
 import { rateLimitByIp } from '@/lib/rate-limit'
 
 export async function POST(req: NextRequest) {
@@ -19,6 +19,15 @@ export async function POST(req: NextRequest) {
     } else {
       // Fallback: just log — still returns success to the user
       console.log('Newsletter signup (no RESEND_AUDIENCE_ID set):', email)
+    }
+
+    // Fresh subscribe — send the welcome email with the WELCOME10 code.
+    // Wrapped so a send failure never fails the subscription itself.
+    // (Duplicate contacts throw above and are handled in catch, so they skip this.)
+    try {
+      await sendWelcomeEmail({ customerEmail: email })
+    } catch (e) {
+      console.error('Welcome email send failed:', e)
     }
 
     return NextResponse.json({ ok: true })

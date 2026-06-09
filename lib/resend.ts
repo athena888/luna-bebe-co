@@ -27,9 +27,10 @@ export async function sendWelcomeEmail({
   customerName,
   customerEmail,
 }: {
-  customerName: string
+  customerName?: string
   customerEmail: string
 }) {
+  const greeting = customerName ? `Welcome, ${customerName}` : 'Welcome'
   return resend.emails.send({
     from: FROM,
     to: customerEmail,
@@ -37,7 +38,7 @@ export async function sendWelcomeEmail({
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
         ${brandHeader}
-        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">Welcome, ${customerName}</h1>
+        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">${greeting}</h1>
         <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
             We're so glad you're here. Petite Lavande was born out of a love for new life — every box we create is handcrafted with organic materials, curated with intention, and packed with dried lavender and a wax seal because every detail matters.

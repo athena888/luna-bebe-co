@@ -35,6 +35,7 @@ export const IMAGE_SLOTS: ImageSlot[] = [
 
   // Misc
   { key: 'giftcard.visual', label: 'Gift Card — Visual',   group: 'Misc',  ratio: '3:2',  hint: 'Gift card art, ~1200×800' },
+  { key: 'global.logo',     label: 'Global — Logo / Seal', group: 'Misc',  ratio: '1:1',  hint: 'Square seal/logo, transparent PNG, ~600×600 — shown in the header & footer' },
   { key: 'global.og_image', label: 'Global — Social share image (OG)', group: 'Misc', ratio: '1.91:1', hint: 'Link preview, 1200×630' },
 ]
 

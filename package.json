@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "setup:welcome-code": "node scripts/setup-welcome-code.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.96.0",

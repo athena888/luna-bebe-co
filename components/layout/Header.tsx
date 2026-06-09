@@ -2,9 +2,9 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { Menu, X, User, Heart, ShoppingBag } from 'lucide-react'
+import { Menu, X, User, ShoppingBag } from 'lucide-react'
 import { cartCount } from '@/lib/cart'
-import { LavenderSprig } from '@/components/ui/LavenderSprig'
+import { LogoMark } from '@/components/ui/LogoMark'
 
 // Cart lives in the nav row so it scrolls with the header and aligns on every
 // page. On the build page it opens the bag drawer in place; elsewhere it links
@@ -48,29 +48,8 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
       <Link href="/build" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Build Your Own Box</Link>
       <Link href="/boxes" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Ready-Made Boxes</Link>
       <Link href="/gift-cards" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Gift Cards</Link>
-      <Link href="/wishlist" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Wishlist</Link>
       <Link href="/account" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>My Account</Link>
       <Link href="/social" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Stories</Link>
-    </div>
-  )
-}
-
-const ANNOUNCEMENTS = [
-  'Free shipping on orders over $150 · Handcrafted with care',
-  'Every box includes a personalized printed card',
-]
-
-function AnnouncementBar() {
-  const [i, setI] = useState(0)
-  useEffect(() => {
-    const t = setInterval(() => setI(p => (p + 1) % ANNOUNCEMENTS.length), 4500)
-    return () => clearInterval(t)
-  }, [])
-  return (
-    <div className="bg-terra-100 border-b border-cream-300 overflow-hidden">
-      <p key={i} className="pl-fade text-bark-600 font-sans text-[10px] tracking-[0.3em] uppercase text-center py-2.5 px-4">
-        {ANNOUNCEMENTS[i]}
-      </p>
     </div>
   )
 }
@@ -79,16 +58,13 @@ export function Header() {
   const [open, setOpen] = useState(false)
   return (
     <header className="relative z-40 bg-white">
-      {/* Announcement bar — above the logo, rotating messages */}
-      <AnnouncementBar />
-
       {/* Nav bar */}
       <div className="border-b border-cream-300">
         <div className="relative w-full pl-4 sm:pl-9 pr-3 sm:pr-6 h-[68px] flex items-center justify-between">
 
-          {/* Logo — sprig mark + flat wordmark lockup, links home */}
+          {/* Logo — seal mark + flat wordmark lockup, links home */}
           <Link href="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0" aria-label="Petite Lavande — home">
-            <LavenderSprig className="h-7 sm:h-9 w-auto shrink-0" style={{ color: '#574540' }} />
+            <LogoMark className="h-7 sm:h-9 w-auto shrink-0" style={{ color: '#574540' }} alt="Petite Lavande" />
             <span
               className="uppercase inline-block"
               style={{
@@ -116,9 +92,6 @@ export function Header() {
 
           {/* Right slot */}
           <div className="flex items-center gap-1.5 md:gap-0.5 justify-self-end">
-            <Link href="/wishlist" className="hidden md:flex p-2.5 text-bark-400 hover:text-bark-600 transition-colors" title="Wishlist">
-              <Heart size={16} />
-            </Link>
             <Link href="/account" className="hidden md:flex p-2.5 text-bark-400 hover:text-bark-600 transition-colors" title="My Account">
               <User size={16} />
             </Link>

@@ -38,11 +38,11 @@ export const DEFAULT_HOME_CONTENT: HomeContent = {
   why: {
     eyebrow: 'Why Petite Lavande',
     title: 'What makes it special',
-    intro: 'Anyone can send a gift. We help you send a moment — every box built around the mother, not just the baby, and finished by hand as if a daughter chose it herself.',
+    intro: 'Anyone can send a gift. We help you send a moment — built around the mother as much as the baby, traced to its source, and finished by hand with the kind of care only love remembers.',
     items: [
-      { t: 'Chosen for her, not just baby', b: 'Most gifts forget the mother. Every box carries something for her too — a quiet reminder that she is seen.' },
-      { t: 'Organic, traced to the source', b: 'Soft on new skin and gentle on the planet — cotton made with GOTS-certified organic cotton from a GOTS-certified maker, ingredients traced to their origin.' },
-      { t: 'Finished by hand', b: 'Sealed with a wax stamp, tied with satin ribbon, tucked with dried lavender, and a card printed just for them.' },
+      { t: 'Chosen for her, not just baby', b: 'Most gifts celebrate the baby and forget her. Every box carries wellness and quiet French luxuries for the mother too — a reminder that she is seen.' },
+      { t: 'Organic, grown without pesticides', b: 'Soft on the most delicate new skin and gentle on the earth — GOTS-certified organic cotton grown without pesticides, every ingredient traced to its origin.' },
+      { t: 'Finished by hand', b: 'Closed with a wax seal and linen ribbon, tucked with dried lavender, and a card printed just for them.' },
       { t: 'Built your way', b: 'Start from a ready-made set or build your own — pick exactly what goes inside. No two boxes alike.' },
     ],
   },

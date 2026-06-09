@@ -3,6 +3,7 @@ import { Footer } from '@/components/layout/Footer'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { getSiteImages } from '@/lib/site-images'
+import { LogoMark } from '@/components/ui/LogoMark'
 
 export const metadata: Metadata = {
   title: 'Our Story',
@@ -32,6 +33,7 @@ export default async function StoryPage() {
         {/* Hero */}
         <div className="border-b border-cream-300 bg-white">
           <div className="max-w-3xl mx-auto px-6 py-20 text-center">
+            <LogoMark className="h-20 w-auto mx-auto mb-6" style={{ color: '#574540' }} alt="Petite Lavande" />
             <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-4">Our Story</p>
             <h1
               className="text-5xl sm:text-6xl text-bark-600 mb-6 leading-tight"
@@ -47,7 +49,7 @@ export default async function StoryPage() {
         <div className="max-w-2xl mx-auto px-6 py-20">
           {founder && (
             <div className="float-none sm:float-right sm:ml-8 mb-6 w-full sm:w-56 shrink-0">
-              <div className="aspect-[3/4] overflow-hidden rounded-sm border border-cream-300">
+              <div className="aspect-[3/4] overflow-hidden border border-cream-300">
                 <img src={founder.public_url} alt={founder.alt_text} className="w-full h-full object-cover" />
               </div>
             </div>

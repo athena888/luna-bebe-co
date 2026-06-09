@@ -6,10 +6,9 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { PRODUCTS, CATEGORY_LABELS, CATEGORY_ORDER, getAllProducts } from '@/lib/products'
 import type { Product, ProductCategory } from '@/types'
-import { Check, X, Plus, Minus, Heart, ShieldCheck, Leaf } from 'lucide-react'
+import { Check, X, Plus, Minus, ShieldCheck, Leaf } from 'lucide-react'
 import Image from 'next/image'
 import { memo, useCallback, useMemo, useState as useLocalState } from 'react'
-import { toggleWishlist, isWishlisted } from '@/lib/wishlist'
 import { CertBadges } from '@/components/ui/CertBadges'
 import { SlotImage } from '@/components/ui/SlotImage'
 import { SlotBackground } from '@/components/ui/SlotBackground'
@@ -67,13 +66,6 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
   const [imgFailed, setImgFailed] = useState(false)
   const [hoverImgFailed, setHoverImgFailed] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
-  const [wishlisted, setWishlisted] = useLocalState(() => isWishlisted(product.id))
-
-  function handleWishlist(e: React.MouseEvent) {
-    e.stopPropagation()
-    const next = toggleWishlist(product.id)
-    setWishlisted(next)
-  }
 
   const storageSrc = product.image ?? (SUPABASE_URL
     ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${product.id}.jpg`
@@ -89,7 +81,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
         disabled={soldOut}
         onMouseEnter={() => { if (hoverVideo && videoRef.current) videoRef.current.play().catch(() => {}) }}
         onMouseLeave={() => { if (hoverVideo && videoRef.current) { videoRef.current.pause(); videoRef.current.currentTime = 0 } }}
-        className={`relative w-full overflow-hidden rounded block ${soldOut ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+        className={`relative w-full overflow-hidden block ${soldOut ? 'cursor-not-allowed' : 'cursor-pointer'}`}
         style={{ aspectRatio: '3/4' }}
       >
         {showImage ? (
@@ -116,15 +108,6 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="bg-white/90 font-sans text-[10px] tracking-[0.25em] uppercase text-bark-600 px-3 py-1.5">Sold Out</span>
           </div>
-        )}
-        {!soldOut && (
-          <button
-            onClick={handleWishlist}
-            className="absolute top-2 left-2 z-10 w-6 h-6 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-            title={wishlisted ? 'Remove from wishlist' : 'Save to wishlist'}
-          >
-            <Heart size={12} className={wishlisted ? 'text-rose-400 fill-rose-400' : 'text-bark-400'} />
-          </button>
         )}
         {selected && !soldOut && (
           <div className="absolute top-2 right-2 w-5 h-5 bg-bark-600 flex items-center justify-center z-10">
@@ -568,7 +551,7 @@ export default function BuildPage() {
                 : null
               return (
                 <div key={product.lineKey} className="flex gap-4 items-start py-1">
-                  <div className="w-28 h-32 bg-cream-100 relative shrink-0 overflow-hidden rounded">
+                  <div className="w-28 h-32 bg-cream-100 relative shrink-0 overflow-hidden">
                     {src
                       ? <Image src={src} alt={product.name} fill className="object-cover" sizes="112px" />
                       : <div className="w-full h-full flex items-center justify-center text-3xl">{product.imageEmoji}</div>

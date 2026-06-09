@@ -11,6 +11,10 @@ import { EditorialFeature } from '@/components/ui/EditorialFeature'
 import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
 import { getHomeContent } from '@/lib/home-content'
+import { Package, PenLine, Leaf, Heart, Truck } from 'lucide-react'
+
+// Icons for the under-hero perks bar, mapped by index to the default perks.
+const PERK_ICONS = [Package, PenLine, Leaf, Heart]
 
 export const metadata: Metadata = {
   title: 'Petite Lavande — Luxury Curated Baby Gift Boxes',
@@ -118,21 +122,25 @@ export default async function HomePage() {
         {/* ── Perks bar — attached directly under the hero ── */}
         <section className="bg-terra-100 border-b border-cream-300">
           <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4">
-            {content.perks.map(({ label, sub }, i) => (
-              <div key={label} className={`text-center py-5 px-4 border-cream-300
-                ${i % 2 === 0 ? 'border-r' : ''}
-                ${i < 2 ? 'border-b md:border-b-0' : ''}
-                md:border-r md:last:border-r-0`}>
-                <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-bark-600 mb-0.5">{label}</p>
-                <p className="font-sans text-[9px] text-bark-400 tracking-wide">{sub}</p>
-              </div>
-            ))}
+            {content.perks.map(({ label, sub }, i) => {
+              const Icon = PERK_ICONS[i % PERK_ICONS.length]
+              return (
+                <div key={label} className={`text-center py-5 px-4 border-cream-300
+                  ${i % 2 === 0 ? 'border-r' : ''}
+                  ${i < 2 ? 'border-b md:border-b-0' : ''}
+                  md:border-r md:last:border-r-0`}>
+                  <Icon size={18} className="text-bark-400 mb-2 mx-auto" strokeWidth={1.5} />
+                  <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-bark-600 mb-0.5">{label}</p>
+                  <p className="font-sans text-[9px] text-bark-400 tracking-wide">{sub}</p>
+                </div>
+              )
+            })}
           </div>
         </section>
 
         {/* ── Shop by Occasion ── */}
-        <section className="py-14 sm:py-16">
-          <div className="pl-6 sm:pl-9 pr-6 mb-10">
+        <section className="pt-14 sm:pt-16 pb-2">
+          <div className="pl-6 sm:pl-9 pr-6 mb-8">
             <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Collections</p>
             <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">Shop by Occasion</h2>
             <p className="font-sans text-xs text-bark-400 mt-2 tracking-wide">Tap any collection to see what&apos;s inside</p>
@@ -162,7 +170,7 @@ export default async function HomePage() {
               Not a gift basket.<br />Something for her.
             </h2>
             <p className="font-cormorant text-lg text-bark-400 leading-loose">
-              You&apos;re here because someone you love is becoming a mother. Most gifts forget her — ours are built around her. A botanical lavender bouquet to slow the morning down. Quiet French luxuries she&apos;d never buy herself. The kind of gift a daughter would choose for her own mother.
+              You&apos;re here because someone you love is becoming a mother. Most gifts celebrate the baby and quietly forget her &mdash; ours begin with her. A botanical lavender bouquet to slow the morning down. French wellness rituals to soften the long days and restore a little of what motherhood asks of her. Each piece chosen the way a daughter would choose for her own mother &mdash; tenderly, with an eye for the small comforts she&apos;d never think to ask for.
             </p>
           </EditorialFeature>
 
@@ -173,10 +181,10 @@ export default async function HomePage() {
               From the source,<br />to her.
             </h2>
             <p className="font-cormorant text-lg text-bark-400 leading-loose mb-6">
-              Every piece chosen with care and traced to its origin — natural, luxurious, and quietly French. Nothing rushed, nothing filler.
+              Every piece is traced to its origin &mdash; organic cotton grown without pesticides, soft enough for the most delicate new skin, alongside French finishing touches chosen for their quiet beauty. Nothing rushed, nothing filler. Each box is then closed by hand with a wax seal and linen ribbon, tucked with dried lavender, as though it were always meant for her.
             </p>
             <ul className="space-y-2.5">
-              {['A gift for mom', 'Organic baby clothing', 'Botanical lavender bouquet', 'Customized card', 'Wax seal & linen ribbon'].map(item => (
+              {['Wellness care for mama', 'Organic cotton, no pesticides', 'Botanical lavender bouquet', 'Customized card', 'Wax seal & linen ribbon'].map(item => (
                 <li key={item} className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 flex items-center gap-3">
                   <span className="w-4 h-px bg-gold-400 shrink-0" />
                   {item}
@@ -187,10 +195,7 @@ export default async function HomePage() {
 
         </section>
 
-        {/* ── Editorial strip — video or image ── */}
-        <EditorialStrip />
-
-        {/* ── Bestsellers — center-snap looping carousel, below the editorial strip ── */}
+        {/* ── Bestsellers — center-snap looping carousel, above the editorial strip ── */}
         <section className="border-t border-cream-300 pt-16 pb-12">
           <div className="pl-6 sm:pl-9 pr-6 mb-10 flex items-end justify-between">
             <div>
@@ -206,6 +211,9 @@ export default async function HomePage() {
           </div>
           <ProductCarousel products={featured} />
         </section>
+
+        {/* ── Editorial strip — video or image ── */}
+        <EditorialStrip />
 
         {/* ── 8. Testimonials ── */}
         <section className="py-14 sm:py-28 px-6 sm:px-8">
@@ -231,7 +239,7 @@ export default async function HomePage() {
         </section>
 
         {/* ── 9. Dark CTA — now carries the three steps ── */}
-        <section className="relative py-24 sm:py-32 px-6 text-center overflow-hidden bg-bark-600">
+        <section className="relative py-10 sm:py-14 px-6 text-center overflow-hidden bg-bark-600">
           <Image
             src={homeImg('box')}
             alt="Petite Lavande gift box"
@@ -240,21 +248,21 @@ export default async function HomePage() {
             unoptimized
           />
           <div className="relative z-10 max-w-3xl mx-auto">
-            <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-8">Begin</p>
-            <h2 className="font-serif text-4xl sm:text-5xl text-cream-50 leading-tight mb-3">
+            <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-5">Begin</p>
+            <h2 className="font-serif text-4xl sm:text-5xl text-cream-50 leading-tight mb-2">
               Create Something
             </h2>
-            <p className="font-script text-4xl text-gold-300 mb-14">unforgettable.</p>
+            <p className="font-script text-4xl text-gold-300 mb-10">unforgettable.</p>
 
             {/* Three simple steps */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-8 mb-14 text-center">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-10 text-center">
               {[
-                { n: '01', title: 'Build Your Box', body: 'Choose from curated organic items across thoughtful categories — or start from a ready-made set.' },
-                { n: '02', title: 'Customize Your Card', body: 'Pick a card design and your message — we print it on premium card stock.' },
-                { n: '03', title: 'We Ship With Care', body: 'Arrives sealed with a wax stamp, ribbon pull, and dried lavender.' },
-              ].map(({ n, title, body }) => (
-                <div key={n}>
-                  <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-300 mb-4">{n}</p>
+                { Icon: Package, title: 'Build Your Box', body: 'Choose from curated organic items across thoughtful categories — or start from a ready-made set.' },
+                { Icon: PenLine, title: 'Customize Your Card', body: 'Pick a card design and your message — we print it on premium card stock.' },
+                { Icon: Truck, title: 'We Ship With Care', body: 'Arrives sealed with a wax stamp, linen ribbon, and dried lavender.' },
+              ].map(({ Icon, title, body }) => (
+                <div key={title}>
+                  <Icon size={22} strokeWidth={1.5} className="text-gold-300 mx-auto mb-4" />
                   <div className="w-8 h-px bg-cream-300/30 mx-auto mb-4" />
                   <h3 className="font-serif text-lg text-cream-50 mb-2.5">{title}</h3>
                   <p className="font-sans text-xs text-cream-200/70 leading-loose">{body}</p>
