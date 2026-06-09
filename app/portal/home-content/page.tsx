@@ -1,8 +1,50 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Loader, Plus, Trash2, Check } from 'lucide-react'
-import type { HomeContent, Perk, WhyItem, Review } from '@/lib/home-content'
+import { useState, useEffect, useRef } from 'react'
+import { Loader, Plus, Trash2, Check, Upload } from 'lucide-react'
+import type { HomeContent, Perk, FeatureBlock, Review } from '@/lib/home-content'
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+
+// Inline photo uploader for an editorial feature. Writes straight to the
+// home-images bucket slot (same endpoint as Portal → Home Images), so the
+// picture and its copy are managed side by side. Uploads are immediate and
+// independent of the "Save changes" button (which only persists the text).
+function FeatureImage({ slot }: { slot: string }) {
+  const [url, setUrl] = useState(`${SUPABASE_URL}/storage/v1/object/public/home-images/${slot}.jpg`)
+  const [exists, setExists] = useState(true)
+  const [busy, setBusy] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  async function handleFile(file: File) {
+    setBusy(true)
+    try {
+      const form = new FormData()
+      form.append('file', file)
+      form.append('slot', slot)
+      const res = await fetch('/api/portal/home-images/upload', { method: 'POST', body: form })
+      const data = await res.json()
+      if (data.url) { setUrl(data.url + `?t=${Date.now()}`); setExists(true) }
+    } finally { setBusy(false) }
+  }
+
+  return (
+    <div
+      className="relative aspect-[3/4] bg-cream-100 rounded-lg overflow-hidden cursor-pointer border border-cream-200 group"
+      onClick={() => inputRef.current?.click()}
+      onDragOver={e => e.preventDefault()}
+      onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f) }}
+    >
+      {exists
+        ? <img src={url} alt="" className="w-full h-full object-cover" onError={() => setExists(false)} />
+        : <div className="absolute inset-0 flex items-center justify-center text-bark-300"><Upload size={20} /></div>}
+      <div className="absolute inset-0 bg-bark-600/0 group-hover:bg-bark-600/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+        {busy ? <Loader size={18} className="text-white animate-spin" /> : <span className="font-sans text-[10px] tracking-[0.2em] uppercase text-white">{exists ? 'Replace' : 'Upload'}</span>}
+      </div>
+      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = '' }} />
+    </div>
+  )
+}
 
 // ── Reusable field bits ──────────────────────────────────────────────────────
 function Field({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
@@ -148,6 +190,8 @@ function ContentEditor() {
   // immutable helpers
   const setPerks = (perks: Perk[]) => setC({ ...c, perks })
   const setWhy = (why: Partial<HomeContent['why']>) => setC({ ...c, why: { ...c.why, ...why } })
+  const setFeature = (i: number, patch: Partial<FeatureBlock>) =>
+    setWhy({ features: c.why.features.map((f, j) => j === i ? { ...f, ...patch } : f) })
   const setReviews = (reviews: Partial<HomeContent['reviews']>) => setC({ ...c, reviews: { ...c.reviews, ...reviews } })
 
   return (
@@ -168,21 +212,30 @@ function ContentEditor() {
 
       {/* What makes it special */}
       <section className="mb-12">
-        <SectionTitle n="3" title="“What makes it special” section" note="The why-choose-us block below the Curated Gift Sets." />
-        <div className="space-y-3 mb-4">
+        <SectionTitle n="3" title="“What makes it special” section" note="The intro and the two editorial image features below the Curated Gift Sets. Each photo and its words are edited together so you can see which is which." />
+        <div className="space-y-3 mb-6">
           <Field label="Eyebrow (small caps)" value={c.why.eyebrow} onChange={v => setWhy({ eyebrow: v })} />
           <Field label="Heading" value={c.why.title} onChange={v => setWhy({ title: v })} />
           <Area label="Intro paragraph" value={c.why.intro} onChange={v => setWhy({ intro: v })} />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {c.why.items.map((it, i) => (
-            <Card key={i} onRemove={() => setWhy({ items: c.why.items.filter((_, j) => j !== i) })}>
-              <Field label="Title" value={it.t} onChange={v => setWhy({ items: c.why.items.map((x, j) => j === i ? { ...x, t: v } : x) })} />
-              <Area label="Body" value={it.b} onChange={v => setWhy({ items: c.why.items.map((x, j) => j === i ? { ...x, b: v } : x) })} />
-            </Card>
+        <div className="space-y-4">
+          {c.why.features.map((f, i) => (
+            <div key={i} className="bg-white border border-cream-200 rounded-lg p-4 grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-4">
+              <div>
+                <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400">Photo {i + 1}{i === 0 ? ' · left' : ' · right'}</span>
+                <div className="mt-1.5"><FeatureImage slot={f.slot} /></div>
+                <p className="font-sans text-[9px] text-bark-400/70 mt-1.5">Click or drop a photo — saves instantly.</p>
+              </div>
+              <div className="space-y-3">
+                <Field label="Eyebrow (small caps)" value={f.eyebrow} onChange={v => setFeature(i, { eyebrow: v })} />
+                <Area label="Title (press Enter for a line break)" value={f.title} onChange={v => setFeature(i, { title: v })} rows={2} />
+                <Area label="Body paragraph" value={f.body} onChange={v => setFeature(i, { body: v })} rows={5} />
+                <Area label="Bullet list — one per line (optional)" value={f.bullets.join('\n')} onChange={v => setFeature(i, { bullets: v.split('\n') })} rows={4} />
+              </div>
+            </div>
           ))}
         </div>
-        <div className="mt-3"><AddButton onClick={() => setWhy({ items: [...c.why.items, { t: '', b: '' } as WhyItem] })} label="Add point" /></div>
+        <p className="font-sans text-[10px] text-bark-400/80 mt-3">Photos upload immediately; text changes go live when you press “Save changes” below.</p>
       </section>
 
       {/* Reviews */}

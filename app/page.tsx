@@ -6,6 +6,7 @@ import { Footer } from '@/components/layout/Footer'
 import { getProductById, FEATURED_IDS } from '@/lib/products'
 import type { Product } from '@/types'
 import { ProductCarousel } from '@/components/ui/ProductCarousel'
+import { EditorialFeature } from '@/components/ui/EditorialFeature'
 import { EditorialStrip } from '@/components/ui/EditorialStrip'
 import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
@@ -150,29 +151,41 @@ export default async function HomePage() {
         {/* ── Curated Gift Sets ── */}
         <PrebuiltBoxesSection />
 
-        {/* ── What makes it special — fully editable from Portal → Home Content ── */}
-        <section className="border-t border-cream-300 bg-cream-50 py-16 sm:py-24 px-6 sm:px-8">
-          <div className="max-w-5xl mx-auto text-center">
+        {/* ── What makes it special — editable intro + editorial features, all from Portal → Home Content ── */}
+        <section className="border-t border-cream-300 bg-cream-50">
 
-            {/* Editable intro */}
+          {/* Editable intro */}
+          <div className="max-w-3xl mx-auto text-center px-6 sm:px-8 pt-10 sm:pt-14 pb-6 sm:pb-10">
             <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">{content.why.eyebrow}</p>
             <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600 leading-tight mb-5">{content.why.title}</h2>
-            <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose max-w-2xl mx-auto mb-14">
+            <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose">
               {content.why.intro}
             </p>
-
-            {/* Editable points */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-8 text-left">
-              {content.why.items.map(({ t, b }, i) => (
-                <div key={`${t}-${i}`}>
-                  <div className="w-8 h-px bg-gold-400 mb-5" />
-                  <h3 className="font-serif text-lg text-bark-600 mb-3 leading-snug">{t}</h3>
-                  <p className="font-sans text-xs text-bark-400 leading-loose">{b}</p>
-                </div>
-              ))}
-            </div>
-
           </div>
+
+          {/* Editable image features — image + copy edited together in the portal.
+              Images alternate flush-left / flush-right as they fly in. */}
+          {content.why.features.map((f, i) => {
+            const bullets = f.bullets.filter(b => b.trim())
+            return (
+              <EditorialFeature key={i} image={homeImg(f.slot)} alt={f.eyebrow || 'Petite Lavande'} side={i % 2 === 0 ? 'left' : 'right'}>
+                {f.eyebrow && <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">{f.eyebrow}</p>}
+                <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-bark-600 leading-[1.05] mb-5 whitespace-pre-line">{f.title}</h2>
+                <p className="font-cormorant text-lg text-bark-400 leading-loose whitespace-pre-line">{f.body}</p>
+                {bullets.length > 0 && (
+                  <ul className="space-y-2.5 mt-6">
+                    {bullets.map((b, j) => (
+                      <li key={j} className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 flex items-center gap-3">
+                        <span className="w-4 h-px bg-gold-400 shrink-0" />
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </EditorialFeature>
+            )
+          })}
+
         </section>
 
         {/* ── Bestsellers — center-snap looping carousel, above the editorial strip ── */}

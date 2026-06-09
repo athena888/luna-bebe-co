@@ -448,7 +448,7 @@ export default function BuildPage() {
           )}
         </SlotBackground>
 
-        <div className="w-full py-12 space-y-14">
+        <div className="w-full py-12 space-y-8">
           {activeCategories.map((cat) => (
             <section key={cat} id={`cat-${cat}`}>
               <SlotImage slotKey={`build.banner.${cat}`} className="w-full aspect-[21/9] sm:aspect-[3/1] overflow-hidden mb-6" />

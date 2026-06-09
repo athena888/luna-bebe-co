@@ -42,6 +42,9 @@
   --color-bark-700: #262523;
   --color-bark-800: #181716;
 
+  /* Espresso — warm dark brown, used for the footer */
+  --color-espresso: #4A3B30;
+
   --font-serif: "Cormorant Garamond", Georgia, serif;
   --font-cormorant: "Cormorant Garamond", Georgia, serif;
   --font-sans: "Brandon Grotesque", "Jost", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;

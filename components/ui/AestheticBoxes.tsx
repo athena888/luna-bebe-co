@@ -67,18 +67,25 @@ function ItemColumns({ box }: { box: ResolvedBox }) {
   const baby = box.items.filter(i => !isMama(i))
   const mama = box.items.filter(isMama)
 
+  // Audience sections stack vertically (For Baby, then For Mama); within each
+  // section the items flow in two columns. Keeps each section compact even when
+  // one audience has far more items than the other.
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-5">
+    <div className="space-y-6">
       {baby.length > 0 && (
-        <div className="space-y-3">
-          <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gold-400 pb-1.5 border-b border-cream-200">For Baby</p>
-          {baby.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} />)}
+        <div>
+          <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">For Baby</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-3">
+            {baby.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} />)}
+          </div>
         </div>
       )}
       {mama.length > 0 && (
-        <div className="space-y-3">
-          <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gold-400 pb-1.5 border-b border-cream-200">For Mama</p>
-          {mama.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} />)}
+        <div>
+          <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">For Mama</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-3">
+            {mama.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} />)}
+          </div>
         </div>
       )}
     </div>

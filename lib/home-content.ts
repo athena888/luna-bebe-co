@@ -5,14 +5,23 @@ import { supabaseAdmin } from './supabase'
 // the homepage always renders even before anything is saved in the portal.
 
 export interface Perk { label: string; sub: string }
-export interface WhyItem { t: string; b: string }
 export interface Review { quote: string; name: string; context: string }
+
+// One full-bleed editorial feature: a managed photo (home-images bucket slot)
+// beside editable copy. `title` may contain line breaks; `bullets` is optional.
+export interface FeatureBlock {
+  slot: string
+  eyebrow: string
+  title: string
+  body: string
+  bullets: string[]
+}
 
 export interface WhyBlock {
   eyebrow: string
   title: string
   intro: string
-  items: WhyItem[]
+  features: FeatureBlock[]
 }
 
 export interface ReviewsBlock {
@@ -39,11 +48,21 @@ export const DEFAULT_HOME_CONTENT: HomeContent = {
     eyebrow: 'Why Petite Lavande',
     title: 'What makes it special',
     intro: 'Anyone can send a gift. We help you send a moment — built around the mother as much as the baby, traced to its source, and finished by hand with the kind of care only love remembers.',
-    items: [
-      { t: 'Chosen for her, not just baby', b: 'Most gifts celebrate the baby and forget her. Every box carries wellness and quiet French luxuries for the mother too — a reminder that she is seen.' },
-      { t: 'Organic, grown without pesticides', b: 'Soft on the most delicate new skin and gentle on the earth — GOTS-certified organic cotton grown without pesticides, every ingredient traced to its origin.' },
-      { t: 'Finished by hand', b: 'Closed with a wax seal and linen ribbon, tucked with dried lavender, and a card printed just for them.' },
-      { t: 'Built your way', b: 'Start from a ready-made set or build your own — pick exactly what goes inside. No two boxes alike.' },
+    features: [
+      {
+        slot: 'brand',
+        eyebrow: 'For Mama',
+        title: 'Not a gift basket.\nSomething for her.',
+        body: "You're here because someone you love is becoming a mother. Most gifts celebrate the baby and quietly forget her — ours begin with her. A botanical lavender bouquet to slow the morning down. French wellness rituals to soften the long days and restore a little of what motherhood asks of her. Each piece chosen the way a daughter would choose for her own mother — tenderly, with an eye for the small comforts she'd never think to ask for.",
+        bullets: [],
+      },
+      {
+        slot: 'inside',
+        eyebrow: 'Made With Love',
+        title: 'From the source,\nto her.',
+        body: 'Every piece is traced to its origin — organic cotton grown without pesticides, soft enough for the most delicate new skin, alongside French finishing touches chosen for their quiet beauty. Nothing rushed, nothing filler. Each box is then closed by hand with a wax seal and linen ribbon, tucked with dried lavender, as though it were always meant for her.',
+        bullets: ['Wellness care for mama', 'Organic cotton, no pesticides', 'Botanical lavender bouquet', 'Customized card', 'Wax seal & linen ribbon'],
+      },
     ],
   },
   reviews: {
@@ -68,7 +87,9 @@ export async function getHomeContent(): Promise<HomeContent> {
     const map = new Map((data ?? []).map(r => [r.key as string, r.value]))
     return {
       perks: (map.get(KEYS.perks) as Perk[] | undefined) ?? DEFAULT_HOME_CONTENT.perks,
-      why: (map.get(KEYS.why) as WhyBlock | undefined) ?? DEFAULT_HOME_CONTENT.why,
+      // Merge over defaults so blocks added later (e.g. features) are always
+      // present even if an older saved row predates them.
+      why: { ...DEFAULT_HOME_CONTENT.why, ...((map.get(KEYS.why) as Partial<WhyBlock> | undefined) ?? {}) },
       reviews: (map.get(KEYS.reviews) as ReviewsBlock | undefined) ?? DEFAULT_HOME_CONTENT.reviews,
     }
   } catch {
