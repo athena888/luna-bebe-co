@@ -2,9 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
-import { Upload, CheckCircle, Loader, Video, RotateCcw, Trash2, Plus } from 'lucide-react'
+import { Upload, CheckCircle, Loader, Video, RotateCcw, Trash2 } from 'lucide-react'
 import { CATEGORY_LABELS } from '@/lib/products'
-import { resizeImage } from '@/lib/image-resize'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 
@@ -495,71 +494,6 @@ function BestsellerManager() {
   )
 }
 
-function BoxGalleryManager() {
-  const [images, setImages] = useState<Array<{ path: string; url: string }>>([])
-  const [loading, setLoading] = useState(true)
-  const [busy, setBusy] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  async function load() {
-    setLoading(true)
-    try {
-      const res = await fetch('/api/portal/home-gallery')
-      const data = await res.json()
-      setImages(data.images ?? [])
-    } finally { setLoading(false) }
-  }
-  useEffect(() => { load() }, [])
-
-  async function addFiles(files: FileList | null) {
-    if (!files?.length) return
-    setBusy(true)
-    try {
-      for (const f of Array.from(files)) {
-        const resized = await resizeImage(f, 2000, 0.9)
-        const form = new FormData()
-        form.append('file', resized)
-        await fetch('/api/portal/home-gallery', { method: 'POST', body: form })
-      }
-      await load()
-    } finally { setBusy(false) }
-  }
-
-  async function remove(path: string) {
-    if (!confirm('Remove this photo from the gallery?')) return
-    setImages(imgs => imgs.filter(i => i.path !== path))
-    await fetch(`/api/portal/home-gallery?path=${encodeURIComponent(path)}`, { method: 'DELETE' })
-  }
-
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      {!loading && images.map(img => (
-        <div key={img.path} className="relative group aspect-[4/3] bg-cream-200 rounded-xl overflow-hidden border border-cream-200">
-          <Image src={img.url} alt="Box gallery photo" fill className="object-cover" unoptimized />
-          <button
-            onClick={() => remove(img.path)}
-            className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center bg-white/90 rounded-full text-bark-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-            title="Remove"
-          >
-            <Trash2 size={13} />
-          </button>
-        </div>
-      ))}
-      <button
-        type="button"
-        onClick={() => inputRef.current?.click()}
-        disabled={busy}
-        className="aspect-[4/3] border-2 border-dashed border-cream-300 rounded-xl flex flex-col items-center justify-center gap-2 text-bark-400 hover:border-bark-400 hover:text-bark-600 transition-colors disabled:opacity-50"
-      >
-        {busy ? <Loader size={20} className="animate-spin" /> : <Plus size={20} />}
-        <span className="font-sans text-[10px] tracking-[0.15em] uppercase">{busy ? 'Uploading…' : 'Add photo(s)'}</span>
-      </button>
-      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden"
-        onChange={e => { addFiles(e.target.files); e.target.value = '' }} />
-    </div>
-  )
-}
-
 function SectionHeader({ label, note }: { label: string; note?: string }) {
   return (
     <div className="mb-4 pb-3 border-b border-cream-300">
@@ -610,31 +544,25 @@ export default function HomeImagesPage() {
         </div>
       </div>
 
-      {/* ── 4. Brand Story ── */}
+      {/* ── 4. Editorial — "Something for her" ── */}
       <div className="mb-10">
-        <SectionHeader label="4 · Brand Story — &quot;Organic Cotton, Ethically Sourced&quot;" note="Left half of the two-column editorial pair." />
+        <SectionHeader label="4 · Editorial — &quot;Not a gift basket. Something for her.&quot;" note="Left half of the two-column editorial pair (image flush-left, flies in)." />
         <div className="max-w-xs">
-          <ImageSlotCard slotKey="brand" label="Brand Story" description="Portrait — baby in wicker basket with lavender. Recommended: 900 × 1100px." />
+          <ImageSlotCard slotKey="brand" label="Editorial — left" description="Portrait — baby in wicker basket with lavender. Recommended: 900 × 1100px." />
         </div>
       </div>
 
-      {/* ── 5. What's Inside ── */}
+      {/* ── 5. Editorial — "From the source, to her" ── */}
       <div className="mb-10">
-        <SectionHeader label="5 · What&apos;s Inside — &quot;A moment they'll never forget.&quot;" note="Right half of the two-column editorial pair." />
+        <SectionHeader label="5 · Editorial — &quot;From the source, to her.&quot;" note="Right half of the two-column editorial pair (image flush-right, flies in)." />
         <div className="max-w-xs">
-          <ImageSlotCard slotKey="inside" label="What's Inside" description="Open box with letter, hello world disc. Recommended: 900 × 1100px." />
+          <ImageSlotCard slotKey="inside" label="Editorial — right" description="Open box with letter, hello world disc. Recommended: 900 × 1100px." />
         </div>
       </div>
 
-      {/* ── 6. Box Gallery (dynamic) ── */}
+      {/* ── 6. CTA Background ── */}
       <div className="mb-10">
-        <SectionHeader label="6 · The Box Gallery — horizontal scroll" note="Add as many photos as you like — they appear in the scrollable strip on the homepage. Hover a photo to remove it." />
-        <BoxGalleryManager />
-      </div>
-
-      {/* ── 7. CTA Background ── */}
-      <div className="mb-10">
-        <SectionHeader label="7 · Final CTA background — &quot;Create Something Unforgettable&quot;" note="Dark full-width section near the bottom of the page. Image appears at 40% opacity." />
+        <SectionHeader label="6 · Final CTA background — &quot;Create Something Unforgettable&quot;" note="Dark full-width section near the bottom of the page. Image appears at 40% opacity." />
         <div className="max-w-xs">
           <ImageSlotCard slotKey="box" label="CTA Background" description="Cream box with ribbon — dark/moody works best. Recommended: 1600 × 900px." />
         </div>
