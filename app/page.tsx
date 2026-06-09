@@ -7,7 +7,6 @@ import { getProductById, FEATURED_IDS } from '@/lib/products'
 import type { Product } from '@/types'
 import { ProductCarousel } from '@/components/ui/ProductCarousel'
 import { EditorialStrip } from '@/components/ui/EditorialStrip'
-import { EditorialFeature } from '@/components/ui/EditorialFeature'
 import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
 import { getHomeContent } from '@/lib/home-content'
@@ -151,48 +150,29 @@ export default async function HomePage() {
         {/* ── Curated Gift Sets ── */}
         <PrebuiltBoxesSection />
 
-        {/* ── What makes it special — editable intro + editorial features, one section ── */}
-        <section className="border-t border-cream-300 bg-cream-50">
+        {/* ── What makes it special — fully editable from Portal → Home Content ── */}
+        <section className="border-t border-cream-300 bg-cream-50 py-16 sm:py-24 px-6 sm:px-8">
+          <div className="max-w-5xl mx-auto text-center">
 
-          {/* Editable intro */}
-          <div className="max-w-3xl mx-auto text-center px-6 sm:px-8 pt-10 sm:pt-14 pb-6 sm:pb-10">
+            {/* Editable intro */}
             <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">{content.why.eyebrow}</p>
             <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600 leading-tight mb-5">{content.why.title}</h2>
-            <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose">
+            <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose max-w-2xl mx-auto mb-14">
               {content.why.intro}
             </p>
-          </div>
 
-          {/* Feature 1: image flush LEFT — a gift for mama */}
-          <EditorialFeature image={homeImg('brand')} alt="A gift chosen for her" side="left">
-            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">For Mama</p>
-            <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-bark-600 leading-[1.05] mb-5">
-              Not a gift basket.<br />Something for her.
-            </h2>
-            <p className="font-cormorant text-lg text-bark-400 leading-loose">
-              You&apos;re here because someone you love is becoming a mother. Most gifts celebrate the baby and quietly forget her &mdash; ours begin with her. A botanical lavender bouquet to slow the morning down. French wellness rituals to soften the long days and restore a little of what motherhood asks of her. Each piece chosen the way a daughter would choose for her own mother &mdash; tenderly, with an eye for the small comforts she&apos;d never think to ask for.
-            </p>
-          </EditorialFeature>
-
-          {/* Feature 2: image flush RIGHT — what's inside */}
-          <EditorialFeature image={homeImg('inside')} alt="Inside a Petite Lavande box" side="right">
-            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">Made With Love</p>
-            <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-bark-600 leading-[1.05] mb-5">
-              From the source,<br />to her.
-            </h2>
-            <p className="font-cormorant text-lg text-bark-400 leading-loose mb-6">
-              Every piece is traced to its origin &mdash; organic cotton grown without pesticides, soft enough for the most delicate new skin, alongside French finishing touches chosen for their quiet beauty. Nothing rushed, nothing filler. Each box is then closed by hand with a wax seal and linen ribbon, tucked with dried lavender, as though it were always meant for her.
-            </p>
-            <ul className="space-y-2.5">
-              {['Wellness care for mama', 'Organic cotton, no pesticides', 'Botanical lavender bouquet', 'Customized card', 'Wax seal & linen ribbon'].map(item => (
-                <li key={item} className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 flex items-center gap-3">
-                  <span className="w-4 h-px bg-gold-400 shrink-0" />
-                  {item}
-                </li>
+            {/* Editable points */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-8 text-left">
+              {content.why.items.map(({ t, b }, i) => (
+                <div key={`${t}-${i}`}>
+                  <div className="w-8 h-px bg-gold-400 mb-5" />
+                  <h3 className="font-serif text-lg text-bark-600 mb-3 leading-snug">{t}</h3>
+                  <p className="font-sans text-xs text-bark-400 leading-loose">{b}</p>
+                </div>
               ))}
-            </ul>
-          </EditorialFeature>
+            </div>
 
+          </div>
         </section>
 
         {/* ── Bestsellers — center-snap looping carousel, above the editorial strip ── */}
