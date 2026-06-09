@@ -15,6 +15,7 @@ import { getHomeContent } from '@/lib/home-content'
 export const metadata: Metadata = {
   title: 'Petite Lavande — Luxury Curated Baby Gift Boxes',
   description: 'Build a bespoke luxury baby shower gift box. Choose 5 premium organic items, add a personalized printed card, and deliver an unforgettable unboxing experience.',
+  alternates: { canonical: process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com' },
   openGraph: { title: 'Petite Lavande', description: 'Luxury curated organic baby gift boxes — built item by item, shipped with love.' },
 }
 
