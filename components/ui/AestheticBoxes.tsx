@@ -2,8 +2,9 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { Leaf, X, ChevronDown } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Leaf, X, ChevronDown, ZoomIn } from 'lucide-react'
+import { CertBadges } from '@/components/ui/CertBadges'
 import type { ResolvedBox, BoxItem } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
 
@@ -33,20 +34,20 @@ function BuyBox({ items }: { items: BoxItem[] }) {
   )
 }
 
-// One product line — the whole row links to the product page (the "shortcut").
-// `big` enlarges the thumbnail + name for the single-column desktop list.
-function ItemEntry({ item, big = false }: { item: BoxItem; big?: boolean }) {
+// One product line — a compact "shortcut" that opens a product preview modal
+// (so the visitor never leaves /boxes). `big` is the single-column desktop list.
+function ItemEntry({ item, onOpen }: { item: BoxItem; onOpen: (i: BoxItem) => void }) {
   const src = productImg(item)
   return (
-    <Link href={`/products/${item.id}`} className="group flex items-center gap-3">
-      <div className={`relative ${big ? 'w-24 h-28' : 'w-14 h-16'} shrink-0 overflow-hidden bg-cream-100 border border-cream-200`}>
+    <button type="button" onClick={() => onOpen(item)} className="group flex items-center gap-3 text-left w-full">
+      <div className="relative w-14 h-16 shrink-0 overflow-hidden bg-cream-100 border border-cream-200">
         {src
           ? <img src={src} alt={item.name} className="w-full h-full object-cover" />
           : <span className="absolute inset-0 flex items-center justify-center text-lg">{item.imageEmoji}</span>}
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-2">
-          <p className={`font-sans ${big ? 'text-sm' : 'text-xs'} text-bark-600 leading-snug group-hover:text-bark-800 line-clamp-2`}>{item.name}</p>
+          <p className="font-sans text-xs text-bark-600 leading-snug group-hover:text-bark-800 line-clamp-2">{item.name}</p>
           <span className="font-sans text-[11px] text-bark-500 shrink-0">{fmt(item.price)}</span>
         </div>
         <div className="flex items-center gap-2 flex-wrap mt-0.5">
@@ -54,14 +55,14 @@ function ItemEntry({ item, big = false }: { item: BoxItem; big?: boolean }) {
           {item.organic && <span className="inline-flex items-center gap-0.5 text-sage-600"><Leaf size={9} /><span className="font-sans text-[8px] tracking-[0.1em] uppercase">Organic</span></span>}
         </div>
       </div>
-    </Link>
+    </button>
   )
 }
 
 // Contents split into clear "For Baby" / "For Mama" parts (two columns on wider
 // space, stacked on phones). Uses the item's audience when the box editor set
 // it; otherwise infers Mama from the product category (mom / postpartum / etc.).
-function ItemColumns({ box, big = false }: { box: ResolvedBox; big?: boolean }) {
+function ItemColumns({ box, big = false, onOpen }: { box: ResolvedBox; big?: boolean; onOpen: (i: BoxItem) => void }) {
   const isMama = (i: BoxItem) =>
     i.audience === 'mama' ||
     (!i.audience && /\b(mom|mama|mother|matern|postpartum|self.?care)\b/i.test(i.category ?? ''))
@@ -69,16 +70,16 @@ function ItemColumns({ box, big = false }: { box: ResolvedBox; big?: boolean }) 
   const mama = box.items.filter(isMama)
 
   // Audience sections stack vertically (For Baby, then For Mama). `big` (desktop
-  // left rail) forces a single column with larger thumbnails; otherwise items
-  // flow in two columns (mobile modal) to stay compact.
-  const grid = big ? 'grid grid-cols-1 gap-y-4' : 'grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-3'
+  // left rail) is a single column; otherwise items flow in two columns (mobile
+  // modal) to stay compact.
+  const grid = big ? 'grid grid-cols-1 gap-y-3' : 'grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-3'
   return (
     <div className="space-y-6">
       {baby.length > 0 && (
         <div>
           <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">For Baby</p>
           <div className={grid}>
-            {baby.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} big={big} />)}
+            {baby.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} onOpen={onOpen} />)}
           </div>
         </div>
       )}
@@ -86,7 +87,7 @@ function ItemColumns({ box, big = false }: { box: ResolvedBox; big?: boolean }) 
         <div>
           <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">For Mama</p>
           <div className={grid}>
-            {mama.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} big={big} />)}
+            {mama.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} onOpen={onOpen} />)}
           </div>
         </div>
       )}
@@ -141,7 +142,7 @@ function PriceBlock({ box }: { box: ResolvedBox }) {
 }
 
 // Mobile: the contents live in a modal, opened by tapping the box.
-function ItemsModal({ box, onClose }: { box: ResolvedBox; onClose: () => void }) {
+function ItemsModal({ box, onClose, onPreview }: { box: ResolvedBox; onClose: () => void; onPreview: (i: BoxItem) => void }) {
   return (
     <div className="fixed inset-0 z-[60] bg-bark-900/55 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-6" onClick={onClose}>
       <div className="bg-cream-50 w-full sm:max-w-lg max-h-[88vh] flex flex-col overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
@@ -153,7 +154,7 @@ function ItemsModal({ box, onClose }: { box: ResolvedBox; onClose: () => void })
           <button onClick={onClose} aria-label="Close" className="text-bark-400 hover:text-bark-600 transition-colors -mt-1"><X size={18} /></button>
         </div>
         <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5">
-          <ItemColumns box={box} />
+          <ItemColumns box={box} onOpen={onPreview} />
         </div>
         <div className="shrink-0 px-6 py-4 border-t border-cream-200 space-y-3">
           <PriceBlock box={box} />
@@ -164,7 +165,7 @@ function ItemsModal({ box, onClose }: { box: ResolvedBox; onClose: () => void })
   )
 }
 
-function BoxCard({ box, style, onOpenItems }: { box: ResolvedBox; style: string; onOpenItems: (b: ResolvedBox) => void }) {
+function BoxCard({ box, style, onOpenItems, onPreview }: { box: ResolvedBox; style: string; onOpenItems: (b: ResolvedBox) => void; onPreview: (i: BoxItem) => void }) {
   const src = box.image
   return (
     <div id={`box-${box.slug}`} className="bg-cream-50 border border-cream-200 overflow-hidden scroll-mt-24">
@@ -177,7 +178,7 @@ function BoxCard({ box, style, onOpenItems }: { box: ResolvedBox; style: string;
           <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-4 shrink-0">What&apos;s Inside</p>
           <div className="relative flex-1 min-h-0">
             <div className="h-full overflow-y-auto scrollbar-hide pr-1">
-              <ItemColumns box={box} big />
+              <ItemColumns box={box} big onOpen={onPreview} />
             </div>
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-cream-50 to-transparent" />
           </div>
@@ -227,6 +228,104 @@ function BoxCard({ box, style, onOpenItems }: { box: ResolvedBox; style: string;
   )
 }
 
+// A read-only product preview that opens over /boxes when a "What's Inside"
+// shortcut is tapped — mirrors the product detail page (2-column photos with a
+// zoom lightbox, certs between dividers, description, materials) so the visitor
+// never loses their place. Pulls gallery/certs/description from /api/products.
+function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => void }) {
+  const [data, setData] = useState<{
+    gallery?: Array<{ id: string; image_url: string; label?: string }>
+    product?: { description?: string; ingredients?: string; certifications?: Array<{ key: string; name?: string; iconUrl?: string | null; certificateUrl?: string | null }> }
+  } | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [lightbox, setLightbox] = useState<string | null>(null)
+
+  useEffect(() => {
+    let alive = true
+    setLoading(true)
+    fetch(`/api/products/${item.id}`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => { if (alive) { setData(d); setLoading(false) } })
+      .catch(() => { if (alive) setLoading(false) })
+    return () => { alive = false }
+  }, [item.id])
+
+  const gallery = data?.gallery ?? []
+  const cells: Array<{ src: string | null; label?: string }> = gallery.length
+    ? gallery.map(g => ({ src: g.image_url, label: g.label }))
+    : [{ src: productImg(item) }]
+  const certs = data?.product?.certifications ?? []
+  const description = data?.product?.description
+  const ingredients = data?.product?.ingredients
+
+  return (
+    <>
+      <div className="fixed inset-0 z-[70] bg-bark-900/60 backdrop-blur-sm flex items-center justify-center p-4 lg:p-10" onClick={onClose}>
+        <div className="bg-white w-full max-w-4xl max-h-[92vh] flex flex-col lg:flex-row lg:overflow-hidden overflow-y-auto relative rounded" onClick={e => e.stopPropagation()}>
+          <button onClick={onClose} aria-label="Close" className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center text-bark-400 hover:text-bark-600 bg-white/80"><X size={16} /></button>
+
+          {/* Photos — 2-column grid, click to enlarge */}
+          <div className="lg:w-[55%] shrink-0 bg-cream-50 p-4 lg:p-5 lg:overflow-y-auto">
+            {loading && gallery.length === 0 ? (
+              <div className="aspect-[3/4] flex items-center justify-center bg-cream-100">
+                <div className="w-6 h-6 border-2 border-cream-300 border-t-bark-600 rounded-full animate-spin" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                {cells.map((c, i) => (
+                  <button key={i} type="button" onClick={() => c.src && setLightbox(c.src)} disabled={!c.src}
+                    className="group relative w-full overflow-hidden bg-cream-200 cursor-zoom-in disabled:cursor-default" style={{ aspectRatio: '3/4' }}>
+                    {c.src
+                      ? <img src={c.src} alt={c.label ?? item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      : <div className="absolute inset-0 flex items-center justify-center text-6xl"><span className="select-none">{item.imageEmoji}</span></div>}
+                    {c.src && <span className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-cream-50/85 text-bark-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><ZoomIn size={13} /></span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Info — mirrors the detail page (certs between dividers, then text) */}
+          <div className="flex-1 lg:min-h-0 lg:overflow-y-auto p-6 lg:p-8 flex flex-col">
+            <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-2">{item.category}</p>
+            <h2 className="font-serif text-2xl lg:text-3xl text-bark-600 leading-tight mb-2">{item.name}</h2>
+            <p className="font-sans text-base text-bark-400 mb-2">{fmt(item.price)}</p>
+
+            {(certs.length > 0 || item.organic) && (
+              <div className="border-t border-b border-cream-300 py-4 mt-2">
+                <CertBadges certs={certs} organic={item.organic} />
+              </div>
+            )}
+            {description && (
+              <div className="border-t border-cream-300 py-3.5">
+                <p className="text-base text-bark-600 leading-relaxed" style={{ fontFamily: 'var(--font-cormorant)' }}>{description}</p>
+              </div>
+            )}
+            {ingredients && (
+              <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
+                <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
+                <span className="font-sans text-xs text-bark-400">{ingredients}</span>
+              </div>
+            )}
+            <div className="border-t border-cream-300 pt-4 mt-auto">
+              <Link href={`/products/${item.id}`} className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
+                View full product →
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {lightbox && (
+        <div className="fixed inset-0 z-[80] bg-bark-900/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-10 cursor-zoom-out" onClick={() => setLightbox(null)}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={lightbox} alt="" className="max-h-[92vh] max-w-[92vw] w-auto h-auto object-contain shadow-2xl" />
+        </div>
+      )}
+    </>
+  )
+}
+
 // Anchor-safe slug for a style/edition name ("All Season" → "all-season").
 function editionSlug(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
@@ -234,6 +333,7 @@ function editionSlug(s: string) {
 
 export function AestheticBoxes({ byStyle }: { byStyle: Array<{ style: string; boxes: ResolvedBox[] }> }) {
   const [openBox, setOpenBox] = useState<ResolvedBox | null>(null)
+  const [previewItem, setPreviewItem] = useState<BoxItem | null>(null)
   const [jumpOpen, setJumpOpen] = useState(false)
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-14 space-y-12">
@@ -274,11 +374,12 @@ export function AestheticBoxes({ byStyle }: { byStyle: Array<{ style: string; bo
             <p className="font-sans text-[10px] text-bark-300">{boxes[0]?.aesthetic}</p>
           </div>
           <div className="space-y-10">
-            {boxes.map(box => <BoxCard key={box.slug} box={box} style={style} onOpenItems={setOpenBox} />)}
+            {boxes.map(box => <BoxCard key={box.slug} box={box} style={style} onOpenItems={setOpenBox} onPreview={setPreviewItem} />)}
           </div>
         </div>
       ))}
-      {openBox && <ItemsModal box={openBox} onClose={() => setOpenBox(null)} />}
+      {openBox && <ItemsModal box={openBox} onClose={() => setOpenBox(null)} onPreview={setPreviewItem} />}
+      {previewItem && <ProductPreviewModal item={previewItem} onClose={() => setPreviewItem(null)} />}
     </div>
   )
 }
