@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { SLOT_BUCKET } from '@/lib/image-slots'
 
-const OK = ['image/jpeg', 'image/png', 'image/webp']
+// SVG + PNG + WebP keep transparency (essential for logos/seals); JPEG can't.
+const OK = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml']
+const EXT: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/svg+xml': 'svg' }
 const MAX_BYTES = 8 * 1024 * 1024
 
 // List all managed slot images (admin) — keyed by slot_key.
@@ -52,10 +54,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true })
     }
 
-    if (!OK.includes(file.type)) return NextResponse.json({ error: 'Only JPG, PNG, or WebP' }, { status: 400 })
+    if (!OK.includes(file.type)) return NextResponse.json({ error: 'Only JPG, PNG, WebP, or SVG' }, { status: 400 })
     if (file.size > MAX_BYTES) return NextResponse.json({ error: 'File too large (max 8MB)' }, { status: 400 })
 
-    const ext = (file.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg')
+    const ext = EXT[file.type] ?? 'jpg'
     const safe = slotKey.replace(/[^a-z0-9.-]/gi, '-')
     const path = `slots/${safe}-${Date.now()}.${ext}`
     const buffer = await file.arrayBuffer()
