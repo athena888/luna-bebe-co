@@ -41,8 +41,19 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   { key: 'build.banner.keepsake', label: 'Banner — Keepsake & Toy',    group: 'Build Your Box', where: 'Wide banner above the Keepsake & Toy category', ratio: '21:9', hint: 'Wide band · ~2000×860' },
   { key: 'build.banner.mom',      label: 'Banner — Mama’s Gift',       group: 'Build Your Box', where: 'Wide banner above the Mama’s Gift category', ratio: '21:9', hint: 'Wide band · ~2000×860' },
 
+  // ── Gift Guides ─────────────────────────────────────────────────────────────
+  { key: 'gifts.organic-newborn-gift-box.hero',    label: 'Organic Newborn — Hero',       group: 'Gift Guides', where: 'Background behind the hero on /gifts/organic-newborn-gift-box',    ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: '~1000×1250' } },
+  { key: 'gifts.gender-neutral-baby-gift-box.hero', label: 'Gender-Neutral — Hero',       group: 'Gift Guides', where: 'Background behind the hero on /gifts/gender-neutral-baby-gift-box', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: '~1000×1250' } },
+  { key: 'gifts.postpartum-care-package.hero',      label: 'Postpartum Care — Hero',      group: 'Gift Guides', where: 'Background behind the hero on /gifts/postpartum-care-package',      ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: '~1000×1250' } },
+  { key: 'gifts.organic-baby-clothes-gift-set.hero',label: 'Organic Clothes — Hero',      group: 'Gift Guides', where: 'Background behind the hero on /gifts/organic-baby-clothes-gift-set', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: '~1000×1250' } },
+  { key: 'gifts.french-baby-gifts.hero',            label: 'French Baby Gifts — Hero',    group: 'Gift Guides', where: 'Background behind the hero on /gifts/french-baby-gifts',            ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: '~1000×1250' } },
+  { key: 'gifts.luxury-baby-shower-gift.hero',      label: 'Luxury Shower Gift — Hero',   group: 'Gift Guides', where: 'Background behind the hero on /gifts/luxury-baby-shower-gift',      ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: '~1000×1250' } },
+
   // ── Ready-Made Boxes ────────────────────────────────────────────────────────
   { key: 'boxes.custom_cta_bg', label: 'Build-your-own CTA background', group: 'Ready-Made Boxes', where: 'Background behind the “Prefer to choose yourself?” CTA', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' } },
+
+  // ── Homepage ────────────────────────────────────────────────────────────────
+  { key: 'home.testimonials_bg', label: 'Testimonials background', group: 'Homepage', where: 'Background behind the reviews carousel section', ratio: '21:9', hint: 'Soft, light lifestyle · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' } },
 
   // ── Footer ──────────────────────────────────────────────────────────────────
   { key: 'footer.bg', label: 'Footer background', group: 'Footer', where: 'Sits behind the whole site footer (every page)', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' } },
