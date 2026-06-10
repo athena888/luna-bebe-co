@@ -50,24 +50,31 @@ function BuyBox({ items }: { items: BoxItem[] }) {
   )
 }
 
-// Simple text item row — tapping opens the product preview modal.
-function ItemRow({ item, onOpen }: { item: BoxItem; onOpen: (i: BoxItem) => void }) {
+// Thumbnail shortcut — tapping opens the product preview modal.
+function ItemEntry({ item, onOpen }: { item: BoxItem; onOpen: (i: BoxItem) => void }) {
+  const src = productImg(item)
   return (
-    <button
-      type="button"
-      onClick={() => onOpen(item)}
-      className="group flex items-center justify-between w-full py-2.5 border-b border-cream-200 last:border-0 text-left hover:border-cream-300 transition-colors"
-    >
-      <div className="flex items-center gap-3">
-        {item.organic && <Leaf size={10} className="text-sage-500 shrink-0" />}
-        <span className="font-sans text-xs text-bark-600 group-hover:text-bark-800 transition-colors leading-snug">{item.name}</span>
+    <button type="button" onClick={() => onOpen(item)} className="group flex items-center gap-3 text-left w-full">
+      <div className="relative w-14 h-16 shrink-0 overflow-hidden bg-cream-100 border border-cream-200">
+        {src
+          ? <img src={src} alt={item.name} className="w-full h-full object-cover" />
+          : <span className="absolute inset-0 flex items-center justify-center text-lg">{item.imageEmoji}</span>}
       </div>
-      <span className="font-sans text-[11px] text-bark-400 shrink-0 ml-4">{fmt(item.price)}</span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline justify-between gap-2">
+          <p className="font-sans text-xs text-bark-600 leading-snug group-hover:text-bark-800 line-clamp-2">{item.name}</p>
+          <span className="font-sans text-[11px] text-bark-500 shrink-0">{fmt(item.price)}</span>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap mt-0.5">
+          <span className="font-sans text-[9px] tracking-[0.15em] uppercase text-gold-400">{item.category}</span>
+          {item.organic && <span className="inline-flex items-center gap-0.5 text-sage-600"><Leaf size={9} /><span className="font-sans text-[8px] tracking-[0.1em] uppercase">Organic</span></span>}
+        </div>
+      </div>
     </button>
   )
 }
 
-// Items grouped by audience, displayed as clean text rows (no thumbnails).
+// Items grouped by audience with thumbnail shortcuts.
 function ItemsList({ box, onOpen }: { box: ResolvedBox; onOpen: (i: BoxItem) => void }) {
   const isMama = (i: BoxItem) =>
     i.audience === 'mama' ||
@@ -79,14 +86,18 @@ function ItemsList({ box, onOpen }: { box: ResolvedBox; onOpen: (i: BoxItem) => 
     <div className="space-y-5">
       {baby.length > 0 && (
         <div>
-          <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-2">For Baby</p>
-          {baby.map((item, i) => <ItemRow key={`${item.id}-${i}`} item={item} onOpen={onOpen} />)}
+          <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">For Baby</p>
+          <div className="space-y-3">
+            {baby.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} onOpen={onOpen} />)}
+          </div>
         </div>
       )}
       {mama.length > 0 && (
         <div>
-          <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-2">For Mama</p>
-          {mama.map((item, i) => <ItemRow key={`${item.id}-${i}`} item={item} onOpen={onOpen} />)}
+          <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">For Mama</p>
+          <div className="space-y-3">
+            {mama.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} onOpen={onOpen} />)}
+          </div>
         </div>
       )}
     </div>
@@ -296,19 +307,11 @@ function BoxSection({
         {/* Bottom: items + price + CTA */}
         <div className="px-8 lg:px-12 xl:px-16 pb-12 lg:pb-16 mt-10">
 
-          {/* What's Inside — shown inline on desktop, behind modal on mobile */}
+          {/* What's Inside — thumbnail shortcuts, always visible */}
           {box.items.length > 0 && (
             <div className="mb-8">
               <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-4">What&apos;s Inside</p>
-              <div className="hidden lg:block">
-                <ItemsList box={box} onOpen={onPreview} />
-              </div>
-              <button
-                onClick={() => onOpenItems(box)}
-                className="lg:hidden font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 hover:text-bark-700 transition-colors border-b border-bark-300 pb-0.5"
-              >
-                See {box.items.length} items →
-              </button>
+              <ItemsList box={box} onOpen={onPreview} />
             </div>
           )}
 
