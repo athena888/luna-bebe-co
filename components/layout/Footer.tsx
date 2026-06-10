@@ -58,8 +58,8 @@ export function Footer() {
 
           {/* Logo + tagline */}
           <div className="mb-10 text-center">
-            <LogoMark className="h-14 w-auto mx-auto mb-3" style={{ color: '#4A3B30' }} alt="Petite Lavande" />
-            <div className="font-serif text-2xl tracking-[0.15em] uppercase text-espresso mb-2">Petite Lavande</div>
+            <LogoMark className="h-24 w-auto mx-auto mb-4" style={{ color: '#4A3B30' }} alt="Petite Lavande" />
+            <div className="font-serif text-3xl tracking-[0.15em] uppercase text-espresso mb-2">Petite Lavande</div>
             <p className="font-serif italic text-espresso text-sm">Fait avec amour, pour vous.</p>
           </div>
 
