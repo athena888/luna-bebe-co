@@ -24,7 +24,7 @@ export default async function BoxesPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-cream-white">
+      <main className="min-h-screen bg-cream-100">
 
         <AestheticBoxes byStyle={byStyle} />
 

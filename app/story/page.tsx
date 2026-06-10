@@ -7,6 +7,7 @@ import { getStoryContent } from '@/lib/story-content'
 import { LogoMark } from '@/components/ui/LogoMark'
 import { SlotImage } from '@/components/ui/SlotImage'
 import { SocialFeed } from '@/components/ui/SocialFeed'
+import { Leaf, Heart, Mail } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Our Story',
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-const VALUE_EMOJI = ['🌿', '🤍', '✉️']
+const VALUE_ICONS = [Leaf, Heart, Mail]
 
 export default async function StoryPage() {
   const [imgs, content] = await Promise.all([
@@ -28,13 +29,13 @@ export default async function StoryPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-cream-white">
+      <main className="min-h-screen bg-cream-50">
 
         {/* Hero image (optional, managed in Portal → Story; mobile crop supported) */}
         <SlotImage slotKey="story.hero" className="relative block w-full aspect-[16/9] sm:aspect-[21/9] overflow-hidden" imgClassName="w-full h-full object-cover" />
 
         {/* Hero */}
-        <div className="border-b border-cream-300 bg-cream-white">
+        <div className="border-b border-cream-300 bg-white">
           <div className="max-w-3xl mx-auto px-6 py-20 text-center">
             <LogoMark className="h-32 w-auto mx-auto mb-6" style={{ color: '#574540' }} alt="Petite Lavande" />
             <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-4">{content.hero.eyebrow}</p>
@@ -77,14 +78,15 @@ export default async function StoryPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
               {content.values.map(({ title, body }, i) => {
                 const vi = valueImgs[i]
+                const Icon = VALUE_ICONS[i] ?? Leaf
                 return (
                   <div key={i} className="text-center">
                     {vi ? (
-                      <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden border border-cream-300">
+                      <div className="w-20 h-20 mx-auto mb-4 rounded-full pl-round-full overflow-hidden border border-cream-300">
                         <img src={vi.public_url} alt={vi.alt_text} className="w-full h-full object-cover" />
                       </div>
                     ) : (
-                      <div className="text-3xl mb-4">{VALUE_EMOJI[i] ?? '🌿'}</div>
+                      <Icon size={26} strokeWidth={1.5} className="text-gold-400 mb-4 mx-auto" />
                     )}
                     <h3 className="font-sans text-xs tracking-[0.2em] uppercase text-bark-600 mb-3">{title}</h3>
                     <p className="font-sans text-sm text-bark-400 leading-relaxed">{body}</p>

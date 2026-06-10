@@ -16,10 +16,22 @@ export function isGots(c: ResolvedCert): boolean {
 }
 function label(c: ResolvedCert): string { return isGots(c) ? 'Organic' : (c.name ?? c.key) }
 
+// Give each cert badge its own muted tone (Organic stays sage); the rest cycle
+// through gold / rose / terra so the row isn't one flat colour.
+function certTone(c: ResolvedCert, idx: number): { wrap: string; text: string } {
+  if (isGots(c)) return { wrap: 'border-sage-200 bg-sage-50 hover:border-sage-300', text: 'text-sage-700' }
+  const tones = [
+    { wrap: 'border-gold-300 bg-gold-100/40 hover:border-gold-400', text: 'text-gold-600' },
+    { wrap: 'border-rose-300 bg-rose-100/50 hover:border-rose-400', text: 'text-rose-400' },
+    { wrap: 'border-terra-300 bg-terra-100/60 hover:border-terra-400', text: 'text-terra-500' },
+  ]
+  return tones[idx % tones.length]
+}
+
 function CertIcon({ c, size }: { c: ResolvedCert; size: number }) {
   if (isGots(c)) {
     return (
-      <span className="rounded-full bg-sage-500 flex items-center justify-center shrink-0" style={{ width: size + 8, height: size + 8 }}>
+      <span className="rounded-full pl-round-full bg-sage-500 flex items-center justify-center shrink-0" style={{ width: size + 8, height: size + 8 }}>
         <Leaf size={size} className="text-white" />
       </span>
     )
@@ -53,21 +65,24 @@ export function CertBadges({ certs, organic }: { certs: ResolvedCert[]; organic?
       {/* Badge row */}
       <div className="flex items-center gap-2 flex-wrap">
         {organicOnly && (
-          <span className="flex items-center gap-2 border border-sage-200 bg-sage-50 px-3 py-2 rounded-lg" title="Made with organic cotton">
-            <span className="w-[22px] h-[22px] rounded-full bg-sage-500 flex items-center justify-center shrink-0"><Leaf size={13} className="text-white" /></span>
+          <span className="flex items-center gap-2 border border-sage-200 bg-sage-50 px-3 py-2 rounded-lg pl-round" title="Made with organic cotton">
+            <span className="w-[22px] h-[22px] rounded-full pl-round-full bg-sage-500 flex items-center justify-center shrink-0"><Leaf size={13} className="text-white" /></span>
             <span className="font-sans text-[11px] tracking-[0.08em] uppercase text-sage-700 whitespace-nowrap">Organic</span>
           </span>
         )}
-        {active.map((cert, idx) => (
-          <button
-            key={cert.key}
-            onClick={() => openModal(idx)}
-            className={`flex items-center gap-2 border transition-colors px-3 py-2 rounded-lg group ${isGots(cert) ? 'border-sage-200 bg-sage-50 hover:border-sage-300' : 'border-cream-300 bg-cream-50 hover:border-bark-400 hover:bg-cream-100'}`}
-          >
-            <CertIcon c={cert} size={14} />
-            <span className={`font-sans text-[11px] tracking-[0.08em] uppercase whitespace-nowrap transition-colors ${isGots(cert) ? 'text-sage-700' : 'text-bark-500 group-hover:text-bark-700'}`}>{label(cert)}</span>
-          </button>
-        ))}
+        {active.map((cert, idx) => {
+          const tone = certTone(cert, idx)
+          return (
+            <button
+              key={cert.key}
+              onClick={() => openModal(idx)}
+              className={`flex items-center gap-2 border transition-colors px-3 py-2 rounded-lg pl-round group ${tone.wrap}`}
+            >
+              <CertIcon c={cert} size={14} />
+              <span className={`font-sans text-[11px] tracking-[0.08em] uppercase whitespace-nowrap transition-colors ${tone.text}`}>{label(cert)}</span>
+            </button>
+          )
+        })}
       </div>
       {active.length > 0 && (
         <button

@@ -128,12 +128,12 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
           return (
             <div className="absolute bottom-2 left-2 flex items-center gap-1 z-10">
               {showOrganic && (
-                <div className="w-5 h-5 rounded-full bg-sage-500 flex items-center justify-center shadow-sm" title="Made with organic cotton">
+                <div className="w-5 h-5 rounded-full pl-round-full bg-sage-500 flex items-center justify-center shadow-sm" title="Made with organic cotton">
                   <Leaf size={12} className="text-white" />
                 </div>
               )}
               {list.slice(0, 3).map(cert => (
-                <div key={cert.key} className="w-5 h-5 relative bg-white/90 rounded-full p-0.5 backdrop-blur-sm" title={cert.name || cert.key}>
+                <div key={cert.key} className="w-5 h-5 relative bg-white/90 rounded-full pl-round-full p-0.5 backdrop-blur-sm" title={cert.name || cert.key}>
                   {cert.iconUrl ? (
                     <Image src={cert.iconUrl} alt={cert.name || cert.key} fill className="object-contain" />
                   ) : (

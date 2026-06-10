@@ -69,7 +69,7 @@
 * { box-sizing: border-box; }
 
 body {
-  background-color: #FBF7F0;
+  background-color: #FFFFFF;
   color: #383734;
   font-family: "Jost", ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -93,6 +93,10 @@ html { scroll-behavior: smooth; }
 /* Brand aesthetic is sharp / editorial — no rounded corners anywhere. This
    squares every Tailwind rounded utility (incl. rounded-full pills/circles). */
 [class*="rounded"] { border-radius: 0 !important; }
+
+/* Opt-outs: certification icons stay circular; cert badges stay softly rounded. */
+.pl-round-full { border-radius: 9999px !important; }
+.pl-round { border-radius: 0.375rem !important; }
 
 @keyframes ribbonPull {
   0% { transform: scaleY(1); }

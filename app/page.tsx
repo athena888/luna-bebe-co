@@ -118,8 +118,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── Perks bar — attached directly under the hero (footer-cream bg, espresso text) ── */}
-        <section className="bg-cream-100 border-b border-cream-300">
+        {/* ── Perks bar — attached directly under the hero (matches header banner, espresso text) ── */}
+        <section className="bg-[#FEF8F4] border-b border-cream-300">
           <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4">
             {content.perks.map(({ label, sub }, i) => {
               const Icon = PERK_ICONS[i % PERK_ICONS.length]
@@ -151,7 +151,7 @@ export default async function HomePage() {
         <PrebuiltBoxesSection />
 
         {/* ── What makes it special — editable intro + editorial features, all from Portal → Home Content ── */}
-        <section className="border-t border-cream-300 bg-cream-50">
+        <section className="border-t border-cream-300 bg-cream-white">
 
           {/* Editable intro */}
           <div className="max-w-3xl mx-auto text-center px-6 sm:px-8 pt-10 sm:pt-14 pb-6 sm:pb-10">
@@ -241,17 +241,17 @@ export default async function HomePage() {
             <p className="font-script text-4xl text-gold-300 mb-10">unforgettable.</p>
 
             {/* Three simple steps */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-10 text-center">
+            <div className="grid grid-cols-3 gap-4 sm:gap-8 mb-10 text-center">
               {[
                 { Icon: Package, title: 'Build Your Box', body: 'Choose from curated organic items across thoughtful categories — or start from a ready-made set.' },
                 { Icon: PenLine, title: 'Customize Your Card', body: 'Pick a card design and your message — we print it on premium card stock.' },
                 { Icon: Truck, title: 'We Ship With Care', body: 'Arrives sealed with a wax stamp, linen ribbon, and dried lavender.' },
               ].map(({ Icon, title, body }) => (
                 <div key={title}>
-                  <Icon size={22} strokeWidth={1.5} className="text-gold-300 mx-auto mb-4" />
-                  <div className="w-8 h-px bg-cream-300/30 mx-auto mb-4" />
-                  <h3 className="font-serif text-lg text-cream-50 mb-2.5">{title}</h3>
-                  <p className="font-sans text-xs text-cream-200/70 leading-loose">{body}</p>
+                  <Icon size={18} strokeWidth={1.5} className="text-gold-300 mx-auto mb-3 sm:mb-4 sm:size-[22px]" />
+                  <div className="w-6 sm:w-8 h-px bg-cream-300/30 mx-auto mb-3 sm:mb-4" />
+                  <h3 className="font-serif text-sm sm:text-lg text-cream-50 mb-1.5 sm:mb-2.5 leading-tight">{title}</h3>
+                  <p className="font-sans text-[10px] sm:text-xs text-cream-200/70 leading-snug sm:leading-loose hidden sm:block">{body}</p>
                 </div>
               ))}
             </div>

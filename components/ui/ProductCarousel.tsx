@@ -478,7 +478,7 @@ export function ProductCarousel({ products }: { products: Product[] }) {
                   {isOrganic(product) && (
                     <div className="absolute bottom-3 right-3 flex flex-col items-center gap-0.5 pointer-events-none">
                       <span className="font-sans text-[8px] tracking-[0.18em] uppercase text-white drop-shadow">Organic</span>
-                      <span className="w-7 h-7 rounded-full bg-sage-500/90 backdrop-blur-sm flex items-center justify-center shadow-md">
+                      <span className="w-7 h-7 rounded-full pl-round-full bg-sage-500/90 backdrop-blur-sm flex items-center justify-center shadow-md">
                         <Leaf size={14} className="text-white" />
                       </span>
                     </div>
