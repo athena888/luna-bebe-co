@@ -154,13 +154,13 @@ export default async function StoryPage() {
               className="text-3xl text-bark-600 mb-4"
               style={{ fontFamily: 'var(--font-cormorant)' }}
             >
-              @petitelavande
+              @petitelavandeco
             </h2>
             <p className="font-sans text-sm text-bark-400 mb-6 leading-relaxed">
               Behind-the-scenes of our packing process, sneak peeks of new products, and the most beautiful baby unboxings you've ever seen.
             </p>
             <a
-              href="https://instagram.com/petitelavande"
+              href="https://instagram.com/petitelavandeco"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block border border-bark-400 text-bark-600 font-sans text-[11px] tracking-[0.2em] uppercase px-8 py-3.5 hover:bg-bark-600 hover:text-cream-50 transition-colors"
@@ -173,31 +173,6 @@ export default async function StoryPage() {
         {/* Social feed — merged in from the old /social page */}
         <SocialFeed />
 
-        {/* Final CTA */}
-        <div className="border-t border-cream-300 bg-bark-600">
-          <div className="max-w-xl mx-auto px-6 py-16 text-center">
-            <p
-              className="text-3xl text-cream-100 mb-4"
-              style={{ fontFamily: 'var(--font-cormorant)' }}
-            >
-              Ready to give a gift that means something?
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link
-                href="/shop"
-                className="inline-block bg-gold-400 text-bark-700 font-sans text-[11px] tracking-[0.2em] uppercase px-8 py-3.5 hover:bg-gold-500 transition-colors"
-              >
-                Shop Gift Boxes
-              </Link>
-              <Link
-                href="/build"
-                className="inline-block border border-cream-300/40 text-cream-300 font-sans text-[11px] tracking-[0.2em] uppercase px-8 py-3.5 hover:border-cream-300 hover:text-cream-100 transition-colors"
-              >
-                Build Your Own
-              </Link>
-            </div>
-          </div>
-        </div>
 
       </main>
       <Footer />

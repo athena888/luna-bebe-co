@@ -98,6 +98,15 @@ html { scroll-behavior: smooth; }
 .pl-round-full { border-radius: 9999px !important; }
 .pl-round { border-radius: 0.375rem !important; }
 
+/* Color swatch buttons in product/build modals stay circular. */
+.pl-swatch { border-radius: 9999px !important; }
+
+/* Crisp chat widget button — force circular. */
+#crisp-chatbox { border-radius: 9999px !important; overflow: hidden; }
+.crisp-client .cc-unoo,
+.crisp-client [data-id="chat_button"],
+.crisp-client [class*="cc-"] > span { border-radius: 9999px !important; }
+
 @keyframes ribbonPull {
   0% { transform: scaleY(1); }
   50% { transform: scaleY(0.2) scaleX(1.1); }

@@ -710,7 +710,7 @@ export default function BuildPage() {
                             onClick={() => { setPickColor(color); setPickStyle(null); setPickSize(null) }}
                             disabled={!inStockForColor}
                             title={color}
-                            className={`w-8 h-8 rounded-full border-2 transition-all disabled:opacity-30 ${active ? 'border-bark-600 scale-110' : 'border-cream-300 hover:border-bark-400'}`}
+                            className={`pl-swatch w-8 h-8 border-2 transition-all disabled:opacity-30 ${active ? 'border-bark-600 scale-110' : 'border-cream-300 hover:border-bark-400'}`}
                             style={{ backgroundColor: color_hex || '#e5e0d8' }}
                           />
                         )
