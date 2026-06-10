@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Leaf, X, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react'
 import { CertBadges } from '@/components/ui/CertBadges'
 import type { ResolvedBox, BoxItem } from '@/lib/prebuilt-boxes-db'
@@ -12,6 +12,32 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 function fmt(c: number) { return `$${(c / 100).toFixed(0)}` }
 function productImg(p: { id: string; image?: string | null }): string | null {
   return p.image ?? (SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${p.id}.jpg` : null)
+}
+
+// Scroll-triggered fly-in — fires once when element enters viewport.
+function FlyIn({ children, delay = 0, from = 'bottom', className = '', style }: {
+  children: React.ReactNode; delay?: number; from?: 'bottom' | 'left' | 'right'; className?: string; style?: React.CSSProperties
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect() } }, { threshold: 0.12 })
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+  const translate = from === 'left' ? 'translateX(-40px)' : from === 'right' ? 'translateX(40px)' : 'translateY(32px)'
+  return (
+    <div ref={ref} className={className} style={{
+      ...style,
+      opacity: visible ? 1 : 0,
+      transform: visible ? 'none' : translate,
+      transition: `opacity 0.75s ease ${delay}ms, transform 0.75s ease ${delay}ms`,
+    }}>
+      {children}
+    </div>
+  )
 }
 
 function prices(box: ResolvedBox) {
@@ -276,53 +302,56 @@ function BoxSection({
       className="scroll-mt-20 flex flex-col lg:flex-row border-b border-cream-300"
       style={{ minHeight: '95vh' }}
     >
-      {/* Image — 60% width on desktop, full height */}
-      <div className={`relative w-full lg:w-[60%] overflow-hidden ${flip ? 'lg:order-2' : ''}`} style={{ minHeight: '65vw', flex: '0 0 auto' }}>
+      {/* Image — 60% width on desktop, full height, flies in from the image side */}
+      <FlyIn from={flip ? 'right' : 'left'} className={`relative w-full lg:w-[60%] overflow-hidden ${flip ? 'lg:order-2' : ''}`} style={{ minHeight: '65vw', flex: '0 0 auto' }}>
         <div className="absolute inset-0">
           <BoxImages box={box} />
         </div>
-        {/* Variant badge — subtle overlay */}
         {box.variant && box.variant !== 'neutral' && (
           <span className="absolute top-5 left-5 font-sans text-[9px] tracking-[0.2em] uppercase bg-white/85 text-bark-600 px-3 py-1.5 capitalize">
             {box.variant}
           </span>
         )}
-      </div>
+      </FlyIn>
 
       {/* Info panel — fixed 95vh on desktop, flex column so only items scroll */}
       <div className={`lg:w-[40%] flex flex-col lg:h-[95vh] ${flip ? 'lg:order-1' : ''}`}>
 
-        {/* Top: identity — never shrinks */}
+        {/* Top: identity */}
         <div className="px-8 lg:px-12 xl:px-16 pt-12 lg:pt-16 shrink-0">
-          <p className="font-sans text-[9px] tracking-[0.55em] uppercase text-gold-400 mb-5">{style}</p>
-          <h2 className="font-serif text-5xl lg:text-6xl text-bark-600 leading-[1.02] mb-5">{box.name}</h2>
+          <FlyIn delay={100}>
+            <h2 className="font-serif text-5xl lg:text-6xl text-bark-600 leading-[1.02] mb-5">{box.name}</h2>
+          </FlyIn>
           {box.tagline && (
-            <p className="font-cormorant text-xl italic text-bark-400 leading-relaxed mb-6">{box.tagline}</p>
+            <FlyIn delay={200}>
+              <p className="font-cormorant text-xl italic text-bark-400 leading-relaxed mb-6">{box.tagline}</p>
+            </FlyIn>
           )}
           {box.description && (
-            <p className="font-sans text-sm text-bark-500 leading-relaxed">{box.description}</p>
+            <FlyIn delay={280}>
+              <p className="font-sans text-sm text-bark-500 leading-relaxed">{box.description}</p>
+            </FlyIn>
           )}
         </div>
 
-        {/* Middle: items — scrollable, takes whatever space remains */}
+        {/* Middle: items — scrollable */}
         {box.items.length > 0 && (
-          <div className="flex-1 min-h-0 px-8 lg:px-12 xl:px-16 mt-8 relative">
-            <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-4 shrink-0">What&apos;s Inside</p>
+          <FlyIn delay={350} className="flex-1 min-h-0 px-8 lg:px-12 xl:px-16 mt-8 relative">
+            <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-4">What&apos;s Inside</p>
             <div className="lg:h-[calc(100%-2rem)] lg:overflow-y-auto scrollbar-hide pr-1">
               <ItemsList box={box} onOpen={onPreview} />
             </div>
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />
-          </div>
+          </FlyIn>
         )}
 
-        {/* Bottom: price + buy — never shrinks */}
-        <div className="px-8 lg:px-12 xl:px-16 pb-12 lg:pb-10 mt-6 shrink-0">
-          {/* Divider + price + buy */}
+        {/* Bottom: price + buy */}
+        <FlyIn delay={450} className="px-8 lg:px-12 xl:px-16 pb-12 lg:pb-10 mt-6 shrink-0">
           <div className="border-t border-cream-300 pt-6 space-y-5">
             <PriceBlock box={box} />
             <BuyBox items={box.items} />
           </div>
-        </div>
+        </FlyIn>
       </div>
     </section>
   )
@@ -338,11 +367,10 @@ export function AestheticBoxes({ byStyle }: { byStyle: Array<{ style: string; bo
     <>
       {byStyle.map(({ style, boxes }) => (
         <div key={style} id={`edition-${editionSlug(style)}`} className="scroll-mt-20">
-          {/* Edition label — a clean horizontal divider */}
-          <div className="flex items-center gap-6 px-8 lg:px-12 xl:px-16 py-5 border-b border-cream-300">
-            <span className="font-sans text-[9px] tracking-[0.55em] uppercase text-bark-300 shrink-0">{style}</span>
+          {/* Edition label — clean horizontal divider, no repeat count */}
+          <div className="flex items-center gap-8 px-8 lg:px-12 xl:px-16 py-6 border-b border-cream-300">
+            <span className="font-serif text-2xl sm:text-3xl text-bark-500 shrink-0 tracking-wide">{style}</span>
             <span className="flex-1 h-px bg-cream-300" />
-            <span className="font-sans text-[9px] text-bark-300 shrink-0">{boxes.length} {boxes.length === 1 ? 'set' : 'sets'}</span>
           </div>
           {boxes.map(box => {
             const flip = globalIdx++ % 2 === 1
