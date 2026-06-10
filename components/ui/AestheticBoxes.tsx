@@ -289,11 +289,11 @@ function BoxSection({
         )}
       </div>
 
-      {/* Info panel — 40% width, full height, scrollable */}
-      <div className={`lg:w-[40%] flex flex-col justify-between overflow-y-auto ${flip ? 'lg:order-1' : ''}`} style={{ minHeight: '60vh' }}>
+      {/* Info panel — fixed 95vh on desktop, flex column so only items scroll */}
+      <div className={`lg:w-[40%] flex flex-col lg:h-[95vh] ${flip ? 'lg:order-1' : ''}`}>
 
-        {/* Top: identity */}
-        <div className="px-8 lg:px-12 xl:px-16 pt-12 lg:pt-16">
+        {/* Top: identity — never shrinks */}
+        <div className="px-8 lg:px-12 xl:px-16 pt-12 lg:pt-16 shrink-0">
           <p className="font-sans text-[9px] tracking-[0.55em] uppercase text-gold-400 mb-5">{style}</p>
           <h2 className="font-serif text-5xl lg:text-6xl text-bark-600 leading-[1.02] mb-5">{box.name}</h2>
           {box.tagline && (
@@ -304,17 +304,19 @@ function BoxSection({
           )}
         </div>
 
-        {/* Bottom: items + price + CTA */}
-        <div className="px-8 lg:px-12 xl:px-16 pb-12 lg:pb-16 mt-10">
-
-          {/* What's Inside — thumbnail shortcuts, always visible */}
-          {box.items.length > 0 && (
-            <div className="mb-8">
-              <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-4">What&apos;s Inside</p>
+        {/* Middle: items — scrollable, takes whatever space remains */}
+        {box.items.length > 0 && (
+          <div className="flex-1 min-h-0 px-8 lg:px-12 xl:px-16 mt-8 relative">
+            <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-4 shrink-0">What&apos;s Inside</p>
+            <div className="lg:h-[calc(100%-2rem)] lg:overflow-y-auto scrollbar-hide pr-1">
               <ItemsList box={box} onOpen={onPreview} />
             </div>
-          )}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />
+          </div>
+        )}
 
+        {/* Bottom: price + buy — never shrinks */}
+        <div className="px-8 lg:px-12 xl:px-16 pb-12 lg:pb-10 mt-6 shrink-0">
           {/* Divider + price + buy */}
           <div className="border-t border-cream-300 pt-6 space-y-5">
             <PriceBlock box={box} />
