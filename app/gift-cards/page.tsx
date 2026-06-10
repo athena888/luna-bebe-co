@@ -53,7 +53,7 @@ export default function GiftCardsPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-cream-50">
+      <main className="min-h-screen bg-cream-white">
         <SlotBackground slotKey="giftcards.header_bg" scrim="bg-cream-50/55" className="px-6 pt-16 pb-14 sm:pt-20">
           <div className="max-w-4xl mx-auto">
             <div className="text-center">

@@ -28,15 +28,15 @@ export default async function StoryPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-cream-50">
+      <main className="min-h-screen bg-cream-white">
 
         {/* Hero image (optional, managed in Portal → Story; mobile crop supported) */}
         <SlotImage slotKey="story.hero" className="relative block w-full aspect-[16/9] sm:aspect-[21/9] overflow-hidden" imgClassName="w-full h-full object-cover" />
 
         {/* Hero */}
-        <div className="border-b border-cream-300 bg-white">
+        <div className="border-b border-cream-300 bg-cream-white">
           <div className="max-w-3xl mx-auto px-6 py-20 text-center">
-            <LogoMark className="h-20 w-auto mx-auto mb-6" style={{ color: '#574540' }} alt="Petite Lavande" />
+            <LogoMark className="h-32 w-auto mx-auto mb-6" style={{ color: '#574540' }} alt="Petite Lavande" />
             <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-4">{content.hero.eyebrow}</p>
             <h1
               className="text-5xl sm:text-6xl text-bark-600 mb-6 leading-tight"
