@@ -80,7 +80,7 @@ export function Header() {
 
           {/* Logo — seal mark + flat wordmark lockup, links home */}
           <Link href="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0" aria-label="Petite Lavande — home">
-            <LogoMark className="h-9 sm:h-12 w-auto shrink-0" style={{ color: '#574540' }} alt="Petite Lavande" />
+            <LogoMark className="h-10 sm:h-14 w-auto shrink-0" style={{ color: '#574540' }} alt="Petite Lavande" />
             <span
               className="uppercase inline-block"
               style={{
