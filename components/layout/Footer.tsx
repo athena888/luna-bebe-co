@@ -91,6 +91,7 @@ export function Footer() {
                 <li><Link href="/gifts/gender-neutral-baby-gift-box" className="text-espresso hover:text-espresso transition-colors">Gender-Neutral Box</Link></li>
                 <li><Link href="/gifts/postpartum-care-package" className="text-espresso hover:text-espresso transition-colors">Postpartum Care</Link></li>
                 <li><Link href="/gifts/luxury-baby-shower-gift" className="text-espresso hover:text-espresso transition-colors">Luxury Shower Gift</Link></li>
+                <li><Link href="/corporate" className="text-espresso hover:text-espresso transition-colors">Corporate &amp; Team Gifting</Link></li>
               </ul>
             </div>
 

@@ -220,4 +220,19 @@ create policy journal_posts_public_read on journal_posts for select using (publi
 drop policy if exists journal_posts_service_write on journal_posts;
 create policy journal_posts_service_write on journal_posts for all to service_role using (true) with check (true);
 
+-- 14) Corporate & Team Gifting leads. Inserts via the service-role server
+-- action only; duplicate emails allowed (no unique constraint).
+create table if not exists public.b2b_leads (
+  id uuid primary key default gen_random_uuid(),
+  email text not null,
+  name text,
+  company text,
+  team_size text,          -- '<50' | '50-200' | '200-1000' | '1000+'
+  message text,
+  created_at timestamptz not null default now()
+);
+alter table public.b2b_leads enable row level security;
+drop policy if exists b2b_leads_service_write on public.b2b_leads;
+create policy b2b_leads_service_write on public.b2b_leads for all to service_role using (true) with check (true);
+
 -- Done.

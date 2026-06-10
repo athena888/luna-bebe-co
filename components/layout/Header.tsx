@@ -53,7 +53,7 @@ function CartButton() {
 
 function MobileMenu({ onClose }: { onClose: () => void }) {
   return (
-    <div className="md:hidden bg-white border-b border-cream-300 px-6 py-8 flex flex-col gap-6">
+    <div className="md:hidden bg-[#FDF2EA] border-b border-cream-300 px-6 py-8 flex flex-col gap-6">
       <Link href="/build" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Build Your Own Box</Link>
       <div>
         <Link href="/boxes" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Ready-Made Boxes</Link>
@@ -73,7 +73,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
 export function Header() {
   const [open, setOpen] = useState(false)
   return (
-    <header className="relative z-40 bg-white">
+    <header className="relative z-40 bg-[#FDF2EA]">
       {/* Nav bar */}
       <div className="border-b border-cream-300">
         <div className="relative w-full pl-4 sm:pl-9 pr-3 sm:pr-6 h-[88px] flex items-center justify-between">
@@ -85,7 +85,7 @@ export function Header() {
               className="uppercase inline-block"
               style={{
                 fontFamily: 'var(--font-cormorant)',
-                fontSize: 'clamp(1.5rem, 6.5vw, 2.5rem)',
+                fontSize: 'clamp(1.35rem, 6vw, 2.1rem)',
                 fontWeight: 450,
                 lineHeight: 1,
                 color: '#574540',
