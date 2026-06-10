@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { Leaf, X, ZoomIn } from 'lucide-react'
+import { Leaf, X, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react'
 import { CertBadges } from '@/components/ui/CertBadges'
 import type { ResolvedBox, BoxItem } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
@@ -13,13 +13,29 @@ function fmt(c: number) { return `$${(c / 100).toFixed(0)}` }
 function productImg(p: { id: string; image?: string | null }): string | null {
   return p.image ?? (SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${p.id}.jpg` : null)
 }
-function variantBadge(v: ResolvedBox['variant']) {
-  return v === 'girl' ? 'bg-rose-100/85 text-rose-500'
-    : v === 'boy' ? 'bg-sky-100/85 text-sky-600'
-    : 'bg-cream-100/90 text-bark-500'
+
+function prices(box: ResolvedBox) {
+  const contents = box.items.reduce((s, p) => s + (p?.price ?? 0), 0)
+  const regular = BOX_BASE_PRICE + contents
+  const price = box.customPrice ?? regular
+  const saving = box.customPrice != null && regular > box.customPrice
+  return { regular, price, saving }
 }
 
-// Buy straight from the listing — no detour through a detail page.
+function PriceBlock({ box }: { box: ResolvedBox }) {
+  const { regular, price, saving } = prices(box)
+  return (
+    <div>
+      <div className="flex items-baseline gap-3 flex-wrap">
+        {saving && <span className="font-serif text-xl text-bark-400 line-through">{fmt(regular)}</span>}
+        <span className="font-serif text-3xl text-bark-600">{fmt(price)}</span>
+        {saving && <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-sage-600">Save {fmt(regular - price)}</span>}
+      </div>
+      <p className="font-sans text-[11px] text-bark-400 mt-1">Box, packaging &amp; wax seal included · card at checkout</p>
+    </div>
+  )
+}
+
 function BuyBox({ items }: { items: BoxItem[] }) {
   const router = useRouter()
   function buy() {
@@ -34,118 +50,54 @@ function BuyBox({ items }: { items: BoxItem[] }) {
   )
 }
 
-// One product line — a compact "shortcut" that opens a product preview modal
-// (so the visitor never leaves /boxes). `big` is the single-column desktop list.
-function ItemEntry({ item, onOpen }: { item: BoxItem; onOpen: (i: BoxItem) => void }) {
-  const src = productImg(item)
+// Simple text item row — tapping opens the product preview modal.
+function ItemRow({ item, onOpen }: { item: BoxItem; onOpen: (i: BoxItem) => void }) {
   return (
-    <button type="button" onClick={() => onOpen(item)} className="group flex items-center gap-3 text-left w-full">
-      <div className="relative w-14 h-16 shrink-0 overflow-hidden bg-cream-100 border border-cream-200">
-        {src
-          ? <img src={src} alt={item.name} className="w-full h-full object-cover" />
-          : <span className="absolute inset-0 flex items-center justify-center text-lg">{item.imageEmoji}</span>}
+    <button
+      type="button"
+      onClick={() => onOpen(item)}
+      className="group flex items-center justify-between w-full py-2.5 border-b border-cream-200 last:border-0 text-left hover:border-cream-300 transition-colors"
+    >
+      <div className="flex items-center gap-3">
+        {item.organic && <Leaf size={10} className="text-sage-500 shrink-0" />}
+        <span className="font-sans text-xs text-bark-600 group-hover:text-bark-800 transition-colors leading-snug">{item.name}</span>
       </div>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-baseline justify-between gap-2">
-          <p className="font-sans text-xs text-bark-600 leading-snug group-hover:text-bark-800 line-clamp-2">{item.name}</p>
-          <span className="font-sans text-[11px] text-bark-500 shrink-0">{fmt(item.price)}</span>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap mt-0.5">
-          <span className="font-sans text-[9px] tracking-[0.15em] uppercase text-gold-400">{item.category}</span>
-          {item.organic && <span className="inline-flex items-center gap-0.5 text-sage-600"><Leaf size={9} /><span className="font-sans text-[8px] tracking-[0.1em] uppercase">Organic</span></span>}
-        </div>
-      </div>
+      <span className="font-sans text-[11px] text-bark-400 shrink-0 ml-4">{fmt(item.price)}</span>
     </button>
   )
 }
 
-// Contents split into clear "For Baby" / "For Mama" parts (two columns on wider
-// space, stacked on phones). Uses the item's audience when the box editor set
-// it; otherwise infers Mama from the product category (mom / postpartum / etc.).
-function ItemColumns({ box, big = false, onOpen }: { box: ResolvedBox; big?: boolean; onOpen: (i: BoxItem) => void }) {
+// Items grouped by audience, displayed as clean text rows (no thumbnails).
+function ItemsList({ box, onOpen }: { box: ResolvedBox; onOpen: (i: BoxItem) => void }) {
   const isMama = (i: BoxItem) =>
     i.audience === 'mama' ||
     (!i.audience && /\b(mom|mama|mother|matern|postpartum|self.?care)\b/i.test(i.category ?? ''))
   const baby = box.items.filter(i => !isMama(i))
   const mama = box.items.filter(isMama)
 
-  // Audience sections stack vertically (For Baby, then For Mama). `big` (desktop
-  // left rail) is a single column; otherwise items flow in two columns (mobile
-  // modal) to stay compact.
-  const grid = big ? 'grid grid-cols-1 gap-y-3' : 'grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-3'
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {baby.length > 0 && (
         <div>
-          <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">For Baby</p>
-          <div className={grid}>
-            {baby.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} onOpen={onOpen} />)}
-          </div>
+          <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-2">For Baby</p>
+          {baby.map((item, i) => <ItemRow key={`${item.id}-${i}`} item={item} onOpen={onOpen} />)}
         </div>
       )}
       {mama.length > 0 && (
         <div>
-          <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">For Mama</p>
-          <div className={grid}>
-            {mama.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} onOpen={onOpen} />)}
-          </div>
+          <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-2">For Mama</p>
+          {mama.map((item, i) => <ItemRow key={`${item.id}-${i}`} item={item} onOpen={onOpen} />)}
         </div>
       )}
     </div>
   )
 }
 
-// Square, swipeable photo gallery for a box — consistent (aspect-square) size to
-// match the old detail page; horizontal scroll-snap reveals extra uploaded photos.
-function BoxGallery({ images, name, variant }: { images: string[]; name: string; variant: ResolvedBox['variant'] }) {
-  return (
-    <div className="relative w-full aspect-square max-h-full bg-cream-200">
-      {images.length > 0 ? (
-        <div className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scrollbar-hide">
-          {images.map((src, i) => (
-            <img key={i} src={src} alt={`${name} — photo ${i + 1}`} className="w-full h-full shrink-0 snap-center object-cover" />
-          ))}
-        </div>
-      ) : (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-bark-300">
-          <div className="w-8 h-px bg-gold-400" /><span className="font-script text-2xl text-bark-400">Petite Lavande</span><div className="w-8 h-px bg-gold-400" />
-        </div>
-      )}
-      <span className={`absolute top-3 right-3 font-sans text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-full capitalize ${variantBadge(variant)}`}>{variant}</span>
-      {images.length > 1 && (
-        <span className="absolute bottom-3 right-3 bg-cream-50/85 text-bark-600 font-sans text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-full">{images.length} photos · swipe →</span>
-      )}
-    </div>
-  )
-}
-
-function prices(box: ResolvedBox) {
-  const contents = box.items.reduce((s, p) => s + (p?.price ?? 0), 0)
-  const regular = BOX_BASE_PRICE + contents      // value if pieces were bought separately
-  const price = box.customPrice ?? regular        // what we actually charge
-  const saving = box.customPrice != null && regular > box.customPrice
-  return { regular, price, saving }
-}
-
-function PriceBlock({ box }: { box: ResolvedBox }) {
-  const { regular, price, saving } = prices(box)
-  return (
-    <div>
-      <div className="flex items-baseline gap-3 flex-wrap">
-        {saving && <span className="font-serif text-xl text-bark-400 line-through">{fmt(regular)}</span>}
-        <span className="font-serif text-3xl text-bark-600">{fmt(price)}</span>
-        {saving && <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-sage-600">Save {fmt(regular - price)}</span>}
-      </div>
-      <p className="font-sans text-[11px] text-bark-400 mt-1">Includes box, packaging &amp; wax seal · letter added at checkout</p>
-    </div>
-  )
-}
-
-// Mobile: the contents live in a modal, opened by tapping the box.
+// Mobile modal — items + price + buy.
 function ItemsModal({ box, onClose, onPreview }: { box: ResolvedBox; onClose: () => void; onPreview: (i: BoxItem) => void }) {
   return (
     <div className="fixed inset-0 z-[60] bg-bark-900/55 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-6" onClick={onClose}>
-      <div className="bg-cream-50 w-full sm:max-w-lg max-h-[88vh] flex flex-col overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
+      <div className="bg-white w-full sm:max-w-lg max-h-[88vh] flex flex-col overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3 px-6 pt-6 pb-4 border-b border-cream-200 shrink-0">
           <div>
             <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-gold-400">{box.style}</p>
@@ -154,7 +106,7 @@ function ItemsModal({ box, onClose, onPreview }: { box: ResolvedBox; onClose: ()
           <button onClick={onClose} aria-label="Close" className="text-bark-400 hover:text-bark-600 transition-colors -mt-1"><X size={18} /></button>
         </div>
         <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5">
-          <ItemColumns box={box} onOpen={onPreview} />
+          <ItemsList box={box} onOpen={onPreview} />
         </div>
         <div className="shrink-0 px-6 py-4 border-t border-cream-200 space-y-3">
           <PriceBlock box={box} />
@@ -165,73 +117,7 @@ function ItemsModal({ box, onClose, onPreview }: { box: ResolvedBox; onClose: ()
   )
 }
 
-function BoxCard({ box, style, onOpenItems, onPreview }: { box: ResolvedBox; style: string; onOpenItems: (b: ResolvedBox) => void; onPreview: (i: BoxItem) => void }) {
-  const src = box.image
-  return (
-    <div id={`box-${box.slug}`} className="bg-cream-50 border border-cream-200 overflow-hidden scroll-mt-24">
-
-      {/* ── Desktop: What's Inside (1-col scroll) · square gallery · name+desc+price+buy ── */}
-      <div className="hidden lg:grid lg:grid-cols-[1fr_1.5fr_1.05fr] lg:grid-rows-[minmax(0,1fr)] h-[82vh] max-h-[760px]">
-        {/* Left — What's Inside, single column, bigger thumbnails. A soft fade at
-            the bottom hints there's more to scroll (nicer than a raw scrollbar). */}
-        <div className="flex flex-col h-full min-h-0 p-8 xl:p-10 border-r border-cream-200">
-          <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-4 shrink-0">What&apos;s Inside</p>
-          <div className="relative flex-1 min-h-0">
-            <div className="h-full overflow-y-auto scrollbar-hide pr-1">
-              <ItemColumns box={box} big onOpen={onPreview} />
-            </div>
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-cream-50 to-transparent" />
-          </div>
-        </div>
-
-        {/* Middle — square photo gallery (consistent size, swipeable) */}
-        <div className="h-full bg-cream-200 flex items-center justify-center overflow-hidden">
-          <BoxGallery images={box.images?.length ? box.images : (src ? [src] : [])} name={box.name} variant={box.variant} />
-        </div>
-
-        {/* Right — name + description + price + buy, vertically centered so it fits without scrolling */}
-        <div className="flex flex-col justify-center h-full overflow-hidden p-8 xl:p-10 border-l border-cream-200">
-          <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 mb-2">{style}</p>
-          <h2 className="font-serif text-4xl text-bark-600 mb-3 leading-tight">{box.name}</h2>
-          <p className="font-cormorant text-xl italic text-bark-400 mb-4 leading-snug">{box.tagline}</p>
-          {box.description && <p className="font-sans text-sm text-bark-600 leading-relaxed">{box.description}</p>}
-          {box.aesthetic && <p className="font-sans text-[11px] text-bark-300 mt-3 tracking-wide">{box.aesthetic}</p>}
-          <div className="mt-6 pt-5 border-t border-cream-200 space-y-4">
-            <PriceBlock box={box} />
-            <BuyBox items={box.items} />
-          </div>
-        </div>
-      </div>
-
-      {/* ── Mobile: image first → name/description/price → modal for contents ── */}
-      <div className="lg:hidden">
-        <button onClick={() => onOpenItems(box)} className="relative block w-full aspect-[4/5] bg-cream-200">
-          {src
-            ? <img src={src} alt={box.name} className="absolute inset-0 w-full h-full object-cover" />
-            : <div className="absolute inset-0 flex items-center justify-center text-bark-300"><span className="font-script text-2xl text-bark-400">Petite Lavande</span></div>}
-          <span className={`absolute top-3 right-3 font-sans text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-full capitalize ${variantBadge(box.variant)}`}>{box.variant}</span>
-          <span className="absolute bottom-3 right-3 bg-cream-50/90 text-bark-700 font-sans text-[9px] tracking-[0.2em] uppercase px-3 py-1.5">See what&apos;s inside →</span>
-        </button>
-        <div className="p-6">
-          <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 mb-2">{style}</p>
-          <h2 className="font-serif text-3xl text-bark-600 mb-2 leading-tight">{box.name}</h2>
-          <p className="font-cormorant text-lg italic text-bark-400 mb-4 leading-snug">{box.tagline}</p>
-          {box.description && <p className="font-sans text-sm text-bark-600 leading-relaxed mb-5">{box.description}</p>}
-          <div className="mb-5"><PriceBlock box={box} /></div>
-          <BuyBox items={box.items} />
-          <button onClick={() => onOpenItems(box)} className="mt-3 w-full border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase py-3.5 hover:bg-bark-600 hover:text-cream-50 transition-colors">
-            See What&apos;s Inside
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// A read-only product preview that opens over /boxes when a "What's Inside"
-// shortcut is tapped — mirrors the product detail page (2-column photos with a
-// zoom lightbox, certs between dividers, description, materials) so the visitor
-// never loses their place. Pulls gallery/certs/description from /api/products.
+// Full-bleed product preview modal (unchanged — 2-col photo grid + lightbox + certs).
 function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => void }) {
   const [data, setData] = useState<{
     gallery?: Array<{ id: string; image_url: string; label?: string }>
@@ -251,9 +137,7 @@ function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => 
   }, [item.id])
 
   const gallery = data?.gallery ?? []
-  const cells: Array<{ src: string | null; label?: string }> = gallery.length
-    ? gallery.map(g => ({ src: g.image_url, label: g.label }))
-    : [{ src: productImg(item) }]
+  const cells: Array<{ src: string | null; label?: string }> = gallery.length ? gallery.map(g => ({ src: g.image_url, label: g.label ?? undefined })) : [{ src: productImg(item) }]
   const certs = data?.product?.certifications ?? []
   const description = data?.product?.description
   const ingredients = data?.product?.ingredients
@@ -261,10 +145,8 @@ function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => 
   return (
     <>
       <div className="fixed inset-0 z-[70] bg-bark-900/60 backdrop-blur-sm flex items-center justify-center p-4 lg:p-10" onClick={onClose}>
-        <div className="bg-white w-full max-w-4xl max-h-[92vh] flex flex-col lg:flex-row lg:overflow-hidden overflow-y-auto relative rounded" onClick={e => e.stopPropagation()}>
+        <div className="bg-white w-full max-w-4xl max-h-[92vh] flex flex-col lg:flex-row lg:overflow-hidden overflow-y-auto relative" onClick={e => e.stopPropagation()}>
           <button onClick={onClose} aria-label="Close" className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center text-bark-400 hover:text-bark-600 bg-white/80"><X size={16} /></button>
-
-          {/* Photos — 2-column grid, click to enlarge */}
           <div className="lg:w-[55%] shrink-0 bg-cream-50 p-4 lg:p-5 lg:overflow-y-auto">
             {loading && gallery.length === 0 ? (
               <div className="aspect-[3/4] flex items-center justify-center bg-cream-100">
@@ -278,19 +160,16 @@ function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => 
                     {c.src
                       ? <img src={c.src} alt={c.label ?? item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                       : <div className="absolute inset-0 flex items-center justify-center text-6xl"><span className="select-none">{item.imageEmoji}</span></div>}
-                    {c.src && <span className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-cream-50/85 text-bark-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><ZoomIn size={13} /></span>}
+                    {c.src && <span className="absolute bottom-2 right-2 w-7 h-7 bg-cream-50/85 text-bark-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><ZoomIn size={13} /></span>}
                   </button>
                 ))}
               </div>
             )}
           </div>
-
-          {/* Info — mirrors the detail page (certs between dividers, then text) */}
           <div className="flex-1 lg:min-h-0 lg:overflow-y-auto p-6 lg:p-8 flex flex-col">
             <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-2">{item.category}</p>
             <h2 className="font-serif text-2xl lg:text-3xl text-bark-600 leading-tight mb-2">{item.name}</h2>
             <p className="font-sans text-base text-bark-400 mb-2">{fmt(item.price)}</p>
-
             {(certs.length > 0 || item.organic) && (
               <div className="border-t border-b border-cream-300 py-4 mt-2">
                 <CertBadges certs={certs} organic={item.organic} />
@@ -315,7 +194,6 @@ function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => 
           </div>
         </div>
       </div>
-
       {lightbox && (
         <div className="fixed inset-0 z-[80] bg-bark-900/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-10 cursor-zoom-out" onClick={() => setLightbox(null)}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -326,30 +204,158 @@ function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => 
   )
 }
 
-// Anchor-safe slug for a style/edition name ("All Season" → "all-season").
+// Simple swipeable image strip for the box (no card).
+function BoxImages({ box }: { box: ResolvedBox }) {
+  const images = box.images?.length ? box.images : (box.image ? [box.image] : [])
+  const [idx, setIdx] = useState(0)
+  const n = images.length
+
+  if (n === 0) {
+    return (
+      <div className="absolute inset-0 bg-cream-100 flex items-center justify-center">
+        <span className="font-script text-4xl text-bark-300">Petite Lavande</span>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <img src={images[idx]} alt={box.name} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500" />
+      {n > 1 && (
+        <>
+          <button
+            onClick={() => setIdx(i => (i - 1 + n) % n)}
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/75 hover:bg-white flex items-center justify-center transition-colors"
+            aria-label="Previous photo"
+          >
+            <ChevronLeft size={18} className="text-bark-600" />
+          </button>
+          <button
+            onClick={() => setIdx(i => (i + 1) % n)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/75 hover:bg-white flex items-center justify-center transition-colors"
+            aria-label="Next photo"
+          >
+            <ChevronRight size={18} className="text-bark-600" />
+          </button>
+          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-1.5">
+            {images.map((_, i) => (
+              <button key={i} onClick={() => setIdx(i)} className={`transition-all duration-300 ${i === idx ? 'w-4 h-1 bg-white' : 'w-1 h-1 bg-white/50'}`} />
+            ))}
+          </div>
+        </>
+      )}
+    </>
+  )
+}
+
 function editionSlug(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
+// One box — full editorial section, 95vh, image + info panel, no card borders.
+function BoxSection({
+  box, style, flip, onOpenItems, onPreview,
+}: {
+  box: ResolvedBox; style: string; flip: boolean
+  onOpenItems: (b: ResolvedBox) => void; onPreview: (i: BoxItem) => void
+}) {
+  return (
+    <section
+      id={`box-${box.slug}`}
+      className="scroll-mt-20 flex flex-col lg:flex-row border-b border-cream-300"
+      style={{ minHeight: '95vh' }}
+    >
+      {/* Image — 60% width on desktop, full height */}
+      <div className={`relative w-full lg:w-[60%] overflow-hidden ${flip ? 'lg:order-2' : ''}`} style={{ minHeight: '65vw', flex: '0 0 auto' }}>
+        <div className="absolute inset-0">
+          <BoxImages box={box} />
+        </div>
+        {/* Variant badge — subtle overlay */}
+        {box.variant && box.variant !== 'neutral' && (
+          <span className="absolute top-5 left-5 font-sans text-[9px] tracking-[0.2em] uppercase bg-white/85 text-bark-600 px-3 py-1.5 capitalize">
+            {box.variant}
+          </span>
+        )}
+      </div>
+
+      {/* Info panel — 40% width, full height, scrollable */}
+      <div className={`lg:w-[40%] flex flex-col justify-between overflow-y-auto ${flip ? 'lg:order-1' : ''}`} style={{ minHeight: '60vh' }}>
+
+        {/* Top: identity */}
+        <div className="px-8 lg:px-12 xl:px-16 pt-12 lg:pt-16">
+          <p className="font-sans text-[9px] tracking-[0.55em] uppercase text-gold-400 mb-5">{style}</p>
+          <h2 className="font-serif text-5xl lg:text-6xl text-bark-600 leading-[1.02] mb-5">{box.name}</h2>
+          {box.tagline && (
+            <p className="font-cormorant text-xl italic text-bark-400 leading-relaxed mb-6">{box.tagline}</p>
+          )}
+          {box.description && (
+            <p className="font-sans text-sm text-bark-500 leading-relaxed">{box.description}</p>
+          )}
+        </div>
+
+        {/* Bottom: items + price + CTA */}
+        <div className="px-8 lg:px-12 xl:px-16 pb-12 lg:pb-16 mt-10">
+
+          {/* What's Inside — shown inline on desktop, behind modal on mobile */}
+          {box.items.length > 0 && (
+            <div className="mb-8">
+              <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-4">What&apos;s Inside</p>
+              <div className="hidden lg:block">
+                <ItemsList box={box} onOpen={onPreview} />
+              </div>
+              <button
+                onClick={() => onOpenItems(box)}
+                className="lg:hidden font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 hover:text-bark-700 transition-colors border-b border-bark-300 pb-0.5"
+              >
+                See {box.items.length} items →
+              </button>
+            </div>
+          )}
+
+          {/* Divider + price + buy */}
+          <div className="border-t border-cream-300 pt-6 space-y-5">
+            <PriceBlock box={box} />
+            <BuyBox items={box.items} />
+          </div>
+        </div>
+      </div>
+    </section>
+  )
 }
 
 export function AestheticBoxes({ byStyle }: { byStyle: Array<{ style: string; boxes: ResolvedBox[] }> }) {
   const [openBox, setOpenBox] = useState<ResolvedBox | null>(null)
   const [previewItem, setPreviewItem] = useState<BoxItem | null>(null)
+
+  let globalIdx = 0
+
   return (
-    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-14 space-y-12">
-      {/* Edition navigation now lives in the header's "Ready-Made" dropdown. */}
+    <>
       {byStyle.map(({ style, boxes }) => (
-        <div key={style} id={`edition-${editionSlug(style)}`} className="scroll-mt-24">
-          <div className="mb-6 pb-4 border-b border-cream-300 flex items-baseline gap-4">
-            <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400">{style}</p>
-            <p className="font-sans text-[10px] text-bark-300">{boxes[0]?.aesthetic}</p>
+        <div key={style} id={`edition-${editionSlug(style)}`} className="scroll-mt-20">
+          {/* Edition label — a clean horizontal divider */}
+          <div className="flex items-center gap-6 px-8 lg:px-12 xl:px-16 py-5 border-b border-cream-300">
+            <span className="font-sans text-[9px] tracking-[0.55em] uppercase text-bark-300 shrink-0">{style}</span>
+            <span className="flex-1 h-px bg-cream-300" />
+            <span className="font-sans text-[9px] text-bark-300 shrink-0">{boxes.length} {boxes.length === 1 ? 'set' : 'sets'}</span>
           </div>
-          <div className="space-y-10">
-            {boxes.map(box => <BoxCard key={box.slug} box={box} style={style} onOpenItems={setOpenBox} onPreview={setPreviewItem} />)}
-          </div>
+          {boxes.map(box => {
+            const flip = globalIdx++ % 2 === 1
+            return (
+              <BoxSection
+                key={box.slug}
+                box={box}
+                style={style}
+                flip={flip}
+                onOpenItems={setOpenBox}
+                onPreview={setPreviewItem}
+              />
+            )
+          })}
         </div>
       ))}
       {openBox && <ItemsModal box={openBox} onClose={() => setOpenBox(null)} onPreview={setPreviewItem} />}
       {previewItem && <ProductPreviewModal item={previewItem} onClose={() => setPreviewItem(null)} />}
-    </div>
+    </>
   )
 }
