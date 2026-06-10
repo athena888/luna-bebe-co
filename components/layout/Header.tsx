@@ -76,11 +76,11 @@ export function Header() {
     <header className="relative z-40 bg-[#FEF8F4]">
       {/* Nav bar */}
       <div className="border-b border-cream-300">
-        <div className="relative w-full pl-4 sm:pl-9 pr-3 sm:pr-6 h-[68px] flex items-center justify-between">
+        <div className="relative w-full pl-4 sm:pl-9 pr-3 sm:pr-6 h-[80px] flex items-center justify-between">
 
           {/* Logo — seal mark + flat wordmark lockup, links home */}
           <Link href="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0" aria-label="Petite Lavande — home">
-            <LogoMark className="h-10 sm:h-14 w-auto shrink-0" style={{ color: '#574540' }} alt="Petite Lavande" />
+            <LogoMark className="h-11 sm:h-16 w-auto shrink-0" style={{ color: '#574540' }} alt="Petite Lavande" />
             <span
               className="uppercase inline-block"
               style={{
