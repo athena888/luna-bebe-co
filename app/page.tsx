@@ -118,8 +118,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── Perks bar — attached directly under the hero ── */}
-        <section className="bg-terra-100 border-b border-cream-300">
+        {/* ── Perks bar — attached directly under the hero (footer-cream bg, espresso text) ── */}
+        <section className="bg-cream-100 border-b border-cream-300">
           <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4">
             {content.perks.map(({ label, sub }, i) => {
               const Icon = PERK_ICONS[i % PERK_ICONS.length]
@@ -128,9 +128,9 @@ export default async function HomePage() {
                   ${i % 2 === 0 ? 'border-r' : ''}
                   ${i < 2 ? 'border-b md:border-b-0' : ''}
                   md:border-r md:last:border-r-0`}>
-                  <Icon size={18} className="text-bark-400 mb-2 mx-auto" strokeWidth={1.5} />
-                  <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-bark-600 mb-0.5">{label}</p>
-                  <p className="font-sans text-[9px] text-bark-400 tracking-wide">{sub}</p>
+                  <Icon size={18} className="text-espresso mb-2 mx-auto" strokeWidth={1.5} />
+                  <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-espresso mb-0.5">{label}</p>
+                  <p className="font-sans text-[9px] text-espresso/80 tracking-wide">{sub}</p>
                 </div>
               )
             })}
