@@ -235,4 +235,23 @@ alter table public.b2b_leads enable row level security;
 drop policy if exists b2b_leads_service_write on public.b2b_leads;
 create policy b2b_leads_service_write on public.b2b_leads for all to service_role using (true) with check (true);
 
+-- 15) Social posts — uploadable photo/video feed + Instagram/TikTok embeds.
+-- Powers the Social Feed admin page and the homepage Instagram grid.
+create table if not exists social_posts (
+  id            uuid primary key default gen_random_uuid(),
+  type          text not null check (type in ('image', 'video', 'instagram', 'tiktok')),
+  media_url     text,                             -- uploaded file public URL
+  embed_url     text,                             -- original IG/TikTok post URL
+  caption       text not null default '',
+  active        boolean not null default true,
+  display_order int  not null default 0,
+  created_at    timestamptz not null default now()
+);
+create index if not exists social_posts_active_idx on social_posts (active, display_order, created_at desc);
+alter table social_posts enable row level security;
+drop policy if exists social_posts_public_read on social_posts;
+create policy social_posts_public_read on social_posts for select using (active = true);
+drop policy if exists social_posts_service_write on social_posts;
+create policy social_posts_service_write on social_posts for all to service_role using (true) with check (true);
+
 -- Done.

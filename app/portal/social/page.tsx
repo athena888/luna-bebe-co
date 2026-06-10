@@ -36,6 +36,7 @@ export default function SocialPortalPage() {
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [caption, setCaption] = useState('')
+  const [uploadLinkUrl, setUploadLinkUrl] = useState('')
   const [embedUrl, setEmbedUrl] = useState('')
   const [embedCaption, setEmbedCaption] = useState('')
   const [tab, setTab] = useState<'upload' | 'embed'>('upload')
@@ -66,12 +67,14 @@ export default function SocialPortalPage() {
     const form = new FormData()
     form.append('file', file)
     form.append('caption', caption)
+    if (uploadLinkUrl) form.append('embed_url', uploadLinkUrl)
     try {
       const res = await fetch('/api/portal/social/upload', { method: 'POST', body: form })
       const data = await res.json()
       if (data.post) {
         setPosts(p => [data.post, ...p])
         setCaption('')
+        setUploadLinkUrl('')
       } else {
         setError(data.error ?? 'Upload failed')
       }
@@ -187,6 +190,13 @@ export default function SocialPortalPage() {
                 }}
               />
             </div>
+            <input
+              type="url"
+              value={uploadLinkUrl}
+              onChange={e => setUploadLinkUrl(e.target.value)}
+              placeholder="Instagram post URL — https://www.instagram.com/p/... (optional)"
+              className="w-full border border-cream-300 px-4 py-2.5 font-sans text-sm text-bark-600 placeholder:text-bark-400/50 focus:outline-none focus:border-bark-400 bg-white"
+            />
             <input
               type="text"
               value={caption}

@@ -6,6 +6,7 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData()
     const file = formData.get('file') as File | null
     const caption = (formData.get('caption') as string | null) ?? ''
+    const embedUrl = (formData.get('embed_url') as string | null)?.trim() || null
 
     if (!file) {
       return NextResponse.json({ error: 'file is required' }, { status: 400 })
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
 
     const { data: post, error: dbError } = await supabaseAdmin
       .from('social_posts')
-      .insert({ type, media_url: urlData.publicUrl, caption, active: true, display_order: 0 })
+      .insert({ type, media_url: urlData.publicUrl, embed_url: embedUrl, caption, active: true, display_order: 0 })
       .select()
       .single()
 

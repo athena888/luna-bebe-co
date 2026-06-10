@@ -13,6 +13,7 @@ import { RotatingImage } from '@/components/ui/RotatingImage'
 import { ParallaxLayer } from '@/components/ui/ParallaxLayer'
 import { getHomeContent } from '@/lib/home-content'
 import { getHomeGalleries } from '@/lib/site-images'
+import { getActiveSocialPosts } from '@/lib/social-posts'
 import { Package, PenLine, Leaf, Heart, Truck, Mail } from 'lucide-react'
 import { TestimonialsCarousel } from '@/components/ui/TestimonialsCarousel'
 import { SlotBackground } from '@/components/ui/SlotBackground'
@@ -80,8 +81,8 @@ async function getCollectionsData() {
 }
 
 export default async function HomePage() {
-  const [featured, collectionsData, content, galleries] = await Promise.all([
-    getBestsellers(), getCollectionsData(), getHomeContent(), getHomeGalleries(['hero', 'box', 'brand', 'inside']),
+  const [featured, collectionsData, content, galleries, igPosts] = await Promise.all([
+    getBestsellers(), getCollectionsData(), getHomeContent(), getHomeGalleries(['hero', 'box', 'brand', 'inside']), getActiveSocialPosts(6),
   ])
 
   return (
@@ -224,59 +225,68 @@ export default async function HomePage() {
         </SlotBackground>
 
         {/* ── Contact / Social ── */}
-        <section className="border-t border-cream-300 bg-[#FEF8F4] py-16 px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">Connect</p>
-            <h2 className="font-serif text-3xl sm:text-4xl text-bark-600 mb-12">Find Us</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-cream-300">
-              {[
-                {
-                  label: 'Email',
-                  sub: 'hello@petitelavande.com',
-                  href: 'mailto:hello@petitelavande.com',
-                  icon: (
-                    <Mail size={20} strokeWidth={1.5} className="text-bark-400 mx-auto mb-3" />
-                  ),
-                },
-                {
-                  label: 'Instagram',
-                  sub: '@petitelavandeco',
-                  href: 'https://www.instagram.com/petitelavandeco',
-                  icon: (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-bark-400 mx-auto mb-3"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
-                  ),
-                },
-                {
-                  label: 'Facebook',
-                  sub: 'Petite Lavande',
-                  href: 'https://www.facebook.com/profile.php?id=61590439437590',
-                  icon: (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-bark-400 mx-auto mb-3"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-                  ),
-                },
-                {
-                  label: 'TikTok',
-                  sub: '@petitelavandeco',
-                  href: 'https://www.tiktok.com/@petitelavandeco',
-                  icon: (
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-bark-400 mx-auto mb-3"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg>
-                  ),
-                },
-              ].map(({ label, sub, href, icon }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target={href.startsWith('mailto') ? undefined : '_blank'}
-                  rel={href.startsWith('mailto') ? undefined : 'noopener noreferrer'}
-                  className="bg-[#FEF8F4] py-10 px-4 flex flex-col items-center hover:bg-cream-100 transition-colors group"
-                >
-                  {icon}
-                  <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-600 mb-1 group-hover:text-bark-800 transition-colors">{label}</p>
-                  <p className="font-sans text-[10px] text-bark-400 break-all">{sub}</p>
-                </a>
-              ))}
+        <section className="border-t border-cream-300 bg-[#FEF8F4]">
+          {/* Social icon strip — compact */}
+          <div className="py-8 px-6">
+            <div className="max-w-4xl mx-auto text-center">
+              <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-2">Connect</p>
+              <h2 className="font-serif text-2xl sm:text-3xl text-bark-600 mb-6">Find Us</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-cream-300">
+                {[
+                  { label: 'Email', sub: 'hello@petitelavande.com', href: 'mailto:hello@petitelavande.com',
+                    icon: <Mail size={18} strokeWidth={1.5} className="text-bark-400 mx-auto mb-2.5" /> },
+                  { label: 'Instagram', sub: '@petitelavandeco', href: 'https://www.instagram.com/petitelavandeco',
+                    icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-bark-400 mx-auto mb-2.5"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> },
+                  { label: 'Facebook', sub: 'Petite Lavande', href: 'https://www.facebook.com/profile.php?id=61590439437590',
+                    icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-bark-400 mx-auto mb-2.5"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> },
+                  { label: 'TikTok', sub: '@petitelavandeco', href: 'https://www.tiktok.com/@petitelavandeco',
+                    icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px] text-bark-400 mx-auto mb-2.5"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg> },
+                ].map(({ label, sub, href, icon }) => (
+                  <a key={label} href={href}
+                    target={href.startsWith('mailto') ? undefined : '_blank'}
+                    rel={href.startsWith('mailto') ? undefined : 'noopener noreferrer'}
+                    className="bg-[#FEF8F4] py-6 px-4 flex flex-col items-center hover:bg-cream-100 transition-colors group"
+                  >
+                    {icon}
+                    <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-600 mb-0.5 group-hover:text-bark-800 transition-colors">{label}</p>
+                    <p className="font-sans text-[10px] text-bark-400 break-all">{sub}</p>
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
+
+          {/* Instagram photo grid — shows when posts have been uploaded in Portal → Social Feed */}
+          {igPosts.length > 0 && (
+            <div className="border-t border-cream-300">
+              <div className="py-4 text-center">
+                <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer"
+                  className="font-sans text-[9px] tracking-[0.35em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
+                  Follow @petitelavandeco on Instagram
+                </a>
+              </div>
+              <div className="grid grid-cols-3 sm:grid-cols-6">
+                {igPosts.map((post, i) => (
+                  <a key={post.id}
+                    href={post.embed_url || 'https://www.instagram.com/petitelavandeco'}
+                    target="_blank" rel="noopener noreferrer"
+                    className="relative aspect-square overflow-hidden group bg-cream-200 block"
+                  >
+                    {post.media_url && (
+                      <img
+                        src={post.media_url}
+                        alt={post.caption || `Petite Lavande post ${i + 1}`}
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-500"
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-bark-800/0 group-hover:bg-bark-800/25 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="white" stroke="none"/></svg>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
 
         {/* ── 9. Dark CTA — now carries the three steps ── */}

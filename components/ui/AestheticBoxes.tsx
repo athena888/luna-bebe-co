@@ -344,14 +344,14 @@ function BoxSection({
           )}
         </div>
 
-        {/* Middle: items — scrollable, no FlyIn so items are always visible */}
+        {/* Middle: items — on desktop scrolls within the fixed-height panel; on mobile flows naturally */}
         {box.items.length > 0 && (
-          <div className="flex-1 min-h-0 px-8 lg:px-12 xl:px-16 mt-8 relative">
+          <div className="px-8 lg:px-12 xl:px-16 mt-8 lg:flex-1 lg:min-h-0 relative">
             <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-4">What&apos;s Inside</p>
-            <div className="lg:h-[calc(100%-2rem)] lg:overflow-y-auto scrollbar-hide pr-1">
+            <div className="lg:max-h-[400px] lg:overflow-y-auto scrollbar-hide pr-1">
               <ItemsList box={box} onOpen={onPreview} />
             </div>
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />
+            <div className="pointer-events-none hidden lg:block absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />
           </div>
         )}
 
