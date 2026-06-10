@@ -145,48 +145,6 @@ export default async function StoryPage() {
           </div>
         </div>
 
-        {/* As seen on / social proof */}
-        <div className="border-t border-cream-300">
-          <div className="max-w-3xl mx-auto px-6 py-16 text-center">
-            <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-bark-400 mb-10">As Told By Our Families</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-              {[
-                {
-                  quote: 'I have never seen a gift box like this. The new mother literally cried when she opened it. Every single item was exquisite.',
-                  name: 'Sarah M.',
-                  context: 'Baby shower gift',
-                },
-                {
-                  quote: 'We ordered the Neutral Newborn box and it became the most-talked-about gift at the baby shower. Worth every penny.',
-                  name: 'James & Clara',
-                  context: 'First-time parents',
-                },
-                {
-                  quote: 'The attention to detail is unreal. The wax seal, the tissue paper, the personalized card — it felt like unwrapping something from a Parisian boutique.',
-                  name: 'Margot T.',
-                  context: 'Gifted to a colleague',
-                },
-                {
-                  quote: 'My sister still uses the bamboo swaddle two years later. That\'s how I know the quality is real.',
-                  name: 'Lily R.',
-                  context: 'Returning customer',
-                },
-              ].map(({ quote, name, context }) => (
-                <div key={name} className="border border-cream-300 bg-white p-6 text-left">
-                  <p
-                    className="text-lg text-bark-500 leading-relaxed mb-4"
-                    style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}
-                  >
-                    "{quote}"
-                  </p>
-                  <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-600">{name}</p>
-                  <p className="font-sans text-[10px] text-bark-400">{context}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
         {/* Instagram CTA */}
         <div className="border-t border-cream-300 bg-terra-50">
           <div className="max-w-2xl mx-auto px-6 py-16 text-center">

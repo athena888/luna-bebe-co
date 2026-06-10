@@ -14,6 +14,7 @@ import { ParallaxLayer } from '@/components/ui/ParallaxLayer'
 import { getHomeContent } from '@/lib/home-content'
 import { getHomeGalleries } from '@/lib/site-images'
 import { Package, PenLine, Leaf, Heart, Truck } from 'lucide-react'
+import { TestimonialsCarousel } from '@/components/ui/TestimonialsCarousel'
 
 // Icons for the under-hero perks bar, mapped by index to the default perks.
 const PERK_ICONS = [Package, PenLine, Leaf, Heart]
@@ -207,26 +208,15 @@ export default async function HomePage() {
         {/* ── Editorial strip — video or image ── */}
         <EditorialStrip />
 
-        {/* ── 8. Testimonials ── */}
-        <section className="py-14 sm:py-28 px-6 sm:px-8">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-4">
+        {/* ── 8. Testimonials — auto-rotating, combined from all pages ── */}
+        <section className="border-t border-cream-300 py-12 sm:py-16 px-6 sm:px-8">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-10">
               <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">{content.reviews.eyebrow}</p>
               <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">{content.reviews.title}</h2>
+              <p className="font-sans text-[11px] tracking-[0.2em] text-gold-400 mt-3">{content.reviews.ratingLine}</p>
             </div>
-            <p className="font-sans text-[11px] tracking-[0.2em] text-gold-400 text-center mb-14">
-              {content.reviews.ratingLine}
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-cream-300">
-              {content.reviews.items.map(({ quote, name, context }) => (
-                <div key={name} className="py-10 md:py-0 md:px-10 first:pl-0 last:pr-0 text-center">
-                  <p className="font-sans text-[10px] tracking-[0.25em] text-gold-400 mb-5">★★★★★</p>
-                  <p className="font-serif text-sm text-bark-600 leading-relaxed italic mb-8">&ldquo;{quote}&rdquo;</p>
-                  <p className="font-sans text-xs font-medium text-bark-600">{name}</p>
-                  <p className="font-sans text-xs text-bark-400 mt-0.5">{context}</p>
-                </div>
-              ))}
-            </div>
+            <TestimonialsCarousel />
           </div>
         </section>
 

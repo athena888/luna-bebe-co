@@ -474,7 +474,7 @@ export function ProductCarousel({ products }: { products: Product[] }) {
                     </div>
                   ) : (
                     <div
-                      className="w-full h-full bg-cream-100 flex items-center justify-center"
+                      className="w-full h-full bg-white flex items-center justify-center"
                       style={{ fontSize: 'clamp(3rem,12vw,5rem)' }}
                     >
                       {product.imageEmoji}
