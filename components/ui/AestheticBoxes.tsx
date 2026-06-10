@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
 import { Leaf, X, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react'
 import { CertBadges } from '@/components/ui/CertBadges'
@@ -62,17 +61,28 @@ function PriceBlock({ box }: { box: ResolvedBox }) {
   )
 }
 
-function BuyBox({ items }: { items: BoxItem[] }) {
-  const router = useRouter()
-  function buy() {
-    sessionStorage.setItem('pl_box_selection', JSON.stringify(items))
-    sessionStorage.removeItem('pl_letter')
-    router.push('/checkout')
-  }
+function BuyBox(_: { items: BoxItem[] }) {
+  const [notice, setNotice] = useState(false)
   return (
-    <button onClick={buy} className="w-full bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase py-4 hover:bg-bark-700 transition-colors">
-      Buy This Box
-    </button>
+    <div>
+      <button
+        onClick={() => setNotice(true)}
+        className="w-full bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase py-4 hover:bg-bark-700 transition-colors"
+      >
+        Buy This Box
+      </button>
+      {notice && (
+        <div className="mt-3 border border-cream-300 bg-cream-50 px-4 py-3 text-center">
+          <p className="font-sans text-[11px] tracking-[0.1em] text-bark-600 leading-relaxed">
+            We&rsquo;re launching soon &mdash; follow us on{' '}
+            <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">Instagram</a>
+            {' '}&amp;{' '}
+            <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">Facebook</a>
+            {' '}for the announcement.
+          </p>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -334,15 +344,15 @@ function BoxSection({
           )}
         </div>
 
-        {/* Middle: items — scrollable */}
+        {/* Middle: items — scrollable, no FlyIn so items are always visible */}
         {box.items.length > 0 && (
-          <FlyIn delay={350} className="flex-1 min-h-0 px-8 lg:px-12 xl:px-16 mt-8 relative">
+          <div className="flex-1 min-h-0 px-8 lg:px-12 xl:px-16 mt-8 relative">
             <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-4">What&apos;s Inside</p>
             <div className="lg:h-[calc(100%-2rem)] lg:overflow-y-auto scrollbar-hide pr-1">
               <ItemsList box={box} onOpen={onPreview} />
             </div>
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />
-          </FlyIn>
+          </div>
         )}
 
         {/* Bottom: price + buy */}

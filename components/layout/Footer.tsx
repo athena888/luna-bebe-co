@@ -111,6 +111,8 @@ export function Footer() {
               <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-espresso mb-4 font-medium">Contact</p>
               <ul className="space-y-2.5 text-xs font-sans">
                 <li><a href="mailto:hello@petitelavande.com" className="text-espresso hover:text-espresso transition-colors break-all">hello@<br />petitelavande.com</a></li>
+                <li><a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="text-espresso hover:text-espresso transition-colors">Instagram</a></li>
+                <li><a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="text-espresso hover:text-espresso transition-colors">Facebook</a></li>
               </ul>
             </div>
 

@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react'
 // title text (in normal flow) slides over it. Desktop only and respects
 // prefers-reduced-motion. The inner layer is oversized (inset -10%) so the
 // drift never reveals an edge. Children should fill it (absolute inset-0).
-export function ParallaxLayer({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+export function ParallaxLayer({ children, className = '', strength = 0.08 }: { children: React.ReactNode; className?: string; strength?: number }) {
   const outer = useRef<HTMLDivElement>(null)
   const inner = useRef<HTMLDivElement>(null)
 
@@ -24,7 +24,7 @@ export function ParallaxLayer({ children, className = '' }: { children: React.Re
       // -1 when just below the viewport, +1 when just above.
       const p = (rect.top + rect.height / 2 - vh / 2) / (vh / 2 + rect.height / 2)
       const clamped = Math.max(-1, Math.min(1, p))
-      const shift = -clamped * rect.height * 0.08 // up to 8% of its height (< the 10% inset)
+      const shift = -clamped * rect.height * strength // configurable strength (default 8%)
       im.style.transform = `translate3d(0, ${shift.toFixed(1)}px, 0)`
     }
     const onScroll = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(update) }

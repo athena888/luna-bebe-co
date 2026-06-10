@@ -74,6 +74,18 @@ export function Header() {
   const [open, setOpen] = useState(false)
   return (
     <header className="relative z-40 bg-[#FEF8F4]">
+
+      {/* Coming-soon announcement strip */}
+      <div className="bg-[#4A3B30] text-cream-50 text-center py-2.5 px-4">
+        <p className="font-sans text-[10px] tracking-[0.25em] uppercase leading-relaxed">
+          Petite Lavande is launching soon &mdash;&nbsp;
+          <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gold-300 transition-colors">Instagram</a>
+          &nbsp;&amp;&nbsp;
+          <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gold-300 transition-colors">Facebook</a>
+          &nbsp;for updates
+        </p>
+      </div>
+
       {/* Nav bar */}
       <div className="border-b border-cream-300">
         <div className="relative w-full pl-4 sm:pl-9 pr-3 sm:pr-6 h-[80px] flex items-center justify-between">

@@ -12,6 +12,7 @@ import { memo, useCallback, useMemo, useState as useLocalState } from 'react'
 import { CertBadges } from '@/components/ui/CertBadges'
 import { SlotImage } from '@/components/ui/SlotImage'
 import { SlotBackground } from '@/components/ui/SlotBackground'
+import { ParallaxLayer } from '@/components/ui/ParallaxLayer'
 import type { ProductCert, CertDef } from '@/lib/certifications'
 
 type ResolvedCert = ProductCert & Partial<CertDef>
@@ -212,6 +213,14 @@ export default function BuildPage() {
   const [pickStyle, setPickStyle] = useState<string | null>(null)
   const [modalLoading, setModalLoading] = useState(false)
   const [lightbox, setLightbox] = useState<string | null>(null)
+  const [checkoutNotice, setCheckoutNotice] = useState(false)
+  const [heroImg, setHeroImg] = useState<string | null>(null)
+  useEffect(() => {
+    fetch('/api/site-images?keys=build.header_bg')
+      .then(r => r.json())
+      .then(d => setHeroImg(d.images?.['build.header_bg']?.public_url ?? null))
+      .catch(() => {})
+  }, [])
   const galleryCache = useRef<Record<string, GalleryImage[]>>({})
 
   useEffect(() => {
@@ -422,14 +431,35 @@ export default function BuildPage() {
       <Header />
       <main className="min-h-screen bg-cream-50 pb-16 lg:pb-0">
 
-        <SlotBackground slotKey="build.header_bg" scrim="" className="border-b border-cream-300 bg-cream-50 px-6 py-14 sm:py-20 min-h-[80vh] flex flex-col items-center justify-center text-center">
-          {(hasImage) => (
-            <div style={hasImage ? { textShadow: '0 1px 12px rgba(0,0,0,0.35)' } : undefined}>
-              <h1 className={`font-serif text-4xl sm:text-5xl mb-2 ${hasImage ? 'text-cream-50' : 'text-bark-600'}`}>Build Your Box</h1>
-              <p className={`font-sans text-xs tracking-wide ${hasImage ? 'text-cream-100/90' : 'text-bark-500'}`}>Click any item to explore — add as many as you like.</p>
-            </div>
+        {/* Hero — full-viewport, parallax bg, Why Simple text, fade-in */}
+        <section className="relative w-full min-h-screen bg-bark-700 flex items-end overflow-hidden border-b border-cream-300">
+          {heroImg ? (
+            <>
+              <ParallaxLayer strength={0.2}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={heroImg} alt="Build Your Box" className="absolute inset-0 w-full h-full object-cover" fetchPriority="high" />
+              </ParallaxLayer>
+              <div className="absolute inset-0 bg-gradient-to-t from-bark-900/75 via-bark-900/25 to-transparent pointer-events-none" />
+            </>
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-bark-700 to-bark-800" />
           )}
-        </SlotBackground>
+          <div
+            className="relative z-10 w-full px-8 sm:px-14 pb-20 sm:pb-28 max-w-3xl"
+            style={{ animation: 'slideUp 1.4s cubic-bezier(0.22,1,0.36,1) both' }}
+          >
+            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-cream-200/60 mb-5">Build Your Box</p>
+            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-cream-50 leading-[1.05] mb-6">
+              We don&apos;t add what doesn&apos;t belong.
+            </h1>
+            <p className="font-serif italic text-lg sm:text-xl text-cream-200/80 leading-relaxed max-w-lg mb-3">
+              We don&apos;t pad the box with filler. Every item here exists because a new mother will actually use it, hold it, drink it, or dress her baby in it.
+            </p>
+            <p className="font-sans text-sm text-cream-100/50 tracking-wide">
+              Simplicity isn&apos;t a shortcut. It&apos;s the harder choice.
+            </p>
+          </div>
+        </section>
 
         <div className="w-full py-12 space-y-8">
           {activeCategories.map((cat) => (
@@ -581,12 +611,23 @@ export default function BuildPage() {
           </div>
           <p className="font-sans text-[10px] text-bark-400/60 mb-4">Box fee &amp; shipping calculated at checkout</p>
           <button
-            onClick={() => { setBagOpen(false); handleCheckout() }}
+            onClick={() => { if (hasItems) setCheckoutNotice(true) }}
             disabled={!hasItems}
             className="w-full bg-bark-700 text-cream-50 font-sans text-[11px] tracking-[0.25em] uppercase py-4 hover:bg-bark-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Check Out
           </button>
+          {checkoutNotice && (
+            <div className="mt-3 border border-cream-300 bg-cream-50 px-4 py-3 text-center">
+              <p className="font-sans text-[11px] tracking-[0.1em] text-bark-600 leading-relaxed">
+                We&rsquo;re launching soon &mdash; follow{' '}
+                <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">@petitelavandeco</a>
+                {' '}&amp;{' '}
+                <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">Facebook</a>
+                {' '}for the announcement.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

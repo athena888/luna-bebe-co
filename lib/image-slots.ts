@@ -20,6 +20,8 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   { key: 'story.value.1', label: 'Value icon — “Purely Organic”', group: 'Story', where: 'Round icon above the “Purely Organic” value', ratio: '1:1', hint: 'Square, centered subject · ~800×800' },
   { key: 'story.value.2', label: 'Value icon — “Artisan-Made”',   group: 'Story', where: 'Round icon above the “Artisan-Made” value', ratio: '1:1', hint: 'Square, centered subject · ~800×800' },
   { key: 'story.value.3', label: 'Value icon — “Every Detail”',   group: 'Story', where: 'Round icon above the “Every Detail” value', ratio: '1:1', hint: 'Square, centered subject · ~800×800' },
+  { key: 'story.founder_bg', label: 'Founder letter background', group: 'Story', where: 'Background behind the founder letter section', ratio: '16:9', hint: 'Soft, light lifestyle · ~2000×1130', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' } },
+  { key: 'story.values_bg', label: 'Values section background',   group: 'Story', where: 'Background behind the “What We Stand For” section', ratio: '16:9', hint: 'Soft, airy background · ~2000×1130', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' } },
 
   // ── Shop ───────────────────────────────────────────────────────────────────
   { key: 'shop.header_bg', label: 'Header background', group: 'Shop', where: 'Sits behind the title at the top of the Shop page', ratio: '21:9', hint: 'Wide & soft (text sits on top) · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' } },

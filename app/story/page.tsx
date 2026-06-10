@@ -6,6 +6,7 @@ import { getSiteImages } from '@/lib/site-images'
 import { getStoryContent } from '@/lib/story-content'
 import { LogoMark } from '@/components/ui/LogoMark'
 import { SlotImage } from '@/components/ui/SlotImage'
+import { SlotBackground } from '@/components/ui/SlotBackground'
 import { SocialFeed } from '@/components/ui/SocialFeed'
 import { Leaf, Heart, Mail } from 'lucide-react'
 
@@ -50,6 +51,7 @@ export default async function StoryPage() {
         </div>
 
         {/* Founder letter */}
+        <SlotBackground slotKey="story.founder_bg" scrim="bg-cream-50/80" className="border-b border-cream-300">
         <div className="max-w-2xl mx-auto px-6 py-20">
           {founder && (
             <div className="float-none sm:float-right sm:ml-8 mb-6 w-full sm:w-56 shrink-0">
@@ -70,9 +72,10 @@ export default async function StoryPage() {
             </p>
           </div>
         </div>
+        </SlotBackground>
 
         {/* Brand values */}
-        <div className="border-t border-cream-300 bg-white">
+        <SlotBackground slotKey="story.values_bg" scrim="bg-white/85" className="border-t border-cream-300">
           <div className="max-w-4xl mx-auto px-6 py-20">
             <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-bark-400 text-center mb-12">What We Stand For</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
@@ -95,52 +98,20 @@ export default async function StoryPage() {
               })}
             </div>
           </div>
-        </div>
+        </SlotBackground>
 
-        {/* We don't curate. We trace. */}
+        {/* Only the best for her */}
         <div className="border-t border-cream-300">
-          <div className="max-w-2xl mx-auto px-6 py-20 text-center">
-            <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-gold-400 mb-5">{content.traced.eyebrow}</p>
-            <p
-              className="text-3xl sm:text-4xl text-bark-600 mb-6"
-              style={{ fontFamily: 'var(--font-cormorant)' }}
-            >
-              {content.traced.heading}
-            </p>
-            <p className="font-sans text-sm text-bark-500 leading-relaxed">
-              {content.traced.body}
-            </p>
-          </div>
-        </div>
-
-        {/* Why Simple */}
-        <div className="border-t border-cream-300 bg-white">
           <div className="max-w-2xl mx-auto px-6 py-20">
-            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">{content.whySimple.eyebrow}</p>
-            <p className="font-sans text-base text-bark-600 leading-relaxed mb-6">
-              {content.whySimple.body}
+            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">Only the best for her</p>
+            <p className="font-sans text-sm text-bark-500 leading-relaxed mb-5">
+              The aesthetic comes from old French apothecaries — kraft paper, glass tubes, wax seals, twine, dried herbs. A time when remedies came with care, and care came with beauty.
             </p>
             <p
               className="text-2xl text-bark-500"
               style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}
             >
-              {content.whySimple.tagline}
-            </p>
-          </div>
-        </div>
-
-        {/* French Apothecary Soul, PNW Heart */}
-        <div className="border-t border-cream-300">
-          <div className="max-w-2xl mx-auto px-6 py-20">
-            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">{content.french.eyebrow}</p>
-            {content.french.paragraphs.map((para, i) => (
-              <p key={i} className="font-sans text-sm text-bark-500 leading-relaxed mb-5">{para}</p>
-            ))}
-            <p
-              className="text-xl text-bark-500"
-              style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}
-            >
-              {content.french.tagline}
+              Everything tagged. Everything traceable. Everything chosen the way a daughter would choose for her own mother.
             </p>
           </div>
         </div>
