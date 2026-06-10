@@ -2,9 +2,18 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { Menu, X, User, ShoppingBag } from 'lucide-react'
+import { Menu, X, User, ShoppingBag, ChevronDown } from 'lucide-react'
 import { cartCount } from '@/lib/cart'
 import { LogoMark } from '@/components/ui/LogoMark'
+
+// Ready-Made editions — the label links to all boxes; the dropdown jumps to a
+// specific edition section on /boxes (anchors match `edition-<slug>` there).
+const READY_MADE_EDITIONS = [
+  { label: 'All', href: '/boxes' },
+  { label: 'Summer', href: '/boxes#edition-summer' },
+  { label: 'All Season', href: '/boxes#edition-all-season' },
+  { label: 'Winter', href: '/boxes#edition-winter' },
+]
 
 // Cart lives in the nav row so it scrolls with the header and aligns on every
 // page. On the build page it opens the bag drawer in place; elsewhere it links
@@ -46,7 +55,14 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
   return (
     <div className="md:hidden bg-white border-b border-cream-300 px-6 py-8 flex flex-col gap-6">
       <Link href="/build" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Build Your Own Box</Link>
-      <Link href="/boxes" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Ready-Made Boxes</Link>
+      <div>
+        <Link href="/boxes" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Ready-Made Boxes</Link>
+        <div className="mt-3 ml-3 flex flex-col gap-3 border-l border-cream-300 pl-4">
+          {READY_MADE_EDITIONS.map(e => (
+            <Link key={e.label} href={e.href} className="text-[10px] font-sans tracking-[0.2em] uppercase text-bark-300 hover:text-bark-500 transition-colors" onClick={onClose}>{e.label}</Link>
+          ))}
+        </div>
+      </div>
       <Link href="/gift-cards" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Gift Cards</Link>
       <Link href="/account" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>My Account</Link>
       <Link href="/story" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Stories</Link>
@@ -85,7 +101,24 @@ export function Header() {
           {/* Nav — center (flows between logo and icons, never overlaps) */}
           <nav className="hidden md:flex flex-1 items-center justify-center gap-5 lg:gap-7 px-4">
             <Link href="/build" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400 hover:text-bark-600 transition-colors whitespace-nowrap">Build Your Own Box</Link>
-            <Link href="/boxes" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400 hover:text-bark-600 transition-colors whitespace-nowrap">Ready-Made</Link>
+
+            {/* Ready-Made — links to all boxes, with an edition dropdown on hover */}
+            <div className="relative group">
+              <Link href="/boxes" className="flex items-center gap-1 text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400 hover:text-bark-600 transition-colors whitespace-nowrap">
+                Ready-Made
+                <ChevronDown size={12} className="text-bark-300 group-hover:text-bark-500 transition-colors" />
+              </Link>
+              <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 hidden group-hover:block group-focus-within:block z-50">
+                <div className="bg-white border border-cream-200 shadow-xl py-1 min-w-[170px]">
+                  {READY_MADE_EDITIONS.map(e => (
+                    <Link key={e.label} href={e.href} className="block px-5 py-2.5 text-[11px] font-sans tracking-[0.2em] uppercase text-bark-500 hover:bg-cream-100 hover:text-bark-700 transition-colors">
+                      {e.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             <Link href="/gift-cards" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400 hover:text-bark-600 transition-colors whitespace-nowrap">Gift Cards</Link>
             <Link href="/story" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400 hover:text-bark-600 transition-colors">Stories</Link>
           </nav>

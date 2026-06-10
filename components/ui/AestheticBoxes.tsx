@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { Leaf, X, ChevronDown, ZoomIn } from 'lucide-react'
+import { Leaf, X, ZoomIn } from 'lucide-react'
 import { CertBadges } from '@/components/ui/CertBadges'
 import type { ResolvedBox, BoxItem } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
@@ -334,39 +334,9 @@ function editionSlug(s: string) {
 export function AestheticBoxes({ byStyle }: { byStyle: Array<{ style: string; boxes: ResolvedBox[] }> }) {
   const [openBox, setOpenBox] = useState<ResolvedBox | null>(null)
   const [previewItem, setPreviewItem] = useState<BoxItem | null>(null)
-  const [jumpOpen, setJumpOpen] = useState(false)
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-14 space-y-12">
-      {/* Edition jump menu — only when there's more than one edition to jump between */}
-      {byStyle.length > 1 && (
-        <div className="sticky top-3 z-30 flex justify-end -mb-6">
-          <div className="relative">
-            <button
-              onClick={() => setJumpOpen(o => !o)}
-              onBlur={() => setTimeout(() => setJumpOpen(false), 120)}
-              className="inline-flex items-center gap-2 bg-cream-50 border border-bark-300 px-5 py-2.5 font-sans text-[10px] tracking-[0.25em] uppercase text-bark-600 hover:border-bark-500 shadow-sm transition-colors"
-            >
-              Jump to edition
-              <ChevronDown size={14} className={`transition-transform ${jumpOpen ? 'rotate-180' : ''}`} />
-            </button>
-            {jumpOpen && (
-              <div className="absolute right-0 mt-2 z-30 bg-cream-50 border border-cream-200 shadow-xl min-w-[200px] py-1">
-                {byStyle.map(({ style }) => (
-                  <a
-                    key={style}
-                    href={`#edition-${editionSlug(style)}`}
-                    onClick={() => setJumpOpen(false)}
-                    className="block px-5 py-2.5 font-sans text-xs text-bark-600 hover:bg-cream-100 transition-colors capitalize"
-                  >
-                    {style}
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
+      {/* Edition navigation now lives in the header's "Ready-Made" dropdown. */}
       {byStyle.map(({ style, boxes }) => (
         <div key={style} id={`edition-${editionSlug(style)}`} className="scroll-mt-24">
           <div className="mb-6 pb-4 border-b border-cream-300 flex items-baseline gap-4">
