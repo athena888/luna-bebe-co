@@ -87,6 +87,10 @@ p, li, blockquote { font-family: "Cormorant Garamond", Georgia, serif; }
 ::selection { background: #DDD7CF; color: #383734; }
 html { scroll-behavior: smooth; }
 
+/* Brand aesthetic is sharp / editorial — no rounded corners anywhere. This
+   squares every Tailwind rounded utility (incl. rounded-full pills/circles). */
+[class*="rounded"] { border-radius: 0 !important; }
+
 @keyframes ribbonPull {
   0% { transform: scaleY(1); }
   50% { transform: scaleY(0.2) scaleX(1.1); }
