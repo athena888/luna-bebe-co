@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, X, ShoppingBag, Leaf } from 'lucide-react'
+import { ChevronLeft, ChevronRight, X, ShoppingBag, Leaf, ZoomIn } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import type { Product } from '@/types'
 import type { ProductCert, CertDef } from '@/lib/certifications'
@@ -57,22 +57,23 @@ function isOrganic(p: Product): boolean {
 
 function ProductModal({ product, onClose }: { product: Product; onClose: () => void }) {
   const router = useRouter()
-  const [imgPhase, setImgPhase] = useState(0)
   const [gallery, setGallery] = useState<GalleryImage[]>([])
   const [variants, setVariants] = useState<VariantOpt[]>([])
   const [certs, setCerts] = useState<ResolvedCert[]>([])
-  const [imgIdx, setImgIdx] = useState(0)
   const [pickColor, setPickColor] = useState<string | null>(null)
   const [pickSize, setPickSize] = useState<string | null>(null)
   const [desc, setDesc] = useState(product.description)
   const [ingredients, setIngredients] = useState(product.ingredients)
+  const [loading, setLoading] = useState(true)
+  const [lightbox, setLightbox] = useState<string | null>(null)
 
-  // Fallback main image (catalog override → product photo → emoji)
-  const fallbackSrc = getImgSrc(product, imgPhase)
+  const fallbackSrc = SUPABASE_URL
+    ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${product.id}.jpg`
+    : product.image ?? null
 
-  // Fetch live gallery / variants / certs / fresh copy
   useEffect(() => {
     let active = true
+    setLoading(true)
     fetch(`/api/products/${product.id}`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
@@ -89,33 +90,25 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
         if (data.product?.ingredients !== undefined) setIngredients(data.product.ingredients ?? undefined)
       })
       .catch(() => {})
+      .finally(() => { if (active) setLoading(false) })
     return () => { active = false }
   }, [product.id])
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose()
-      if (e.key === 'ArrowRight') setImgIdx(i => Math.min(i + 1, slideCount - 1))
-      if (e.key === 'ArrowLeft') setImgIdx(i => Math.max(i - 1, 0))
+      if (e.key === 'Escape') { if (lightbox) setLightbox(null); else onClose() }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onClose, gallery.length])
+  }, [onClose, lightbox])
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
   }, [])
 
-  // Slides: prefer gallery images; fall back to single resolved image
-  const slides: string[] = gallery.length > 0
-    ? gallery.map(g => g.image_url)
-    : fallbackSrc ? [fallbackSrc] : []
-  const slideCount = slides.length
-  const mainSrc = slides[imgIdx] ?? null
+  const photos = gallery.length > 0 ? gallery.map(g => g.image_url) : fallbackSrc ? [fallbackSrc] : []
 
-  // Variant picker derived state
   const hasVariants = variants.length > 0
   const colors = useMemo(() => {
     const m = new Map<string, string | null>()
@@ -131,162 +124,185 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[60] bg-black/70 flex items-center justify-center p-4 sm:p-8"
-      onClick={onClose}
-    >
+    <>
       <div
-        className="bg-cream-50 w-full max-w-2xl flex flex-col sm:flex-row overflow-hidden max-h-[90vh] shadow-2xl"
-        onClick={e => e.stopPropagation()}
+        className="fixed inset-0 z-[60] bg-bark-800/60 backdrop-blur-sm flex items-center justify-center p-4 lg:p-10"
+        onClick={onClose}
       >
-        <div className="relative w-full sm:w-[45%] shrink-0 bg-cream-100 flex flex-col">
-          <div className="relative w-full" style={{ aspectRatio: '3/4' }}>
-            {mainSrc ? (
-              <Image src={mainSrc} alt={product.name} fill className="object-cover" unoptimized onError={() => { if (gallery.length === 0) setImgPhase(p => p + 1) }} />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center" style={{ fontSize: '6rem' }}>
-                {product.imageEmoji}
-              </div>
-            )}
-            {product.tag && (
-              <div className="absolute top-3 left-3">
-                <span className="bg-white/90 text-bark-600 font-sans text-[9px] tracking-[0.2em] uppercase px-2.5 py-1">
-                  {product.tag}
-                </span>
-              </div>
-            )}
+        <div
+          className="bg-white w-full max-w-4xl max-h-[92vh] flex flex-col lg:flex-row lg:overflow-hidden overflow-y-auto relative"
+          onClick={e => e.stopPropagation()}
+        >
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center text-bark-400 hover:text-bark-600 transition-colors bg-white/80"
+          >
+            <X size={16} />
+          </button>
 
-            {/* Photo shift arrows */}
-            {slideCount > 1 && (
-              <>
-                <button
-                  onClick={() => setImgIdx(i => Math.max(i - 1, 0))}
-                  disabled={imgIdx === 0}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/85 shadow flex items-center justify-center text-bark-600 hover:bg-white transition-all disabled:opacity-0"
-                >
-                  <ChevronLeft size={15} />
-                </button>
-                <button
-                  onClick={() => setImgIdx(i => Math.min(i + 1, slideCount - 1))}
-                  disabled={imgIdx === slideCount - 1}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/85 shadow flex items-center justify-center text-bark-600 hover:bg-white transition-all disabled:opacity-0"
-                >
-                  <ChevronRight size={15} />
-                </button>
-              </>
+          {/* Image panel — 2-col grid, same as build page modal */}
+          <div className="lg:w-[55%] shrink-0 bg-cream-50 p-4 lg:p-5 lg:overflow-y-auto">
+            {loading ? (
+              <div className="aspect-[3/4] flex items-center justify-center bg-cream-100">
+                <div className="w-6 h-6 border-2 border-cream-300 border-t-bark-600 rounded-full animate-spin" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                {(photos.length > 0 ? photos : [null]).map((src, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => src && setLightbox(src)}
+                    disabled={!src}
+                    className="group relative w-full overflow-hidden bg-cream-200 cursor-zoom-in disabled:cursor-default"
+                    style={{ aspectRatio: '3/4' }}
+                  >
+                    {src
+                      ? <Image src={src} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width:1023px) 50vw, 28vw" unoptimized />
+                      : <div className="absolute inset-0 flex items-center justify-center text-7xl"><span className="select-none">{product.imageEmoji}</span></div>}
+                    {src && (
+                      <span className="absolute bottom-2 right-2 w-7 h-7 bg-cream-50/85 text-bark-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <ZoomIn size={13} />
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
 
-          {/* Photo dots */}
-          {slideCount > 1 && (
-            <div className="flex justify-center gap-1.5 py-2.5">
-              {slides.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setImgIdx(i)}
-                  className={`rounded-full transition-all duration-200 ${imgIdx === i ? 'w-4 h-1.5 bg-bark-600' : 'w-1.5 h-1.5 bg-bark-300'}`}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Certifications — under the image carousel */}
-          {certs.length > 0 && (
-            <div className="px-4 pb-3 pt-1 border-t border-cream-200">
-              <CertBadges certs={certs} />
-            </div>
-          )}
-        </div>
-
-        <div className="flex flex-col overflow-y-auto p-6 sm:p-8 flex-1">
-          <div className="flex items-start justify-between mb-1">
-            <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-gold-400">
+          {/* Info panel */}
+          <div className="flex-1 lg:min-h-0 lg:overflow-y-auto p-6 lg:p-8 flex flex-col">
+            <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-2">
               {CATEGORY_LABELS[product.category]}
             </p>
-            <button onClick={onClose} className="text-bark-400 hover:text-bark-600 transition-colors shrink-0 ml-4 -mt-1">
-              <X size={18} />
-            </button>
-          </div>
-          <h2 className="font-sans text-2xl text-bark-600 leading-tight mb-1">{product.name}</h2>
-          <p className="font-sans text-base text-bark-400 mb-5">{formatPrice(product.price)}</p>
-          <p className="font-sans text-sm text-bark-500 leading-relaxed mb-5">{clean(desc)}</p>
+            <h2 className="font-sans text-2xl lg:text-3xl text-bark-600 leading-tight mb-2">{product.name}</h2>
+            <p className="font-sans text-base text-bark-400 mb-4">{formatPrice(product.price)}</p>
+            {product.tag && (
+              <span className="inline-block bg-terra-100 text-terra-500 font-sans text-[9px] tracking-[0.2em] uppercase px-3 py-1 mb-4 self-start">
+                {product.tag}
+              </span>
+            )}
 
-          {/* Variant picker — color then size */}
-          {hasVariants && (
-            <div className="border-t border-cream-300 pt-4 mb-5 space-y-3">
-              <div>
-                <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-2">
-                  Color{pickColor ? <span className="text-bark-600 capitalize">: {pickColor}</span> : ''}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {colors.map(({ color, color_hex }) => {
-                    const inStock = variants.some(v => v.color === color && v.quantity > 0)
-                    const active = pickColor === color
-                    return (
-                      <button
-                        key={color}
-                        onClick={() => { setPickColor(color); setPickSize(null) }}
-                        disabled={!inStock}
-                        title={color}
-                        className={`w-8 h-8 rounded-full border-2 transition-all disabled:opacity-30 ${active ? 'border-bark-600 scale-110' : 'border-cream-300 hover:border-bark-400'}`}
-                        style={{ backgroundColor: color_hex || '#e5e0d8' }}
-                      />
-                    )
-                  })}
-                </div>
-              </div>
-              {pickColor && (
-                <div>
-                  <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-2">Size</p>
-                  <div className="flex flex-wrap gap-2">
-                    {sizesForColor.map(v => (
-                      <button
-                        key={v.size}
-                        onClick={() => setPickSize(v.size)}
-                        disabled={v.quantity <= 0}
-                        className={`border px-3 py-1.5 rounded font-sans text-xs transition-colors disabled:opacity-40 disabled:line-through ${
-                          pickSize === v.size ? 'border-bark-600 bg-bark-600 text-white' : 'border-cream-300 text-bark-500 hover:border-bark-400'
-                        }`}
-                      >
-                        {v.size}
-                      </button>
-                    ))}
-                  </div>
+            {/* Cert badges */}
+            <div className="border-t border-b border-cream-300 py-4">
+              {(certs.length > 0 || product.organic) ? (
+                <CertBadges certs={certs} organic={product.organic} />
+              ) : (
+                <div className="flex items-start justify-between">
+                  {[{ label: 'Free Shipping', sub: '$150+' }, { label: 'Handcrafted', sub: 'with care' }, { label: 'Gift Ready', sub: 'wax seal' }].map(({ label, sub }) => (
+                    <div key={label} className="flex-1 text-center">
+                      <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
+                      <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
-          )}
 
-          {ingredients && (
-            <div className="border-t border-cream-300 pt-4 mb-3">
-              <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-1">Materials</p>
-              <p className="font-sans text-xs text-bark-500">{clean(ingredients)}</p>
+            {/* Description */}
+            <div className="border-t border-cream-300 py-3.5">
+              <p className="text-base text-bark-600 leading-relaxed" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                {clean(desc)}
+              </p>
             </div>
-          )}
-          {certs.some(isGots) && (
-            <p className="font-sans text-xs text-bark-400 leading-relaxed mb-5">
-              Made with <span className="text-bark-600">GOTS-certified organic cotton</span> from a GOTS-certified manufacturer.
-            </p>
-          )}
 
-          <div className="mt-auto pt-4 space-y-2.5">
-            <button
-              onClick={handleAddToBox}
-              className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-bark-700 transition-colors flex items-center justify-center gap-2"
-            >
-              <ShoppingBag size={14} />
-              Add to Box
-            </button>
-            <Link
-              href={`/products/${product.id}`}
-              className="block w-full text-center border border-cream-300 text-bark-500 font-sans text-[11px] tracking-[0.2em] uppercase py-3 hover:border-bark-400 hover:text-bark-700 transition-colors"
-            >
-              View Full Details
-            </Link>
+            {ingredients && (
+              <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
+                <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
+                <span className="font-sans text-xs text-bark-400">{clean(ingredients)}</span>
+              </div>
+            )}
+
+            {certs.some(isGots) && (
+              <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
+                <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
+                <span className="font-sans text-xs text-bark-400">Made with <span className="text-bark-600">GOTS-certified organic cotton</span> from a GOTS-certified manufacturer.</span>
+              </div>
+            )}
+
+            {/* Variant picker */}
+            {hasVariants && (
+              <div className="border-t border-cream-300 pt-4 mb-4 space-y-3">
+                <div>
+                  <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-2">
+                    Color{pickColor ? <span className="text-bark-600 capitalize">: {pickColor}</span> : ''}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {colors.map(({ color, color_hex }) => {
+                      const inStock = variants.some(v => v.color === color && v.quantity > 0)
+                      const active = pickColor === color
+                      return (
+                        <button
+                          key={color}
+                          onClick={() => { setPickColor(color); setPickSize(null) }}
+                          disabled={!inStock}
+                          title={color}
+                          className={`w-8 h-8 rounded-full border-2 transition-all disabled:opacity-30 ${active ? 'border-bark-600 scale-110' : 'border-cream-300 hover:border-bark-400'}`}
+                          style={{ backgroundColor: color_hex || '#e5e0d8' }}
+                        />
+                      )
+                    })}
+                  </div>
+                </div>
+                {pickColor && (
+                  <div>
+                    <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-2">Size</p>
+                    <div className="flex flex-wrap gap-2">
+                      {sizesForColor.map(v => (
+                        <button
+                          key={v.size}
+                          onClick={() => setPickSize(v.size)}
+                          disabled={v.quantity <= 0}
+                          className={`border px-3 py-2 font-sans text-xs transition-colors disabled:opacity-40 disabled:line-through ${
+                            pickSize === v.size ? 'border-bark-600 bg-bark-600 text-cream-50' : 'border-cream-300 text-bark-600 hover:border-bark-400'
+                          }`}
+                        >
+                          {v.size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="mt-auto pt-4 space-y-2.5">
+              <button
+                onClick={handleAddToBox}
+                className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-bark-700 transition-colors flex items-center justify-center gap-2"
+              >
+                <ShoppingBag size={14} />
+                Add to Box
+              </button>
+              <Link
+                href={`/products/${product.id}`}
+                className="block w-full text-center border border-cream-300 text-bark-500 font-sans text-[11px] tracking-[0.2em] uppercase py-3 hover:border-bark-400 hover:text-bark-700 transition-colors"
+              >
+                View Full Details
+              </Link>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Lightbox */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-[70] bg-bark-900/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-10 cursor-zoom-out"
+          onClick={() => setLightbox(null)}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={lightbox} alt="" className="max-h-[92vh] max-w-[92vw] w-auto h-auto object-contain shadow-2xl" />
+          <button
+            onClick={() => setLightbox(null)}
+            className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center text-cream-50/80 hover:text-cream-50 bg-bark-900/40 rounded-full"
+          >
+            <X size={20} />
+          </button>
+        </div>
+      )}
+    </>
   )
 }
 
