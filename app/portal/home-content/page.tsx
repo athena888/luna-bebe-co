@@ -5,6 +5,7 @@ import { Loader, Plus, Trash2, Check } from 'lucide-react'
 import type { HomeContent, Perk, FeatureBlock, Review } from '@/lib/home-content'
 import { ImageSlotCard, VideoSlotCard, BestsellerManager, GallerySlot } from '@/components/portal/HomeMediaWidgets'
 import { Field, Area } from '@/components/portal/ContentFields'
+import { SiteImageUploader } from '@/components/portal/SiteImageUploader'
 
 function Card({ children, onRemove }: { children: React.ReactNode; onRemove?: () => void }) {
   return (
@@ -205,6 +206,10 @@ function HomepageEditor() {
       {/* 8 · Reviews */}
       <section className="mb-12">
         <SectionTitle n="8" title="Reviews" note="The testimonials block near the bottom of the homepage." />
+        <div className="bg-white border border-cream-200 rounded-lg p-3 mb-5">
+          <p className="font-sans text-[10px] text-bark-400 mb-2">Section background (optional)</p>
+          <SiteImageUploader slotKey="home.testimonials_bg" context="Background behind the homepage reviews/testimonials section" ratio="21:9" hint="soft, light lifestyle · ~2000×860" compact />
+        </div>
         <div className="space-y-3 mb-4">
           <Field label="Eyebrow (small caps)" value={c.reviews.eyebrow} onChange={v => setReviews({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'the eyebrow above the reviews heading' }} />
           <Field label="Heading" value={c.reviews.title} onChange={v => setReviews({ title: v })} ai={{ kind: 'title', context: 'the reviews section heading' }} />

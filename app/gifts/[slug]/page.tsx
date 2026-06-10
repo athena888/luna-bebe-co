@@ -168,17 +168,12 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
                 </div>
               ))}
 
-              <div className="mt-12 text-center">
-                <Link href="/build" className="inline-block border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-bark-600 hover:text-cream-50 transition-colors">
-                  Build Your Own Box →
-                </Link>
-              </div>
             </div>
           </section>
         )}
 
         {/* Internal links to other guides */}
-        <section className="border-t border-cream-300 bg-[#FBF7F0] px-6 sm:px-8 py-14">
+        <section className="border-t border-cream-300 bg-[#FBF7F0] px-6 sm:px-8 py-10">
           <div className="max-w-5xl mx-auto">
           <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5 text-center">Explore more</p>
           <div className="flex flex-wrap justify-center gap-3">

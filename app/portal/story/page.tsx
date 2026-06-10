@@ -56,7 +56,13 @@ export default function StoryPortal() {
       <section className="mb-12">
         <SectionTitle n="1" title="Hero" note="The wide banner photo and the headline at the top of the page." />
         <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
-          <SiteImageUploader slotKey="story.hero" context="Story hero banner" ratio="21:9" hint="wide, ~2000×860" compact />
+          <div className="space-y-3">
+            <SiteImageUploader slotKey="story.hero" context="Story hero banner" ratio="21:9" hint="wide banner above fold" compact />
+            <div>
+              <p className="font-sans text-[10px] text-bark-400 mb-1">Hero section background</p>
+              <SiteImageUploader slotKey="story.hero_bg" context="Background behind the story hero heading and logo" ratio="16:9" hint="soft, light lifestyle" compact />
+            </div>
+          </div>
           <div className="space-y-3">
             <Field label="Eyebrow" value={c.hero.eyebrow} onChange={v => setHero({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'small eyebrow above the Story page hero heading' }} />
             <Area label="Heading" value={c.hero.heading} onChange={v => setHero({ heading: v })} rows={2} ai={{ kind: 'title', context: 'the main hero heading for the brand Story page' }} />
@@ -68,7 +74,13 @@ export default function StoryPortal() {
       <section className="mb-12">
         <SectionTitle n="2" title="Founder’s letter" note="The portrait that floats beside the letter, and the letter itself." />
         <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
-          <SiteImageUploader slotKey="story.founder" context="Founder portrait on the Story page" ratio="3:4" hint="portrait, ~900×1200" />
+          <div className="space-y-3">
+            <SiteImageUploader slotKey="story.founder" context="Founder portrait on the Story page" ratio="3:4" hint="portrait, ~900×1200" />
+            <div>
+              <p className="font-sans text-[10px] text-bark-400 mb-1">Section background</p>
+              <SiteImageUploader slotKey="story.founder_bg" context="Background behind the founder letter section" ratio="16:9" hint="soft, light lifestyle" compact />
+            </div>
+          </div>
           <div className="space-y-3">
             <Field label="Eyebrow" value={c.founder.eyebrow} onChange={v => setFounder({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'eyebrow above the founder letter' }} />
             <Area label="Letter (blank line between paragraphs)" value={toText(c.founder.paragraphs)} onChange={v => setFounder({ paragraphs: toParas(v) })} rows={10} ai={{ kind: 'body', context: 'a warm first-person founder letter for an organic baby gift brand' }} />
@@ -80,7 +92,7 @@ export default function StoryPortal() {
       {/* 3 · Values */}
       <section className="mb-12">
         <SectionTitle n="3" title="What we stand for" note="Three values — each with its round icon image." />
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
           {c.values.map((v, i) => (
             <div key={i} className="bg-white border border-cream-200 rounded-lg p-3 space-y-3">
               <SiteImageUploader slotKey={`story.value.${i + 1}`} context={`Story value icon: ${v.title}`} ratio="1:1" hint="square, ~800×800" compact />
@@ -88,6 +100,10 @@ export default function StoryPortal() {
               <Area label="Body" value={v.body} onChange={val => setValue(i, { body: val })} rows={4} ai={{ kind: 'body', context: `body copy for the brand value "${v.title}"` }} />
             </div>
           ))}
+        </div>
+        <div className="bg-white border border-cream-200 rounded-lg p-3">
+          <p className="font-sans text-[10px] text-bark-400 mb-2">Values section background (optional)</p>
+          <SiteImageUploader slotKey="story.values_bg" context="Background behind the What We Stand For section" ratio="16:9" hint="soft, airy background · ~2000×1130" compact />
         </div>
       </section>
 
