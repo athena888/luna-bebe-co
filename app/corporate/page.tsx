@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { SlotBackground } from '@/components/ui/SlotBackground'
 import { CorporateForm } from './CorporateForm'
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
@@ -38,18 +39,20 @@ export default function CorporatePage() {
       <Header />
       <main className="bg-cream-50 min-h-screen">
 
-        {/* Hero */}
-        <section className="border-b border-cream-300 px-6 py-20 sm:py-28 text-center">
-          <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-5">Corporate &amp; Team Gifting</p>
-          <h1 className="font-serif text-4xl sm:text-6xl text-bark-600 leading-tight max-w-3xl mx-auto">
-            When your people become parents
-          </h1>
-          <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose max-w-2xl mx-auto mt-6">
-            A birth is the biggest week in an employee&rsquo;s life. Most companies send a logo mug. Send something
-            that sees the moment — an organic newborn gift box that cares for the new parent as much as the baby,
-            hand-packed and delivered to their door.
-          </p>
-        </section>
+        {/* Hero — background uploadable via Portal → Site Images → Corporate */}
+        <SlotBackground slotKey="corporate.hero_bg" scrim="bg-[#FBF7F0]/90" className="border-b border-cream-300">
+          <section className="px-6 py-20 sm:py-28 text-center">
+            <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-5">Corporate &amp; Team Gifting</p>
+            <h1 className="font-serif text-4xl sm:text-6xl text-bark-600 leading-tight max-w-3xl mx-auto">
+              When your people become parents
+            </h1>
+            <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose max-w-2xl mx-auto mt-6">
+              A birth is the biggest week in an employee&rsquo;s life. Most companies send a logo mug. Send something
+              that sees the moment — an organic newborn gift box that cares for the new parent as much as the baby,
+              hand-packed and delivered to their door.
+            </p>
+          </section>
+        </SlotBackground>
 
         {/* Three points */}
         <section className="border-b border-cream-300 px-6 py-16 sm:py-20">

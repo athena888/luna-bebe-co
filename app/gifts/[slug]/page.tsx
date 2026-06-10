@@ -146,7 +146,7 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
                     {products.map(p => (
                       <Link key={p.id} href={`/products/${p.id}`} className="group">
                         {/* Image */}
-                        <div className="relative aspect-[4/5] bg-white overflow-hidden mb-3 border border-cream-200">
+                        <div className="relative aspect-[4/5] bg-[#FBF7F0] overflow-hidden mb-3 border border-cream-200">
                           {productImage(p) ? (
                             <img
                               src={productImage(p)}
@@ -178,7 +178,8 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
         )}
 
         {/* Internal links to other guides */}
-        <section className="border-t border-cream-300 px-6 sm:px-8 py-14 max-w-5xl mx-auto">
+        <section className="border-t border-cream-300 bg-[#FBF7F0] px-6 sm:px-8 py-14">
+          <div className="max-w-5xl mx-auto">
           <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5 text-center">Explore more</p>
           <div className="flex flex-wrap justify-center gap-3">
             {others.map(o => (
@@ -186,6 +187,7 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
                 {o.h1.replace(/^The /, '')}
               </Link>
             ))}
+          </div>
           </div>
         </section>
 

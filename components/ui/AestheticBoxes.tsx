@@ -324,7 +324,8 @@ function BoxSection({
         )}
       </FlyIn>
 
-      {/* Info panel — fixed 95vh on desktop, flex column so only items scroll */}
+      {/* Info panel — desktop: fixed 95vh column so items scroll and price anchors bottom;
+           mobile: natural flow, items capped at max-h so all content stays visible */}
       <div className={`lg:w-[40%] flex flex-col lg:h-[95vh] ${flip ? 'lg:order-1' : ''}`}>
 
         {/* Top: identity */}
@@ -344,14 +345,14 @@ function BoxSection({
           )}
         </div>
 
-        {/* Middle: items — on desktop scrolls within the fixed-height panel; on mobile flows naturally */}
+        {/* Middle: items — desktop scrolls inside fixed panel; mobile scrolls in a capped box */}
         {box.items.length > 0 && (
           <div className="px-8 lg:px-12 xl:px-16 mt-8 lg:flex-1 lg:min-h-0 relative">
             <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-4">What&apos;s Inside</p>
-            <div className="lg:max-h-[400px] lg:overflow-y-auto scrollbar-hide pr-1">
+            <div className="max-h-[280px] lg:max-h-none lg:h-full overflow-y-auto scrollbar-hide pr-1 pb-2">
               <ItemsList box={box} onOpen={onPreview} />
             </div>
-            <div className="pointer-events-none hidden lg:block absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />
           </div>
         )}
 

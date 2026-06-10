@@ -50,6 +50,9 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   { key: 'gifts.french-baby-gifts.hero',            label: 'French Baby Gifts — Hero',    group: 'Gift Guides', where: 'Background behind the hero on /gifts/french-baby-gifts',            ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: '~1000×1250' } },
   { key: 'gifts.luxury-baby-shower-gift.hero',      label: 'Luxury Shower Gift — Hero',   group: 'Gift Guides', where: 'Background behind the hero on /gifts/luxury-baby-shower-gift',      ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: '~1000×1250' } },
 
+  // ── Corporate ──────────────────────────────────────────────────────────────
+  { key: 'corporate.hero_bg', label: 'Hero background', group: 'Corporate', where: 'Background behind the "When your people become parents" hero', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' } },
+
   // ── Ready-Made Boxes ────────────────────────────────────────────────────────
   { key: 'boxes.custom_cta_bg', label: 'Build-your-own CTA background', group: 'Ready-Made Boxes', where: 'Background behind the “Prefer to choose yourself?” CTA', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' } },
 
