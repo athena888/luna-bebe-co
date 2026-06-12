@@ -26,6 +26,12 @@ export async function POST(req: NextRequest) {
     const active = String(form.get('active') ?? 'true') !== 'false'
     const file = form.get('file') as File | null
 
+    // Optional auto-detected placement/styling (JSON). Stored in card_styles.meta
+    // (jsonb) — silently ignored if that column hasn't been migrated yet.
+    let meta: unknown = undefined
+    const metaRaw = String(form.get('meta') ?? '').trim()
+    if (metaRaw) { try { meta = JSON.parse(metaRaw) } catch { /* ignore bad json */ } }
+
     let imageUrl = String(form.get('imageUrl') ?? '').trim()
 
     if (file) {
@@ -42,18 +48,28 @@ export async function POST(req: NextRequest) {
 
     if (!name) return NextResponse.json({ error: 'Name is required' }, { status: 400 })
 
+    // Writes the row; if `meta` errors because the column hasn't been migrated
+    // yet, retries once without it so card saving never breaks.
+    async function write(row: Record<string, unknown>, withMeta: boolean) {
+      const payload = withMeta && meta !== undefined ? { ...row, meta } : row
+      return id
+        ? await supabaseAdmin.from('card_styles').update(payload).eq('id', id)
+        : await supabaseAdmin.from('card_styles').insert(payload)
+    }
+
     if (id) {
       const patch: Record<string, unknown> = { name, size_label: sizeLabel, alt_text: altText, word_limit: wordLimit, sort_order: sortOrder, active }
       if (imageUrl) patch.image_url = imageUrl
-      const { error } = await supabaseAdmin.from('card_styles').update(patch).eq('id', id)
+      let { error } = await write(patch, true)
+      if (error && /meta/i.test(error.message)) ({ error } = await write(patch, false))
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
       return NextResponse.json({ ok: true })
     }
 
     if (!imageUrl) return NextResponse.json({ error: 'An image is required' }, { status: 400 })
-    const { error } = await supabaseAdmin.from('card_styles').insert({
-      name, image_url: imageUrl, alt_text: altText, size_label: sizeLabel, word_limit: wordLimit, sort_order: sortOrder, active,
-    })
+    const insertRow = { name, image_url: imageUrl, alt_text: altText, size_label: sizeLabel, word_limit: wordLimit, sort_order: sortOrder, active }
+    let { error } = await write(insertRow, true)
+    if (error && /meta/i.test(error.message)) ({ error } = await write(insertRow, false))
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ ok: true })
   } catch (e) {

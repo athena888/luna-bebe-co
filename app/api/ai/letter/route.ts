@@ -8,11 +8,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
     }
 
-    const { recipientName, senderName } = await req.json()
+    const { recipientName, senderName, cardName, cardTheme, concept } = await req.json()
 
     if (!recipientName || !senderName) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
+
+    // Tailor the letters to the card the customer chose and anything they told
+    // us they want to say.
+    const cardLine = cardName || cardTheme
+      ? `\nThe chosen card design is "${cardName ?? ''}"${cardTheme ? ` with the sentiment "${cardTheme}"` : ''}. Match the letters to that sentiment/occasion in mood (do not quote the card text).`
+      : ''
+    const conceptLine = concept && String(concept).trim()
+      ? `\nThe sender wants the message to convey: "${String(concept).trim()}". Build both letters around this.`
+      : ''
 
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
@@ -23,7 +32,7 @@ export async function POST(req: NextRequest) {
         content: `Write TWO different handwritten letters to accompany a luxury baby gift box. Make them feel distinctly different in tone.
 
 Recipient: ${recipientName}
-Sender: ${senderName}
+Sender: ${senderName}${cardLine}${conceptLine}
 
 Letter 1 — WARM & CASUAL: Intimate, conversational, like chatting with a close friend. Genuine warmth without formality.
 

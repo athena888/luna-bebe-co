@@ -6,7 +6,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Button } from '@/components/ui/Button'
 import { RefreshCw, ArrowRight, Check } from 'lucide-react'
-import type { CardStyle } from '@/lib/card-styles'
+import { DEFAULT_CARD_META, type CardStyle } from '@/lib/card-styles'
 
 type Phase = 'form' | 'generating' | 'edit'
 
@@ -49,7 +49,7 @@ export default function CardPage() {
         const res = await fetch('/api/ai/letter', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ recipientName, senderName }),
+          body: JSON.stringify({ recipientName, senderName, cardName: selectedStyle?.name, cardTheme: selectedStyle?.meta?.theme }),
         })
         const data = await res.json()
         if (data.letters?.length === 2) {
@@ -183,6 +183,39 @@ export default function CardPage() {
                   ? <p className="font-sans text-xs text-red-500 mt-3">Your message is {words - wordLimit} word{words - wordLimit === 1 ? '' : 's'} over the limit for this card. Please shorten it.</p>
                   : <p className="font-sans text-xs text-bark-400 mt-3">We&rsquo;ll print exactly what you see here{selectedStyle ? ` on the ${selectedStyle.name} card${selectedStyle.size_label ? ` (${selectedStyle.size_label})` : ''}` : ''}.</p>}
               </div>
+
+              {/* Live preview — the message set on the chosen card, positioned
+                  and styled to match it. */}
+              {selectedStyle && (() => {
+                const zone = selectedStyle.meta?.textZone ?? DEFAULT_CARD_META.textZone!
+                const isScript = (selectedStyle.meta?.font ?? 'serif') === 'script'
+                return (
+                  <div className="mb-6">
+                    <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-bark-400 mb-3 text-center">Preview on your card</p>
+                    <div className="relative mx-auto w-full max-w-sm border border-cream-300 shadow-sm bg-white overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={selectedStyle.image_url} alt={selectedStyle.name} className="w-full h-auto block" />
+                      <div
+                        className="absolute"
+                        style={{
+                          left: `${zone.x}%`, top: `${zone.y}%`, width: `${zone.w}%`,
+                          textAlign: zone.align,
+                          fontFamily: 'var(--font-cormorant)',
+                          fontStyle: isScript ? 'italic' : 'normal',
+                          color: '#5a5147',
+                          lineHeight: 1.45,
+                          fontSize: 'clamp(7px, 2.3vw, 14px)',
+                          whiteSpace: 'pre-wrap',
+                          overflowWrap: 'break-word',
+                        }}
+                      >
+                        {editedContent}
+                      </div>
+                    </div>
+                    <p className="font-sans text-[10px] text-bark-400 text-center mt-2">A close approximation of the printed card.</p>
+                  </div>
+                )
+              })()}
             </>
           )}
 

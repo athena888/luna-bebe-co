@@ -254,4 +254,8 @@ create policy social_posts_public_read on social_posts for select using (active 
 drop policy if exists social_posts_service_write on social_posts;
 create policy social_posts_service_write on social_posts for all to service_role using (true) with check (true);
 
+-- 16) Card-style auto-detect metadata — message placement, font, and theme,
+-- filled automatically from the uploaded artwork via Claude vision.
+alter table card_styles add column if not exists meta jsonb;
+
 -- Done.

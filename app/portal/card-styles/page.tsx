@@ -1,17 +1,17 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Loader, Plus, Trash2, Check, Upload } from 'lucide-react'
+import { Loader, Plus, Trash2, Check, Upload, Sparkles } from 'lucide-react'
 import { resizeImage } from '@/lib/image-resize'
-import type { CardStyle } from '@/lib/card-styles'
+import type { CardStyle, CardMeta } from '@/lib/card-styles'
 
 const inputCls = 'w-full px-3 py-2 border border-cream-300 bg-white rounded text-sm text-bark-600 focus:outline-none focus:border-bark-400'
 const labelCls = 'block font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-1'
 
-interface Draft { name: string; sizeLabel: string; altText: string; wordLimit: string; sortOrder: string; active: boolean; file: File | null; preview: string }
+interface Draft { name: string; sizeLabel: string; altText: string; wordLimit: string; sortOrder: string; active: boolean; file: File | null; preview: string; meta: CardMeta | null }
 
 function emptyDraft(): Draft {
-  return { name: '', sizeLabel: '', altText: '', wordLimit: '100', sortOrder: '0', active: true, file: null, preview: '' }
+  return { name: '', sizeLabel: '', altText: '', wordLimit: '100', sortOrder: '0', active: true, file: null, preview: '', meta: null }
 }
 
 export default function CardStylesPage() {
@@ -20,6 +20,7 @@ export default function CardStylesPage() {
   const [editing, setEditing] = useState<string | 'new' | null>(null)
   const [draft, setDraft] = useState<Draft>(emptyDraft())
   const [busy, setBusy] = useState(false)
+  const [detecting, setDetecting] = useState(false)
   const [err, setErr] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -36,13 +37,33 @@ export default function CardStylesPage() {
   function startNew() { setEditing('new'); setDraft(emptyDraft()); setErr('') }
   function startEdit(s: CardStyle) {
     setEditing(s.id); setErr('')
-    setDraft({ name: s.name, sizeLabel: s.size_label, altText: s.alt_text, wordLimit: String(s.word_limit), sortOrder: String(s.sort_order), active: s.active, file: null, preview: s.image_url })
+    setDraft({ name: s.name, sizeLabel: s.size_label, altText: s.alt_text, wordLimit: String(s.word_limit), sortOrder: String(s.sort_order), active: s.active, file: null, preview: s.image_url, meta: s.meta ?? null })
   }
 
   async function pickFile(f: File | null) {
     if (!f) return
     const resized = await resizeImage(f, 2000, 0.9)
     setDraft(d => ({ ...d, file: resized, preview: URL.createObjectURL(resized) }))
+    // Auto-detect the card's name, description, size, message capacity, and
+    // where the personal message should sit — so there's nothing to type.
+    setDetecting(true); setErr('')
+    try {
+      const form = new FormData()
+      form.append('file', resized)
+      const res = await fetch('/api/portal/card-styles/detect', { method: 'POST', body: form })
+      const data = await res.json()
+      if (res.ok && data.detected) {
+        const dt = data.detected as { name: string; altText: string; sizeLabel: string; wordLimit: number; meta: CardMeta }
+        setDraft(d => ({
+          ...d,
+          name: d.name.trim() || dt.name,
+          altText: d.altText.trim() || dt.altText,
+          sizeLabel: d.sizeLabel.trim() || dt.sizeLabel,
+          wordLimit: (!d.wordLimit || d.wordLimit === '100') ? String(dt.wordLimit) : d.wordLimit,
+          meta: dt.meta ?? d.meta,
+        }))
+      }
+    } catch { /* detection is best-effort */ } finally { setDetecting(false) }
   }
 
   async function save() {
@@ -58,6 +79,7 @@ export default function CardStylesPage() {
       form.append('wordLimit', draft.wordLimit || '100')
       form.append('sortOrder', draft.sortOrder || '0')
       form.append('active', String(draft.active))
+      if (draft.meta) form.append('meta', JSON.stringify(draft.meta))
       if (draft.file) form.append('file', draft.file)
       const res = await fetch('/api/portal/card-styles', { method: 'POST', body: form })
       const data = await res.json()
@@ -96,9 +118,27 @@ export default function CardStylesPage() {
             <div>
               <div className="relative aspect-[3/2] rounded-lg overflow-hidden border border-cream-300 bg-cream-100 mb-2">
                 {draft.preview
-                  ? <img src={draft.preview} alt="" className="w-full h-full object-cover" />
+                  ? <img src={draft.preview} alt="" className="w-full h-full object-contain" />
                   : <div className="absolute inset-0 flex items-center justify-center text-bark-300"><Upload size={20} /></div>}
+                {/* Detected message zone — where the customer's note will print */}
+                {draft.preview && draft.meta?.textZone && (
+                  <div
+                    className="absolute border border-dashed border-gold-400 bg-gold-400/10 pointer-events-none flex items-center justify-center"
+                    style={{ left: `${draft.meta.textZone.x}%`, top: `${draft.meta.textZone.y}%`, width: `${draft.meta.textZone.w}%`, height: '22%' }}
+                  >
+                    <span className="font-sans text-[8px] tracking-[0.15em] uppercase text-gold-500/90">message here</span>
+                  </div>
+                )}
+                {detecting && (
+                  <div className="absolute inset-0 bg-cream-50/70 flex items-center justify-center gap-2">
+                    <Sparkles size={14} className="text-gold-400 animate-pulse" />
+                    <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-500">Reading card…</span>
+                  </div>
+                )}
               </div>
+              {draft.meta && !detecting && (
+                <p className="font-sans text-[10px] text-sage-600 mb-2 inline-flex items-center gap-1"><Sparkles size={10} /> Auto-filled — edit anything below</p>
+              )}
               <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={e => { pickFile(e.target.files?.[0] ?? null); e.target.value = '' }} />
               <button type="button" onClick={() => fileRef.current?.click()} className="w-full flex items-center justify-center gap-2 border border-cream-300 bg-cream-50 text-bark-600 text-[11px] tracking-[0.15em] uppercase py-2 rounded hover:border-bark-400">
                 <Upload size={12} /> {draft.preview ? 'Replace image' : 'Upload image'}
