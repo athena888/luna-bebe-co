@@ -107,13 +107,12 @@ export default function StoryPortal() {
         </BackgroundBox>
       </section>
 
-      {/* 4 · French apothecary — closing section, with background image + overlay */}
+      {/* 4 · French apothecary — closing section, split layout */}
       <section className="mb-12">
-        <SectionTitle n="4" title="French apothecary soul" note="The closing section. Add a background photo and tune its colour overlay." />
+        <SectionTitle n="4" title="French apothecary soul" note="The closing section. The photo fills the band; text sits on a cream panel over the left half, the right half shows the photo clean." />
         <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
-          <BackgroundBox appliesTo="the French apothecary closing text on this section">
-            <SiteImageUploader slotKey="story.french_bg" context="Background behind the French apothecary closing section" ratio="16:9" hint="soft, light lifestyle" compact />
-            <ScrimControl scrimKey="story.french_bg" defaultScrim={{ hex: '#FBF7F0', opacity: 0.92 }} />
+          <BackgroundBox appliesTo="the right half of the closing band (the left half is a cream text panel)">
+            <SiteImageUploader slotKey="story.french_bg" context="Photo for the French apothecary closing section" ratio="16:9" hint="landscape lifestyle — keep the subject toward the right" compact />
           </BackgroundBox>
           <div className="space-y-3">
             <Field label="Eyebrow" value={c.french.eyebrow} onChange={v => setFrench({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'eyebrow about the French apothecary aesthetic' }} />
