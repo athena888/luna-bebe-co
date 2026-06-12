@@ -91,8 +91,8 @@ export default async function StoryPage() {
                 return (
                   <div key={i} className="text-center">
                     {vi ? (
-                      <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border border-cream-50/20 aspect-square">
-                        <img src={vi.public_url} alt={vi.alt_text} className="w-full h-full object-cover rounded-full" />
+                      <div className="w-24 h-24 mx-auto mb-4 pl-round-full overflow-hidden border border-cream-50/20 aspect-square">
+                        <img src={vi.public_url} alt={vi.alt_text} className="w-full h-full object-cover pl-round-full" />
                       </div>
                     ) : (
                       <Icon size={26} strokeWidth={1.5} className="text-cream-50/50 mb-4 mx-auto" />
