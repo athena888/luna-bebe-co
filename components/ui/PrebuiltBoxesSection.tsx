@@ -124,7 +124,7 @@ export function PrebuiltBoxesSection() {
       <div className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory gap-5 pl-6 sm:pl-9 pb-2">
         {boxes.map(box => (
           <button key={box.slug} onClick={() => setModal(box)} className="group shrink-0 w-[78vw] sm:w-[340px] lg:w-[380px] snap-start text-left">
-            <div className="relative aspect-[4/5] bg-cream-200 overflow-hidden">
+            <div className="relative aspect-[4/5] bg-white overflow-hidden">
               {box.image
                 ? <Image src={box.image} alt={box.name} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" unoptimized sizes="(max-width:640px) 78vw, 380px" />
                 : <div className="absolute inset-0 flex items-center justify-center text-bark-300"><Package size={32} /></div>}
