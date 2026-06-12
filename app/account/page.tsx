@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { supabaseBrowser as supabase } from '@/lib/supabase-browser'
 import { Button } from '@/components/ui/Button'
+import { SlotBackground } from '@/components/ui/SlotBackground'
 import { Package, LogOut, MapPin } from 'lucide-react'
 import type { User } from '@supabase/supabase-js'
 
@@ -81,7 +82,8 @@ export default function AccountPage() {
 
   if (!user) {
     return (
-      <div className="max-w-md mx-auto px-6 py-20">
+      <SlotBackground slotKey="signin.bg" scrim="bg-cream-50/85" className="min-h-screen flex items-center justify-center px-6 py-20">
+        <div className="max-w-md w-full">
         <div className="text-center mb-10">
           <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">My Account</p>
           <h1 className="font-serif text-4xl text-bark-600">Sign In</h1>
@@ -110,7 +112,8 @@ export default function AccountPage() {
             <p className="font-sans text-[10px] text-bark-400 text-center">No password needed — we email you a secure sign-in link.</p>
           </form>
         )}
-      </div>
+        </div>
+      </SlotBackground>
     )
   }
 

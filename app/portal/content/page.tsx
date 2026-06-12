@@ -265,9 +265,9 @@ export default function ContentPage() {
 
         {active === 'signin' && (
           <div className="p-8 max-w-3xl">
-            <SectionHeading title="Sign In" note="The admin portal sign-in page. Upload a photo and tune the colour overlay over it." />
+            <SectionHeading title="Sign In" note="Shows on the customer sign-in page (/account) and the admin login. Upload a photo and tune the colour overlay over it." />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <BackgroundBox appliesTo="the Petite Lavande logo and the password sign-in form">
+              <BackgroundBox appliesTo="the customer sign-in form at /account (and the admin login)">
                 <SlotRow
                   slotKey="signin.bg"
                   label="Sign-in background"
