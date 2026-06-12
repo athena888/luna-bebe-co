@@ -6,9 +6,13 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Button } from '@/components/ui/Button'
 import { RefreshCw, ArrowRight, Check } from 'lucide-react'
-import { DEFAULT_CARD_META, type CardStyle } from '@/lib/card-styles'
+import type { CardStyle } from '@/lib/card-styles'
 
 type Phase = 'form' | 'generating' | 'edit'
+
+// Centered fallback zone, defined locally so this client page never imports the
+// server-only lib/card-styles module (which pulls in the Supabase admin client).
+const FALLBACK_ZONE = { x: 15, y: 42, w: 70, align: 'center' as const }
 
 function countWords(s: string) { return s.trim() ? s.trim().split(/\s+/).length : 0 }
 
@@ -205,7 +209,7 @@ export default function CardPage() {
               {/* Live preview — the message set on the chosen card, positioned
                   and styled to match it. */}
               {selectedStyle && (() => {
-                const zone = selectedStyle.meta?.textZone ?? DEFAULT_CARD_META.textZone!
+                const zone = selectedStyle.meta?.textZone ?? FALLBACK_ZONE
                 const isScript = (selectedStyle.meta?.font ?? 'serif') === 'script'
                 return (
                   <div className="mb-6">
