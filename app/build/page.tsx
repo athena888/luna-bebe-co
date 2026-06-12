@@ -215,10 +215,14 @@ export default function BuildPage() {
   const [lightbox, setLightbox] = useState<string | null>(null)
   const [checkoutNotice, setCheckoutNotice] = useState(false)
   const [heroImg, setHeroImg] = useState<string | null>(null)
+  const [productsBg, setProductsBg] = useState<string | null>(null)
   useEffect(() => {
-    fetch('/api/site-images?keys=build.header_bg')
+    fetch('/api/site-images?keys=build.header_bg,build.products_bg')
       .then(r => r.json())
-      .then(d => setHeroImg(d.images?.['build.header_bg']?.public_url ?? null))
+      .then(d => {
+        setHeroImg(d.images?.['build.header_bg']?.public_url ?? null)
+        setProductsBg(d.images?.['build.products_bg']?.public_url ?? null)
+      })
       .catch(() => {})
   }, [])
   const galleryCache = useRef<Record<string, GalleryImage[]>>({})
@@ -461,10 +465,16 @@ export default function BuildPage() {
           </div>
         </section>
 
-        <div className="w-full py-12 space-y-8">
+        <div
+          className="w-full py-12 space-y-8"
+          style={productsBg ? {
+            backgroundImage: `linear-gradient(rgba(251,247,240,0.88), rgba(251,247,240,0.88)), url(${productsBg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          } : undefined}
+        >
           {activeCategories.map((cat) => (
             <section key={cat} id={`cat-${cat}`}>
-              <SlotImage slotKey={`build.banner.${cat}`} className="w-full aspect-[21/9] sm:aspect-[3/1] overflow-hidden mb-6" />
               <div className="pl-6 sm:pl-9 pr-6 sm:pr-8 mb-8">
                 <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-1">{CATEGORY_LABELS[cat]}</p>
                 <h2 className="font-serif text-lg sm:text-xl text-terra-500">{CATEGORY_SUBTITLES[cat]}</h2>
