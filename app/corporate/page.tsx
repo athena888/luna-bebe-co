@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { SlotBackground } from '@/components/ui/SlotBackground'
+import { SlotImage } from '@/components/ui/SlotImage'
 import { CorporateForm } from './CorporateForm'
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
@@ -33,6 +34,22 @@ const POINTS = [
   },
 ]
 
+// The three selling points — white text, centered. Reused for the desktop
+// (overlaid on the photo) and mobile (stacked under the photo) layouts.
+function Points({ className = '' }: { className?: string }) {
+  return (
+    <div className={`grid text-center ${className}`}>
+      {POINTS.map(({ title, body }) => (
+        <div key={title}>
+          <div className="w-8 h-px bg-gold-400 mb-5 mx-auto" />
+          <h2 className="font-serif text-xl text-cream-50 mb-3 leading-snug">{title}</h2>
+          <p className="font-sans text-sm text-cream-100/85 leading-relaxed">{body}</p>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function CorporatePage() {
   return (
     <>
@@ -46,7 +63,7 @@ export default function CorporatePage() {
             <h1 className="font-serif text-4xl sm:text-6xl text-bark-600 leading-tight max-w-3xl mx-auto">
               When your people become parents
             </h1>
-            <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose max-w-2xl mx-auto mt-6">
+            <p className="font-cormorant text-lg sm:text-xl text-[#6F5B4D] leading-loose max-w-2xl mx-auto mt-6">
               A birth is the biggest week in an employee&rsquo;s life. Most companies send a logo mug. Send something
               that sees the moment — an organic newborn gift box that cares for the new parent as much as the baby,
               hand-packed and delivered to their door.
@@ -54,23 +71,27 @@ export default function CorporatePage() {
           </section>
         </SlotBackground>
 
-        {/* Three points — espresso text; background image uploadable in
-            Portal → Contents → Corporate. fit="natural": the image fills the
-            full width and the band's height follows the image (no fixed height,
-            no cropping). Text overlays it centered. */}
-        <SlotBackground slotKey="corporate.points_bg" fit="natural" scrim="" className="border-b border-cream-300 bg-bark-800">
-          <section className="px-6 py-16 sm:py-20">
-            <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-12">
-              {POINTS.map(({ title, body }) => (
-                <div key={title}>
-                  <div className="w-8 h-px bg-gold-400 mb-5" />
-                  <h2 className="font-serif text-xl text-cream-50 mb-3 leading-snug">{title}</h2>
-                  <p className="font-sans text-sm text-cream-100/85 leading-relaxed">{body}</p>
-                </div>
-              ))}
+        {/* Three points. Background image uploadable in Portal → Contents →
+            Corporate. Desktop: the whole photo shows and the points overlay it.
+            Mobile: the photo alone isn't tall enough for three stacked points,
+            so the photo sits on top and the points stack below on the dark band. */}
+        <div className="border-b border-cream-300 bg-bark-800">
+          {/* Desktop — points overlaid on the full-width photo */}
+          <div className="hidden md:block">
+            <SlotBackground slotKey="corporate.points_bg" fit="natural" scrim="">
+              <section className="px-6 py-16">
+                <Points className="max-w-5xl mx-auto grid-cols-3 gap-12" />
+              </section>
+            </SlotBackground>
+          </div>
+          {/* Mobile — photo, then points stacked below */}
+          <div className="md:hidden">
+            <SlotImage slotKey="corporate.points_bg" className="block w-full" imgClassName="w-full h-auto block" />
+            <div className="px-6 py-12">
+              <Points className="grid-cols-1 gap-9" />
             </div>
-          </section>
-        </SlotBackground>
+          </div>
+        </div>
 
         {/* Lead form — background uploadable via Portal → Site Images → Corporate */}
         <SlotBackground slotKey="corporate.form_bg" scrim="bg-cream-50/85">

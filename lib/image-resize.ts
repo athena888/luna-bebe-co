@@ -74,7 +74,7 @@ export function dataUrlToFile(dataUrl: string, filename: string): File {
 // small. Transparency is preserved: PNG/WebP re-encode to PNG, and SVG (vector)
 // is passed through untouched. Only opaque photos become JPEG — encoding a
 // transparent image as JPEG would flatten its alpha to solid black.
-export async function resizeImage(file: File, maxDim = 1600, quality = 0.85): Promise<File> {
+export async function resizeImage(file: File, maxDim = 1600, quality = 0.85, forceJpeg = false): Promise<File> {
   // Only attempt on images; if anything fails, fall back to the original file.
   const looksLikeImage = file.type.startsWith('image/') || /\.(jpe?g|png|webp|heic|heif|svg)$/i.test(file.name)
   if (!looksLikeImage) return file
@@ -82,8 +82,10 @@ export async function resizeImage(file: File, maxDim = 1600, quality = 0.85): Pr
   // SVG is vector — rasterizing it would lose scalability (and alpha). Pass through.
   if (file.type === 'image/svg+xml' || /\.svg$/i.test(file.name)) return file
 
-  // PNG/WebP can carry transparency → re-encode to PNG (lossless, keeps alpha).
-  const keepsAlpha = /png|webp/i.test(file.type) || /\.(png|webp)$/i.test(file.name)
+  // PNG/WebP can carry transparency → re-encode to PNG (lossless, keeps alpha)
+  // — UNLESS forceJpeg is set (for opaque artwork like cards, where PNG bloats
+  // past the upload size limit and JPEG is dramatically smaller).
+  const keepsAlpha = !forceJpeg && (/png|webp/i.test(file.type) || /\.(png|webp)$/i.test(file.name))
   const outType = keepsAlpha ? 'image/png' : 'image/jpeg'
   const outExt = keepsAlpha ? 'png' : 'jpg'
 
@@ -114,6 +116,8 @@ export async function resizeImage(file: File, maxDim = 1600, quality = 0.85): Pr
     canvas.height = height
     const ctx = canvas.getContext('2d')
     if (!ctx) return file
+    // JPEG has no alpha — flatten any transparency to white (not black) first.
+    if (outType === 'image/jpeg') { ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, width, height) }
     ctx.drawImage(img, 0, 0, width, height)
 
     const blob: Blob | null = await new Promise(resolve => canvas.toBlob(resolve, outType, quality))

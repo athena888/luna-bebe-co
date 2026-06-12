@@ -42,7 +42,9 @@ export default function CardStylesPage() {
 
   async function pickFile(f: File | null) {
     if (!f) return
-    const resized = await resizeImage(f, 2000, 0.9)
+    // Cards are opaque artwork on cream — force JPEG so large PNGs don't blow
+    // past the upload size limit.
+    const resized = await resizeImage(f, 1800, 0.9, true)
     setDraft(d => ({ ...d, file: resized, preview: URL.createObjectURL(resized) }))
     // Auto-detect the card's name, description, size, message capacity, and
     // where the personal message should sit — so there's nothing to type.

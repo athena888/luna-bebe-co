@@ -20,6 +20,7 @@ export default function CardPage() {
   const [letters, setLetters] = useState<string[]>([])
   const [chosenIndex, setChosenIndex] = useState(0)
   const [editedContent, setEditedContent] = useState('')
+  const [genError, setGenError] = useState('')
 
   const [styles, setStyles] = useState<CardStyle[]>([])
   const [styleId, setStyleId] = useState<string | null>(null)
@@ -53,15 +54,20 @@ export default function CardPage() {
         })
         const data = await res.json()
         if (data.letters?.length === 2) {
+          setGenError('')
           setLetters(data.letters)
           setChosenIndex(0)
           setEditedContent(data.letters[0])
           setPhase('edit')
         } else {
+          setGenError(res.status === 429
+            ? 'You’ve drafted a lot already — wait a few minutes, or write your own message below.'
+            : (data.error || 'Couldn’t draft right now — you can write your own message below.'))
           setPhase('form')
         }
       } catch (e) {
         console.error('Generation error:', e)
+        setGenError('Couldn’t connect — please try again, or write your own message below.')
         setPhase('form')
       }
     }, 800)
@@ -149,6 +155,18 @@ export default function CardPage() {
                 </div>
               </div>
               <p className="font-sans text-xs text-bark-400 mt-4">We&rsquo;ll draft two versions automatically as you type — you can edit or rewrite them.</p>
+              {genError && (
+                <div className="mt-4 border border-cream-300 bg-cream-100 rounded-xl p-4 text-center">
+                  <p className="font-sans text-xs text-bark-500 mb-3">{genError}</p>
+                  <button
+                    type="button"
+                    onClick={() => { setLetters(['', '']); setChosenIndex(0); setEditedContent(''); setGenError(''); setPhase('edit') }}
+                    className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-600 underline underline-offset-2 hover:text-bark-800"
+                  >
+                    Write my own message
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
