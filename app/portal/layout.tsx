@@ -77,10 +77,15 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
   const [open, setOpen] = useState(false)
 
   // Anyone using the admin portal is internal — flag this browser so GA excludes it
   useEffect(() => { try { localStorage.setItem('pl_internal', '1') } catch {} }, [])
+
+  // The login page is shown to signed-OUT users — render it bare (no portal nav
+  // sidebar/header) so its own full-screen background image fills the viewport.
+  if (pathname === '/portal/login') return <>{children}</>
 
   return (
     <div className="flex min-h-screen bg-bark-700">
