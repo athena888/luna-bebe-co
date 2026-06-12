@@ -45,7 +45,6 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   { key: 'boxes.custom_cta_bg', label: 'Build-your-own CTA background', group: 'Ready-Made Boxes', where: 'Background behind the "Prefer to choose yourself?" CTA', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.70 } },
 
   // ── Homepage ────────────────────────────────────────────────────────────────
-  { key: 'home.occasions_bg', label: 'Shop by Occasion background', group: 'Homepage', where: 'Background behind the "Shop by Occasion" collections section', ratio: '21:9', hint: 'Soft, light lifestyle · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.80 } },
   { key: 'home.testimonials_bg', label: 'Testimonials background', group: 'Homepage', where: 'Background behind the reviews carousel section', ratio: '21:9', hint: 'Soft, light lifestyle · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.85 } },
 
   // ── Footer ──────────────────────────────────────────────────────────────────

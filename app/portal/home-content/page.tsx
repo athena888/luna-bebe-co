@@ -7,7 +7,6 @@ import { ImageSlotCard, VideoSlotCard, BestsellerManager, GallerySlot, Editorial
 import { Field, Area } from '@/components/portal/ContentFields'
 import { SiteImageUploader } from '@/components/portal/SiteImageUploader'
 import { ScrimControl } from '@/components/portal/ScrimControl'
-import { BackgroundBox } from '@/components/portal/BackgroundBox'
 import { CollectionsEditor } from '@/app/portal/collections/page'
 
 function Card({ children, onRemove }: { children: React.ReactNode; onRemove?: () => void }) {
@@ -153,14 +152,9 @@ function HomepageEditor() {
         <div className="mt-3"><AddButton onClick={() => setPerks([...c.perks, { label: '', sub: '' }])} label="Add perk" /></div>
       </section>
 
-      {/* 3 · Shop by Occasion + Curated Gift Sets — one shared background */}
+      {/* 3 · Shop by Occasion + Curated Gift Sets */}
       <section className="mb-12">
-        <SectionTitle n="3" title="Shop by Occasion & Curated Gift Sets" note="These two homepage sections sit on one shared background image + colour overlay." />
-        <BackgroundBox appliesTo="BOTH the Shop by Occasion cards and the Curated Gift Sets carousel below">
-          <SiteImageUploader slotKey="home.occasions_bg" context="Background behind the Shop by Occasion and Curated Gift Sets sections" ratio="21:9" hint="Soft, light lifestyle · ~2000×860. Shows behind the cards." compact />
-          <ScrimControl scrimKey="home.occasions_bg" defaultScrim={{ hex: '#FAF9F8', opacity: 0.80 }} label="Background colour overlay" note="tint over the shared photo — raise for legibility, lower to show more of the photo" />
-        </BackgroundBox>
-
+        <SectionTitle n="3" title="Shop by Occasion & Curated Gift Sets" note="The Shop by Occasion cards and which Curated Gift Sets appear in the carousel." />
         <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500 mb-2">Shop by Occasion — the four cards</p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <ImageSlotCard slotKey="newborn" label="Newborn Gifts" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />

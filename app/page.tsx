@@ -142,9 +142,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── Shop by Occasion + Curated Gift Sets — one shared background image
-              & colour overlay, managed together in Portal → Home Content ── */}
-        <SlotBackground slotKey="home.occasions_bg" scrim="bg-cream-50/80" className="pt-14 sm:pt-16 pb-0 border-t border-cream-300">
+        {/* ── Shop by Occasion + Curated Gift Sets ── */}
+        <div className="pt-14 sm:pt-16 pb-0 border-t border-cream-300">
           <div className="pl-6 sm:pl-9 pr-6 mb-8">
             <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Collections</p>
             <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">Shop by Occasion</h2>
@@ -152,9 +151,8 @@ export default async function HomePage() {
           </div>
           <CollectionsSection initial={collectionsData ?? undefined} />
 
-          {/* Curated Gift Sets — transparent section, sits on the same background */}
           <PrebuiltBoxesSection />
-        </SlotBackground>
+        </div>
 
         {/* ── What makes it special — editable intro + editorial features, all from Portal → Home Content ── */}
         <section className="border-t border-cream-300 bg-cream-white">
