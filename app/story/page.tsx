@@ -46,7 +46,7 @@ export default async function StoryPage() {
             <LogoMark className="h-20 sm:h-32 w-auto mx-auto mb-4 sm:mb-6" style={{ color: '#574540' }} alt="Petite Lavande" />
             <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-4">{content.hero.eyebrow}</p>
             <h1
-              className="text-4xl sm:text-6xl text-bark-600 leading-tight"
+              className="text-3xl sm:text-4xl lg:text-5xl text-bark-600 leading-tight"
               style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 400 }}
             >
               {content.hero.heading}
