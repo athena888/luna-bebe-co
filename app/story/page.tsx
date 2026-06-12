@@ -8,6 +8,7 @@ import { getActiveSocialPosts } from '@/lib/social-posts'
 import { LogoMark } from '@/components/ui/LogoMark'
 import { SlotImage } from '@/components/ui/SlotImage'
 import { SlotBackground } from '@/components/ui/SlotBackground'
+import { ScrollFlyIn } from '@/components/ui/ScrollFlyIn'
 import { SocialFeed } from '@/components/ui/SocialFeed'
 import { Leaf, Heart, Mail } from 'lucide-react'
 import { CONTACT_EMAIL } from '@/lib/site-config'
@@ -106,14 +107,12 @@ export default async function StoryPage() {
           </div>
         </SlotBackground>
 
-        {/* French apothecary soul — split layout: the photo fills the section;
-            text sits on a cream panel over the LEFT half, the RIGHT half shows
-            the photo clean (no overlay). Image managed in Portal → Story. */}
-        <section className="border-t border-cream-300 relative overflow-hidden">
-          <SlotImage slotKey="story.french_bg" className="absolute inset-0 w-full h-full" imgClassName="w-full h-full object-cover" />
-          <div className="relative grid grid-cols-1 md:grid-cols-2 min-h-[26rem]">
-            {/* Left: readable cream panel with the text */}
-            <div className="bg-[#FBF7F0]/90 px-6 sm:px-10 lg:px-16 py-16 sm:py-20 flex flex-col justify-center">
+        {/* French apothecary soul — text column (left 35%) and photo column
+            (right 65%) side by side, no overlap. Photo managed in Portal → Story. */}
+        <section className="border-t border-cream-300">
+          <div className="grid grid-cols-1 md:grid-cols-[35%_65%] items-stretch">
+            {/* Left: text on cream — flies in/out on scroll */}
+            <ScrollFlyIn from="left" className="bg-[#FBF7F0] px-6 sm:px-10 lg:px-14 py-16 sm:py-20 flex flex-col justify-center">
               <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">{content.french.eyebrow}</p>
               {content.french.paragraphs.map((para, i) => (
                 i === 0
@@ -121,9 +120,11 @@ export default async function StoryPage() {
                   : <p key={i} className="font-sans text-sm text-bark-400 leading-relaxed mb-4">{para}</p>
               ))}
               <p className="text-2xl text-bark-500" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.french.tagline}</p>
+            </ScrollFlyIn>
+            {/* Right: the photo as its own block — sits beside the text, no overlap */}
+            <div className="relative min-h-[22rem] md:min-h-[32rem] bg-cream-100">
+              <SlotImage slotKey="story.french_bg" className="absolute inset-0 w-full h-full" imgClassName="w-full h-full object-cover" />
             </div>
-            {/* Right: pure photo, no overlay (desktop only) */}
-            <div className="hidden md:block" aria-hidden="true" />
           </div>
         </section>
 

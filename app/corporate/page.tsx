@@ -58,14 +58,14 @@ export default function CorporatePage() {
             Portal → Contents → Corporate. fit="natural": the image fills the
             full width and the band's height follows the image (no fixed height,
             no cropping). Text overlays it centered. */}
-        <SlotBackground slotKey="corporate.points_bg" fit="natural" scrim="" className="border-b border-cream-300">
+        <SlotBackground slotKey="corporate.points_bg" fit="natural" scrim="" className="border-b border-cream-300 bg-bark-800">
           <section className="px-6 py-16 sm:py-20">
             <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-12">
               {POINTS.map(({ title, body }) => (
                 <div key={title}>
                   <div className="w-8 h-px bg-gold-400 mb-5" />
-                  <h2 className="font-serif text-xl text-[#3D2F28] mb-3 leading-snug">{title}</h2>
-                  <p className="font-sans text-sm text-[#3D2F28]/80 leading-relaxed">{body}</p>
+                  <h2 className="font-serif text-xl text-cream-50 mb-3 leading-snug">{title}</h2>
+                  <p className="font-sans text-sm text-cream-100/85 leading-relaxed">{body}</p>
                 </div>
               ))}
             </div>
