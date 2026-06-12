@@ -5,12 +5,11 @@ import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import { SiteImageUploader } from '@/components/portal/SiteImageUploader'
 
-type PageId = 'home' | 'story' | 'shop' | 'build' | 'boxes' | 'corporate' | 'giftcards' | 'global' | 'social' | 'journal'
+type PageId = 'home' | 'story' | 'build' | 'boxes' | 'corporate' | 'giftcards' | 'global' | 'social' | 'journal'
 
 const TABS: { id: PageId; label: string }[] = [
   { id: 'home',       label: 'Homepage' },
   { id: 'story',      label: 'Story' },
-  { id: 'shop',       label: 'Shop' },
   { id: 'build',      label: 'Build Your Box' },
   { id: 'boxes',      label: 'Boxes Page' },
   { id: 'corporate',  label: 'Corporate' },
@@ -101,21 +100,6 @@ export default function ContentPage() {
           </>
         )}
 
-        {active === 'shop' && (
-          <>
-            <SectionHeading title="Shop Page" note="The /shop catalog page." />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <SlotRow
-                slotKey="shop.header_bg"
-                label="Header background"
-                context="Background behind the Shop page header"
-                ratio="21:9"
-                hint="Wide & soft · ~2000×860"
-                where="Behind the title at the top of /shop"
-              />
-            </div>
-          </>
-        )}
 
         {active === 'build' && (
           <>
@@ -123,11 +107,19 @@ export default function ContentPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <SlotRow
                 slotKey="build.header_bg"
-                label="Hero background"
-                context="Background behind the Build Your Box hero section"
+                label="Hero background — Desktop"
+                context="Background behind the Build Your Box hero section on desktop"
                 ratio="16:9"
-                hint="Full-screen hero · ~2400×1350 (16:9). Covers the entire viewport on desktop and portrait mobile — keep your subject centered."
-                where="Fills the entire screen at the top of /build"
+                hint="Desktop crop · ~1920×1080. Keep subject centered — mobile will use the portrait version below."
+                where="Fills the entire screen at the top of /build on desktop"
+              />
+              <SlotRow
+                slotKey="build.header_bg.mobile"
+                label="Hero background — Mobile"
+                context="Background behind the Build Your Box hero section on mobile"
+                ratio="9:16"
+                hint="Mobile crop · ~1080×1920. Portrait — shown on phones instead of the desktop image above."
+                where="Fills the entire screen at the top of /build on phones"
               />
               <SlotRow
                 slotKey="build.products_bg"
@@ -155,11 +147,19 @@ export default function ContentPage() {
               />
               <SlotRow
                 slotKey="boxes.custom_cta_bg"
-                label="Build-your-own CTA background"
-                context="Background behind the Prefer to choose yourself CTA section on the boxes page"
+                label="Build-your-own CTA — Desktop"
+                context="Background behind the Prefer to choose yourself CTA on desktop"
                 ratio="21:9"
-                hint="Wide & soft · ~2000×860"
-                where="Behind the &ldquo;Prefer to choose yourself?&rdquo; CTA at the bottom of /boxes"
+                hint="Desktop crop · ~2000×860 (21:9). Keep subject centered."
+                where="Behind the &ldquo;Prefer to choose yourself?&rdquo; CTA at the bottom of /boxes on desktop"
+              />
+              <SlotRow
+                slotKey="boxes.custom_cta_bg.mobile"
+                label="Build-your-own CTA — Mobile"
+                context="Background behind the Prefer to choose yourself CTA on mobile"
+                ratio="9:16"
+                hint="Mobile crop · ~1080×1920. Portrait — shown on phones instead of the desktop image."
+                where="Behind the &ldquo;Prefer to choose yourself?&rdquo; CTA at the bottom of /boxes on phones"
               />
             </div>
           </>
@@ -171,11 +171,19 @@ export default function ContentPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <SlotRow
                 slotKey="corporate.hero_bg"
-                label="Hero background"
-                context="Background behind the When your people become parents hero on the corporate page"
+                label="Hero background — Desktop"
+                context="Background behind the corporate page hero on desktop"
                 ratio="21:9"
-                hint="Wide & soft · ~2000×860"
-                where="Behind the hero heading on /corporate"
+                hint="Desktop crop · ~2000×860 (21:9). Keep subject centered."
+                where="Behind the hero heading on /corporate on desktop"
+              />
+              <SlotRow
+                slotKey="corporate.hero_bg.mobile"
+                label="Hero background — Mobile"
+                context="Background behind the corporate page hero on mobile"
+                ratio="9:16"
+                hint="Mobile crop · ~1080×1920. Portrait — shown on phones instead of the desktop image."
+                where="Behind the hero heading on /corporate on phones"
               />
             </div>
           </>
@@ -187,11 +195,19 @@ export default function ContentPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <SlotRow
                 slotKey="giftcards.header_bg"
-                label="Header background"
-                context="Background behind the Gift Cards page header"
+                label="Header background — Desktop"
+                context="Background behind the Gift Cards page header on desktop"
                 ratio="21:9"
-                hint="Wide & soft · ~2000×860"
-                where="Behind the header on /gift-cards"
+                hint="Desktop crop · ~2000×860 (21:9). Keep subject centered."
+                where="Behind the header on /gift-cards on desktop"
+              />
+              <SlotRow
+                slotKey="giftcards.header_bg.mobile"
+                label="Header background — Mobile"
+                context="Background behind the Gift Cards page header on mobile"
+                ratio="9:16"
+                hint="Mobile crop · ~1080×1920. Portrait — shown on phones instead of the desktop image."
+                where="Behind the header on /gift-cards on phones"
               />
               <SlotRow
                 slotKey="giftcard.visual"
@@ -233,11 +249,19 @@ export default function ContentPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <SlotRow
                 slotKey="footer.bg"
-                label="Footer background"
-                context="Background behind the site footer"
+                label="Footer background — Desktop"
+                context="Background behind the site footer on desktop"
                 ratio="21:9"
-                hint="Wide & soft · ~2000×860"
-                where="Behind the footer on every page"
+                hint="Desktop crop · ~2000×860 (21:9). Keep subject centered."
+                where="Behind the footer on every page on desktop"
+              />
+              <SlotRow
+                slotKey="footer.bg.mobile"
+                label="Footer background — Mobile"
+                context="Background behind the site footer on mobile"
+                ratio="9:16"
+                hint="Mobile crop · ~1080×1920. Portrait — shown on phones instead of the desktop image."
+                where="Behind the footer on every page on phones"
               />
               <SlotRow
                 slotKey="global.logo"

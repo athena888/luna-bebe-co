@@ -78,9 +78,9 @@ export default async function StoryPage() {
         </SlotBackground>
 
         {/* Brand values */}
-        <SlotBackground slotKey="story.values_bg" scrim="bg-[#FBF7F0]/90" className="border-t border-cream-300">
+        <div className="bg-[#3D2F28] border-t border-[#2e231d]">
           <div className="max-w-4xl mx-auto px-6 py-20">
-            <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-bark-400 text-center mb-12">What We Stand For</p>
+            <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-cream-50/50 text-center mb-12">What We Stand For</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
               {content.values.map(({ title, body }, i) => {
                 const vi = valueImgs[i]
@@ -88,20 +88,20 @@ export default async function StoryPage() {
                 return (
                   <div key={i} className="text-center">
                     {vi ? (
-                      <div className="w-20 h-20 mx-auto mb-4 rounded-full pl-round-full overflow-hidden border border-cream-300">
+                      <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden border border-cream-50/20">
                         <img src={vi.public_url} alt={vi.alt_text} className="w-full h-full object-cover" />
                       </div>
                     ) : (
-                      <Icon size={26} strokeWidth={1.5} className="text-gold-400 mb-4 mx-auto" />
+                      <Icon size={26} strokeWidth={1.5} className="text-cream-50/50 mb-4 mx-auto" />
                     )}
-                    <h3 className="font-sans text-xs tracking-[0.2em] uppercase text-bark-600 mb-3">{title}</h3>
-                    <p className="font-sans text-sm text-bark-400 leading-relaxed">{body}</p>
+                    <h3 className="font-sans text-xs tracking-[0.2em] uppercase text-cream-50 mb-3">{title}</h3>
+                    <p className="font-sans text-sm text-cream-50/70 leading-relaxed">{body}</p>
                   </div>
                 )
               })}
             </div>
           </div>
-        </SlotBackground>
+        </div>
 
         {/* Only the best for her */}
         <div className="border-t border-cream-300 bg-[#FBF7F0]">
