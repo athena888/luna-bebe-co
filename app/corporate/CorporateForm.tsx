@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { submitB2bLead } from '@/app/actions/b2b'
 
 const TEAM_SIZES = ['<50', '50-200', '200-1000', '1000+']
+const GIFTS_PER_YEAR = ['Just once', '1–25', '25–100', '100–500', '500+']
 
 const labelCls = 'block font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-1.5'
 const inputCls = 'w-full px-4 py-3 border border-cream-300 bg-cream-50 font-sans text-sm text-bark-700 focus:outline-none focus:border-bark-400 transition-colors'
@@ -13,7 +14,9 @@ export function CorporateForm() {
   const [email, setEmail] = useState('')
   const [company, setCompany] = useState('')
   const [teamSize, setTeamSize] = useState('')
+  const [giftsPerYear, setGiftsPerYear] = useState('')
   const [message, setMessage] = useState('')
+  const [hp, setHp] = useState('')   // honeypot
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
@@ -22,7 +25,7 @@ export function CorporateForm() {
     e.preventDefault()
     if (loading) return
     setLoading(true); setError('')
-    const res = await submitB2bLead({ email, name, company, team_size: teamSize, message })
+    const res = await submitB2bLead({ email, name, company, team_size: teamSize, message, gifts_per_year: giftsPerYear, hp })
     setLoading(false)
     if ('ok' in res) {
       setDone(true)
@@ -64,8 +67,20 @@ export function CorporateForm() {
         </select>
       </div>
       <div>
-        <label htmlFor="b2b-message" className={labelCls}>Message <span className="normal-case tracking-normal text-bark-300">(optional)</span></label>
+        <label htmlFor="b2b-gifts" className={labelCls}>Gifts per year <span className="normal-case tracking-normal text-bark-300">(optional)</span></label>
+        <select id="b2b-gifts" value={giftsPerYear} onChange={e => setGiftsPerYear(e.target.value)} className={inputCls}>
+          <option value="">Select…</option>
+          {GIFTS_PER_YEAR.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+      </div>
+      <div>
+        <label htmlFor="b2b-message" className={labelCls}>What do you need? <span className="normal-case tracking-normal text-bark-300">(optional)</span></label>
         <textarea id="b2b-message" rows={4} value={message} onChange={e => setMessage(e.target.value)} className={`${inputCls} resize-none`} />
+      </div>
+
+      {/* Honeypot — hidden from humans; bots fill it and get silently dropped. */}
+      <div aria-hidden="true" className="absolute -left-[9999px] w-px h-px overflow-hidden">
+        <label>Leave this empty<input type="text" tabIndex={-1} autoComplete="off" value={hp} onChange={e => setHp(e.target.value)} /></label>
       </div>
 
       {error && <p className="font-sans text-xs text-red-500">{error}</p>}

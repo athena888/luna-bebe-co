@@ -24,6 +24,33 @@ const brandFooter = `
   </div>
 `
 
+// Plain-text alert to the team when a corporate inquiry comes in. Reply-to is
+// the lead so it can be answered directly.
+export async function sendCorporateInquiryEmail(lead: {
+  name?: string | null; email: string; company?: string | null
+  company_size?: string | null; needs?: string | null; gifts_per_year?: string | null
+}) {
+  const text = [
+    `Company:        ${lead.company || '—'}`,
+    `Name:           ${lead.name || '—'}`,
+    `Work email:     ${lead.email}`,
+    `Company size:   ${lead.company_size || '—'}`,
+    `Gifts per year: ${lead.gifts_per_year || '—'}`,
+    '',
+    'What they need:',
+    lead.needs || '—',
+    '',
+    '— Respond today. This is a corporate lead (Portal → Outreach).',
+  ].join('\n')
+  return resend.emails.send({
+    from: FROM,
+    to: CONTACT_EMAIL,
+    replyTo: lead.email,
+    subject: `Corporate inquiry: ${lead.company || lead.name || lead.email}`,
+    text,
+  })
+}
+
 export async function sendWelcomeEmail({
   customerName,
   customerEmail,
