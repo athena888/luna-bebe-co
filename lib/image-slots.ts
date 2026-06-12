@@ -51,6 +51,9 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   // ── Footer ──────────────────────────────────────────────────────────────────
   { key: 'footer.bg', label: 'Footer background', group: 'Footer', where: 'Sits behind the whole site footer (every page)', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#F4F2EF', opacity: 0.30 } },
 
+  // ── Sign In ─────────────────────────────────────────────────────────────────
+  { key: 'signin.bg', label: 'Sign-in background', group: 'Sign In', where: 'Behind the admin sign-in form on the login page', ratio: '16:9', hint: 'Soft lifestyle image · ~1920×1080', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#181716', opacity: 0.85 } },
+
   // ── Global ──────────────────────────────────────────────────────────────────
   { key: 'global.logo',     label: 'Logo / seal',             group: 'Global', where: 'Shown in the site header & footer', ratio: '1:1', hint: 'Transparent PNG · ~600×600' },
   { key: 'global.og_image', label: 'Social-share image (OG)', group: 'Global', where: 'Link preview when the site is shared on social', ratio: '1.91:1', hint: 'Link preview · 1200×630' },

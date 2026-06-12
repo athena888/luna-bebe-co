@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader } from 'lucide-react'
 import { Suspense } from 'react'
+import { SlotBackground } from '@/components/ui/SlotBackground'
 
 function LoginForm() {
   const router = useRouter()
@@ -63,14 +64,16 @@ function LoginForm() {
 
 export default function PortalLoginPage() {
   return (
-    <div className="min-h-screen bg-bark-800 flex flex-col items-center justify-center px-6">
-      <div className="mb-10 text-center">
-        <div className="font-serif text-2xl tracking-[0.2em] uppercase text-gold-300 mb-1">Petite Lavande</div>
-        <div className="font-sans text-[10px] uppercase tracking-[0.35em] text-gold-400/60">& Co. — Internal Portal</div>
+    <SlotBackground slotKey="signin.bg" scrim="bg-bark-800/85" className="min-h-screen bg-bark-800">
+      <div className="min-h-screen flex flex-col items-center justify-center px-6">
+        <div className="mb-10 text-center">
+          <div className="font-serif text-2xl tracking-[0.2em] uppercase text-gold-300 mb-1">Petite Lavande</div>
+          <div className="font-sans text-[10px] uppercase tracking-[0.35em] text-gold-400/60">& Co. — Internal Portal</div>
+        </div>
+        <Suspense>
+          <LoginForm />
+        </Suspense>
       </div>
-      <Suspense>
-        <LoginForm />
-      </Suspense>
-    </div>
+    </SlotBackground>
   )
 }
