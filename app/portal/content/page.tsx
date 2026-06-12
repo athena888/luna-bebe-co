@@ -33,14 +33,17 @@ function SectionHeading({ title, note }: { title: string; note?: string }) {
   )
 }
 
-function SlotRow({ slotKey, label, context, ratio, hint, where }: {
+function SlotRow({ slotKey, label, context, ratio, hint, where, scrim }: {
   slotKey: string; label: string; context: string; ratio: string; hint?: string; where: string
+  // When set, shows a colour + opacity overlay control beneath the uploader.
+  scrim?: { hex: string; opacity: number; label?: string; note?: string }
 }) {
   return (
     <div className="bg-white border border-cream-200 rounded-lg p-4">
       <p className="font-sans text-sm font-medium text-bark-600 mb-0.5">{label}</p>
       <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">{where}</p>
       <SiteImageUploader slotKey={slotKey} context={context} ratio={ratio} hint={hint} compact />
+      {scrim && <ScrimControl scrimKey={slotKey} defaultScrim={{ hex: scrim.hex, opacity: scrim.opacity }} label={scrim.label} note={scrim.note} />}
     </div>
   )
 }
@@ -87,6 +90,7 @@ export default function ContentPage() {
                 ratio="16:9"
                 hint="Desktop crop · ~1920×1080. Keep subject centered — mobile will use the portrait version below."
                 where="Fills the entire screen at the top of /build on desktop"
+                scrim={{ hex: '#181716', opacity: 0.75, label: 'Colour overlay', note: 'darkens the bottom so the white hero text stays readable' }}
               />
               <SlotRow
                 slotKey="build.header_bg.mobile"
@@ -103,6 +107,7 @@ export default function ContentPage() {
                 ratio="16:9"
                 hint="Soft, light — cards sit on top · ~2000×1125 (16:9)"
                 where="Behind the product category list on /build"
+                scrim={{ hex: '#FAF9F8', opacity: 0.80, label: 'Colour overlay', note: 'cream wash over the photo so the product cards stay readable' }}
               />
             </div>
           </div>
@@ -127,6 +132,7 @@ export default function ContentPage() {
                 ratio="21:9"
                 hint="Desktop crop · ~2000×860 (21:9). Keep subject centered."
                 where="Behind the &ldquo;Prefer to choose yourself?&rdquo; CTA at the bottom of /boxes on desktop"
+                scrim={{ hex: '#FAF9F8', opacity: 0.70, label: 'Colour overlay', note: 'tint over the photo so the CTA text stays readable' }}
               />
               <SlotRow
                 slotKey="boxes.custom_cta_bg.mobile"
@@ -151,6 +157,7 @@ export default function ContentPage() {
                 ratio="21:9"
                 hint="Desktop crop · ~2000×860 (21:9). Keep subject centered."
                 where="Behind the hero heading on /corporate on desktop"
+                scrim={{ hex: '#FAF9F8', opacity: 0.40, label: 'Hero colour overlay', note: 'tint over the hero photo — raise for legibility, lower to show more photo' }}
               />
               <SlotRow
                 slotKey="corporate.hero_bg.mobile"
@@ -159,6 +166,24 @@ export default function ContentPage() {
                 ratio="9:16"
                 hint="Mobile crop · ~1080×1920. Portrait — shown on phones instead of the desktop image."
                 where="Behind the hero heading on /corporate on phones"
+              />
+              <SlotRow
+                slotKey="corporate.points_bg"
+                label="Three-points band background"
+                context="Background behind the One-less-thing / Traceable / Simple-to-run band"
+                ratio="21:9"
+                hint="Shown WHOLE — not cropped. Use a wide image · ~2000×860. Dark band, white text."
+                where="Behind the dark 'One less thing / Traceable / Simple to run' band"
+                scrim={{ hex: '#181716', opacity: 0, label: 'Colour overlay', note: 'off by default so the whole image shows — raise to darken the photo' }}
+              />
+              <SlotRow
+                slotKey="corporate.form_bg"
+                label="Lead form background"
+                context="Background behind the Tell us about your team contact form"
+                ratio="16:9"
+                hint="Soft, light — form sits on top · ~2000×1130"
+                where="Behind the 'Tell us about your team' contact form"
+                scrim={{ hex: '#FAF9F8', opacity: 0.85, label: 'Colour overlay', note: 'tint over the photo so the form stays readable' }}
               />
             </div>
           </div>
@@ -175,6 +200,7 @@ export default function ContentPage() {
                 ratio="21:9"
                 hint="Desktop crop · ~2000×860 (21:9). Keep subject centered."
                 where="Behind the header on /gift-cards on desktop"
+                scrim={{ hex: '#FAF9F8', opacity: 0.55, label: 'Colour overlay', note: 'tint over the photo so the header text stays readable' }}
               />
               <SlotRow
                 slotKey="giftcards.header_bg.mobile"
@@ -207,6 +233,7 @@ export default function ContentPage() {
                 ratio="21:9"
                 hint="Desktop crop · ~2000×860 (21:9). Keep subject centered."
                 where="Behind the footer on every page on desktop"
+                scrim={{ hex: '#F4F2EF', opacity: 0.30, label: 'Colour overlay', note: 'light wash over the photo so the footer text stays readable' }}
               />
               <SlotRow
                 slotKey="footer.bg.mobile"
