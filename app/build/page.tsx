@@ -12,6 +12,7 @@ import { memo, useCallback, useMemo, useState as useLocalState } from 'react'
 import { CertBadges } from '@/components/ui/CertBadges'
 import { SlotImage } from '@/components/ui/SlotImage'
 import { SlotBackground } from '@/components/ui/SlotBackground'
+import { ScrimOverlay } from '@/components/ui/ScrimOverlay'
 import { ParallaxLayer } from '@/components/ui/ParallaxLayer'
 import type { ProductCert, CertDef } from '@/lib/certifications'
 
@@ -454,7 +455,7 @@ export default function BuildPage() {
                   <img src={(heroImg ?? heroImgMobile)!} alt="Build Your Box" className="absolute inset-0 w-full h-full object-cover" fetchPriority="high" />
                 )}
               </ParallaxLayer>
-              <div className="absolute inset-0 bg-gradient-to-t from-bark-900/75 via-bark-900/25 to-transparent pointer-events-none" />
+              <ScrimOverlay scrimKey="build.header_bg" defaultHex="#181716" defaultOpacity={0.75} variant="gradient-top" />
             </>
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-bark-700 to-bark-800" />
@@ -477,13 +478,15 @@ export default function BuildPage() {
         </section>
 
         <div
-          className="w-full py-12 space-y-8"
+          className="w-full py-12 relative"
           style={productsBg ? {
             backgroundImage: `url(${productsBg})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           } : undefined}
         >
+          {productsBg && <ScrimOverlay scrimKey="build.products_bg" defaultHex="#FBF7F0" defaultOpacity={0} variant="flat" />}
+          <div className="relative z-10 space-y-8">
           {activeCategories.map((cat) => (
             <section key={cat} id={`cat-${cat}`}>
               <div className="pl-6 sm:pl-9 pr-6 sm:pr-8 mb-8">
@@ -523,6 +526,7 @@ export default function BuildPage() {
               </div>
             </section>
           ))}
+          </div>
         </div>
         {/* Spacer so the floating bag button doesn't overlap content on mobile */}
         <div className="h-16 lg:hidden" />

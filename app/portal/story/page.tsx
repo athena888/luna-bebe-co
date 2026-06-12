@@ -5,6 +5,7 @@ import { Loader, Check } from 'lucide-react'
 import type { StoryContent } from '@/lib/story-content'
 import { Field, Area } from '@/components/portal/ContentFields'
 import { SiteImageUploader } from '@/components/portal/SiteImageUploader'
+import { ScrimControl } from '@/components/portal/ScrimControl'
 
 function SectionTitle({ n, title, note }: { n: string; title: string; note?: string }) {
   return (
@@ -61,6 +62,7 @@ export default function StoryPortal() {
             <div>
               <p className="font-sans text-[10px] text-bark-400 mb-1">Hero section background</p>
               <SiteImageUploader slotKey="story.hero_bg" context="Background behind the story hero heading and logo" ratio="16:9" hint="soft, light lifestyle" compact />
+              <ScrimControl scrimKey="story.hero_bg" defaultScrim={{ hex: '#FBF7F0', opacity: 0.92 }} />
             </div>
           </div>
           <div className="space-y-3">
@@ -79,6 +81,7 @@ export default function StoryPortal() {
             <div>
               <p className="font-sans text-[10px] text-bark-400 mb-1">Section background</p>
               <SiteImageUploader slotKey="story.founder_bg" context="Background behind the founder letter section" ratio="16:9" hint="soft, light lifestyle" compact />
+              <ScrimControl scrimKey="story.founder_bg" defaultScrim={{ hex: '#FBF7F0', opacity: 0.90 }} />
             </div>
           </div>
           <div className="space-y-3">

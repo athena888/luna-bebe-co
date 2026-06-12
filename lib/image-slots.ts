@@ -33,14 +33,14 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   { key: 'giftcard.visual',     label: 'Gift card artwork',  group: 'Gift Cards', where: 'The card image in the live gift-card preview', ratio: '3:2', hint: 'Gift card art · ~1200×800' },
 
   // ── Build Your Box ──────────────────────────────────────────────────────────
-  { key: 'build.header_bg',   label: 'Hero background',           group: 'Build Your Box', where: 'Tall hero at the very top of Build Your Box', ratio: '16:9', hint: 'Fills a tall hero — keep the subject centered · ~2400×1500', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1100×1400' } },
-  { key: 'build.products_bg', label: 'Products area background',  group: 'Build Your Box', where: 'Background behind the product category list on /build', ratio: '16:9', hint: 'Soft, light — cards sit on top · ~2000×1130', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' } },
+  { key: 'build.header_bg',   label: 'Hero background',           group: 'Build Your Box', where: 'Tall hero at the very top of Build Your Box', ratio: '16:9', hint: 'Fills a tall hero — keep the subject centered · ~2400×1500', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1100×1400' }, scrimDefault: { hex: '#181716', opacity: 0.75 } },
+  { key: 'build.products_bg', label: 'Products area background',  group: 'Build Your Box', where: 'Background behind the product category list on /build', ratio: '16:9', hint: 'Soft, light — cards sit on top · ~2000×1130', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FBF7F0', opacity: 0 } },
 
   // ── Corporate ──────────────────────────────────────────────────────────────
-  { key: 'corporate.hero_bg', label: 'Hero background', group: 'Corporate', where: 'Background behind the "When your people become parents" hero', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' } },
+  { key: 'corporate.hero_bg', label: 'Hero background', group: 'Corporate', where: 'Background behind the "When your people become parents" hero', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.40 } },
 
   // ── Ready-Made Boxes ────────────────────────────────────────────────────────
-  { key: 'boxes.custom_cta_bg', label: 'Build-your-own CTA background', group: 'Ready-Made Boxes', where: 'Background behind the "Prefer to choose yourself?" CTA', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' } },
+  { key: 'boxes.custom_cta_bg', label: 'Build-your-own CTA background', group: 'Ready-Made Boxes', where: 'Background behind the "Prefer to choose yourself?" CTA', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.70 } },
 
   // ── Homepage ────────────────────────────────────────────────────────────────
   { key: 'home.occasions_bg', label: 'Shop by Occasion background', group: 'Homepage', where: 'Background behind the "Shop by Occasion" collections section', ratio: '21:9', hint: 'Soft, light lifestyle · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.80 } },

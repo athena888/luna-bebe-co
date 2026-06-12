@@ -6,6 +6,7 @@ import type { HomeContent, Perk, FeatureBlock, Review } from '@/lib/home-content
 import { ImageSlotCard, VideoSlotCard, BestsellerManager, GallerySlot, EditorialMediaGallery } from '@/components/portal/HomeMediaWidgets'
 import { Field, Area } from '@/components/portal/ContentFields'
 import { SiteImageUploader } from '@/components/portal/SiteImageUploader'
+import { ScrimControl } from '@/components/portal/ScrimControl'
 import { CollectionsEditor } from '@/app/portal/collections/page'
 
 function Card({ children, onRemove }: { children: React.ReactNode; onRemove?: () => void }) {
@@ -131,7 +132,10 @@ function HomepageEditor() {
       {/* 1 · Hero */}
       <section className="mb-12">
         <SectionTitle n="1" title="Hero" note="Full-width banner at the very top of the homepage. Add several photos to cross-fade them." />
-        <div className="max-w-2xl"><GallerySlot wide slot="hero" label="Hero Image(s)" description="Landscape — the box centered, lifestyle feel. ~2400×1350 (16:9). On narrow phones the sides crop; keep subject centered." /></div>
+        <div className="max-w-2xl">
+          <GallerySlot wide slot="hero" label="Hero Image(s)" description="Landscape — the box centered, lifestyle feel. ~2400×1350 (16:9). On narrow phones the sides crop; keep subject centered." />
+          <ScrimControl scrimKey="home.hero" defaultScrim={{ hex: '#181716', opacity: 0.4 }} label="Hero colour overlay" note="darkens the bottom so the white headline stays readable" />
+        </div>
       </section>
 
       {/* 2 · Perks bar */}

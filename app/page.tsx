@@ -10,6 +10,7 @@ import { EditorialStrip } from '@/components/ui/EditorialStrip'
 import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
 import { RotatingImage } from '@/components/ui/RotatingImage'
+import { ScrimOverlay } from '@/components/ui/ScrimOverlay'
 import { ParallaxLayer } from '@/components/ui/ParallaxLayer'
 import { getHomeContent } from '@/lib/home-content'
 import { getHomeGalleries } from '@/lib/site-images'
@@ -96,7 +97,7 @@ export default async function HomePage() {
           <ParallaxLayer>
             <RotatingImage urls={galleries.hero} alt="Petite Lavande — Timeless Moments, Made With Love" />
           </ParallaxLayer>
-          <div className="absolute inset-0 bg-gradient-to-t from-bark-800/40 via-transparent to-transparent" />
+          <ScrimOverlay scrimKey="home.hero" defaultHex="#181716" defaultOpacity={0.4} variant="gradient-top" />
           <div className="relative z-10 w-full px-6 sm:px-12 pb-10 sm:pb-14 flex justify-end">
             <div className="w-full max-w-[300px] sm:max-w-sm text-right">
               <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-cream-200/80 mb-3 pt-8 md:pt-12">Petite Lavande</p>
