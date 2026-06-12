@@ -131,6 +131,11 @@ export async function getNeedsAttention(): Promise<NeedsAttentionItem[]> {
   return rows.filter(r => r.contact).sort((a, b) => rank(a) - rank(b))
 }
 
+export async function findContactByEmail(email: string): Promise<Contact | null> {
+  const { data } = await supabaseAdmin.from('contacts').select('*').eq('email', email.trim().toLowerCase()).maybeSingle()
+  return (data as Contact) ?? null
+}
+
 export async function getContacts(filter: 'all' | 'corporate' = 'all'): Promise<Contact[]> {
   let q = supabaseAdmin.from('contacts').select('*').order('updated_at', { ascending: false }).limit(500)
   if (filter === 'corporate') q = q.or('is_corporate.eq.true,source.eq.corporate_form')
@@ -139,6 +144,29 @@ export async function getContacts(filter: 'all' | 'corporate' = 'all'): Promise<
 }
 
 // ── Inbound quarantine (unknown senders) ─────────────────────────────────────
+export interface QuarantineRow {
+  id: string
+  from_email: string
+  from_domain: string | null
+  subject: string | null
+  snippet: string | null
+  likely_corporate: boolean
+  status: 'pending' | 'reviewed'
+  created_at: string
+}
+
+// Pending quarantine, likely-corporate sorted to the top.
+export async function getQuarantine(): Promise<QuarantineRow[]> {
+  const { data } = await supabaseAdmin
+    .from('inbound_quarantine').select('*').eq('status', 'pending')
+    .order('likely_corporate', { ascending: false }).order('created_at', { ascending: false }).limit(200)
+  return (data ?? []) as QuarantineRow[]
+}
+
+export async function reviewQuarantine(id: string) {
+  await supabaseAdmin.from('inbound_quarantine').update({ status: 'reviewed' }).eq('id', id)
+}
+
 export async function quarantineInbound(input: { from_email: string; subject?: string; snippet?: string }) {
   const from = input.from_email.trim().toLowerCase()
   await supabaseAdmin.from('inbound_quarantine').insert({

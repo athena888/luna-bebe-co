@@ -2,14 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import { Loader, Check, Flame, Building2, Mail } from 'lucide-react'
-import type { Contact, NeedsAttentionItem } from '@/lib/outreach'
+import type { Contact, NeedsAttentionItem, QuarantineRow } from '@/lib/outreach'
 
-type Tab = 'needs' | 'corporate' | 'all'
+type Tab = 'needs' | 'corporate' | 'all' | 'quarantine'
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'needs', label: 'Needs Attention' },
   { id: 'corporate', label: 'Corporate' },
   { id: 'all', label: 'All Contacts' },
+  { id: 'quarantine', label: 'Quarantine' },
 ]
 
 function isCorp(c?: Contact | null) { return !!c && (c.is_corporate || c.source === 'corporate_form') }
@@ -23,6 +24,7 @@ export default function OutreachPage() {
   const [tab, setTab] = useState<Tab>('needs')
   const [needs, setNeeds] = useState<NeedsAttentionItem[]>([])
   const [contacts, setContacts] = useState<Contact[]>([])
+  const [quarantine, setQuarantine] = useState<QuarantineRow[]>([])
   const [loading, setLoading] = useState(true)
   const [resolving, setResolving] = useState<string | null>(null)
 
@@ -32,6 +34,7 @@ export default function OutreachPage() {
       const res = await fetch(`/api/portal/outreach?tab=${t}`)
       const d = await res.json()
       if (t === 'needs') setNeeds(d.needs ?? [])
+      else if (t === 'quarantine') setQuarantine(d.quarantine ?? [])
       else setContacts(d.contacts ?? [])
     } finally { setLoading(false) }
   }
@@ -42,6 +45,14 @@ export default function OutreachPage() {
     try {
       await fetch('/api/portal/outreach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'resolve', flagId }) })
       setNeeds(prev => prev.filter(n => n.id !== flagId))
+    } finally { setResolving(null) }
+  }
+
+  async function review(id: string) {
+    setResolving(id)
+    try {
+      await fetch('/api/portal/outreach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'review', id }) })
+      setQuarantine(prev => prev.filter(q => q.id !== id))
     } finally { setResolving(null) }
   }
 
@@ -86,6 +97,30 @@ export default function OutreachPage() {
                 <button onClick={() => resolve(n.id)} disabled={resolving === n.id}
                   className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cream-100 text-bark-600 font-sans text-xs font-semibold hover:bg-cream-200 transition-colors disabled:opacity-50">
                   {resolving === n.id ? <Loader size={12} className="animate-spin" /> : <Check size={12} />} Done
+                </button>
+              </div>
+            ))}
+          </div>
+        )
+      ) : tab === 'quarantine' ? (
+        quarantine.length === 0 ? (
+          <p className="font-sans text-sm text-bark-400 py-10 text-center">No quarantined emails. Unknown senders land here for review; non-freemail (likely corporate) sort to the top.</p>
+        ) : (
+          <div className="space-y-3">
+            {quarantine.map(q => (
+              <div key={q.id} className={`bg-white border rounded-xl p-4 flex items-start justify-between gap-4 ${q.likely_corporate ? 'border-bark-300' : 'border-cream-300'}`}>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    {q.likely_corporate && <CorpBadge />}
+                    <a href={`mailto:${q.from_email}`} className="font-sans text-sm font-medium text-bark-700 underline truncate">{q.from_email}</a>
+                  </div>
+                  {q.subject && <p className="font-sans text-xs text-bark-600 mb-1">{q.subject}</p>}
+                  {q.snippet && <p className="font-sans text-xs text-bark-400 line-clamp-2">{q.snippet}</p>}
+                  <p className="font-sans text-[11px] text-bark-400 mt-1">{q.from_domain || '—'} · {fmtDate(q.created_at)}</p>
+                </div>
+                <button onClick={() => review(q.id)} disabled={resolving === q.id}
+                  className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cream-100 text-bark-600 font-sans text-xs font-semibold hover:bg-cream-200 transition-colors disabled:opacity-50">
+                  {resolving === q.id ? <Loader size={12} className="animate-spin" /> : <Check size={12} />} Reviewed
                 </button>
               </div>
             ))}
