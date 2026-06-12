@@ -485,7 +485,7 @@ export default function BuildPage() {
             backgroundPosition: 'center',
           } : undefined}
         >
-          {productsBg && <ScrimOverlay scrimKey="build.products_bg" defaultHex="#FBF7F0" defaultOpacity={0} variant="flat" />}
+          {productsBg && <ScrimOverlay scrimKey="build.products_bg" defaultHex="#FBF7F0" defaultOpacity={0.88} variant="flat" />}
           <div className="relative z-10 space-y-8">
           {activeCategories.map((cat) => (
             <section key={cat} id={`cat-${cat}`}>
