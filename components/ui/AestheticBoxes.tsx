@@ -412,12 +412,12 @@ function BoxSection({
           </FlyIn>
           {box.tagline && (
             <FlyIn delay={200}>
-              <p className="font-cormorant text-xl italic text-bark-400 leading-relaxed mb-6">{box.tagline}</p>
+              <p className="font-cormorant text-xl italic text-espresso-light leading-relaxed mb-6">{box.tagline}</p>
             </FlyIn>
           )}
           {box.description && (
             <FlyIn delay={280}>
-              <p className="font-sans text-sm text-bark-500 leading-relaxed">{box.description}</p>
+              <p className="font-sans text-sm text-espresso-light leading-relaxed">{box.description}</p>
             </FlyIn>
           )}
         </div>
@@ -456,7 +456,7 @@ export function AestheticBoxes({ byStyle }: { byStyle: Array<{ style: string; bo
         <div key={style} id={`edition-${editionSlug(style)}`} className="scroll-mt-20">
           {/* Edition label — clean horizontal divider, no repeat count */}
           <div className="flex items-center gap-8 px-8 lg:px-12 xl:px-16 py-6 border-b border-cream-300">
-            <span className="font-serif text-2xl sm:text-3xl text-bark-500 shrink-0 tracking-wide">{style}</span>
+            <span className="font-serif text-2xl sm:text-3xl text-espresso shrink-0 tracking-wide">{style}</span>
             <span className="flex-1 h-px bg-cream-300" />
           </div>
           {boxes.map(box => {

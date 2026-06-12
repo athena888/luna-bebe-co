@@ -47,7 +47,7 @@ export default async function StoryPage() {
             <LogoMark className="h-20 sm:h-32 w-auto mx-auto mb-4 sm:mb-6" style={{ color: '#574540' }} alt="Petite Lavande" />
             <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-4">{content.hero.eyebrow}</p>
             <h1
-              className="text-3xl sm:text-4xl lg:text-5xl text-bark-600 leading-tight"
+              className="text-3xl sm:text-4xl lg:text-5xl text-espresso leading-tight"
               style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 400 }}
             >
               {content.hero.heading}
@@ -70,10 +70,10 @@ export default async function StoryPage() {
               <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400">{content.founder.eyebrow}</p>
               {content.founder.paragraphs.map((para, i) => (
                 i === 0
-                  ? <p key={i} className="text-xl text-bark-600 leading-loose" style={{ fontFamily: 'var(--font-cormorant)' }}>{para}</p>
-                  : <p key={i} className="font-sans text-sm text-bark-500 leading-relaxed">{para}</p>
+                  ? <p key={i} className="text-xl text-espresso leading-loose" style={{ fontFamily: 'var(--font-cormorant)' }}>{para}</p>
+                  : <p key={i} className="font-sans text-sm text-espresso-light leading-relaxed">{para}</p>
               ))}
-              <p className="text-2xl text-bark-500" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>
+              <p className="text-2xl text-espresso" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>
                 {content.founder.signature}
               </p>
             </div>
@@ -116,10 +116,10 @@ export default async function StoryPage() {
               <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">{content.french.eyebrow}</p>
               {content.french.paragraphs.map((para, i) => (
                 i === 0
-                  ? <p key={i} className="font-sans text-sm text-bark-500 leading-relaxed mb-4">{para}</p>
+                  ? <p key={i} className="font-sans text-sm text-espresso-light leading-relaxed mb-4">{para}</p>
                   : <p key={i} className="font-sans text-sm text-bark-400 leading-relaxed mb-4">{para}</p>
               ))}
-              <p className="text-2xl text-bark-500" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.french.tagline}</p>
+              <p className="text-2xl text-espresso" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.french.tagline}</p>
             </ScrollFlyIn>
             {/* Right: the photo as its own block — sits beside the text, no overlap */}
             <div className="relative min-h-[22rem] md:min-h-[32rem] bg-cream-100">

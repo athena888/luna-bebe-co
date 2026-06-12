@@ -31,7 +31,7 @@ export default async function BoxesPage() {
         {/* Build-your-own CTA (optional background image, managed in Site Images) */}
         <SlotBackground slotKey="boxes.custom_cta_bg" className="border-t border-cream-300 py-20 px-6 text-center">
           <p className="font-serif italic text-2xl sm:text-3xl text-espresso mb-3">Prefer to choose yourself?</p>
-          <p className="font-cormorant text-lg sm:text-xl text-[#6F5B4D] mb-6 leading-relaxed">Build your own custom box — pick exactly what goes inside.</p>
+          <p className="font-cormorant text-lg sm:text-xl text-espresso-light mb-6 leading-relaxed">Build your own custom box — pick exactly what goes inside.</p>
           <Link
             href="/build"
             className="border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-10 py-3.5 hover:bg-bark-600 hover:text-cream-50 transition-colors inline-block bg-cream-50/70"

@@ -45,8 +45,9 @@
   --color-bark-700: #262523;
   --color-bark-800: #181716;
 
-  /* Espresso — warm dark brown, used for the footer */
+  /* Espresso — warm dark brown (headings); -light for supporting body/taglines */
   --color-espresso: #4A3B30;
+  --color-espresso-light: #6F5B4D;
 
   --font-serif: "Cormorant Garamond", Georgia, serif;
   --font-cormorant: "Cormorant Garamond", Georgia, serif;
