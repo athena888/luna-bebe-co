@@ -54,18 +54,21 @@ export default function CorporatePage() {
           </section>
         </SlotBackground>
 
-        {/* Three points */}
-        <section className="border-b border-cream-300 px-6 py-16 sm:py-20">
-          <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-12">
-            {POINTS.map(({ title, body }) => (
-              <div key={title}>
-                <div className="w-8 h-px bg-gold-400 mb-5" />
-                <h2 className="font-serif text-xl text-bark-600 mb-3 leading-snug">{title}</h2>
-                <p className="font-sans text-sm text-bark-500 leading-relaxed">{body}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* Three points — dark section, white text; background image uploadable
+            via Portal → Site Images → Corporate. Whole image shown (not cropped). */}
+        <SlotBackground slotKey="corporate.points_bg" fit="contain" scrim="" className="border-b border-cream-300 bg-bark-800">
+          <section className="px-6 py-16 sm:py-20">
+            <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-12">
+              {POINTS.map(({ title, body }) => (
+                <div key={title}>
+                  <div className="w-8 h-px bg-gold-400 mb-5" />
+                  <h2 className="font-serif text-xl text-cream-50 mb-3 leading-snug">{title}</h2>
+                  <p className="font-sans text-sm text-cream-100/80 leading-relaxed">{body}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        </SlotBackground>
 
         {/* Lead form — background uploadable via Portal → Site Images → Corporate */}
         <SlotBackground slotKey="corporate.form_bg" scrim="bg-cream-50/85">
