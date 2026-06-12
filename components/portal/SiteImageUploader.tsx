@@ -34,6 +34,12 @@ export function SiteImageUploader({ slotKey, ratio, hint, context, compact = fal
     setBusy(true); setMsg('')
     try {
       const resized = await resizeImage(file, 2000, 0.9)
+      // resizeImage returns the original if it can't decode (e.g. HEIC on Chrome)
+      const isHeic = /heic|heif/i.test(resized.type) || /\.(heic|heif)$/i.test(resized.name)
+      if (isHeic) {
+        setMsg('HEIC not supported here — in Photos, tap Share → Save as JPEG, then upload again.')
+        return
+      }
       const form = new FormData()
       form.append('file', resized)
       form.append('slotKey', slotKey)
@@ -99,7 +105,7 @@ export function SiteImageUploader({ slotKey, ratio, hint, context, compact = fal
           {busy ? <Loader size={18} className="text-white animate-spin" /> : <span className="font-sans text-[10px] tracking-[0.2em] uppercase text-white">{url ? 'Replace' : 'Upload'}</span>}
         </div>
       </div>
-      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = '' }} />
+      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml,image/heic,image/heif" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = '' }} />
       <div className="flex items-stretch gap-1.5">
         <input value={alt} onChange={e => setAlt(e.target.value)} onBlur={() => saveAlt()} placeholder="Alt text" className="flex-1 min-w-0 px-2 py-1.5 border border-cream-300 rounded text-xs text-bark-600 focus:outline-none focus:border-bark-400" />
         <button type="button" onClick={suggestAlt} disabled={suggesting || !url} title="AI alt text" className="shrink-0 inline-flex items-center px-2 rounded border border-gold-300 bg-gold-50/50 text-bark-600 hover:border-gold-400 transition-colors disabled:opacity-40">

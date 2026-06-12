@@ -215,12 +215,14 @@ export default function BuildPage() {
   const [lightbox, setLightbox] = useState<string | null>(null)
   const [checkoutNotice, setCheckoutNotice] = useState(false)
   const [heroImg, setHeroImg] = useState<string | null>(null)
+  const [heroImgMobile, setHeroImgMobile] = useState<string | null>(null)
   const [productsBg, setProductsBg] = useState<string | null>(null)
   useEffect(() => {
-    fetch('/api/site-images?keys=build.header_bg,build.products_bg')
+    fetch('/api/site-images?keys=build.header_bg,build.header_bg.mobile,build.products_bg')
       .then(r => r.json())
       .then(d => {
         setHeroImg(d.images?.['build.header_bg']?.public_url ?? null)
+        setHeroImgMobile(d.images?.['build.header_bg.mobile']?.public_url ?? null)
         setProductsBg(d.images?.['build.products_bg']?.public_url ?? null)
       })
       .catch(() => {})
@@ -433,15 +435,24 @@ export default function BuildPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-cream-50 pb-16 lg:pb-0">
+      <main className="min-h-screen bg-cream-50">
 
         {/* Hero — full-viewport, parallax bg, Why Simple text, fade-in */}
         <section className="relative w-full min-h-screen bg-bark-700 flex items-end overflow-hidden border-b border-cream-300">
-          {heroImg ? (
+          {(heroImg || heroImgMobile) ? (
             <>
               <ParallaxLayer strength={0.2}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={heroImg} alt="Build Your Box" className="absolute inset-0 w-full h-full object-cover" fetchPriority="high" />
+                {heroImg && heroImgMobile ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={heroImgMobile} alt="Build Your Box" className="absolute inset-0 w-full h-full object-cover sm:hidden" fetchPriority="high" />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={heroImg} alt="Build Your Box" className="absolute inset-0 w-full h-full object-cover hidden sm:block" />
+                  </>
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={(heroImg ?? heroImgMobile)!} alt="Build Your Box" className="absolute inset-0 w-full h-full object-cover" fetchPriority="high" />
+                )}
               </ParallaxLayer>
               <div className="absolute inset-0 bg-gradient-to-t from-bark-900/75 via-bark-900/25 to-transparent pointer-events-none" />
             </>
@@ -513,8 +524,10 @@ export default function BuildPage() {
             </section>
           ))}
         </div>
+        {/* Spacer so the floating bag button doesn't overlap content on mobile */}
+        <div className="h-16 lg:hidden" />
+        <Footer />
       </main>
-      <Footer />
 
       {/* ── Bag drawer backdrop ── */}
       <div

@@ -3,9 +3,10 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { SLOT_BUCKET } from '@/lib/image-slots'
 
 // SVG + PNG + WebP keep transparency (essential for logos/seals); JPEG can't.
-const OK = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml']
-const EXT: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/svg+xml': 'svg' }
-const MAX_BYTES = 8 * 1024 * 1024
+// HEIC/HEIF are converted to JPEG server-side via sharp so iPhone photos work.
+const OK = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml', 'image/heic', 'image/heif']
+const EXT: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/svg+xml': 'svg', 'image/heic': 'jpg', 'image/heif': 'jpg' }
+const MAX_BYTES = 20 * 1024 * 1024  // HEIC files can be larger before conversion
 
 // List all managed slot images (admin) — keyed by slot_key.
 export async function GET() {
@@ -54,16 +55,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true })
     }
 
-    if (!OK.includes(file.type)) return NextResponse.json({ error: 'Only JPG, PNG, WebP, or SVG' }, { status: 400 })
-    if (file.size > MAX_BYTES) return NextResponse.json({ error: 'File too large (max 8MB)' }, { status: 400 })
+    if (!OK.includes(file.type)) return NextResponse.json({ error: 'Only JPG, PNG, WebP, SVG, or HEIC' }, { status: 400 })
+    if (file.size > MAX_BYTES) return NextResponse.json({ error: 'File too large (max 20 MB)' }, { status: 400 })
 
+    const isHeic = file.type === 'image/heic' || file.type === 'image/heif'
     const ext = EXT[file.type] ?? 'jpg'
     const safe = slotKey.replace(/[^a-z0-9.-]/gi, '-')
     const path = `slots/${safe}-${Date.now()}.${ext}`
-    const buffer = await file.arrayBuffer()
+
+    let rawBuf = await file.arrayBuffer()
+    let uploadBuf: Buffer
+    let contentType = file.type
+
+    if (isHeic) {
+      // Convert HEIC → JPEG server-side so it stores as a universally viewable format
+      const sharp = (await import('sharp')).default
+      uploadBuf = await sharp(Buffer.from(rawBuf)).jpeg({ quality: 90 }).toBuffer()
+      contentType = 'image/jpeg'
+    } else {
+      uploadBuf = Buffer.from(rawBuf)
+    }
 
     const { error: upErr } = await supabaseAdmin.storage.from(SLOT_BUCKET)
-      .upload(path, buffer, { contentType: file.type, cacheControl: '31536000', upsert: true })
+      .upload(path, uploadBuf, { contentType, cacheControl: '31536000', upsert: true })
     if (upErr) return NextResponse.json({ error: upErr.message }, { status: 500 })
 
     const { data: { publicUrl } } = supabaseAdmin.storage.from(SLOT_BUCKET).getPublicUrl(path)

@@ -108,7 +108,7 @@ export function GallerySlot({ slot, label, description, wide = false }: {
           </button>
         </div>
       )}
-      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) add(f); e.target.value = '' }} />
+      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) add(f); e.target.value = '' }} />
       <p className="font-sans text-[9px] text-bark-400/70 mt-2">Add several to cross-fade them. “First” shows before it rotates. Saves instantly.</p>
     </div>
   )
@@ -220,7 +220,7 @@ export function ImageSlotCard({
         <input
           ref={inputRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp"
+          accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
           className="hidden"
           onChange={e => {
             const file = e.target.files?.[0]
@@ -580,7 +580,7 @@ function BestsellerCard({ item, curated, onRemove }: { item: BestsellerItem; cur
         <input
           ref={inputRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp"
+          accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
           className="hidden"
           onChange={e => {
             const file = e.target.files?.[0]
