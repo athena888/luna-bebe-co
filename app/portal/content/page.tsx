@@ -172,7 +172,7 @@ export default function ContentPage() {
                 label="Three-points band background"
                 context="Background behind the One-less-thing / Traceable / Simple-to-run band"
                 ratio="21:9"
-                hint="Shown WHOLE — not cropped. Use a wide image · ~2000×860. Dark band, white text."
+                hint="Shown full width, uncropped — the band height follows the image. Use a wide image with room for text · ~2000×860. White text overlays it."
                 where="Behind the dark 'One less thing / Traceable / Simple to run' band"
                 scrim={{ hex: '#181716', opacity: 0, label: 'Colour overlay', note: 'off by default so the whole image shows — raise to darken the photo' }}
               />

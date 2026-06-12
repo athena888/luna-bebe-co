@@ -55,8 +55,10 @@ export default function CorporatePage() {
         </SlotBackground>
 
         {/* Three points — dark section, white text; background image uploadable
-            via Portal → Site Images → Corporate. Whole image shown (not cropped). */}
-        <SlotBackground slotKey="corporate.points_bg" fit="contain" scrim="" className="border-b border-cream-300 bg-bark-800">
+            in Portal → Contents → Corporate. fit="natural": the image fills the
+            full width and the band's height follows the image (no fixed height,
+            no cropping). Text overlays it centered. */}
+        <SlotBackground slotKey="corporate.points_bg" fit="natural" scrim="" className="border-b border-cream-300 bg-bark-800">
           <section className="px-6 py-16 sm:py-20">
             <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-12">
               {POINTS.map(({ title, body }) => (
