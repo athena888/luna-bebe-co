@@ -404,12 +404,6 @@ export default function BoxEditorPage() {
         </div>
       </div>
 
-      {/* Info panel background */}
-      <div className="bg-white border border-cream-300 rounded-xl p-6 mb-6">
-        <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-1">Info Panel Background</p>
-        <p className="font-sans text-xs text-bark-400/70 mb-4">Optional — shows behind the title, item list, and price on the /boxes page. A soft, light image works best.</p>
-        <SiteImageUploader slotKey={`boxes.${slug}.info_bg`} context={`Background behind the ${box.name} info panel on the boxes page`} ratio="9:16" hint="portrait, soft & light · ~1000×1800" compact />
-      </div>
 
       {/* Slots */}
       <div className="bg-white border border-cream-300 rounded-xl p-6">

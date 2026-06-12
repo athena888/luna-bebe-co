@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { CONTACT_EMAIL } from '@/lib/site-config'
 
 // Catches errors thrown in the root layout itself. Must be fully self-contained
 // (its own <html>/<body>) because the normal layout has failed to render.
@@ -17,7 +18,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
             <h1 style={{ fontSize: '28px', fontWeight: 500, marginBottom: '12px' }}>Something went wrong</h1>
             <p style={{ fontSize: '14px', color: '#9a8c85', marginBottom: '28px', lineHeight: 1.6 }}>
               A little hiccup on our end. Please try again — if it keeps happening, email{' '}
-              <a href="mailto:hello@petitelavande.com" style={{ color: '#c9a96a' }}>hello@petitelavande.com</a>.
+              <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: '#c9a96a' }}>{CONTACT_EMAIL}</a>.
             </p>
             <button
               onClick={reset}

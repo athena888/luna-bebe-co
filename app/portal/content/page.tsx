@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import { SiteImageUploader } from '@/components/portal/SiteImageUploader'
 
-type PageId = 'home' | 'story' | 'shop' | 'build' | 'boxes' | 'corporate' | 'giftcards' | 'global'
+type PageId = 'home' | 'story' | 'shop' | 'build' | 'boxes' | 'corporate' | 'giftcards' | 'global' | 'social' | 'journal'
 
 const TABS: { id: PageId; label: string }[] = [
   { id: 'home',       label: 'Homepage' },
@@ -16,6 +16,8 @@ const TABS: { id: PageId; label: string }[] = [
   { id: 'corporate',  label: 'Corporate' },
   { id: 'giftcards',  label: 'Gift Cards' },
   { id: 'global',     label: 'Global' },
+  { id: 'social',     label: 'Social Feed' },
+  { id: 'journal',    label: 'Journal' },
 ]
 
 function EditorLink({ href, label, description }: { href: string; label: string; description: string }) {
@@ -124,15 +126,15 @@ export default function ContentPage() {
                 label="Hero background"
                 context="Background behind the Build Your Box hero section"
                 ratio="16:9"
-                hint="Fills a tall hero · ~2400×1500"
-                where="Tall hero at the very top of /build"
+                hint="Full-screen hero · ~2400×1350 (16:9). Covers the entire viewport on desktop and portrait mobile — keep your subject centered."
+                where="Fills the entire screen at the top of /build"
               />
               <SlotRow
                 slotKey="build.products_bg"
                 label="Products area background"
                 context="Background behind the product category list on the Build Your Box page"
                 ratio="16:9"
-                hint="Soft, light — cards sit on top · ~2000×1130"
+                hint="Soft, light — cards sit on top · ~2000×1125 (16:9)"
                 where="Behind the product category list on /build"
               />
             </div>
@@ -142,12 +144,15 @@ export default function ContentPage() {
         {active === 'boxes' && (
           <>
             <SectionHeading title="Boxes Page" note="The /boxes ready-made gift sets page." />
-            <p className="font-sans text-xs text-bark-400 mb-5">
-              To upload a background image for each individual box panel, go to{' '}
-              <Link href="/portal/boxes" className="text-gold-500 underline">Prebuilt Boxes</Link>{' '}
-              and open the box you want to edit.
-            </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <SlotRow
+                slotKey="boxes.info_bg"
+                label="Info panel background"
+                context="Background behind the title, item list, and price panel on every box card"
+                ratio="9:16"
+                hint="Portrait, soft & light · ~1000×1800. Shared across all box cards."
+                where="Behind the text panel on every box card on /boxes"
+              />
               <SlotRow
                 slotKey="boxes.custom_cta_bg"
                 label="Build-your-own CTA background"
@@ -197,6 +202,28 @@ export default function ContentPage() {
                 where="The card image in the live gift-card preview"
               />
             </div>
+          </>
+        )}
+
+        {active === 'social' && (
+          <>
+            <SectionHeading title="Social Feed" note="Photos, videos, and Instagram/TikTok embeds shown on the Story page." />
+            <EditorLink
+              href="/portal/social"
+              label="Open Social Feed"
+              description="Upload photos or videos, embed Instagram or TikTok posts, show or hide individual items, manage captions and display order."
+            />
+          </>
+        )}
+
+        {active === 'journal' && (
+          <>
+            <SectionHeading title="Journal" note="Blog-style articles shown on /journal." />
+            <EditorLink
+              href="/portal/journal"
+              label="Open Journal"
+              description="Create, edit, publish, or draft journal posts. Supports subheadings (##) and bullet lists. Each post has a title, slug, excerpt, and meta description."
+            />
           </>
         )}
 

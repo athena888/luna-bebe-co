@@ -17,6 +17,7 @@ import { getActiveSocialPosts } from '@/lib/social-posts'
 import { Package, PenLine, Leaf, Heart, Truck, Mail } from 'lucide-react'
 import { TestimonialsCarousel } from '@/components/ui/TestimonialsCarousel'
 import { SlotBackground } from '@/components/ui/SlotBackground'
+import { CONTACT_EMAIL } from '@/lib/site-config'
 
 // Icons for the under-hero perks bar, mapped by index to the default perks.
 const PERK_ICONS = [Package, PenLine, Leaf, Heart]
@@ -210,19 +211,23 @@ export default async function HomePage() {
         {/* ── Editorial strip — video or image ── */}
         <EditorialStrip />
 
-        {/* ── 8. Testimonials — hidden for now ── */}
-        {/* <SlotBackground slotKey="home.testimonials_bg" scrim="bg-cream-50/85" className="border-t border-cream-300">
-          <section className="py-12 sm:py-16 px-6 sm:px-10">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-10">
-                <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">{content.reviews.eyebrow}</p>
-                <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">{content.reviews.title}</h2>
-                <p className="font-sans text-[11px] tracking-[0.2em] text-gold-400 mt-3">{content.reviews.ratingLine}</p>
+        {/* ── 8. Testimonials — shown only when NEXT_PUBLIC_SHOW_REVIEWS=true and there are real reviews ── */}
+        {process.env.NEXT_PUBLIC_SHOW_REVIEWS === 'true' && content.reviews.items.length > 0 && (
+          <SlotBackground slotKey="home.testimonials_bg" scrim="bg-cream-50/85" className="border-t border-cream-300">
+            <section className="py-12 sm:py-16 px-6 sm:px-10">
+              <div className="max-w-6xl mx-auto">
+                <div className="text-center mb-10">
+                  <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">{content.reviews.eyebrow}</p>
+                  <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">{content.reviews.title}</h2>
+                  {content.reviews.ratingLine && (
+                    <p className="font-sans text-[11px] tracking-[0.2em] text-gold-400 mt-3">{content.reviews.ratingLine}</p>
+                  )}
+                </div>
+                <TestimonialsCarousel reviews={content.reviews.items} />
               </div>
-              <TestimonialsCarousel />
-            </div>
-          </section>
-        </SlotBackground> */}
+            </section>
+          </SlotBackground>
+        )}
 
         {/* ── Contact / Social ── */}
         <section className="border-t border-cream-300 bg-[#FEF8F4]">
@@ -233,7 +238,7 @@ export default async function HomePage() {
               <h2 className="font-serif text-2xl sm:text-3xl text-bark-600 mb-6">Find Us</h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-cream-300">
                 {[
-                  { label: 'Email', sub: 'hello@petitelavande.com', href: 'mailto:hello@petitelavande.com',
+                  { label: 'Email', sub: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}`,
                     icon: <Mail size={18} strokeWidth={1.5} className="text-bark-400 mx-auto mb-2.5" /> },
                   { label: 'Instagram', sub: '@petitelavandeco', href: 'https://www.instagram.com/petitelavandeco',
                     icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-bark-400 mx-auto mb-2.5"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> },

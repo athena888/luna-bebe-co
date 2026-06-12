@@ -14,6 +14,19 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 2678400, // 31 days
   },
+  async redirects() {
+    return [
+      // Fix "Seep Mask" typo — 301 from the old slug to the corrected one.
+      // Run the SQL migration first; then check the actual DB slug with:
+      //   SELECT id FROM products WHERE id ILIKE '%seep%';
+      // and add any additional slug variants here.
+      {
+        source: '/products/mulberry-silk-seep-mask',
+        destination: '/products/mulberry-silk-sleep-mask',
+        permanent: true,
+      },
+    ]
+  },
   async headers() {
     return [
       {

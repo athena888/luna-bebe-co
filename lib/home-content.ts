@@ -68,12 +68,8 @@ export const DEFAULT_HOME_CONTENT: HomeContent = {
   reviews: {
     eyebrow: 'Stories',
     title: 'Loved by Gift-Givers',
-    ratingLine: '★★★★★  5.0 · Over 300 happy orders',
-    items: [
-      { quote: "I've never seen a gift box this beautiful. My best friend cried when she opened it. The personal card was the most special part.", name: 'Camille R.', context: 'Gifted to her sister' },
-      { quote: 'Ordered rush shipping and it arrived the next day. Gorgeous box, everything so soft and organic. Worth every penny.', name: 'Maya T.', context: 'Baby shower gift' },
-      { quote: 'Everyone at the shower was asking where the box was from. Building it myself meant I picked perfectly for someone I barely know.', name: 'Priya N.', context: 'Office baby shower' },
-    ],
+    ratingLine: '',
+    items: [],
   },
 }
 

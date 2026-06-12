@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { CONTACT_EMAIL } from '@/lib/site-config'
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
@@ -53,7 +54,7 @@ export default function TermsPage() {
       </Section>
 
       <Section title="11. Contact">
-        Questions about these terms? Email us at <a href="mailto:hello@petitelavande.com" className="text-bark-600 underline underline-offset-2">hello@petitelavande.com</a>.
+        Questions about these terms? Email us at <a href={`mailto:${CONTACT_EMAIL}`} className="text-bark-600 underline underline-offset-2">{CONTACT_EMAIL}</a>.
       </Section>
     </article>
   )

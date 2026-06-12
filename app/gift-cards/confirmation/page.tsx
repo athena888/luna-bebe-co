@@ -7,6 +7,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Button } from '@/components/ui/Button'
 import { CheckCircle, Mail } from 'lucide-react'
+import { CONTACT_EMAIL } from '@/lib/site-config'
 
 function GiftCardConfirmationInner() {
   const searchParams = useSearchParams()
@@ -40,7 +41,7 @@ function GiftCardConfirmationInner() {
               <Mail size={18} className="text-gold-400" />
             </div>
             <p className="font-sans text-sm text-bark-400 leading-relaxed">
-              Did not receive an email? Check your spam folder or contact us at hello@petitelavande.com
+              Did not receive an email? Check your spam folder or contact us at {CONTACT_EMAIL}
             </p>
           </div>
 

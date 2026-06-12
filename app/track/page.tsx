@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { CONTACT_EMAIL } from '@/lib/site-config'
 import { Package, Truck, CheckCircle, Clock, ExternalLink } from 'lucide-react'
 
 const inputClass = "w-full px-4 py-3 border border-cream-300 bg-cream-50 font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-bark-400 transition-colors"
@@ -157,7 +158,7 @@ export default function TrackPage() {
                       <div className="px-6 py-4">
                         <p className="font-sans text-xs text-bark-400">
                           Tracking information will appear here once your box ships. Questions? Email{' '}
-                          <a href="mailto:hello@petitelavande.com" className="text-bark-600 underline underline-offset-2">hello@petitelavande.com</a>
+                          <a href={`mailto:${CONTACT_EMAIL}`} className="text-bark-600 underline underline-offset-2">{CONTACT_EMAIL}</a>
                         </p>
                       </div>
                     )}

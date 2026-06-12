@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { MessageCircle, X, Send, Loader2 } from 'lucide-react'
+import { CONTACT_EMAIL } from '@/lib/site-config'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -47,7 +48,7 @@ export function ChatWidget() {
       const data = await res.json()
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply ?? data.error ?? 'Something went wrong.' }])
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Connection error. Please email hello@petitelavande.com' }])
+      setMessages(prev => [...prev, { role: 'assistant', content: `Connection error. Please email ${CONTACT_EMAIL}` }])
     } finally {
       setLoading(false)
     }
@@ -103,7 +104,7 @@ export function ChatWidget() {
           {/* Human handoff */}
           <div className="px-4 py-2 border-t border-cream-200 bg-white shrink-0">
             <a
-              href="mailto:hello@petitelavande.com"
+              href={`mailto:${CONTACT_EMAIL}`}
               className="font-sans text-[10px] text-bark-400 hover:text-bark-600 transition-colors"
             >
               Prefer to talk to a person? Email us →

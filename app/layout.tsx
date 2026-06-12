@@ -8,6 +8,7 @@ import { ChatWidget } from "@/components/ui/ChatWidget";
 import { UTMCapture } from "@/components/ui/UTMCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { getSiteImage } from "@/lib/site-images";
+import { CONTACT_EMAIL } from "@/lib/site-config";
 
 const dancing = Dancing_Script({ subsets: ["latin"], variable: "--font-dancing", display: "swap" });
 const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["300", "400", "500"], style: ["normal", "italic"], variable: "--font-cormorant", display: "swap" });
@@ -82,7 +83,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           url: BASE,
           logo: `${BASE}/apple-touch-icon.png`,
           description: 'Luxury curated organic baby gift boxes.',
-          email: 'hello@petitelavande.com',
+          email: CONTACT_EMAIL,
         }} />
         <JsonLd data={{
           '@context': 'https://schema.org',

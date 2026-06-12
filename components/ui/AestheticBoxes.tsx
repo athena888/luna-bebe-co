@@ -8,6 +8,7 @@ import type { ResolvedBox, BoxItem } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+const SHOW_BOTANICAL = process.env.NEXT_PUBLIC_CARD_BOTANICAL_BG === 'true'
 function fmt(c: number) { return `$${(c / 100).toFixed(0)}` }
 function productImg(p: { id: string; image?: string | null }): string | null {
   return p.image ?? (SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${p.id}.jpg` : null)
@@ -171,7 +172,8 @@ function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => 
     product?: { description?: string; ingredients?: string; certifications?: Array<{ key: string; name?: string; iconUrl?: string | null; certificateUrl?: string | null }> }
   } | null>(null)
   const [loading, setLoading] = useState(true)
-  const [lightbox, setLightbox] = useState<string | null>(null)
+  const [lightbox, setLightbox] = useState<number | null>(null)
+  const touchX = useRef<number | null>(null)
 
   useEffect(() => {
     let alive = true
@@ -185,6 +187,18 @@ function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => 
 
   const gallery = data?.gallery ?? []
   const cells: Array<{ src: string | null; label?: string }> = gallery.length ? gallery.map(g => ({ src: g.image_url, label: g.label ?? undefined })) : [{ src: productImg(item) }]
+  const n = cells.length
+
+  useEffect(() => {
+    if (lightbox === null) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') setLightbox(i => i !== null ? (i - 1 + n) % n : null)
+      if (e.key === 'ArrowRight') setLightbox(i => i !== null ? (i + 1) % n : null)
+      if (e.key === 'Escape') setLightbox(null)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [lightbox, n])
   const certs = data?.product?.certifications ?? []
   const description = data?.product?.description
   const ingredients = data?.product?.ingredients
@@ -202,7 +216,7 @@ function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => 
             ) : (
               <div className="grid grid-cols-2 gap-3">
                 {cells.map((c, i) => (
-                  <button key={i} type="button" onClick={() => c.src && setLightbox(c.src)} disabled={!c.src}
+                  <button key={i} type="button" onClick={() => c.src && setLightbox(i)} disabled={!c.src}
                     className="group relative w-full overflow-hidden bg-cream-200 cursor-zoom-in disabled:cursor-default" style={{ aspectRatio: '3/4' }}>
                     {c.src
                       ? <img src={c.src} alt={c.label ?? item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -241,10 +255,55 @@ function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => 
           </div>
         </div>
       </div>
-      {lightbox && (
-        <div className="fixed inset-0 z-[80] bg-bark-900/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-10 cursor-zoom-out" onClick={() => setLightbox(null)}>
+      {lightbox !== null && (
+        <div
+          className="fixed inset-0 z-[80] bg-bark-900/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-10"
+          onClick={() => setLightbox(null)}
+          onTouchStart={e => { touchX.current = e.touches[0].clientX }}
+          onTouchEnd={e => {
+            if (touchX.current === null) return
+            const delta = e.changedTouches[0].clientX - touchX.current
+            touchX.current = null
+            if (Math.abs(delta) < 40) return
+            if (delta < 0) setLightbox(i => i !== null ? (i + 1) % n : null)
+            else setLightbox(i => i !== null ? (i - 1 + n) % n : null)
+          }}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={lightbox} alt="" className="max-h-[92vh] max-w-[92vw] w-auto h-auto object-contain shadow-2xl" />
+          <img
+            src={cells[lightbox]?.src ?? ''}
+            alt=""
+            className="max-h-[92vh] max-w-[calc(100vw-2rem)] sm:max-w-[92vw] w-auto h-auto object-contain shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          />
+          {n > 1 && (
+            <>
+              <button
+                className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors"
+                onClick={e => { e.stopPropagation(); setLightbox(i => i !== null ? (i - 1 + n) % n : null) }}
+                aria-label="Previous photo"
+              >
+                <ChevronLeft size={20} className="text-white" />
+              </button>
+              <button
+                className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors"
+                onClick={e => { e.stopPropagation(); setLightbox(i => i !== null ? (i + 1) % n : null) }}
+                aria-label="Next photo"
+              >
+                <ChevronRight size={20} className="text-white" />
+              </button>
+              <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2">
+                {cells.map((c, i) => c.src ? (
+                  <button
+                    key={i}
+                    className={`transition-all duration-200 ${i === lightbox ? 'w-5 h-1 bg-white' : 'w-1.5 h-1.5 bg-white/40'}`}
+                    onClick={e => { e.stopPropagation(); setLightbox(i) }}
+                    aria-label={`View photo ${i + 1}`}
+                  />
+                ) : null)}
+              </div>
+            </>
+          )}
         </div>
       )}
     </>
@@ -308,11 +367,11 @@ function BoxSection({
 }) {
   const [panelBg, setPanelBg] = useState<string | null>(null)
   useEffect(() => {
-    fetch(`/api/site-images?keys=boxes.${box.slug}.info_bg`)
+    fetch(`/api/site-images?keys=boxes.info_bg`)
       .then(r => r.json())
-      .then(d => setPanelBg(d.images?.[`boxes.${box.slug}.info_bg`]?.public_url ?? null))
+      .then(d => setPanelBg(d.images?.['boxes.info_bg']?.public_url ?? null))
       .catch(() => {})
-  }, [box.slug])
+  }, [])
 
   return (
     <section
@@ -335,13 +394,16 @@ function BoxSection({
       {/* Info panel — desktop: fixed 95vh column so items scroll and price anchors bottom;
            mobile: natural flow, items capped at max-h so all content stays visible */}
       <div
-        className={`lg:w-[40%] flex flex-col lg:h-[95vh] ${flip ? 'lg:order-1' : ''}`}
+        className={`relative isolate lg:w-[40%] flex flex-col lg:h-[95vh] ${flip ? 'lg:order-1' : ''}`}
         style={panelBg ? {
           backgroundImage: `linear-gradient(rgba(251,247,240,0.87), rgba(251,247,240,0.87)), url(${panelBg})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         } : undefined}
       >
+        {SHOW_BOTANICAL && (
+          <div className="box-botanical-panel absolute inset-0 pointer-events-none" style={{ zIndex: -1 }} aria-hidden="true" />
+        )}
 
         {/* Top: identity */}
         <div className="px-8 lg:px-12 xl:px-16 pt-12 lg:pt-16 shrink-0">

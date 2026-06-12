@@ -10,6 +10,7 @@ import { SlotImage } from '@/components/ui/SlotImage'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { SocialFeed } from '@/components/ui/SocialFeed'
 import { Leaf, Heart, Mail } from 'lucide-react'
+import { CONTACT_EMAIL } from '@/lib/site-config'
 
 export const metadata: Metadata = {
   title: 'Our Story',
@@ -35,7 +36,7 @@ export default async function StoryPage() {
       <main className="min-h-screen bg-[#FBF7F0]">
 
         {/* Hero image (optional, managed in Portal → Story; mobile crop supported) */}
-        <SlotImage slotKey="story.hero" className="relative block w-full aspect-[21/9] overflow-hidden" imgClassName="w-full h-full object-cover" />
+        <SlotImage slotKey="story.hero" className="relative block w-full aspect-[4/3] sm:aspect-[21/9] overflow-hidden" imgClassName="w-full h-full object-cover" />
 
         {/* Hero — background uploadable via Portal → Site Images → Story → Hero background */}
         <SlotBackground slotKey="story.hero_bg" scrim="bg-[#FBF7F0]/92" className="border-b border-cream-300">
@@ -127,7 +128,7 @@ export default async function StoryPage() {
               <h2 className="font-serif text-2xl sm:text-3xl text-bark-600 mb-6">Find Us</h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-cream-300">
                 {([
-                  { label: 'Email', sub: 'hello@petitelavande.com', href: 'mailto:hello@petitelavande.com',
+                  { label: 'Email', sub: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}`,
                     icon: <Mail size={18} strokeWidth={1.5} className="text-bark-400 mx-auto mb-2.5" /> },
                   { label: 'Instagram', sub: '@petitelavandeco', href: 'https://www.instagram.com/petitelavandeco',
                     icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-bark-400 mx-auto mb-2.5"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> },

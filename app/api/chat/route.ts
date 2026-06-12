@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { anthropic } from '@/lib/anthropic'
+import { CONTACT_EMAIL } from '@/lib/site-config'
 
 const SYSTEM_PROMPT = `You are the friendly customer service assistant for Petite Lavande, a luxury organic baby gift box company. You are warm, knowledgeable, and speak with a refined but approachable tone.
 
@@ -9,7 +10,7 @@ About Petite Lavande:
 - Materials claim: cotton garments are made with GOTS-certified organic cotton from a GOTS-certified maker. Do NOT say the brand, the boxes, or non-cotton items are "GOTS certified," and never say "100% organic."
 - We ship across the US. Standard shipping: 5–7 business days ($12). Premium rush: 1–2 business days ($28).
 - Free shipping on orders over $150
-- Email: hello@petitelavande.com
+- Email: ${CONTACT_EMAIL}
 
 Products (5 categories):
 - Swaddle & Blanket: organic muslin, bamboo, knit, waffle, quilted linen, velvet wraps ($28–$52)
@@ -25,7 +26,7 @@ Orders: Customers can track at /track using their email and order reference.
 Accounts: Customers can create an account and view order history at /account
 Gift cards: Available at /gift-cards ($50, $100, $150, $200)
 
-Keep responses concise and helpful. If you don't know something specific, say so honestly and suggest emailing hello@petitelavande.com. Never make up prices, policies, or product details not listed above.`
+Keep responses concise and helpful. If you don't know something specific, say so honestly and suggest emailing ${CONTACT_EMAIL}. Never make up prices, policies, or product details not listed above.`
 
 // Simple rate limit: 20 messages per IP per hour
 const RATE_WINDOW_MS = 60 * 60 * 1000
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
     if (!checkRateLimit(ip)) {
-      return NextResponse.json({ error: 'Too many messages. Please email us at hello@petitelavande.com' }, { status: 429 })
+      return NextResponse.json({ error: `Too many messages. Please email us at ${CONTACT_EMAIL}` }, { status: 429 })
     }
 
     const { messages } = await req.json()
@@ -70,11 +71,11 @@ export async function POST(req: NextRequest) {
 
     const reply = message.content[0].type === 'text'
       ? message.content[0].text
-      : "I'm sorry, I couldn't process that. Please email us at hello@petitelavande.com"
+      : `I'm sorry, I couldn't process that. Please email us at ${CONTACT_EMAIL}`
 
     return NextResponse.json({ reply })
   } catch (error) {
     console.error('Chat error:', error)
-    return NextResponse.json({ reply: "I'm having trouble right now. Please email us at hello@petitelavande.com and we'll get back to you shortly." })
+    return NextResponse.json({ reply: `I'm having trouble right now. Please email us at ${CONTACT_EMAIL} and we'll get back to you shortly.` })
   }
 }

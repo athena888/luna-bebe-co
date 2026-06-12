@@ -119,3 +119,18 @@ html { scroll-behavior: smooth; }
 /* Rotating announcement bar message fade-in */
 @keyframes plFade { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
 .pl-fade { animation: plFade 0.5s ease; }
+
+/* Botanical corner art overlay — /boxes card text panels */
+.box-botanical-panel {
+  background-image: url('/decor/sprig-tr.webp'), url('/decor/sprig-bl.webp');
+  background-position: top right, bottom left;
+  background-repeat: no-repeat, no-repeat;
+  background-size: min(40%, 280px), min(45%, 320px);
+}
+@media (max-width: 640px) {
+  .box-botanical-panel {
+    background-image: url('/decor/sprig-bl.webp');
+    background-position: bottom left;
+    background-size: min(50%, 240px);
+  }
+}

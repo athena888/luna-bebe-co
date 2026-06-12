@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Button } from '@/components/ui/Button'
+import { CONTACT_EMAIL } from '@/lib/site-config'
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
@@ -21,7 +22,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
           <h1 className="font-serif text-3xl text-bark-600 mb-4">Something went wrong</h1>
           <p className="font-sans text-sm text-bark-400 mb-10 leading-relaxed">
             A little hiccup on our end. Please try again — if it keeps happening, reach us at{' '}
-            <a href="mailto:hello@petitelavande.com" className="text-gold-500 underline">hello@petitelavande.com</a>.
+            <a href={`mailto:${CONTACT_EMAIL}`} className="text-gold-500 underline">{CONTACT_EMAIL}</a>.
           </p>
           <div className="flex gap-3 justify-center">
             <Button variant="gold" size="md" onClick={reset}>Try again</Button>

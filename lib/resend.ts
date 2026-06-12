@@ -1,8 +1,9 @@
 import { Resend } from 'resend'
+import { CONTACT_EMAIL } from '@/lib/site-config'
 
 export const resend = new Resend(process.env.RESEND_API_KEY!)
 
-const FROM = 'Petite Lavande <hello@petitelavande.com>'
+const FROM = `Petite Lavande <${CONTACT_EMAIL}>`
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
 const brandHeader = `

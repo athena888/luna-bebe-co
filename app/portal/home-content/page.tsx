@@ -130,7 +130,7 @@ function HomepageEditor() {
       {/* 1 · Hero */}
       <section className="mb-12">
         <SectionTitle n="1" title="Hero" note="Full-width banner at the very top of the homepage. Add several photos to cross-fade them." />
-        <div className="max-w-2xl"><GallerySlot wide slot="hero" label="Hero Image(s)" description="Landscape — the box centered, lifestyle feel. ~2400×1400." /></div>
+        <div className="max-w-2xl"><GallerySlot wide slot="hero" label="Hero Image(s)" description="Landscape — the box centered, lifestyle feel. ~2400×1350 (16:9). On narrow phones the sides crop; keep subject centered." /></div>
       </section>
 
       {/* 2 · Perks bar */}
@@ -151,10 +151,10 @@ function HomepageEditor() {
       <section className="mb-12">
         <SectionTitle n="3" title="Shop by Occasion cards" note="Four portrait cards in the 'Shop by Occasion' grid." />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <ImageSlotCard slotKey="newborn" label="Newborn Gifts" description="Baby in white eyelet romper" />
-          <ImageSlotCard slotKey="mama" label="For Mama" description="Mom + baby, soft pink tones" />
-          <ImageSlotCard slotKey="bundle" label="Mama & Baby Bundle" description="Mom holding newborn, box on table" />
-          <ImageSlotCard slotKey="custom" label="Custom Box" description="Baby on rug with bunny blanket" />
+          <ImageSlotCard slotKey="newborn" label="Newborn Gifts" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
+          <ImageSlotCard slotKey="mama" label="For Mama" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
+          <ImageSlotCard slotKey="bundle" label="Mama & Baby Bundle" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
+          <ImageSlotCard slotKey="custom" label="Custom Box" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
         </div>
       </section>
 
@@ -198,7 +198,7 @@ function HomepageEditor() {
       <section className="mb-12">
         <SectionTitle n="7" title="Editorial Strip — “Every detail, intentional.”" note="Full-width cinematic section. Upload a video to make it loop; the photo is the fallback." />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
-          <ImageSlotCard wide slotKey="kraft" label="Editorial Photo" description="Fallback if no video — open box, cinematic crop. ~2000×1100." />
+          <ImageSlotCard wide slotKey="kraft" label="Editorial Photo" description="Fallback if no video — open box, cinematic crop. ~2000×1125 (16:9)." />
           <VideoSlotCard slotKey="kraft" label="Editorial Video" description="Looping overlay. MP4/MOV/WebM — keep under 20 MB." />
         </div>
       </section>
@@ -230,7 +230,7 @@ function HomepageEditor() {
       {/* 9 · Final CTA */}
       <section className="mb-12">
         <SectionTitle n="9" title="Final CTA background" note="Dark full-width section near the bottom — image shows at ~40% opacity. Add several to cross-fade." />
-        <div className="max-w-md"><GallerySlot slot="box" label="CTA Background(s)" description="Cream box with ribbon — dark/moody works best. ~1600×900." /></div>
+        <div className="max-w-md"><GallerySlot wide slot="box" label="CTA Background(s)" description="Cream box with ribbon — dark/moody works best. ~1600×900 (16:9)." /></div>
       </section>
 
       {/* Save bar (text only — photos & box picker save on their own) */}

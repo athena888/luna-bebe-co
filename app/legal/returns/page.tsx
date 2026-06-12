@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { CONTACT_EMAIL } from '@/lib/site-config'
 
 export const metadata: Metadata = {
   title: 'Returns & Refund Policy',
@@ -37,7 +38,7 @@ export default function ReturnsPage() {
       </Section>
 
       <Section title="How to Contact Us">
-        Email <a href="mailto:hello@petitelavande.com" className="text-bark-600 underline underline-offset-2">hello@petitelavande.com</a> with your order number and a description of the issue. We aim to respond within 24 hours.
+        Email <a href={`mailto:${CONTACT_EMAIL}`} className="text-bark-600 underline underline-offset-2">{CONTACT_EMAIL}</a> with your order number and a description of the issue. We aim to respond within 24 hours.
       </Section>
     </article>
   )

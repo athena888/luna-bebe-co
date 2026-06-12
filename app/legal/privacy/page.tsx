@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { CONTACT_EMAIL } from '@/lib/site-config'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
@@ -52,7 +53,7 @@ export default function PrivacyPage() {
       </Section>
 
       <Section title="9. Contact">
-        For privacy-related requests, email <a href="mailto:hello@petitelavande.com" className="text-bark-600 underline underline-offset-2">hello@petitelavande.com</a>.
+        For privacy-related requests, email <a href={`mailto:${CONTACT_EMAIL}`} className="text-bark-600 underline underline-offset-2">{CONTACT_EMAIL}</a>.
       </Section>
     </article>
   )

@@ -5,16 +5,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 type Review = { quote: string; name: string; context: string }
 
-const ALL_REVIEWS: Review[] = [
-  { quote: "I've never seen a gift box this beautiful. My best friend cried when she opened it. The personal card was the most special part.", name: 'Camille R.', context: 'Gifted to her sister' },
-  { quote: 'Ordered rush shipping and it arrived the next day. Gorgeous box, everything so soft and organic. Worth every penny.', name: 'Maya T.', context: 'Baby shower gift' },
-  { quote: 'Everyone at the shower was asking where the box was from. Building it myself meant I picked perfectly for someone I barely know.', name: 'Priya N.', context: 'Office baby shower' },
-  { quote: 'The new mother literally cried when she opened it. Every single item was exquisite — nothing felt like an afterthought.', name: 'Sarah M.', context: 'Baby shower gift' },
-  { quote: 'It became the most-talked-about gift at the baby shower. Worth every penny.', name: 'James & Clara', context: 'First-time parents' },
-  { quote: 'The attention to detail is unreal. The wax seal, the tissue paper, the personalized card — it felt like unwrapping something from a Parisian boutique.', name: 'Margot T.', context: 'Gifted to a colleague' },
-  { quote: "My sister still uses the bamboo swaddle two years later. That's how I know the quality is real.", name: 'Lily R.', context: 'Returning customer' },
-]
-
 function ReviewCard({ r, delay = 0 }: { r: Review; delay?: number }) {
   return (
     <div
@@ -36,8 +26,8 @@ function ReviewCard({ r, delay = 0 }: { r: Review; delay?: number }) {
   )
 }
 
-export function TestimonialsCarousel() {
-  const n = ALL_REVIEWS.length
+export function TestimonialsCarousel({ reviews }: { reviews: Review[] }) {
+  const n = reviews.length
   const [idx, setIdx] = useState(0)
   const [animKey, setAnimKey] = useState(0)
   const touchStartX = useRef<number | null>(null)
@@ -50,12 +40,15 @@ export function TestimonialsCarousel() {
   const advance = useCallback(() => go(idx + 1), [go, idx])
 
   useEffect(() => {
+    if (n === 0) return
     const t = setInterval(advance, 5000)
     return () => clearInterval(t)
-  }, [advance])
+  }, [advance, n])
+
+  if (n === 0) return null
 
   // 3 visible on desktop, 1 on mobile (handled in JSX)
-  const visible = [0, 1, 2].map(i => ALL_REVIEWS[(idx + i) % n])
+  const visible = [0, 1, 2].map(i => reviews[(idx + i) % n])
 
   return (
     <div
@@ -86,7 +79,7 @@ export function TestimonialsCarousel() {
         </button>
 
         <div className="flex gap-2">
-          {ALL_REVIEWS.map((_, i) => (
+          {reviews.map((_, i) => (
             <button
               key={i}
               onClick={() => go(i)}
