@@ -396,7 +396,7 @@ function BoxSection({
       <div
         className={`relative isolate lg:w-[40%] flex flex-col lg:min-h-[95vh] lg:overflow-y-auto ${flip ? 'lg:order-1' : ''}`}
         style={panelBg ? {
-          backgroundImage: `linear-gradient(rgba(251,247,240,0.87), rgba(251,247,240,0.87)), url(${panelBg})`,
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.88), rgba(255,255,255,0.88)), url(${panelBg})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         } : undefined}
