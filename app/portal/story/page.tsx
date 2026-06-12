@@ -6,6 +6,7 @@ import type { StoryContent } from '@/lib/story-content'
 import { Field, Area } from '@/components/portal/ContentFields'
 import { SiteImageUploader } from '@/components/portal/SiteImageUploader'
 import { ScrimControl } from '@/components/portal/ScrimControl'
+import { BackgroundBox } from '@/components/portal/BackgroundBox'
 
 function SectionTitle({ n, title, note }: { n: string; title: string; note?: string }) {
   return (
@@ -53,15 +54,17 @@ export default function StoryPortal() {
 
       {/* 1 · Hero */}
       <section className="mb-12">
-        <SectionTitle n="1" title="Hero" note="The wide banner photo and the headline at the top of the page." />
+        <SectionTitle n="1" title="Hero & Founder’s letter" note="The wide banner photo, the headline, and the founder letter — one section, divided." />
         <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
           <div className="space-y-3">
-            <SiteImageUploader slotKey="story.hero" context="Story hero banner" ratio="21:9" hint="wide banner above fold" compact />
             <div>
-              <p className="font-sans text-[10px] text-bark-400 mb-1">Hero section background</p>
+              <p className="font-sans text-[10px] text-bark-400 mb-1">Top banner photo</p>
+              <SiteImageUploader slotKey="story.hero" context="Story hero banner" ratio="21:9" hint="wide banner above fold" compact />
+            </div>
+            <BackgroundBox appliesTo="BOTH the hero headline and the founder letter (one shared section)">
               <SiteImageUploader slotKey="story.hero_bg" context="Background behind the story hero heading and logo" ratio="16:9" hint="soft, light lifestyle" compact />
               <ScrimControl scrimKey="story.hero_bg" defaultScrim={{ hex: '#FBF7F0', opacity: 0.92 }} />
-            </div>
+            </BackgroundBox>
           </div>
           <div className="space-y-3">
             <Field label="Eyebrow" value={c.hero.eyebrow} onChange={v => setHero({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'small eyebrow above the Story page hero heading' }} />
@@ -72,15 +75,11 @@ export default function StoryPortal() {
 
       {/* 2 · Founder letter */}
       <section className="mb-12">
-        <SectionTitle n="2" title="Founder’s letter" note="The portrait that floats beside the letter, and the letter itself." />
+        <SectionTitle n="2" title="Founder’s letter" note="The portrait that floats beside the letter, and the letter itself. (Its background is the shared one set in section 1.)" />
         <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
           <div className="space-y-3">
+            <p className="font-sans text-[10px] text-bark-400 mb-1">Founder portrait</p>
             <SiteImageUploader slotKey="story.founder" context="Founder portrait on the Story page" ratio="3:4" hint="portrait, ~900×1200" />
-            <div>
-              <p className="font-sans text-[10px] text-bark-400 mb-1">Section background</p>
-              <SiteImageUploader slotKey="story.founder_bg" context="Background behind the founder letter section" ratio="16:9" hint="soft, light lifestyle" compact />
-              <ScrimControl scrimKey="story.founder_bg" defaultScrim={{ hex: '#FBF7F0', opacity: 0.90 }} />
-            </div>
           </div>
           <div className="space-y-3">
             <Field label="Eyebrow" value={c.founder.eyebrow} onChange={v => setFounder({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'eyebrow above the founder letter' }} />
@@ -102,22 +101,20 @@ export default function StoryPortal() {
             </div>
           ))}
         </div>
-        <div className="bg-white border border-cream-200 rounded-lg p-3">
-          <p className="font-sans text-[10px] text-bark-400 mb-2">Values section background (optional)</p>
+        <BackgroundBox appliesTo="the three value cards above (Purely Organic / Artisan-Made / Every Detail)">
           <SiteImageUploader slotKey="story.values_bg" context="Background behind the What We Stand For section" ratio="16:9" hint="soft, airy background · ~2000×1130" compact />
           <ScrimControl scrimKey="story.values_bg" defaultScrim={{ hex: '#3D2F28', opacity: 0.85 }} label="Background colour overlay" note="dark tint kept over any photo so the white text stays readable" />
-        </div>
+        </BackgroundBox>
       </section>
 
       {/* 4 · French apothecary — closing section, with background image + overlay */}
       <section className="mb-12">
         <SectionTitle n="4" title="French apothecary soul" note="The closing section. Add a background photo and tune its colour overlay." />
         <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
-          <div>
-            <p className="font-sans text-[10px] text-bark-400 mb-1">Section background (optional)</p>
+          <BackgroundBox appliesTo="the French apothecary closing text on this section">
             <SiteImageUploader slotKey="story.french_bg" context="Background behind the French apothecary closing section" ratio="16:9" hint="soft, light lifestyle" compact />
             <ScrimControl scrimKey="story.french_bg" defaultScrim={{ hex: '#FBF7F0', opacity: 0.92 }} />
-          </div>
+          </BackgroundBox>
           <div className="space-y-3">
             <Field label="Eyebrow" value={c.french.eyebrow} onChange={v => setFrench({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'eyebrow about the French apothecary aesthetic' }} />
             <Area label="Paragraphs (blank line between)" value={toText(c.french.paragraphs)} onChange={v => setFrench({ paragraphs: toParas(v) })} rows={6} ai={{ kind: 'body', context: 'copy about a French apothecary aesthetic with PNW sourcing' }} />

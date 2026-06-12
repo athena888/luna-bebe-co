@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { SiteImageUploader } from '@/components/portal/SiteImageUploader'
 import { ScrimControl } from '@/components/portal/ScrimControl'
+import { BackgroundBox } from '@/components/portal/BackgroundBox'
 import HomeContentPage from '@/app/portal/home-content/page'
 import StoryPortal from '@/app/portal/story/page'
 import SocialPortalPage from '@/app/portal/social/page'
@@ -239,7 +240,7 @@ export default function ContentPage() {
           <div className="p-8 max-w-3xl">
             <SectionHeading title="Sign In" note="The admin portal sign-in page. Upload a photo and tune the colour overlay over it." />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
+              <BackgroundBox appliesTo="the Petite Lavande logo and the password sign-in form">
                 <SlotRow
                   slotKey="signin.bg"
                   label="Sign-in background"
@@ -249,7 +250,7 @@ export default function ContentPage() {
                   where="Behind the sign-in form on the admin login page"
                 />
                 <ScrimControl scrimKey="signin.bg" defaultScrim={{ hex: '#181716', opacity: 0.85 }} label="Background colour overlay" note="dark tint over the photo so the gold logo & form stay readable" />
-              </div>
+              </BackgroundBox>
             </div>
           </div>
         )}

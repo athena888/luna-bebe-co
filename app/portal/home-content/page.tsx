@@ -7,6 +7,7 @@ import { ImageSlotCard, VideoSlotCard, BestsellerManager, GallerySlot, Editorial
 import { Field, Area } from '@/components/portal/ContentFields'
 import { SiteImageUploader } from '@/components/portal/SiteImageUploader'
 import { ScrimControl } from '@/components/portal/ScrimControl'
+import { BackgroundBox } from '@/components/portal/BackgroundBox'
 import { CollectionsEditor } from '@/app/portal/collections/page'
 
 function Card({ children, onRemove }: { children: React.ReactNode; onRemove?: () => void }) {
@@ -155,11 +156,10 @@ function HomepageEditor() {
       {/* 3 · Shop by Occasion + Curated Gift Sets — one shared background */}
       <section className="mb-12">
         <SectionTitle n="3" title="Shop by Occasion & Curated Gift Sets" note="These two homepage sections sit on one shared background image + colour overlay." />
-        <div className="bg-white border border-cream-200 rounded-lg p-3 mb-6">
-          <p className="font-sans text-[10px] text-bark-400 mb-2">Shared background (optional) — appears behind <strong>both</strong> sections</p>
+        <BackgroundBox appliesTo="BOTH the Shop by Occasion cards and the Curated Gift Sets carousel below">
           <SiteImageUploader slotKey="home.occasions_bg" context="Background behind the Shop by Occasion and Curated Gift Sets sections" ratio="21:9" hint="Soft, light lifestyle · ~2000×860. Shows behind the cards." compact />
           <ScrimControl scrimKey="home.occasions_bg" defaultScrim={{ hex: '#FAF9F8', opacity: 0.80 }} label="Background colour overlay" note="tint over the shared photo — raise for legibility, lower to show more of the photo" />
-        </div>
+        </BackgroundBox>
 
         <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500 mb-2">Shop by Occasion — the four cards</p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
