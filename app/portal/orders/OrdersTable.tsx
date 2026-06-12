@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
-import { ExternalLink, ChevronDown } from 'lucide-react'
+import Link from 'next/link'
+import { ExternalLink, ChevronDown, Printer } from 'lucide-react'
 import { ShipButton } from './ShipButton'
 import type { Order } from '@/types'
 import Image from 'next/image'
@@ -132,6 +133,13 @@ export function OrdersTable({ orders: initial }: { orders: ExtendedOrder[] }) {
                         {processing === order.id ? 'Updating…' : 'Mark processing'}
                       </button>
                     )}
+                    <Link
+                      href={`/portal/inside-card?orderId=${order.id}`}
+                      className="mt-1.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cream-100 text-bark-600 font-sans text-xs font-semibold hover:bg-cream-200 transition-colors"
+                      title="Preview & print the inside-box card for this order"
+                    >
+                      <Printer size={12} /> Card
+                    </Link>
                   </td>
                 </tr>
 
