@@ -106,26 +106,9 @@ export default async function StoryPage() {
           </div>
         </SlotBackground>
 
-        {/* Traced to the source */}
-        <div className="border-t border-cream-300 bg-[#FBF7F0]">
-          <div className="max-w-2xl mx-auto px-6 py-20">
-            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-3">{content.traced.eyebrow}</p>
-            <h2 className="font-serif text-2xl sm:text-3xl text-bark-600 mb-5 leading-snug">{content.traced.heading}</h2>
-            <p className="font-sans text-sm text-bark-500 leading-relaxed">{content.traced.body}</p>
-          </div>
-        </div>
-
-        {/* Why simple */}
-        <div className="border-t border-cream-300 bg-[#F5EFE8]">
-          <div className="max-w-2xl mx-auto px-6 py-20">
-            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">{content.whySimple.eyebrow}</p>
-            <p className="font-sans text-sm text-bark-500 leading-relaxed mb-5">{content.whySimple.body}</p>
-            <p className="text-2xl text-bark-500" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.whySimple.tagline}</p>
-          </div>
-        </div>
-
-        {/* French apothecary soul */}
-        <div className="border-t border-cream-300 bg-[#FBF7F0]">
+        {/* French apothecary soul — background image + colour overlay both
+            managed in Portal → Story. */}
+        <SlotBackground slotKey="story.french_bg" scrim="bg-[#FBF7F0]/92" className="border-t border-cream-300">
           <div className="max-w-2xl mx-auto px-6 py-20">
             <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">{content.french.eyebrow}</p>
             {content.french.paragraphs.map((para, i) => (
@@ -135,7 +118,7 @@ export default async function StoryPage() {
             ))}
             <p className="text-2xl text-bark-500" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.french.tagline}</p>
           </div>
-        </div>
+        </SlotBackground>
 
         {/* Connect / Social */}
         <div className="border-t border-cream-300 bg-[#FEF8F4]">

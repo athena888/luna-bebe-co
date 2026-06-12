@@ -39,8 +39,6 @@ export default function StoryPortal() {
   const setHero = (p: Partial<StoryContent['hero']>) => setC({ ...c, hero: { ...c.hero, ...p } })
   const setFounder = (p: Partial<StoryContent['founder']>) => setC({ ...c, founder: { ...c.founder, ...p } })
   const setValue = (i: number, p: Partial<StoryContent['values'][number]>) => setC({ ...c, values: c.values.map((v, j) => j === i ? { ...v, ...p } : v) })
-  const setTraced = (p: Partial<StoryContent['traced']>) => setC({ ...c, traced: { ...c.traced, ...p } })
-  const setWhy = (p: Partial<StoryContent['whySimple']>) => setC({ ...c, whySimple: { ...c.whySimple, ...p } })
   const setFrench = (p: Partial<StoryContent['french']>) => setC({ ...c, french: { ...c.french, ...p } })
 
   const toText = (a: string[]) => a.join('\n\n')
@@ -111,33 +109,20 @@ export default function StoryPortal() {
         </div>
       </section>
 
-      {/* 4 · Traced to the source */}
+      {/* 4 · French apothecary — closing section, with background image + overlay */}
       <section className="mb-12">
-        <SectionTitle n="4" title="“We don’t curate. We trace.”" note="The traced-to-the-source statement (no image)." />
-        <div className="space-y-3">
-          <Field label="Eyebrow" value={c.traced.eyebrow} onChange={v => setTraced({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'eyebrow above the sourcing statement' }} />
-          <Field label="Heading" value={c.traced.heading} onChange={v => setTraced({ heading: v })} ai={{ kind: 'title', context: 'a punchy sourcing headline' }} />
-          <Area label="Body" value={c.traced.body} onChange={v => setTraced({ body: v })} rows={4} ai={{ kind: 'body', context: 'body copy about tracing every ingredient to its source' }} />
-        </div>
-      </section>
-
-      {/* 5 · Why simple */}
-      <section className="mb-12">
-        <SectionTitle n="5" title="Why simple" />
-        <div className="space-y-3">
-          <Field label="Eyebrow" value={c.whySimple.eyebrow} onChange={v => setWhy({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'eyebrow for the "why simple" section' }} />
-          <Area label="Body" value={c.whySimple.body} onChange={v => setWhy({ body: v })} rows={3} ai={{ kind: 'body', context: 'body about not padding boxes with filler' }} />
-          <Field label="Tagline (italic)" value={c.whySimple.tagline} onChange={v => setWhy({ tagline: v })} ai={{ kind: 'tagline', context: 'a short italic tagline about simplicity' }} />
-        </div>
-      </section>
-
-      {/* 6 · French apothecary */}
-      <section className="mb-12">
-        <SectionTitle n="6" title="French apothecary soul" />
-        <div className="space-y-3">
-          <Field label="Eyebrow" value={c.french.eyebrow} onChange={v => setFrench({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'eyebrow about the French apothecary aesthetic' }} />
-          <Area label="Paragraphs (blank line between)" value={toText(c.french.paragraphs)} onChange={v => setFrench({ paragraphs: toParas(v) })} rows={6} ai={{ kind: 'body', context: 'copy about a French apothecary aesthetic with PNW sourcing' }} />
-          <Field label="Tagline (italic)" value={c.french.tagline} onChange={v => setFrench({ tagline: v })} ai={{ kind: 'tagline', context: 'a short evocative tagline about far-away-yet-close' }} />
+        <SectionTitle n="4" title="French apothecary soul" note="The closing section. Add a background photo and tune its colour overlay." />
+        <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
+          <div>
+            <p className="font-sans text-[10px] text-bark-400 mb-1">Section background (optional)</p>
+            <SiteImageUploader slotKey="story.french_bg" context="Background behind the French apothecary closing section" ratio="16:9" hint="soft, light lifestyle" compact />
+            <ScrimControl scrimKey="story.french_bg" defaultScrim={{ hex: '#FBF7F0', opacity: 0.92 }} />
+          </div>
+          <div className="space-y-3">
+            <Field label="Eyebrow" value={c.french.eyebrow} onChange={v => setFrench({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'eyebrow about the French apothecary aesthetic' }} />
+            <Area label="Paragraphs (blank line between)" value={toText(c.french.paragraphs)} onChange={v => setFrench({ paragraphs: toParas(v) })} rows={6} ai={{ kind: 'body', context: 'copy about a French apothecary aesthetic with PNW sourcing' }} />
+            <Field label="Tagline (italic)" value={c.french.tagline} onChange={v => setFrench({ tagline: v })} ai={{ kind: 'tagline', context: 'a short evocative tagline about far-away-yet-close' }} />
+          </div>
         </div>
       </section>
 

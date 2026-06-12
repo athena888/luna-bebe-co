@@ -24,6 +24,7 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   { key: 'story.value.2',    label: 'Value icon — 2',         group: 'Story', where: 'Round icon above the second brand value', ratio: '1:1', hint: 'Square, centered subject · ~800×800' },
   { key: 'story.value.3',    label: 'Value icon — 3',         group: 'Story', where: 'Round icon above the third brand value', ratio: '1:1', hint: 'Square, centered subject · ~800×800' },
   { key: 'story.values_bg',  label: 'Values section background', group: 'Story', where: 'Background behind the "What We Stand For" section', ratio: '16:9', hint: 'Soft, airy background · ~2000×1130', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#3D2F28', opacity: 0.85 } },
+  { key: 'story.french_bg',  label: 'French apothecary background', group: 'Story', where: 'Background behind the "French Apothecary Soul" closing section', ratio: '16:9', hint: 'Soft, light lifestyle · ~2000×1130', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FBF7F0', opacity: 0.92 } },
 
   // ── Shop ───────────────────────────────────────────────────────────────────
   { key: 'shop.header_bg', label: 'Header background', group: 'Shop', where: 'Sits behind the title at the top of the Shop page', ratio: '21:9', hint: 'Wide & soft (text sits on top) · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' } },
