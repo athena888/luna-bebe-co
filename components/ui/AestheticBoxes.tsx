@@ -306,6 +306,14 @@ function BoxSection({
   box: ResolvedBox; style: string; flip: boolean
   onOpenItems: (b: ResolvedBox) => void; onPreview: (i: BoxItem) => void
 }) {
+  const [panelBg, setPanelBg] = useState<string | null>(null)
+  useEffect(() => {
+    fetch(`/api/site-images?keys=boxes.${box.slug}.info_bg`)
+      .then(r => r.json())
+      .then(d => setPanelBg(d.images?.[`boxes.${box.slug}.info_bg`]?.public_url ?? null))
+      .catch(() => {})
+  }, [box.slug])
+
   return (
     <section
       id={`box-${box.slug}`}
@@ -326,7 +334,14 @@ function BoxSection({
 
       {/* Info panel — desktop: fixed 95vh column so items scroll and price anchors bottom;
            mobile: natural flow, items capped at max-h so all content stays visible */}
-      <div className={`lg:w-[40%] flex flex-col lg:h-[95vh] ${flip ? 'lg:order-1' : ''}`}>
+      <div
+        className={`lg:w-[40%] flex flex-col lg:h-[95vh] ${flip ? 'lg:order-1' : ''}`}
+        style={panelBg ? {
+          backgroundImage: `linear-gradient(rgba(251,247,240,0.87), rgba(251,247,240,0.87)), url(${panelBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        } : undefined}
+      >
 
         {/* Top: identity */}
         <div className="px-8 lg:px-12 xl:px-16 pt-12 lg:pt-16 shrink-0">
@@ -345,11 +360,11 @@ function BoxSection({
           )}
         </div>
 
-        {/* Middle: items — desktop scrolls inside fixed panel; mobile scrolls in a capped box */}
+        {/* Middle: items — desktop: flex column so items fill space between title and price */}
         {box.items.length > 0 && (
-          <div className="px-8 lg:px-12 xl:px-16 mt-8 lg:flex-1 lg:min-h-0 relative">
-            <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-4">What&apos;s Inside</p>
-            <div className="max-h-[280px] lg:max-h-none lg:h-full overflow-y-auto scrollbar-hide pr-1 pb-2">
+          <div className="px-8 lg:px-12 xl:px-16 mt-8 lg:flex-1 lg:min-h-0 relative lg:flex lg:flex-col">
+            <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-4 lg:shrink-0">What&apos;s Inside</p>
+            <div className="max-h-[280px] lg:max-h-none lg:flex-1 lg:min-h-0 overflow-y-auto scrollbar-hide pr-1 pb-2">
               <ItemsList box={box} onOpen={onPreview} />
             </div>
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />

@@ -35,15 +35,15 @@ export default async function StoryPage() {
       <main className="min-h-screen bg-[#FBF7F0]">
 
         {/* Hero image (optional, managed in Portal → Story; mobile crop supported) */}
-        <SlotImage slotKey="story.hero" className="relative block w-full aspect-[16/9] sm:aspect-[21/9] overflow-hidden" imgClassName="w-full h-full object-cover" />
+        <SlotImage slotKey="story.hero" className="relative block w-full aspect-[21/9] overflow-hidden" imgClassName="w-full h-full object-cover" />
 
         {/* Hero — background uploadable via Portal → Site Images → Story → Hero background */}
         <SlotBackground slotKey="story.hero_bg" scrim="bg-[#FBF7F0]/92" className="border-b border-cream-300">
-          <div className="max-w-3xl mx-auto px-6 py-20 text-center">
-            <LogoMark className="h-32 w-auto mx-auto mb-6" style={{ color: '#574540' }} alt="Petite Lavande" />
+          <div className="max-w-3xl mx-auto px-6 py-10 sm:py-20 text-center">
+            <LogoMark className="h-20 sm:h-32 w-auto mx-auto mb-4 sm:mb-6" style={{ color: '#574540' }} alt="Petite Lavande" />
             <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-4">{content.hero.eyebrow}</p>
             <h1
-              className="text-5xl sm:text-6xl text-bark-600 mb-6 leading-tight"
+              className="text-4xl sm:text-6xl text-bark-600 mb-6 leading-tight"
               style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 400 }}
             >
               {content.hero.heading}

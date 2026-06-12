@@ -210,8 +210,8 @@ export default async function HomePage() {
         {/* ── Editorial strip — video or image ── */}
         <EditorialStrip />
 
-        {/* ── 8. Testimonials — 3-up carousel with swipe ── */}
-        <SlotBackground slotKey="home.testimonials_bg" scrim="bg-cream-50/85" className="border-t border-cream-300">
+        {/* ── 8. Testimonials — hidden for now ── */}
+        {/* <SlotBackground slotKey="home.testimonials_bg" scrim="bg-cream-50/85" className="border-t border-cream-300">
           <section className="py-12 sm:py-16 px-6 sm:px-10">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-10">
@@ -222,7 +222,7 @@ export default async function HomePage() {
               <TestimonialsCarousel />
             </div>
           </section>
-        </SlotBackground>
+        </SlotBackground> */}
 
         {/* ── Contact / Social ── */}
         <section className="border-t border-cream-300 bg-[#FEF8F4]">
