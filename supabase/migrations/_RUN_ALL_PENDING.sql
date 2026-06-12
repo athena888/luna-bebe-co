@@ -323,4 +323,33 @@ create policy flags_service      on public.flags              for all to service
 drop policy if exists quarantine_service on public.inbound_quarantine;
 create policy quarantine_service on public.inbound_quarantine for all to service_role using (true) with check (true);
 
+-- 18) Internationalization: per-currency prices + market waitlist.
+create table if not exists public.product_prices (
+  id          uuid primary key default gen_random_uuid(),
+  product_id  text not null,
+  currency    text not null check (currency in ('USD','GBP','EUR')),
+  unit_amount int  not null,
+  active      boolean not null default true,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now(),
+  unique (product_id, currency)
+);
+create index if not exists product_prices_lookup_idx on public.product_prices (product_id, currency, active);
+alter table public.product_prices enable row level security;
+drop policy if exists product_prices_public_read on public.product_prices;
+create policy product_prices_public_read on public.product_prices for select using (active = true);
+drop policy if exists product_prices_service_write on public.product_prices;
+create policy product_prices_service_write on public.product_prices for all to service_role using (true) with check (true);
+
+create table if not exists public.waitlist (
+  id         uuid primary key default gen_random_uuid(),
+  email      text not null,
+  region     text,
+  created_at timestamptz not null default now(),
+  unique (email, region)
+);
+alter table public.waitlist enable row level security;
+drop policy if exists waitlist_service_write on public.waitlist;
+create policy waitlist_service_write on public.waitlist for all to service_role using (true) with check (true);
+
 -- Done.

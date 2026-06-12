@@ -6,6 +6,7 @@ import { ArrowRight } from 'lucide-react'
 import { CONTACT_EMAIL } from '@/lib/site-config'
 import { LogoMark } from '@/components/ui/LogoMark'
 import { SlotBackground } from '@/components/ui/SlotBackground'
+import { RegionSwitcher } from '@/components/ui/RegionSwitcher'
 
 function EmailSignup() {
   const [email, setEmail] = useState('')
@@ -124,6 +125,8 @@ export function Footer() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <p className="font-sans text-[10px] text-espresso">© {new Date().getFullYear()} Petite Lavande. Sent with love.</p>
               <div className="flex flex-wrap items-center gap-4 font-sans text-[10px] text-espresso">
+                <RegionSwitcher />
+                <span className="text-espresso/40">·</span>
                 <Link href="/legal/privacy" className="hover:text-espresso transition-colors">Privacy</Link>
                 <span className="text-espresso/40">·</span>
                 <Link href="/legal/terms" className="hover:text-espresso transition-colors">Terms</Link>

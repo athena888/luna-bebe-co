@@ -9,6 +9,8 @@ import { UTMCapture } from "@/components/ui/UTMCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { getSiteImage } from "@/lib/site-images";
 import { CONTACT_EMAIL } from "@/lib/site-config";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 
 const dancing = Dancing_Script({ subsets: ["latin"], variable: "--font-dancing", display: "swap" });
 const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["300", "400", "500"], style: ["normal", "italic"], variable: "--font-cormorant", display: "swap" });
@@ -61,9 +63,11 @@ export async function generateMetadata(): Promise<Metadata> {
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
   return (
-    <html lang="en" className={`${dancing.variable} ${cormorant.variable} ${jost.variable} h-full antialiased`}>
+    <html lang={locale} className={`${dancing.variable} ${cormorant.variable} ${jost.variable} h-full antialiased`}>
       <head>
         {/* PWA / iOS home screen */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -91,7 +95,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           name: 'Petite Lavande',
           url: BASE,
         }} />
-        {children}
+        <NextIntlClientProvider messages={messages}>
+          {children}
+        </NextIntlClientProvider>
         <Suspense fallback={null}><UTMCapture /></Suspense>
         <CookieBanner />
         <ChatWidget />

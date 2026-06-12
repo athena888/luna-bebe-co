@@ -1,0 +1,18 @@
+{
+  "common": {
+    "buildYourBox": "Build Your Box",
+    "shopReadyMade": "Shop Ready-Made"
+  },
+  "region": {
+    "label": "Region & currency",
+    "comingSoon": "Coming soon to {country}",
+    "waitlistPrompt": "We hope to ship to {country} soon — leave your email and be first to know.",
+    "waitlistPlaceholder": "you@email.com",
+    "waitlistButton": "Notify me",
+    "waitlistThanks": "Thank you — we’ll let you know the moment we launch.",
+    "unavailable": "Not available in your region yet"
+  },
+  "checkout": {
+    "vatNotice": "International orders may be subject to import VAT, duties, and carrier fees collected from the recipient on delivery. These are not included in your order total."
+  }
+}
