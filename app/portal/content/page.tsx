@@ -249,7 +249,7 @@ export default function ContentPage() {
                   hint="Soft lifestyle image · ~1920×1080"
                   where="Behind the sign-in form on the admin login page"
                 />
-                <ScrimControl scrimKey="signin.bg" defaultScrim={{ hex: '#181716', opacity: 0.85 }} label="Background colour overlay" note="dark tint over the photo so the gold logo & form stay readable" />
+                <ScrimControl scrimKey="signin.bg" defaultScrim={{ hex: '#181716', opacity: 0.45 }} label="Background colour overlay" note="dark tint over the photo — raise it if the gold logo & form get hard to read" />
               </BackgroundBox>
             </div>
           </div>

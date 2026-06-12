@@ -64,7 +64,7 @@ function LoginForm() {
 
 export default function PortalLoginPage() {
   return (
-    <SlotBackground slotKey="signin.bg" scrim="bg-bark-800/85" className="min-h-screen bg-bark-800">
+    <SlotBackground slotKey="signin.bg" scrim="bg-bark-800/45" className="min-h-screen bg-bark-800">
       <div className="min-h-screen flex flex-col items-center justify-center px-6">
         <div className="mb-10 text-center">
           <div className="font-serif text-2xl tracking-[0.2em] uppercase text-gold-300 mb-1">Petite Lavande</div>
