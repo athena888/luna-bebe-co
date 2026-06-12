@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Loader, Plus, Trash2, Check } from 'lucide-react'
 import type { HomeContent, Perk, FeatureBlock, Review } from '@/lib/home-content'
-import { ImageSlotCard, VideoSlotCard, BestsellerManager, GallerySlot } from '@/components/portal/HomeMediaWidgets'
+import { ImageSlotCard, VideoSlotCard, BestsellerManager, GallerySlot, EditorialMediaGallery } from '@/components/portal/HomeMediaWidgets'
 import { Field, Area } from '@/components/portal/ContentFields'
 import { SiteImageUploader } from '@/components/portal/SiteImageUploader'
 
@@ -150,6 +150,10 @@ function HomepageEditor() {
       {/* 3 · Shop by Occasion */}
       <section className="mb-12">
         <SectionTitle n="3" title="Shop by Occasion cards" note="Four portrait cards in the 'Shop by Occasion' grid." />
+        <div className="bg-white border border-cream-200 rounded-lg p-3 mb-5">
+          <p className="font-sans text-[10px] text-bark-400 mb-2">Section background (optional)</p>
+          <SiteImageUploader slotKey="home.occasions_bg" context="Background behind the Shop by Occasion section" ratio="21:9" hint="Soft, light lifestyle · ~2000×860. Shows behind the cards at 80% opacity." compact />
+        </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <ImageSlotCard slotKey="newborn" label="Newborn Gifts" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
           <ImageSlotCard slotKey="mama" label="For Mama" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
@@ -195,12 +199,9 @@ function HomepageEditor() {
       </section>
 
       {/* 7 · Editorial Strip */}
-      <section className="mb-12">
-        <SectionTitle n="7" title="Editorial Strip — “Every detail, intentional.”" note="Full-width cinematic section. Upload a video to make it loop; the photo is the fallback." />
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
-          <ImageSlotCard wide slotKey="kraft" label="Editorial Photo" description="Fallback if no video — open box, cinematic crop. ~2000×1125 (16:9)." />
-          <VideoSlotCard slotKey="kraft" label="Editorial Video" description="Looping overlay. MP4/MOV/WebM — keep under 20 MB." />
-        </div>
+      <section className=”mb-12”>
+        <SectionTitle n=”7” title=”Editorial Strip — “Every detail, intentional.”” note=”Photos & videos rotate every 5s. Add as many as you like — delete any you don't want.” />
+        <div className=”max-w-2xl”><EditorialMediaGallery /></div>
       </section>
 
       {/* 8 · Reviews */}

@@ -254,6 +254,108 @@ export function ImageSlotCard({
   )
 }
 
+export function EditorialMediaGallery() {
+  const [items, setItems] = useState<{ id: string; url: string; type: 'image' | 'video' }[]>([])
+  const [loading, setLoading] = useState(true)
+  const [busy, setBusy] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  async function load() {
+    setLoading(true)
+    try {
+      const r = await fetch('/api/portal/editorial-gallery')
+      const d = await r.json()
+      setItems(d.items ?? [])
+    } finally { setLoading(false) }
+  }
+  useEffect(() => { load() }, [])
+
+  async function add(file: File) {
+    setBusy(true)
+    try {
+      const form = new FormData(); form.append('file', file)
+      await fetch('/api/portal/editorial-gallery', { method: 'POST', body: form })
+      await load()
+    } finally { setBusy(false) }
+  }
+  async function remove(id: string) {
+    setBusy(true)
+    try {
+      await fetch('/api/portal/editorial-gallery', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+      await load()
+    } finally { setBusy(false) }
+  }
+  async function makeFirst(id: string) {
+    const order = [id, ...items.filter(i => i.id !== id).map(i => i.id)]
+    setBusy(true)
+    try {
+      await fetch('/api/portal/editorial-gallery', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ order }) })
+      await load()
+    } finally { setBusy(false) }
+  }
+
+  return (
+    <div className="bg-cream-50 border border-cream-200 rounded-xl p-4">
+      <div className="flex items-start justify-between gap-2 mb-3">
+        <div>
+          <p className="font-sans text-xs font-medium text-bark-600">Editorial Media</p>
+          <p className="font-sans text-[10px] text-bark-400 mt-0.5 leading-relaxed">Add photos &amp; videos — they rotate every 5s on the homepage.</p>
+        </div>
+        {items.length > 1 && <span className="font-sans text-[9px] tracking-[0.15em] uppercase text-gold-500 shrink-0">Rotates · 5s</span>}
+      </div>
+      {loading ? (
+        <div className="flex items-center gap-2 text-bark-400 py-4 text-xs"><Loader size={12} className="animate-spin" /> Loading…</div>
+      ) : (
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          {items.map((item, i) => (
+            <div key={item.id} className="relative group rounded-lg overflow-hidden border border-cream-200" style={{ aspectRatio: '16/9' }}>
+              {item.type === 'video' ? (
+                <video src={item.url} className="w-full h-full object-cover" muted playsInline />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={item.url} alt="" className="w-full h-full object-cover" />
+              )}
+              {item.type === 'video' && (
+                <div className="absolute bottom-1 left-1 bg-bark-800/60 rounded px-1 py-0.5 flex items-center">
+                  <Video size={8} className="text-cream-50" />
+                </div>
+              )}
+              {i === 0 && <span className="absolute top-1 left-1 bg-gold-400/90 text-bark-800 font-sans text-[7px] tracking-[0.1em] uppercase px-1.5 py-0.5 rounded-full">First</span>}
+              <div className="absolute inset-0 bg-bark-700/0 group-hover:bg-bark-700/45 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                {i !== 0 && (
+                  <button type="button" onClick={() => makeFirst(item.id)} title="Show first" className="bg-cream-50/90 rounded-full p-1.5 text-bark-600 hover:text-bark-800">
+                    <ArrowUp size={12} />
+                  </button>
+                )}
+                <button type="button" onClick={() => remove(item.id)} title="Remove" className="bg-cream-50/90 rounded-full p-1.5 text-bark-600 hover:text-red-500">
+                  <Trash2 size={12} />
+                </button>
+              </div>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={busy}
+            className="flex flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-cream-300 text-bark-400 hover:border-bark-400 hover:text-bark-600 transition-colors disabled:opacity-50"
+            style={{ aspectRatio: '16/9' }}
+          >
+            {busy ? <Loader size={16} className="animate-spin" /> : <><Plus size={16} /><span className="font-sans text-[9px] tracking-[0.15em] uppercase">Add</span></>}
+          </button>
+        </div>
+      )}
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm"
+        className="hidden"
+        onChange={e => { const f = e.target.files?.[0]; if (f) add(f); e.target.value = '' }}
+      />
+      <p className="font-sans text-[9px] text-bark-400/70 mt-2">Photos or videos (MP4/WebM, under 50 MB). Add several to rotate. &ldquo;First&rdquo; shows first. Saves instantly.</p>
+    </div>
+  )
+}
+
 export function VideoSlotCard({ slotKey, label, description }: { slotKey: string; label: string; description: string }) {
   const [state, setState] = useState<UploadState>('idle')
   const [videoUrl, setVideoUrl] = useState<string | null>(null)

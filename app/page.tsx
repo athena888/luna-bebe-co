@@ -142,14 +142,14 @@ export default async function HomePage() {
         </section>
 
         {/* ── Shop by Occasion ── */}
-        <section className="pt-14 sm:pt-16 pb-0">
+        <SlotBackground slotKey="home.occasions_bg" scrim="bg-cream-50/80" className="pt-14 sm:pt-16 pb-0 border-t border-cream-300">
           <div className="pl-6 sm:pl-9 pr-6 mb-8">
             <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Collections</p>
             <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">Shop by Occasion</h2>
             <p className="font-sans text-xs text-bark-400 mt-2 tracking-wide">Tap any collection to see what&apos;s inside</p>
           </div>
           <CollectionsSection initial={collectionsData ?? undefined} />
-        </section>
+        </SlotBackground>
 
         {/* ── Curated Gift Sets ── */}
         <PrebuiltBoxesSection />

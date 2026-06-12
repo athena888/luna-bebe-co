@@ -391,10 +391,10 @@ function BoxSection({
         )}
       </FlyIn>
 
-      {/* Info panel — desktop: fixed 95vh column so items scroll and price anchors bottom;
-           mobile: natural flow, items capped at max-h so all content stays visible */}
+      {/* Info panel — desktop: 95vh min-height, full panel scrolls so nothing is ever cut off;
+           mobile: natural flow */}
       <div
-        className={`relative isolate lg:w-[40%] flex flex-col lg:h-[95vh] ${flip ? 'lg:order-1' : ''}`}
+        className={`relative isolate lg:w-[40%] flex flex-col lg:min-h-[95vh] lg:overflow-y-auto ${flip ? 'lg:order-1' : ''}`}
         style={panelBg ? {
           backgroundImage: `linear-gradient(rgba(251,247,240,0.87), rgba(251,247,240,0.87)), url(${panelBg})`,
           backgroundSize: 'cover',
@@ -406,7 +406,7 @@ function BoxSection({
         )}
 
         {/* Top: identity */}
-        <div className="px-8 lg:px-12 xl:px-16 pt-12 lg:pt-16 shrink-0">
+        <div className="px-8 lg:px-12 xl:px-16 pt-12 lg:pt-16">
           <FlyIn delay={100}>
             <h2 className="font-serif text-5xl lg:text-6xl text-bark-600 leading-[1.02] mb-5">{box.name}</h2>
           </FlyIn>
@@ -422,19 +422,18 @@ function BoxSection({
           )}
         </div>
 
-        {/* Middle: items — desktop: flex column so items fill space between title and price */}
+        {/* Middle: items — always fully visible, inner scroll if list is very long */}
         {box.items.length > 0 && (
-          <div className="px-8 lg:px-12 xl:px-16 mt-8 lg:flex-1 lg:min-h-0 relative lg:flex lg:flex-col">
-            <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-4 lg:shrink-0">What&apos;s Inside</p>
-            <div className="max-h-[280px] lg:max-h-none lg:flex-1 lg:min-h-0 overflow-y-auto scrollbar-hide pr-1 pb-2">
+          <div className="px-8 lg:px-12 xl:px-16 mt-8">
+            <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-4">What&apos;s Inside</p>
+            <div className="max-h-[320px] lg:max-h-[50vh] overflow-y-auto scrollbar-hide pr-1 pb-2">
               <ItemsList box={box} onOpen={onPreview} />
             </div>
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />
           </div>
         )}
 
         {/* Bottom: price + buy */}
-        <FlyIn delay={450} className="px-8 lg:px-12 xl:px-16 pb-12 lg:pb-10 mt-6 shrink-0">
+        <FlyIn delay={450} className="px-8 lg:px-12 xl:px-16 pb-12 lg:pb-10 mt-6">
           <div className="border-t border-cream-300 pt-6 space-y-5">
             <PriceBlock box={box} />
             <BuyBox items={box.items} />
