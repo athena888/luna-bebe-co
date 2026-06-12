@@ -526,10 +526,12 @@ export default function BuildPage() {
               </div>
             </section>
           ))}
+          {/* Spacer so the floating bag button doesn't overlap the footer on mobile.
+              Kept INSIDE the background container so the image covers it — otherwise
+              a cream gap shows between the image and the footer on phones. */}
+          <div className="h-16 lg:hidden" />
           </div>
         </div>
-        {/* Spacer so the floating bag button doesn't overlap content on mobile */}
-        <div className="h-16 lg:hidden" />
         <Footer />
       </main>
 
