@@ -119,7 +119,7 @@ export default async function StoryPage() {
         </div>
 
         {/* Connect / Social */}
-        <div className="border-t border-cream-300 bg-[#FBF7F0]">
+        <div className="border-t border-cream-300 bg-[#FEF8F4]">
           {/* Social icon strip */}
           <div className="py-8 px-6">
             <div className="max-w-4xl mx-auto text-center">
@@ -139,7 +139,7 @@ export default async function StoryPage() {
                   <a key={label} href={href}
                     target={href.startsWith('mailto') ? undefined : '_blank'}
                     rel={href.startsWith('mailto') ? undefined : 'noopener noreferrer'}
-                    className="bg-[#FBF7F0] py-6 px-4 flex flex-col items-center hover:bg-cream-200 transition-colors group"
+                    className="bg-[#FEF8F4] py-6 px-4 flex flex-col items-center hover:bg-cream-100 transition-colors group"
                   >
                     {icon}
                     <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-600 mb-0.5 group-hover:text-bark-800 transition-colors">{label}</p>
