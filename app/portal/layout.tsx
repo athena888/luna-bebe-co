@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { LayoutDashboard, ShoppingBag, Phone, ImagePlus, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, Gift, Camera, ShieldCheck, Layers, LineChart, Mail, BookOpen, LayoutTemplate } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, Phone, ImagePlus, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, Gift, ShieldCheck, LineChart, Mail, LayoutTemplate } from 'lucide-react'
 
 const NAV = [
   { href: '/portal', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
@@ -11,7 +11,6 @@ const NAV = [
   { href: '/portal/issues', label: 'Phone Issues', icon: <Phone size={16} /> },
   { href: '/portal/content', label: 'Pages & Content', icon: <LayoutTemplate size={16} /> },
   { href: '/portal/products', label: 'Products', icon: <ImagePlus size={16} /> },
-  { href: '/portal/collections', label: 'Collections', icon: <Layers size={16} /> },
   { href: '/portal/boxes', label: 'Prebuilt Boxes', icon: <Gift size={16} /> },
   { href: '/portal/card-styles', label: 'Card Styles', icon: <Mail size={16} /> },
   { href: '/portal/inside-card', label: 'Inside-Box Card', icon: <Mail size={16} /> },
@@ -19,8 +18,6 @@ const NAV = [
   { href: '/portal/inventory', label: 'Inventory', icon: <PackageSearch size={16} /> },
   { href: '/portal/stock-insights', label: 'Stock Insights', icon: <LineChart size={16} /> },
   { href: '/portal/webhooks', label: 'Webhooks', icon: <Webhook size={16} /> },
-  { href: '/portal/social', label: 'Social Feed', icon: <Camera size={16} /> },
-  { href: '/portal/journal', label: 'Journal', icon: <BookOpen size={16} /> },
   { href: '/portal/analytics', label: 'Analytics', icon: <TrendingUp size={16} /> },
 ]
 
@@ -39,7 +36,7 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
       </div>
       <nav className="flex flex-col gap-1">
         {NAV.map(({ href, label, icon }) => {
-          const contentPaths = ['/portal/home-content', '/portal/story', '/portal/site-images']
+          const contentPaths = ['/portal/home-content', '/portal/story', '/portal/social', '/portal/journal', '/portal/collections', '/portal/site-images']
           const active = pathname === href
             || (href !== '/portal' && pathname.startsWith(href))
             || (href === '/portal/content' && contentPaths.some(p => pathname.startsWith(p)))

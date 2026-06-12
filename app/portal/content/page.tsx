@@ -1,11 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
-import { ArrowUpRight } from 'lucide-react'
 import { SiteImageUploader } from '@/components/portal/SiteImageUploader'
+import HomeContentPage from '@/app/portal/home-content/page'
+import StoryPortal from '@/app/portal/story/page'
+import SocialPortalPage from '@/app/portal/social/page'
+import JournalPortal from '@/app/portal/journal/page'
 
-type PageId = 'home' | 'story' | 'build' | 'boxes' | 'corporate' | 'giftcards' | 'global' | 'social' | 'journal'
+type PageId = 'home' | 'story' | 'build' | 'boxes' | 'corporate' | 'giftcards' | 'global' | 'social' | 'journal' | 'signin'
 
 const TABS: { id: PageId; label: string }[] = [
   { id: 'home',       label: 'Homepage' },
@@ -17,19 +19,8 @@ const TABS: { id: PageId; label: string }[] = [
   { id: 'global',     label: 'Global' },
   { id: 'social',     label: 'Social Feed' },
   { id: 'journal',    label: 'Journal' },
+  { id: 'signin',     label: 'Sign In' },
 ]
-
-function EditorLink({ href, label, description }: { href: string; label: string; description: string }) {
-  return (
-    <Link href={href} className="group flex items-start justify-between gap-4 bg-white border border-cream-300 rounded-xl p-5 hover:border-bark-400 transition-colors">
-      <div>
-        <p className="font-serif text-lg text-bark-600 group-hover:text-bark-800 transition-colors">{label}</p>
-        <p className="font-sans text-xs text-bark-400 mt-1 leading-relaxed">{description}</p>
-      </div>
-      <ArrowUpRight size={16} className="text-bark-400 group-hover:text-bark-600 shrink-0 mt-1 transition-colors" />
-    </Link>
-  )
-}
 
 function SectionHeading({ title, note }: { title: string; note?: string }) {
   return (
@@ -75,34 +66,16 @@ export default function ContentPage() {
         </nav>
       </aside>
 
-      {/* Right: content for selected page */}
-      <div className="flex-1 p-8 max-w-3xl">
+      {/* Right: content for selected page — inline editors manage their own padding */}
+      <div className="flex-1 min-w-0">
 
-        {active === 'home' && (
-          <>
-            <SectionHeading title="Homepage" note="Text copy, box selections, and all homepage photos — managed together." />
-            <EditorLink
-              href="/portal/home-content"
-              label="Open Homepage Editor"
-              description="Hero photos, perks bar, occasion cards, box carousel, editorial strip, reviews, and the final CTA — all text and image fields in one place."
-            />
-          </>
-        )}
-
-        {active === 'story' && (
-          <>
-            <SectionHeading title="Story Page" note="Hero, founder letter, brand values, and the prose sections — text and images together." />
-            <EditorLink
-              href="/portal/story"
-              label="Open Story Editor"
-              description="Edit the founder letter, brand values, section headings, and all Story page photos from a single editor."
-            />
-          </>
-        )}
-
+        {active === 'home' && <HomeContentPage />}
+        {active === 'story' && <StoryPortal />}
+        {active === 'social' && <SocialPortalPage />}
+        {active === 'journal' && <JournalPortal />}
 
         {active === 'build' && (
-          <>
+          <div className="p-8 max-w-3xl">
             <SectionHeading title="Build Your Box" note="The /build product selector page." />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <SlotRow
@@ -130,11 +103,11 @@ export default function ContentPage() {
                 where="Behind the product category list on /build"
               />
             </div>
-          </>
+          </div>
         )}
 
         {active === 'boxes' && (
-          <>
+          <div className="p-8 max-w-3xl">
             <SectionHeading title="Boxes Page" note="The /boxes ready-made gift sets page." />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <SlotRow
@@ -162,11 +135,11 @@ export default function ContentPage() {
                 where="Behind the &ldquo;Prefer to choose yourself?&rdquo; CTA at the bottom of /boxes on phones"
               />
             </div>
-          </>
+          </div>
         )}
 
         {active === 'corporate' && (
-          <>
+          <div className="p-8 max-w-3xl">
             <SectionHeading title="Corporate & Team Gifting" note="The /corporate page." />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <SlotRow
@@ -186,11 +159,11 @@ export default function ContentPage() {
                 where="Behind the hero heading on /corporate on phones"
               />
             </div>
-          </>
+          </div>
         )}
 
         {active === 'giftcards' && (
-          <>
+          <div className="p-8 max-w-3xl">
             <SectionHeading title="Gift Cards" note="The /gift-cards page." />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <SlotRow
@@ -218,33 +191,11 @@ export default function ContentPage() {
                 where="The card image in the live gift-card preview"
               />
             </div>
-          </>
-        )}
-
-        {active === 'social' && (
-          <>
-            <SectionHeading title="Social Feed" note="Photos, videos, and Instagram/TikTok embeds shown on the Story page." />
-            <EditorLink
-              href="/portal/social"
-              label="Open Social Feed"
-              description="Upload photos or videos, embed Instagram or TikTok posts, show or hide individual items, manage captions and display order."
-            />
-          </>
-        )}
-
-        {active === 'journal' && (
-          <>
-            <SectionHeading title="Journal" note="Blog-style articles shown on /journal." />
-            <EditorLink
-              href="/portal/journal"
-              label="Open Journal"
-              description="Create, edit, publish, or draft journal posts. Supports subheadings (##) and bullet lists. Each post has a title, slug, excerpt, and meta description."
-            />
-          </>
+          </div>
         )}
 
         {active === 'global' && (
-          <>
+          <div className="p-8 max-w-3xl">
             <SectionHeading title="Global" note="Images that appear on every page." />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <SlotRow
@@ -280,7 +231,23 @@ export default function ContentPage() {
                 where="Link preview when the site is shared on social"
               />
             </div>
-          </>
+          </div>
+        )}
+
+        {active === 'signin' && (
+          <div className="p-8 max-w-3xl">
+            <SectionHeading title="Sign In" note="The admin portal sign-in page." />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <SlotRow
+                slotKey="signin.bg"
+                label="Sign-in background"
+                context="Background behind the admin sign-in form"
+                ratio="16:9"
+                hint="Soft lifestyle image · ~1920×1080"
+                where="Behind the sign-in form on the admin login page"
+              />
+            </div>
+          </div>
         )}
 
       </div>

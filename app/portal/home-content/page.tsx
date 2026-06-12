@@ -6,6 +6,7 @@ import type { HomeContent, Perk, FeatureBlock, Review } from '@/lib/home-content
 import { ImageSlotCard, VideoSlotCard, BestsellerManager, GallerySlot, EditorialMediaGallery } from '@/components/portal/HomeMediaWidgets'
 import { Field, Area } from '@/components/portal/ContentFields'
 import { SiteImageUploader } from '@/components/portal/SiteImageUploader'
+import { CollectionsEditor } from '@/app/portal/collections/page'
 
 function Card({ children, onRemove }: { children: React.ReactNode; onRemove?: () => void }) {
   return (
@@ -170,7 +171,7 @@ function HomepageEditor() {
 
       {/* 5 · What makes it special */}
       <section className="mb-12">
-        <SectionTitle n="5" title="“What makes it special” section" note="The intro and the two editorial image features. Each photo and its words are edited together." />
+        <SectionTitle n="5" title={'"What makes it special" section'} note="The intro and the two editorial image features. Each photo and its words are edited together." />
         <div className="space-y-3 mb-6">
           <Field label="Eyebrow (small caps)" value={c.why.eyebrow} onChange={v => setWhy({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'the small eyebrow above the section heading' }} />
           <Field label="Heading" value={c.why.title} onChange={v => setWhy({ title: v })} ai={{ kind: 'title', context: 'the section heading for why-choose-us' }} />
@@ -189,7 +190,7 @@ function HomepageEditor() {
             </div>
           ))}
         </div>
-        <p className="font-sans text-[10px] text-bark-400/80 mt-3">Photos upload immediately; text changes go live when you press “Save changes” below.</p>
+        <p className="font-sans text-[10px] text-bark-400/80 mt-3">Photos upload immediately; text changes go live when you press "Save changes" below.</p>
       </section>
 
       {/* 6 · Bestsellers */}
@@ -199,9 +200,9 @@ function HomepageEditor() {
       </section>
 
       {/* 7 · Editorial Strip */}
-      <section className=”mb-12”>
-        <SectionTitle n=”7” title=”Editorial Strip — “Every detail, intentional.”” note=”Photos & videos rotate every 5s. Add as many as you like — delete any you don't want.” />
-        <div className=”max-w-2xl”><EditorialMediaGallery /></div>
+      <section className="mb-12">
+        <SectionTitle n="7" title={'Editorial Strip — "Every detail, intentional."'} note="Photos & videos rotate every 5s. Add as many as you like — delete any you don't want." />
+        <div className="max-w-2xl"><EditorialMediaGallery /></div>
       </section>
 
       {/* 8 · Reviews */}
@@ -232,6 +233,12 @@ function HomepageEditor() {
       <section className="mb-12">
         <SectionTitle n="9" title="Final CTA background" note="Dark full-width section near the bottom — image shows at ~40% opacity. Add several to cross-fade." />
         <div className="max-w-md"><GallerySlot wide slot="box" label="CTA Background(s)" description="Cream box with ribbon — dark/moody works best. ~1600×900 (16:9)." /></div>
+      </section>
+
+      {/* 10 · Collections */}
+      <section className="mb-12">
+        <SectionTitle n="10" title="Shop by Occasion — Collections" note="The occasion cards link to collections. Edit each collection's name, subtitle, and which products it includes." />
+        <CollectionsEditor />
       </section>
 
       {/* Save bar (text only — photos & box picker save on their own) */}
