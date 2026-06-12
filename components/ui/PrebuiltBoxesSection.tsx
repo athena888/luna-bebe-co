@@ -53,7 +53,7 @@ function BoxModal({ box, onClose }: { box: ResolvedBox; onClose: () => void }) {
             <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-gold-400">{box.style}</p>
             <button onClick={onClose} className="text-bark-400 hover:text-bark-600 transition-colors -mt-1"><X size={18} /></button>
           </div>
-          <h2 className="font-serif text-3xl text-bark-600 mb-1">{box.name}</h2>
+          <h2 className="font-serif text-3xl text-espresso mb-1">{box.name}</h2>
           <p className="font-cormorant text-lg italic text-bark-400 mb-5 leading-snug">{box.tagline}</p>
 
           <div className="space-y-5 mb-6">
@@ -83,7 +83,7 @@ function BoxModal({ box, onClose }: { box: ResolvedBox; onClose: () => void }) {
 
           <div className="flex items-center justify-between pt-4 border-t border-cream-200">
             <div>
-              <span className="font-serif text-2xl text-bark-600">{fmt(boxTotal(box))}</span>
+              <span className="font-serif text-2xl text-espresso">{fmt(boxTotal(box))}</span>
               <span className="font-sans text-[10px] text-bark-400 ml-2">all-in</span>
             </div>
             <Link href={`/boxes#box-${box.slug}`} onClick={onClose} className="bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.2em] uppercase px-6 py-3 hover:bg-bark-700 transition-colors">
@@ -112,7 +112,7 @@ export function PrebuiltBoxesSection() {
       <div className="pl-6 sm:pl-9 pr-6 mb-6 flex items-end justify-between">
         <div>
           <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Ready-Made</p>
-          <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">Curated Gift Sets</h2>
+          <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-espresso">Curated Gift Sets</h2>
           <p className="font-sans text-xs text-bark-400 mt-2 tracking-wide">Tap any set to peek inside.</p>
         </div>
         <Link href="/boxes" className="hidden sm:inline-block font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 hover:text-bark-700 transition-colors border-b border-bark-400 pb-0.5">

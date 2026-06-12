@@ -24,7 +24,7 @@ export default async function JournalIndex() {
       <main className="bg-cream-50 min-h-screen">
         <section className="border-b border-cream-300 px-6 sm:px-8 py-16 sm:py-20 text-center">
           <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">The Journal</p>
-          <h1 className="font-serif text-[2.5rem] sm:text-[3.5rem] text-bark-600 leading-tight">Gift guides &amp; new-parent notes</h1>
+          <h1 className="font-serif text-[2.5rem] sm:text-[3.5rem] text-espresso leading-tight">Gift guides &amp; new-parent notes</h1>
           <p className="font-cormorant text-lg sm:text-xl text-bark-400 mt-4 max-w-2xl mx-auto leading-loose">
             Thoughtful reading on organic baby gifts, postpartum care, and the small details that make a present feel personal.
           </p>
@@ -36,7 +36,7 @@ export default async function JournalIndex() {
               <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-gold-400 mb-2">
                 {new Date(post.date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} · {post.readMins} min read
               </p>
-              <h2 className="font-serif text-2xl sm:text-3xl text-bark-600 leading-snug mb-2 group-hover:text-bark-800 transition-colors">{post.title}</h2>
+              <h2 className="font-serif text-2xl sm:text-3xl text-espresso leading-snug mb-2 group-hover:text-bark-800 transition-colors">{post.title}</h2>
               <p className="font-cormorant text-lg text-bark-400 leading-relaxed mb-3">{post.excerpt}</p>
               <span className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500 border-b border-bark-400 pb-0.5">Read more →</span>
             </Link>

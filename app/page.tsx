@@ -146,7 +146,7 @@ export default async function HomePage() {
         <div className="pt-14 sm:pt-16 pb-0 border-t border-cream-300">
           <div className="pl-6 sm:pl-9 pr-6 mb-8">
             <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Collections</p>
-            <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">Shop by Occasion</h2>
+            <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-espresso">Shop by Occasion</h2>
             <p className="font-sans text-xs text-bark-400 mt-2 tracking-wide">Tap any collection to see what&apos;s inside</p>
           </div>
           <CollectionsSection initial={collectionsData ?? undefined} />
@@ -160,7 +160,7 @@ export default async function HomePage() {
           {/* Editable intro */}
           <div className="max-w-3xl mx-auto text-center px-6 sm:px-8 pt-10 sm:pt-14 pb-6 sm:pb-10">
             <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">{content.why.eyebrow}</p>
-            <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600 leading-tight mb-5">{content.why.title}</h2>
+            <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-espresso leading-tight mb-5">{content.why.title}</h2>
             <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose">
               {content.why.intro}
             </p>
@@ -173,7 +173,7 @@ export default async function HomePage() {
             return (
               <EditorialFeature key={i} images={galleries[f.slot] ?? [homeImg(f.slot)]} alt={f.eyebrow || 'Petite Lavande'} side={i % 2 === 0 ? 'left' : 'right'}>
                 {f.eyebrow && <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">{f.eyebrow}</p>}
-                <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-bark-600 leading-[1.05] mb-5 whitespace-pre-line">{f.title}</h2>
+                <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-espresso leading-[1.05] mb-5 whitespace-pre-line">{f.title}</h2>
                 <p className="font-cormorant text-lg text-bark-400 leading-loose whitespace-pre-line">{f.body}</p>
                 {bullets.length > 0 && (
                   <ul className="space-y-2.5 mt-6">
@@ -196,7 +196,7 @@ export default async function HomePage() {
           <div className="pl-6 sm:pl-9 pr-6 mb-10 flex items-end justify-between">
             <div>
               <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Curated Picks</p>
-              <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">Bestsellers</h2>
+              <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-espresso">Bestsellers</h2>
             </div>
             <Link
               href="/build"
@@ -218,7 +218,7 @@ export default async function HomePage() {
               <div className="max-w-6xl mx-auto">
                 <div className="text-center mb-10">
                   <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">{content.reviews.eyebrow}</p>
-                  <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600">{content.reviews.title}</h2>
+                  <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-espresso">{content.reviews.title}</h2>
                   {content.reviews.ratingLine && (
                     <p className="font-sans text-[11px] tracking-[0.2em] text-gold-400 mt-3">{content.reviews.ratingLine}</p>
                   )}
@@ -235,7 +235,7 @@ export default async function HomePage() {
           <div className="py-8 px-6">
             <div className="max-w-4xl mx-auto text-center">
               <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-2">Connect</p>
-              <h2 className="font-serif text-2xl sm:text-3xl text-bark-600 mb-6">Find Us</h2>
+              <h2 className="font-serif text-2xl sm:text-3xl text-espresso mb-6">Find Us</h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-cream-300">
                 {[
                   { label: 'Email', sub: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}`,

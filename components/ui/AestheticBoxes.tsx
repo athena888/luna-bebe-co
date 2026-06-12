@@ -54,7 +54,7 @@ function PriceBlock({ box }: { box: ResolvedBox }) {
     <div>
       <div className="flex items-baseline gap-3 flex-wrap">
         {saving && <span className="font-serif text-xl text-bark-400 line-through">{fmt(regular)}</span>}
-        <span className="font-serif text-3xl text-bark-600">{fmt(price)}</span>
+        <span className="font-serif text-3xl text-espresso">{fmt(price)}</span>
         {saving && <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-sage-600">Save {fmt(regular - price)}</span>}
       </div>
       <p className="font-sans text-[11px] text-bark-400 mt-1">Box, packaging &amp; wax seal included · card at checkout</p>
@@ -149,7 +149,7 @@ function ItemsModal({ box, onClose, onPreview }: { box: ResolvedBox; onClose: ()
         <div className="flex items-start justify-between gap-3 px-6 pt-6 pb-4 border-b border-cream-200 shrink-0">
           <div>
             <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-gold-400">{box.style}</p>
-            <h3 className="font-serif text-2xl text-bark-600">{box.name}</h3>
+            <h3 className="font-serif text-2xl text-espresso">{box.name}</h3>
           </div>
           <button onClick={onClose} aria-label="Close" className="text-bark-400 hover:text-bark-600 transition-colors -mt-1"><X size={18} /></button>
         </div>
@@ -229,7 +229,7 @@ function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => 
           </div>
           <div className="flex-1 lg:min-h-0 lg:overflow-y-auto p-6 lg:p-8 flex flex-col">
             <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-2">{item.category}</p>
-            <h2 className="font-serif text-2xl lg:text-3xl text-bark-600 leading-tight mb-2">{item.name}</h2>
+            <h2 className="font-serif text-2xl lg:text-3xl text-espresso leading-tight mb-2">{item.name}</h2>
             <p className="font-sans text-base text-bark-400 mb-2">{fmt(item.price)}</p>
             {(certs.length > 0 || item.organic) && (
               <div className="border-t border-b border-cream-300 py-4 mt-2">
@@ -408,7 +408,7 @@ function BoxSection({
         {/* Top: identity */}
         <div className="px-8 lg:px-12 xl:px-16 pt-12 lg:pt-16">
           <FlyIn delay={100}>
-            <h2 className="font-serif text-5xl lg:text-6xl text-bark-600 leading-[1.02] mb-5">{box.name}</h2>
+            <h2 className="font-serif text-5xl lg:text-6xl text-espresso leading-[1.02] mb-5">{box.name}</h2>
           </FlyIn>
           {box.tagline && (
             <FlyIn delay={200}>

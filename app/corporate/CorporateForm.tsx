@@ -42,7 +42,7 @@ export function CorporateForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <h2 className="font-serif text-2xl text-bark-600 mb-6">Tell us about your team</h2>
+      <h2 className="font-serif text-2xl text-espresso mb-6">Tell us about your team</h2>
 
       <div>
         <label htmlFor="b2b-name" className={labelCls}>Name</label>

@@ -86,7 +86,7 @@ export default function AccountPage() {
         <div className="max-w-md w-full">
         <div className="text-center mb-10">
           <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">My Account</p>
-          <h1 className="font-serif text-4xl text-bark-600">Sign In</h1>
+          <h1 className="font-serif text-4xl text-espresso">Sign In</h1>
           <p className="font-sans text-sm text-bark-400 mt-2">View your orders and saved items.</p>
         </div>
 
@@ -123,7 +123,7 @@ export default function AccountPage() {
       <div className="flex items-start justify-between mb-10">
         <div>
           <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-1">Welcome back</p>
-          <h1 className="font-serif text-3xl text-bark-600">{user.email}</h1>
+          <h1 className="font-serif text-3xl text-espresso">{user.email}</h1>
         </div>
         <button onClick={handleSignOut} className="flex items-center gap-1.5 font-sans text-xs text-bark-400 hover:text-bark-600 transition-colors">
           <LogOut size={14} /> Sign out

@@ -105,7 +105,7 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
           <section className="px-6 sm:px-8 py-16 sm:py-24 text-center">
             <div className="max-w-3xl mx-auto">
               <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-4">{lp.eyebrow}</p>
-              <h1 className="font-serif text-[2.5rem] sm:text-[3.5rem] text-bark-600 leading-[1.05] mb-6">{lp.h1}</h1>
+              <h1 className="font-serif text-[2.5rem] sm:text-[3.5rem] text-espresso leading-[1.05] mb-6">{lp.h1}</h1>
               {lp.intro.map((para, i) => (
                 <p key={i} className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose mb-4">{para}</p>
               ))}
@@ -130,7 +130,7 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12">
                 <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-2">What Goes Inside</p>
-                <h2 className="font-serif text-2xl sm:text-3xl text-bark-600">Pieces to Include</h2>
+                <h2 className="font-serif text-2xl sm:text-3xl text-espresso">Pieces to Include</h2>
               </div>
 
               {byCategory.map(({ category, label, products }) => (

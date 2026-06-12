@@ -71,7 +71,7 @@ export default function GuidePage() {
       <main className="min-h-screen bg-cream-100">
         <SlotBackground slotKey="guide.header_bg" parallax className="px-4 sm:px-6 pt-14 pb-10 text-center">
           <p className="text-[10px] font-sans font-semibold uppercase tracking-[0.35em] text-gold-400 mb-3">Gift Guide</p>
-          <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-3">Find the Perfect Box</h1>
+          <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-3">Find the Perfect Box</h1>
           <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">Answer 4 quick questions and we&rsquo;ll curate the perfect combination just for her.</p>
         </SlotBackground>
         <div className="max-w-2xl mx-auto py-12 px-4 sm:px-6">
@@ -83,7 +83,7 @@ export default function GuidePage() {
           {!isComplete && (
             <div className="bg-cream-50 rounded-2xl border border-cream-200 p-8 sm:p-10">
               <div className="mb-2 text-xs font-sans text-bark-400 uppercase tracking-widest">Question {step + 1} of {QUESTIONS.length}</div>
-              <h2 className="font-serif text-2xl sm:text-3xl text-bark-600 mb-8">{currentQ.question}</h2>
+              <h2 className="font-serif text-2xl sm:text-3xl text-espresso mb-8">{currentQ.question}</h2>
               <div className="grid grid-cols-1 gap-2.5">
                 {currentQ.options.map((option) => (
                   <button
@@ -110,7 +110,7 @@ export default function GuidePage() {
             <div>
               <div className="text-center mb-8">
                 <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 mb-3">Curated For Her</p>
-                <h2 className="font-serif text-3xl sm:text-4xl text-bark-600 mb-3">Your Curated Box</h2>
+                <h2 className="font-serif text-3xl sm:text-4xl text-espresso mb-3">Your Curated Box</h2>
                 <div className="w-12 h-px bg-gold-400 mx-auto mb-3" />
                 <p className="font-sans text-sm text-bark-400">Based on your answers, here&rsquo;s what we suggest:</p>
               </div>
@@ -195,7 +195,7 @@ export default function GuidePage() {
                   <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-gold-400">{CATEGORY_LABELS[modalProduct.category]}</p>
                   {modalProduct.tag && <Badge variant="gold">{modalProduct.tag}</Badge>}
                 </div>
-                <h3 className="font-serif text-2xl text-bark-600 mb-1">{modalProduct.name}</h3>
+                <h3 className="font-serif text-2xl text-espresso mb-1">{modalProduct.name}</h3>
                 <p className="font-sans text-lg text-bark-500 mb-4">${(modalProduct.price / 100).toFixed(0)}</p>
                 {modalProduct.description && <p className="font-sans text-sm text-bark-600 leading-relaxed mb-4">{modalProduct.description}</p>}
                 {modalProduct.ingredients && (

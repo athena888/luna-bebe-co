@@ -112,7 +112,7 @@ export default function CardPage() {
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-10">
             <p className="text-xs font-sans font-semibold uppercase tracking-widest text-gold-400 mb-2">Your Card</p>
-            <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-2">Customize Your Card</h1>
+            <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-2">Customize Your Card</h1>
             <p className="font-sans text-sm text-bark-400">Pick a card design and write your message — we&rsquo;ll print it and tuck it into the box.</p>
           </div>
 

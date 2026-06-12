@@ -78,7 +78,7 @@ export function ReviewSection({ productId }: { productId: string }) {
     <div className="mt-12 pt-10 border-t border-cream-200">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h3 className="font-serif text-2xl text-bark-600 mb-1">Customer Reviews</h3>
+          <h3 className="font-serif text-2xl text-espresso mb-1">Customer Reviews</h3>
           {reviews.length > 0 && (
             <div className="flex items-center gap-2">
               <StarRating value={Math.round(avgRating)} />

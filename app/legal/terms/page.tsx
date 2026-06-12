@@ -10,7 +10,7 @@ export default function TermsPage() {
   return (
     <article className="prose prose-sm max-w-none font-sans text-bark-600">
       <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-gold-400 mb-4">Legal</p>
-      <h1 className="font-serif text-4xl font-normal text-bark-600 mb-2">Terms of Service</h1>
+      <h1 className="font-serif text-4xl font-normal text-espresso mb-2">Terms of Service</h1>
       <p className="text-bark-400 text-sm mb-10">Last updated: May 2025</p>
 
       <Section title="1. Overview">

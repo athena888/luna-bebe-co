@@ -60,7 +60,7 @@ export default function CorporatePage() {
         <SlotBackground slotKey="corporate.hero_bg" scrim="bg-cream-50/40" className="border-b border-cream-300">
           <section className="px-6 py-20 sm:py-28 text-center">
             <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-5">Corporate &amp; Team Gifting</p>
-            <h1 className="font-serif text-4xl sm:text-6xl text-bark-600 leading-tight max-w-3xl mx-auto">
+            <h1 className="font-serif text-4xl sm:text-6xl text-espresso leading-tight max-w-3xl mx-auto">
               When your people become parents
             </h1>
             <p className="font-cormorant text-lg sm:text-xl text-[#6F5B4D] leading-loose max-w-2xl mx-auto mt-6">

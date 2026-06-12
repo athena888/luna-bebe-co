@@ -41,7 +41,7 @@ function ConfirmationInner() {
           </div>
 
           <p className="text-xs font-sans font-semibold uppercase tracking-widest text-gold-400 mb-3">Order Confirmed</p>
-          <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-4">
+          <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-4">
             Your box is on its way to being <span className="font-script text-gold-400" style={{ fontSize: '1.1em' }}>unforgettable.</span>
           </h1>
           <p className="font-sans text-bark-400 mb-3 leading-relaxed">
@@ -76,7 +76,7 @@ function ConfirmationInner() {
           {/* A Note to the New Mother — the note tucked inside every box */}
           <div className="rounded-2xl border border-[#d8c7a8] bg-[#f3ecdc] p-7 sm:p-10 text-left mb-8">
             <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-bark-400 mb-4 text-center">Tucked inside your box</p>
-            <p className="font-serif italic text-2xl text-bark-600 text-center mb-6">We see you.</p>
+            <p className="font-serif italic text-2xl text-espresso text-center mb-6">We see you.</p>
             <div className="space-y-4 font-sans text-sm text-bark-600 leading-relaxed">
               <p>You are doing one of the hardest, most loving things a person can do. You are running on broken sleep and feeding schedules and a love so big it doesn&rsquo;t fit in your chest.</p>
               <p>You deserve warm tea. You deserve ten minutes in a bath. You deserve a few hours of dark, quiet sleep with silk against your eyes. You deserve scent and softness and the small luxury of being thought of.</p>

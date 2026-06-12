@@ -156,7 +156,7 @@ export default function CheckoutPage() {
         {/* Header */}
         <div className="border-b border-cream-300 px-6 py-12 text-center bg-cream-50">
           <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">Almost There</p>
-          <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-2">Checkout</h1>
+          <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-2">Checkout</h1>
           <p className="font-sans text-xs text-bark-400 tracking-wide">Secure checkout powered by Stripe.</p>
         </div>
 

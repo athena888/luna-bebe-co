@@ -24,7 +24,7 @@ function GiftCardConfirmationInner() {
           </div>
 
           <p className="text-xs font-sans font-semibold uppercase tracking-widest text-gold-400 mb-3">Gift Card Sent</p>
-          <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-4">
+          <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-4">
             Your gift is on its way.
           </h1>
           <p className="font-sans text-bark-400 mb-3 leading-relaxed">

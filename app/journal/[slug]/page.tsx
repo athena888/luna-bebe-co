@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 function renderBlock(b: Block, i: number) {
-  if ('h2' in b) return <h2 key={i} className="font-serif text-2xl text-bark-600 mt-10 mb-3">{b.h2}</h2>
+  if ('h2' in b) return <h2 key={i} className="font-serif text-2xl text-espresso mt-10 mb-3">{b.h2}</h2>
   if ('ul' in b) return (
     <ul key={i} className="my-4 space-y-2">
       {b.ul.map((li, j) => (
@@ -82,7 +82,7 @@ export default async function JournalPostPage({ params }: { params: Promise<{ sl
           <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-gold-400 mt-8 mb-3">
             {new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} · {post.readMins} min read
           </p>
-          <h1 className="font-serif text-[2.25rem] sm:text-[3rem] text-bark-600 leading-[1.1] mb-8">{post.title}</h1>
+          <h1 className="font-serif text-[2.25rem] sm:text-[3rem] text-espresso leading-[1.1] mb-8">{post.title}</h1>
 
           <div>{post.body.map(renderBlock)}</div>
 

@@ -58,7 +58,7 @@ export default function GiftCardsPage() {
           <div className="max-w-4xl mx-auto">
             <div className="text-center">
               <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">The Perfect Gift</p>
-              <h1 className="font-serif text-4xl sm:text-5xl text-bark-600 mb-2">Gift Cards</h1>
+              <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-2">Gift Cards</h1>
               <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">
                 Can't decide? Give the gift of choice. Your recipient builds their own Petite Lavande box with your love.
               </p>
@@ -79,7 +79,7 @@ export default function GiftCardsPage() {
                       key={opt.value}
                       type="button"
                       onClick={() => setAmount(opt.value)}
-                      className={`relative py-5 border font-serif text-2xl transition-colors ${amount === opt.value ? 'border-bark-600 bg-cream-100 text-bark-600' : 'border-cream-300 text-bark-400 hover:border-bark-400'}`}
+                      className={`relative py-5 border font-serif text-2xl transition-colors ${amount === opt.value ? 'border-bark-600 bg-cream-100 text-espresso' : 'border-cream-300 text-bark-400 hover:border-bark-400'}`}
                     >
                       {opt.label}
                       {opt.popular && (

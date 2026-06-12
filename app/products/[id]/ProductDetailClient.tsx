@@ -189,7 +189,7 @@ export default function ProductDetailClient() {
                 </p>
 
                 {/* Product name */}
-                <h1 className="font-sans text-3xl text-bark-600 leading-tight mb-2">
+                <h1 className="font-sans text-3xl text-espresso leading-tight mb-2">
                   {product.name}
                 </h1>
 

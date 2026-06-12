@@ -114,7 +114,7 @@ function CollectionModal({ cat, byCategory, boxes, onClose }: {
         <div className="flex items-start justify-between p-6 pb-4 border-b border-cream-300 shrink-0">
           <div>
             <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-gold-400 mb-1">{cat.sub}</p>
-            <h2 className="font-serif text-2xl text-bark-600">{cat.label}</h2>
+            <h2 className="font-serif text-2xl text-espresso">{cat.label}</h2>
           </div>
           <button onClick={onClose} className="text-bark-400 hover:text-bark-600 transition-colors ml-4 mt-0.5">
             <X size={20} />

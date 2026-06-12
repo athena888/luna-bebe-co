@@ -134,7 +134,7 @@ export default async function StoryPage() {
           <div className="py-8 px-6">
             <div className="max-w-4xl mx-auto text-center">
               <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-2">Connect</p>
-              <h2 className="font-serif text-2xl sm:text-3xl text-bark-600 mb-6">Find Us</h2>
+              <h2 className="font-serif text-2xl sm:text-3xl text-espresso mb-6">Find Us</h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-cream-300">
                 {([
                   { label: 'Email', sub: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}`,

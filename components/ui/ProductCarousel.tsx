@@ -176,7 +176,7 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
             <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-2">
               {CATEGORY_LABELS[product.category]}
             </p>
-            <h2 className="font-sans text-2xl lg:text-3xl text-bark-600 leading-tight mb-2">{product.name}</h2>
+            <h2 className="font-sans text-2xl lg:text-3xl text-espresso leading-tight mb-2">{product.name}</h2>
             <p className="font-sans text-base text-bark-400 mb-4">{formatPrice(product.price)}</p>
             {product.tag && (
               <span className="inline-block bg-terra-100 text-terra-500 font-sans text-[9px] tracking-[0.2em] uppercase px-3 py-1 mb-4 self-start">

@@ -719,7 +719,7 @@ export default function BuildPage() {
             {/* Product info — scrolls on desktop, flows naturally on mobile */}
             <div className="flex-1 lg:min-h-0 lg:overflow-y-auto p-6 lg:p-8 flex flex-col">
               <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-2">{CATEGORY_LABELS[modalProduct.category]}</p>
-              <h2 className="font-sans text-2xl lg:text-3xl text-bark-600 leading-tight mb-2">{modalProduct.name}</h2>
+              <h2 className="font-sans text-2xl lg:text-3xl text-espresso leading-tight mb-2">{modalProduct.name}</h2>
               <p className="font-sans text-base text-bark-400 mb-4">{formatPrice(modalProduct.price)}</p>
               {modalProduct.tag && (
                 <span className="inline-block bg-terra-100 text-terra-500 font-sans text-[9px] tracking-[0.2em] uppercase px-3 py-1 mb-4 self-start">
