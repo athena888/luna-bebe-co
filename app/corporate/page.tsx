@@ -67,12 +67,14 @@ export default function CorporatePage() {
           </div>
         </section>
 
-        {/* Lead form */}
-        <section className="px-6 py-16 sm:py-24">
-          <div className="max-w-xl mx-auto">
-            <CorporateForm />
-          </div>
-        </section>
+        {/* Lead form — background uploadable via Portal → Site Images → Corporate */}
+        <SlotBackground slotKey="corporate.form_bg" scrim="bg-cream-50/85">
+          <section className="px-6 py-16 sm:py-24">
+            <div className="max-w-xl mx-auto">
+              <CorporateForm />
+            </div>
+          </section>
+        </SlotBackground>
 
       </main>
       <Footer />
