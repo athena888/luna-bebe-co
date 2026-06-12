@@ -152,30 +152,30 @@ function HomepageEditor() {
         <div className="mt-3"><AddButton onClick={() => setPerks([...c.perks, { label: '', sub: '' }])} label="Add perk" /></div>
       </section>
 
-      {/* 3 · Shop by Occasion */}
+      {/* 3 · Shop by Occasion + Curated Gift Sets — one shared background */}
       <section className="mb-12">
-        <SectionTitle n="3" title="Shop by Occasion cards" note="Four portrait cards in the 'Shop by Occasion' grid." />
-        <div className="bg-white border border-cream-200 rounded-lg p-3 mb-5">
-          <p className="font-sans text-[10px] text-bark-400 mb-2">Section background (optional)</p>
-          <SiteImageUploader slotKey="home.occasions_bg" context="Background behind the Shop by Occasion section" ratio="21:9" hint="Soft, light lifestyle · ~2000×860. Shows behind the cards at 80% opacity." compact />
+        <SectionTitle n="3" title="Shop by Occasion & Curated Gift Sets" note="These two homepage sections sit on one shared background image + colour overlay." />
+        <div className="bg-white border border-cream-200 rounded-lg p-3 mb-6">
+          <p className="font-sans text-[10px] text-bark-400 mb-2">Shared background (optional) — appears behind <strong>both</strong> sections</p>
+          <SiteImageUploader slotKey="home.occasions_bg" context="Background behind the Shop by Occasion and Curated Gift Sets sections" ratio="21:9" hint="Soft, light lifestyle · ~2000×860. Shows behind the cards." compact />
+          <ScrimControl scrimKey="home.occasions_bg" defaultScrim={{ hex: '#FAF9F8', opacity: 0.80 }} label="Background colour overlay" note="tint over the shared photo — raise for legibility, lower to show more of the photo" />
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+
+        <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500 mb-2">Shop by Occasion — the four cards</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <ImageSlotCard slotKey="newborn" label="Newborn Gifts" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
           <ImageSlotCard slotKey="mama" label="For Mama" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
           <ImageSlotCard slotKey="bundle" label="Mama & Baby Bundle" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
           <ImageSlotCard slotKey="custom" label="Custom Box" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
         </div>
-      </section>
 
-      {/* 4 · Curated Gift Sets */}
-      <section className="mb-12">
-        <SectionTitle n="4" title="Curated Gift Sets" note="Which prebuilt boxes appear in the homepage carousel." />
+        <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500 mb-2">Curated Gift Sets — which boxes appear in the carousel</p>
         <BoxPicker />
       </section>
 
       {/* 5 · What makes it special */}
       <section className="mb-12">
-        <SectionTitle n="5" title={'"What makes it special" section'} note="The intro and the two editorial image features. Each photo and its words are edited together." />
+        <SectionTitle n="4" title={'"What makes it special" section'} note="The intro and the two editorial image features. Each photo and its words are edited together." />
         <div className="space-y-3 mb-6">
           <Field label="Eyebrow (small caps)" value={c.why.eyebrow} onChange={v => setWhy({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'the small eyebrow above the section heading' }} />
           <Field label="Heading" value={c.why.title} onChange={v => setWhy({ title: v })} ai={{ kind: 'title', context: 'the section heading for why-choose-us' }} />
@@ -199,19 +199,19 @@ function HomepageEditor() {
 
       {/* 6 · Bestsellers */}
       <section className="mb-12">
-        <SectionTitle n="6" title="Bestsellers carousel" note="The looping product carousel. Curate the exact products and override photos." />
+        <SectionTitle n="5" title="Bestsellers carousel" note="The looping product carousel. Curate the exact products and override photos." />
         <BestsellerManager />
       </section>
 
       {/* 7 · Editorial Strip */}
       <section className="mb-12">
-        <SectionTitle n="7" title={'Editorial Strip — "Every detail, intentional."'} note="Photos & videos rotate every 5s. Add as many as you like — delete any you don't want." />
+        <SectionTitle n="6" title={'Editorial Strip — "Every detail, intentional."'} note="Photos & videos rotate every 5s. Add as many as you like — delete any you don't want." />
         <div className="max-w-2xl"><EditorialMediaGallery /></div>
       </section>
 
       {/* 8 · Reviews */}
       <section className="mb-12">
-        <SectionTitle n="8" title="Reviews" note="The testimonials block near the bottom of the homepage." />
+        <SectionTitle n="7" title="Reviews" note="The testimonials block near the bottom of the homepage." />
         <div className="bg-white border border-cream-200 rounded-lg p-3 mb-5">
           <p className="font-sans text-[10px] text-bark-400 mb-2">Section background (optional)</p>
           <SiteImageUploader slotKey="home.testimonials_bg" context="Background behind the homepage reviews/testimonials section" ratio="21:9" hint="soft, light lifestyle · ~2000×860" compact />
@@ -235,13 +235,13 @@ function HomepageEditor() {
 
       {/* 9 · Final CTA */}
       <section className="mb-12">
-        <SectionTitle n="9" title="Final CTA background" note="Dark full-width section near the bottom — image shows at ~40% opacity. Add several to cross-fade." />
+        <SectionTitle n="8" title="Final CTA background" note="Dark full-width section near the bottom — image shows at ~40% opacity. Add several to cross-fade." />
         <div className="max-w-md"><GallerySlot wide slot="box" label="CTA Background(s)" description="Cream box with ribbon — dark/moody works best. ~1600×900 (16:9)." /></div>
       </section>
 
       {/* 10 · Collections */}
       <section className="mb-12">
-        <SectionTitle n="10" title="Shop by Occasion — Collections" note="The occasion cards link to collections. Edit each collection's name, subtitle, and which products it includes." />
+        <SectionTitle n="9" title="Shop by Occasion — Collections" note="The occasion cards link to collections. Edit each collection's name, subtitle, and which products it includes." />
         <CollectionsEditor />
       </section>
 

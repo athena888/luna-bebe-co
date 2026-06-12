@@ -38,47 +38,50 @@ export default async function StoryPage() {
         {/* Hero image (optional, managed in Portal → Story; mobile crop supported) */}
         <SlotImage slotKey="story.hero" className="relative block w-full aspect-[4/3] sm:aspect-[21/9] overflow-hidden" imgClassName="w-full h-full object-cover" />
 
-        {/* Hero — background uploadable via Portal → Site Images → Story → Hero background */}
+        {/* Hero + Founder letter — one section, separated by a divider only.
+            Background uploadable via Portal → Story → Hero. */}
         <SlotBackground slotKey="story.hero_bg" scrim="bg-[#FBF7F0]/92" className="border-b border-cream-300">
-          <div className="max-w-3xl mx-auto px-6 py-10 sm:py-20 text-center">
+          {/* Hero heading */}
+          <div className="max-w-3xl mx-auto px-6 pt-10 sm:pt-20 pb-8 text-center">
             <LogoMark className="h-20 sm:h-32 w-auto mx-auto mb-4 sm:mb-6" style={{ color: '#574540' }} alt="Petite Lavande" />
             <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-4">{content.hero.eyebrow}</p>
             <h1
-              className="text-4xl sm:text-6xl text-bark-600 mb-6 leading-tight"
+              className="text-4xl sm:text-6xl text-bark-600 leading-tight"
               style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 400 }}
             >
               {content.hero.heading}
             </h1>
-            <div className="w-12 h-px bg-gold-400 mx-auto" />
           </div>
-        </SlotBackground>
 
-        {/* Founder letter */}
-        <SlotBackground slotKey="story.founder_bg" scrim="bg-[#FBF7F0]/90" className="border-b border-cream-300">
-        <div className="max-w-2xl mx-auto px-6 py-20">
-          {founder && (
-            <div className="float-none sm:float-right sm:ml-8 mb-6 w-full sm:w-56 shrink-0">
-              <div className="aspect-[3/4] overflow-hidden border border-cream-300">
-                <img src={founder.public_url} alt={founder.alt_text} className="w-full h-full object-cover" />
+          {/* Divider */}
+          <div className="w-12 h-px bg-gold-400 mx-auto" />
+
+          {/* Founder letter */}
+          <div className="max-w-2xl mx-auto px-6 pt-12 pb-20">
+            {founder && (
+              <div className="float-none sm:float-right sm:ml-8 mb-6 w-full sm:w-56 shrink-0">
+                <div className="aspect-[3/4] overflow-hidden border border-cream-300">
+                  <img src={founder.public_url} alt={founder.alt_text} className="w-full h-full object-cover" />
+                </div>
               </div>
+            )}
+            <div className="space-y-6">
+              <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400">{content.founder.eyebrow}</p>
+              {content.founder.paragraphs.map((para, i) => (
+                i === 0
+                  ? <p key={i} className="text-xl text-bark-600 leading-loose" style={{ fontFamily: 'var(--font-cormorant)' }}>{para}</p>
+                  : <p key={i} className="font-sans text-sm text-bark-500 leading-relaxed">{para}</p>
+              ))}
+              <p className="text-2xl text-bark-500" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>
+                {content.founder.signature}
+              </p>
             </div>
-          )}
-          <div className="space-y-6">
-            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400">{content.founder.eyebrow}</p>
-            {content.founder.paragraphs.map((para, i) => (
-              i === 0
-                ? <p key={i} className="text-xl text-bark-600 leading-loose" style={{ fontFamily: 'var(--font-cormorant)' }}>{para}</p>
-                : <p key={i} className="font-sans text-sm text-bark-500 leading-relaxed">{para}</p>
-            ))}
-            <p className="text-2xl text-bark-500" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>
-              {content.founder.signature}
-            </p>
           </div>
-        </div>
         </SlotBackground>
 
-        {/* Brand values */}
-        <div className="bg-[#3D2F28] border-t border-[#2e231d]">
+        {/* Brand values — dark by default; upload story.values_bg for a photo
+            background (the dark tint is then laid over it, tunable in admin). */}
+        <SlotBackground slotKey="story.values_bg" scrim="bg-[#3D2F28]/85" className="bg-[#3D2F28] border-t border-[#2e231d]">
           <div className="max-w-4xl mx-auto px-6 py-20">
             <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-cream-50/50 text-center mb-12">What We Stand For</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
@@ -88,8 +91,8 @@ export default async function StoryPage() {
                 return (
                   <div key={i} className="text-center">
                     {vi ? (
-                      <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden border border-cream-50/20">
-                        <img src={vi.public_url} alt={vi.alt_text} className="w-full h-full object-cover" />
+                      <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border border-cream-50/20 aspect-square">
+                        <img src={vi.public_url} alt={vi.alt_text} className="w-full h-full object-cover rounded-full" />
                       </div>
                     ) : (
                       <Icon size={26} strokeWidth={1.5} className="text-cream-50/50 mb-4 mx-auto" />
@@ -101,7 +104,7 @@ export default async function StoryPage() {
               })}
             </div>
           </div>
-        </div>
+        </SlotBackground>
 
         {/* Traced to the source */}
         <div className="border-t border-cream-300 bg-[#FBF7F0]">

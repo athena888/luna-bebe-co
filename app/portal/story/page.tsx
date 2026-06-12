@@ -107,6 +107,7 @@ export default function StoryPortal() {
         <div className="bg-white border border-cream-200 rounded-lg p-3">
           <p className="font-sans text-[10px] text-bark-400 mb-2">Values section background (optional)</p>
           <SiteImageUploader slotKey="story.values_bg" context="Background behind the What We Stand For section" ratio="16:9" hint="soft, airy background · ~2000×1130" compact />
+          <ScrimControl scrimKey="story.values_bg" defaultScrim={{ hex: '#3D2F28', opacity: 0.85 }} label="Background colour overlay" note="dark tint kept over any photo so the white text stays readable" />
         </div>
       </section>
 
