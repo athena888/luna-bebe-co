@@ -4,10 +4,14 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Printer, Sparkles, Edit2, Check, X, Loader, Plus, Trash2 } from 'lucide-react'
 import type { CardLine, CardItemContent, CardItemMap } from '@/lib/card-content'
-import { getAllProducts } from '@/lib/products'
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+function productImg(p: { id: string; image?: string | null }): string | null {
+  return p.image || (SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${p.id}.jpg` : null)
+}
 
 interface CardStyleData { id: string; name: string; image_url: string; size_label: string }
-interface ProductBasic { id: string; name: string; description: string; ingredients?: string; category: string }
+interface ProductBasic { id: string; name: string; description: string; ingredients?: string; category: string; image?: string | null }
 interface OrderData {
   id: string
   customer_name: string
@@ -95,8 +99,14 @@ function CardItem({
   onGenerate: () => void
   generating: boolean
 }) {
+  const img = productImg(product)
   return (
-    <div>
+    <div className="flex gap-3">
+      {img && (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img src={img} alt={product.name} className="w-12 h-12 rounded object-cover border border-[#d8c7a8] shrink-0" style={{ WebkitPrintColorAdjust: 'exact' } as React.CSSProperties} onError={e => { e.currentTarget.style.display = 'none' }} />
+      )}
+      <div className="min-w-0 flex-1">
       <h3 className="font-serif text-base text-bark-600 mb-1">{content.title}</h3>
       {content.lines.map((l, i) => (
         <p key={i}><span className="font-semibold">{l.k}</span> {l.v}</p>
@@ -109,6 +119,7 @@ function CardItem({
         <button onClick={onGenerate} disabled={generating} className="inline-flex items-center gap-1 text-[9px] tracking-[0.1em] uppercase text-gold-500 hover:text-gold-600 border border-gold-200 hover:border-gold-400 rounded px-2 py-0.5 transition-colors disabled:opacity-40">
           {generating ? <Loader size={9} className="animate-spin" /> : <Sparkles size={9} />} AI
         </button>
+      </div>
       </div>
     </div>
   )
@@ -143,8 +154,10 @@ function InsideCardContent() {
   const [editDraft, setEditDraft] = useState<CardItemContent | null>(null)
   const [generating, setGenerating] = useState<string | null>(null)
 
-  // All products list for the library view
-  const allProducts = getAllProducts()
+  // Library view uses the LIVE, currently-listed products (same source as
+  // /build) — not the static catalog — so obsolete items don't appear and the
+  // description/ingredients passed to AI are the real, current product details.
+  const [allProducts, setAllProducts] = useState<ProductBasic[]>([])
 
   useEffect(() => {
     const url = orderId
@@ -155,6 +168,18 @@ function InsideCardContent() {
       .then(d => { setItems(d.items ?? {}); setOrder(d.order ?? null) })
       .catch(() => {})
       .finally(() => setLoading(false))
+  }, [orderId])
+
+  // Live product catalog for the library (active products only).
+  useEffect(() => {
+    if (orderId) return
+    fetch('/api/products/all')
+      .then(r => r.json())
+      .then(d => {
+        const byCat = (d.byCategory ?? {}) as Record<string, ProductBasic[]>
+        setAllProducts(Object.values(byCat).flat())
+      })
+      .catch(() => {})
   }, [orderId])
 
   const cardStyle = order?.card_style_data
@@ -379,8 +404,12 @@ function InsideCardContent() {
               }
               return (
                 <div key={product.id} className="bg-white border border-cream-200 rounded-xl p-4">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div className="min-w-0">
+                  <div className="flex items-start gap-3 mb-2">
+                    {productImg(product) && (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={productImg(product)!} alt={product.name} className="w-14 h-14 rounded-lg object-cover border border-cream-200 shrink-0 bg-cream-100" onError={e => { e.currentTarget.style.visibility = 'hidden' }} />
+                    )}
+                    <div className="min-w-0 flex-1">
                       <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400">{product.category}</p>
                       <h3 className="font-serif text-base text-bark-600 truncate">{product.name}</h3>
                     </div>
