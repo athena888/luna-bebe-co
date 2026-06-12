@@ -34,7 +34,7 @@ export const IMAGE_SLOTS: ImageSlot[] = [
 
   // ── Build Your Box ──────────────────────────────────────────────────────────
   { key: 'build.header_bg',   label: 'Hero background',           group: 'Build Your Box', where: 'Tall hero at the very top of Build Your Box', ratio: '16:9', hint: 'Fills a tall hero — keep the subject centered · ~2400×1500', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1100×1400' }, scrimDefault: { hex: '#181716', opacity: 0.75 } },
-  { key: 'build.products_bg', label: 'Products area background',  group: 'Build Your Box', where: 'Background behind the product category list on /build', ratio: '16:9', hint: 'Soft, light — cards sit on top · ~2000×1130', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FBF7F0', opacity: 0.88 } },
+  { key: 'build.products_bg', label: 'Products area background',  group: 'Build Your Box', where: 'Background behind the product category list on /build', ratio: '16:9', hint: 'Soft, light — cards sit on top · ~2000×1130', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.80 } },
 
   // ── Corporate ──────────────────────────────────────────────────────────────
   { key: 'corporate.hero_bg', label: 'Hero background', group: 'Corporate', where: 'Background behind the "When your people become parents" hero', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.40 } },
