@@ -4,6 +4,14 @@ import { useState, useEffect } from 'react'
 import { ParallaxLayer } from './ParallaxLayer'
 
 type Img = { public_url: string; alt_text: string }
+type DbScrim = { hex: string; opacity: number }
+
+function hexToRgba(hex: string, opacity: number): string {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  return `rgba(${r},${g},${b},${opacity})`
+}
 
 // Renders an owner-managed image as a soft background behind a section's
 // content (page headers, footer). Fail-soft: when no image is set the section
@@ -16,6 +24,8 @@ type Img = { public_url: string; alt_text: string }
 //                   desktop only, reduced-motion-safe).
 // If a `${slotKey}.mobile` crop is uploaded it's shown on phones (< sm) while
 // the main image shows on larger screens — purely via responsive classes.
+// The scrim colour/opacity can be tuned live from Portal → Site Images; the
+// `scrim` prop is the fallback Tailwind class used before any DB value is saved.
 export function SlotBackground({
   slotKey,
   children,
@@ -35,18 +45,33 @@ export function SlotBackground({
 }) {
   const [web, setWeb] = useState<Img | null>(null)
   const [mobile, setMobile] = useState<Img | null>(null)
+  const [dbScrim, setDbScrim] = useState<DbScrim | null>(null)
 
   useEffect(() => {
     let alive = true
-    fetch(`/api/site-images?keys=${encodeURIComponent(slotKey)},${encodeURIComponent(slotKey + '.mobile')}`)
+    fetch(`/api/site-images?keys=${encodeURIComponent(slotKey)},${encodeURIComponent(slotKey + '.mobile')}&scrims=1`)
       .then(r => r.json())
-      .then(d => { if (alive) { setWeb(d.images?.[slotKey] ?? null); setMobile(d.images?.[`${slotKey}.mobile`] ?? null) } })
+      .then(d => {
+        if (!alive) return
+        setWeb(d.images?.[slotKey] ?? null)
+        setMobile(d.images?.[`${slotKey}.mobile`] ?? null)
+        const s = d.scrims?.[slotKey]
+        if (s?.hex && s?.opacity != null) setDbScrim(s)
+      })
       .catch(() => {})
     return () => { alive = false }
   }, [slotKey])
 
   const has = !!(web || mobile)
   const content = typeof children === 'function' ? children(has) : children
+
+  // Build the scrim element — inline style when DB value present, Tailwind class otherwise.
+  const scrimEl = (() => {
+    if (dbScrim) {
+      return <div className="absolute inset-0" style={{ backgroundColor: hexToRgba(dbScrim.hex, dbScrim.opacity) }} aria-hidden="true" />
+    }
+    return scrim ? <div className={`absolute inset-0 ${scrim}`} aria-hidden="true" /> : null
+  })()
 
   // Natural: image(s) render in-flow at full height; text overlays centered.
   if (has && fit === 'natural') {
@@ -63,7 +88,7 @@ export function SlotBackground({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={(web ?? mobile)!.public_url} alt={(web ?? mobile)!.alt_text} className="block w-full h-auto" aria-hidden="true" />
         )}
-        {scrim && <div className={`absolute inset-0 ${scrim}`} aria-hidden="true" />}
+        {scrimEl}
         <div className="absolute inset-0 flex items-center justify-center p-6 text-center">{content}</div>
       </div>
     )
@@ -91,7 +116,7 @@ export function SlotBackground({
       {has && (
         <>
           {parallax && fit === 'cover' ? <ParallaxLayer>{layer}</ParallaxLayer> : layer}
-          {scrim && <div className={`absolute inset-0 ${scrim}`} aria-hidden="true" />}
+          {scrimEl}
         </>
       )}
       <div className="relative">{content}</div>

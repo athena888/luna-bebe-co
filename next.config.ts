@@ -25,6 +25,8 @@ const nextConfig: NextConfig = {
         destination: '/products/mulberry-silk-sleep-mask',
         permanent: true,
       },
+      { source: '/guide', destination: '/gifts', permanent: true },
+      { source: '/wishlist', destination: '/build', permanent: true },
     ]
   },
   async headers() {

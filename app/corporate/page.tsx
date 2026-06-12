@@ -40,7 +40,7 @@ export default function CorporatePage() {
       <main className="bg-cream-50 min-h-screen">
 
         {/* Hero — background uploadable via Portal → Site Images → Corporate */}
-        <SlotBackground slotKey="corporate.hero_bg" scrim="bg-[#FBF7F0]/90" className="border-b border-cream-300">
+        <SlotBackground slotKey="corporate.hero_bg" className="border-b border-cream-300">
           <section className="px-6 py-20 sm:py-28 text-center">
             <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-5">Corporate &amp; Team Gifting</p>
             <h1 className="font-serif text-4xl sm:text-6xl text-bark-600 leading-tight max-w-3xl mx-auto">

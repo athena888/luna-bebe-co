@@ -103,19 +103,34 @@ export default async function StoryPage() {
           </div>
         </div>
 
-        {/* Only the best for her */}
+        {/* Traced to the source */}
         <div className="border-t border-cream-300 bg-[#FBF7F0]">
           <div className="max-w-2xl mx-auto px-6 py-20">
-            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">Only the best for her</p>
-            <p className="font-sans text-sm text-bark-500 leading-relaxed mb-5">
-              The aesthetic comes from old French apothecaries — kraft paper, glass tubes, wax seals, twine, dried herbs. A time when remedies came with care, and care came with beauty.
-            </p>
-            <p
-              className="text-2xl text-bark-500"
-              style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}
-            >
-              Everything tagged. Everything traceable. Everything chosen the way a daughter would choose for her own mother.
-            </p>
+            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-3">{content.traced.eyebrow}</p>
+            <h2 className="font-serif text-2xl sm:text-3xl text-bark-600 mb-5 leading-snug">{content.traced.heading}</h2>
+            <p className="font-sans text-sm text-bark-500 leading-relaxed">{content.traced.body}</p>
+          </div>
+        </div>
+
+        {/* Why simple */}
+        <div className="border-t border-cream-300 bg-[#F5EFE8]">
+          <div className="max-w-2xl mx-auto px-6 py-20">
+            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">{content.whySimple.eyebrow}</p>
+            <p className="font-sans text-sm text-bark-500 leading-relaxed mb-5">{content.whySimple.body}</p>
+            <p className="text-2xl text-bark-500" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.whySimple.tagline}</p>
+          </div>
+        </div>
+
+        {/* French apothecary soul */}
+        <div className="border-t border-cream-300 bg-[#FBF7F0]">
+          <div className="max-w-2xl mx-auto px-6 py-20">
+            <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">{content.french.eyebrow}</p>
+            {content.french.paragraphs.map((para, i) => (
+              i === 0
+                ? <p key={i} className="font-sans text-sm text-bark-500 leading-relaxed mb-4">{para}</p>
+                : <p key={i} className="font-sans text-sm text-bark-400 leading-relaxed mb-4">{para}</p>
+            ))}
+            <p className="text-2xl text-bark-500" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.french.tagline}</p>
           </div>
         </div>
 

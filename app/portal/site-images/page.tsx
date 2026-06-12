@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Loader, Upload, Check, Sparkles, Trash2 } from 'lucide-react'
+import { Loader, Upload, Check, Sparkles, Trash2, RotateCcw } from 'lucide-react'
 import { IMAGE_SLOTS, slotsByGroup, type ImageSlot } from '@/lib/image-slots'
 import { resizeImage } from '@/lib/image-resize'
 
 interface Current { public_url: string; alt_text: string }
+interface ScrimVal { hex: string; opacity: number }
 
 // One upload tile for a single slot key (used for both the web image and the
 // optional `${key}.mobile` crop).
@@ -135,7 +136,115 @@ function SlotUploader({ slotKey, context, ratio, hint, current, onSaved, compact
   )
 }
 
-function SlotCard({ slot, images, onSaved }: { slot: ImageSlot; images: Record<string, Current>; onSaved: (key: string, img: Current) => void }) {
+function ScrimControl({ slotKey, defaultScrim, scrims, onSaved }: {
+  slotKey: string
+  defaultScrim: ScrimVal
+  scrims: Record<string, ScrimVal>
+  onSaved: (key: string, val: ScrimVal | null) => void
+}) {
+  const stored = scrims[slotKey]
+  const current = stored ?? defaultScrim
+  const [hex, setHex] = useState(current.hex)
+  const [pct, setPct] = useState(Math.round(current.opacity * 100))
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Sync if parent scrims map updates (e.g. on initial load)
+  useEffect(() => {
+    const s = scrims[slotKey] ?? defaultScrim
+    setHex(s.hex)
+    setPct(Math.round(s.opacity * 100))
+  }, [scrims, slotKey, defaultScrim])
+
+  function schedule(newHex: string, newPct: number) {
+    if (timer.current) clearTimeout(timer.current)
+    timer.current = setTimeout(() => persist(newHex, newPct), 600)
+  }
+
+  async function persist(h: string, p: number) {
+    setSaving(true)
+    try {
+      await fetch('/api/portal/site-scrims', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slotKey, hex: h, opacity: p / 100 }),
+      })
+      onSaved(slotKey, { hex: h, opacity: p / 100 })
+      setSaved(true); setTimeout(() => setSaved(false), 1500)
+    } finally { setSaving(false) }
+  }
+
+  async function reset() {
+    setHex(defaultScrim.hex)
+    setPct(Math.round(defaultScrim.opacity * 100))
+    await fetch(`/api/portal/site-scrims?slotKey=${encodeURIComponent(slotKey)}`, { method: 'DELETE' })
+    onSaved(slotKey, null)
+  }
+
+  const isCustom = stored != null
+
+  return (
+    <div className="mt-4 pt-4 border-t border-cream-200">
+      <div className="flex items-center justify-between mb-2">
+        <p className="font-sans text-[10px] tracking-[0.12em] uppercase text-bark-500">
+          Colour overlay <span className="normal-case tracking-normal text-bark-400">— tint over the image</span>
+        </p>
+        <div className="flex items-center gap-2">
+          {saving && <Loader size={11} className="animate-spin text-bark-400" />}
+          {saved && !saving && <span className="inline-flex items-center gap-1 font-sans text-[10px] text-sage-600"><Check size={10} /> Saved</span>}
+          {isCustom && (
+            <button onClick={reset} title="Reset to default" className="inline-flex items-center gap-1 font-sans text-[9px] tracking-[0.1em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
+              <RotateCcw size={10} /> Reset
+            </button>
+          )}
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        {/* Colour swatch / picker */}
+        <label className="relative cursor-pointer shrink-0" title="Pick colour">
+          <div className="w-8 h-8 rounded border border-cream-300 overflow-hidden">
+            <div className="w-full h-full" style={{ backgroundColor: hex }} />
+          </div>
+          <input
+            type="color"
+            value={hex}
+            onChange={e => { setHex(e.target.value); schedule(e.target.value, pct) }}
+            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+          />
+        </label>
+        {/* Hex input */}
+        <input
+          value={hex}
+          onChange={e => { if (/^#[0-9a-fA-F]{0,6}$/.test(e.target.value)) { setHex(e.target.value); if (e.target.value.length === 7) schedule(e.target.value, pct) } }}
+          className="w-24 px-2 py-1.5 border border-cream-300 rounded font-mono text-xs text-bark-600 focus:outline-none focus:border-bark-400"
+          placeholder="#FBF7F0"
+        />
+        {/* Opacity slider */}
+        <div className="flex-1 flex items-center gap-2 min-w-0">
+          <input
+            type="range" min={0} max={100} value={pct}
+            onChange={e => { setPct(+e.target.value); schedule(hex, +e.target.value) }}
+            className="flex-1 accent-bark-600"
+          />
+          <span className="font-sans text-[11px] text-bark-500 w-9 text-right shrink-0">{pct}%</span>
+        </div>
+      </div>
+      {/* Live preview swatch */}
+      <div className="mt-2 h-6 rounded overflow-hidden border border-cream-200 relative bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGElEQVQYlWNgYGCQwoKxgqGgcJA5h5yTAAAI4AApTKdiVgAAAABJRU5ErkJggg==')] bg-repeat">
+        <div className="absolute inset-0" style={{ backgroundColor: hex, opacity: pct / 100 }} />
+      </div>
+    </div>
+  )
+}
+
+function SlotCard({ slot, images, scrims, onSaved, onScrimSaved }: {
+  slot: ImageSlot
+  images: Record<string, Current>
+  scrims: Record<string, ScrimVal>
+  onSaved: (key: string, img: Current) => void
+  onScrimSaved: (key: string, val: ScrimVal | null) => void
+}) {
   return (
     <div className="bg-white border border-cream-300 rounded-xl p-4">
       <p className="font-sans text-sm font-medium text-bark-600">{slot.label}</p>
@@ -149,25 +258,40 @@ function SlotCard({ slot, images, onSaved }: { slot: ImageSlot; images: Record<s
           <SlotUploader slotKey={`${slot.key}.mobile`} context={`${slot.label} (mobile crop) — ${slot.where}`} ratio={slot.mobile.ratio} hint={slot.mobile.hint} current={images[`${slot.key}.mobile`]} onSaved={onSaved} compact />
         </div>
       )}
+      {slot.scrimDefault && (
+        <ScrimControl slotKey={slot.key} defaultScrim={slot.scrimDefault} scrims={scrims} onSaved={onScrimSaved} />
+      )}
     </div>
   )
 }
 
 export default function SiteImagesPage() {
   const [images, setImages] = useState<Record<string, Current>>({})
+  const [scrims, setScrims] = useState<Record<string, ScrimVal>>({})
   const [loading, setLoading] = useState(true)
   const groups = slotsByGroup()
 
   useEffect(() => {
-    fetch('/api/portal/site-images').then(r => r.json()).then(d => setImages(d.images ?? {})).catch(() => {}).finally(() => setLoading(false))
+    Promise.all([
+      fetch('/api/portal/site-images').then(r => r.json()).then(d => setImages(d.images ?? {})),
+      fetch('/api/portal/site-scrims').then(r => r.json()).then(d => setScrims(d.scrims ?? {})),
+    ]).catch(() => {}).finally(() => setLoading(false))
   }, [])
+
+  function handleScrimSaved(key: string, val: ScrimVal | null) {
+    setScrims(prev => {
+      const next = { ...prev }
+      if (val) next[key] = val; else delete next[key]
+      return next
+    })
+  }
 
   return (
     <div className="p-6 sm:p-8 max-w-6xl">
       <h1 className="font-serif text-3xl text-bark-600 mb-1">Site Images</h1>
       <p className="font-sans text-sm text-bark-400 mb-8 max-w-2xl">
         Standalone images across the site, grouped by the page they appear on. Each shows <strong>where it sits</strong> and a recommended size.
-        Wide slots also take an optional <strong>mobile crop</strong> shown on phones. <strong>Alt text is required</strong> (search &amp; screen readers).
+        Wide slots also take an optional <strong>mobile crop</strong> shown on phones. Slots with a colour overlay also show a <strong>colour + opacity</strong> control. <strong>Alt text is required</strong> (search &amp; screen readers).
         Home page photos &amp; copy are under <a href="/portal/home-content" className="text-gold-500 underline">Homepage</a>; the Story page under <a href="/portal/story" className="text-gold-500 underline">Story</a>.
       </p>
 
@@ -179,7 +303,7 @@ export default function SiteImagesPage() {
             <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-500 mb-4 pb-2 border-b border-cream-300">{group}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {slots.map(slot => (
-                <SlotCard key={slot.key} slot={slot} images={images} onSaved={(k, img) => setImages(prev => ({ ...prev, [k]: img }))} />
+                <SlotCard key={slot.key} slot={slot} images={images} scrims={scrims} onSaved={(k, img) => setImages(prev => ({ ...prev, [k]: img }))} onScrimSaved={handleScrimSaved} />
               ))}
             </div>
           </div>

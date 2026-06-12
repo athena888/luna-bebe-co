@@ -479,7 +479,7 @@ export default function BuildPage() {
         <div
           className="w-full py-12 space-y-8"
           style={productsBg ? {
-            backgroundImage: `linear-gradient(rgba(251,247,240,0.88), rgba(251,247,240,0.88)), url(${productsBg})`,
+            backgroundImage: `url(${productsBg})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           } : undefined}

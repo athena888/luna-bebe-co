@@ -5,7 +5,7 @@ import { resolveImageType } from '@/lib/media-type'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 
-const BRAND_GUIDE = `You write product copy for Petite Lavande — a luxury organic baby gift box company made in Seattle.
+const BRAND_GUIDE = `You write product copy for Petite Lavande — a luxury organic baby gift box company.
 
 Brand voice: warm but not saccharine. Quiet, not loud. Specific, not vague. Like a trusted friend, not a salesperson. Ingredients traced to source.
 
