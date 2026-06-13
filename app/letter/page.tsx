@@ -41,7 +41,8 @@ export default function CardPage() {
   }, [])
 
   const selectedStyle = styles.find(s => s.id === styleId) ?? null
-  const wordLimit = selectedStyle?.word_limit ?? 100
+  // Give writers room — at least 100 words regardless of the card's stored limit.
+  const wordLimit = Math.max(selectedStyle?.word_limit ?? 100, 100)
   const words = countWords(editedContent)
   const overLimit = words > wordLimit
 
@@ -116,11 +117,11 @@ export default function CardPage() {
             <p className="font-sans text-sm text-bark-400">Pick a card design and write your message — we&rsquo;ll print it and tuck it into the box.</p>
           </div>
 
-          {/* Card style picker */}
+          {/* Card style picker — whole card shown (portrait), swipe through them */}
           {styles.length > 0 && (
             <div className="mb-8">
-              <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-bark-400 mb-3">Choose a card design</p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-bark-400 mb-3">Choose a card design — swipe to see them all</p>
+              <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 -mx-4 px-4 sm:-mx-6 sm:px-6">
                 {styles.map(s => {
                   const active = s.id === styleId
                   return (
@@ -128,15 +129,16 @@ export default function CardPage() {
                       key={s.id}
                       type="button"
                       onClick={() => setStyleId(s.id)}
-                      className={`text-left overflow-hidden border transition-all ${active ? 'border-bark-600 ring-1 ring-bark-600' : 'border-cream-300 hover:border-bark-400'}`}
+                      className="snap-start shrink-0 w-40 sm:w-48 text-left"
                     >
-                      <div className="relative aspect-[3/2] bg-cream-100">
-                        <img src={s.image_url} alt={s.alt_text || s.name} className="w-full h-full object-cover" />
-                        {active && <span className="absolute top-2 right-2 bg-bark-600 text-white rounded-full p-1"><Check size={11} /></span>}
+                      {/* A6 portrait — show the WHOLE card (no crop) */}
+                      <div className={`relative bg-cream-100 border transition-all ${active ? 'border-bark-600 ring-2 ring-bark-600' : 'border-cream-300 hover:border-bark-400'}`} style={{ aspectRatio: '41 / 58' }}>
+                        <img src={s.image_url} alt={s.alt_text || s.name} className="absolute inset-0 w-full h-full object-contain" />
+                        {active && <span className="absolute top-2 right-2 bg-bark-600 text-white rounded-full p-1 z-10"><Check size={11} /></span>}
                       </div>
-                      <div className="p-2.5">
+                      <div className="pt-2">
                         <p className="font-sans text-xs font-medium text-bark-600 truncate">{s.name}</p>
-                        <p className="font-sans text-[10px] text-bark-400">{s.size_label || ''}{s.size_label ? ' · ' : ''}{s.word_limit} words max</p>
+                        <p className="font-sans text-[10px] text-bark-400">{s.size_label || ''}{s.size_label ? ' · ' : ''}{Math.max(s.word_limit, 100)} words max</p>
                       </div>
                     </button>
                   )
