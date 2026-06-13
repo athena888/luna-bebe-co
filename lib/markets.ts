@@ -26,10 +26,10 @@ export const MARKETS: Record<Locale, MarketConfig> = {
   'fr-FR': { locale: 'fr-FR', label: 'France (EUR)',          country: 'France',        currency: 'EUR', enabled: false, shipCountries: ['FR'], stripeLocale: 'fr' },
 }
 
-// Domain → locale. Future country domains map here (config, not code).
+// Country-specific domains FORCE their locale (priority over the cookie). The
+// generic .com is intentionally NOT listed, so on it the footer switcher /
+// pl_locale cookie chooses (falling back to Accept-Language, then en-US).
 export const DOMAIN_LOCALE: Record<string, Locale> = {
-  'petitelavande.com': 'en-US',
-  'www.petitelavande.com': 'en-US',
   'petitelavande.co.uk': 'en-GB',
   'www.petitelavande.co.uk': 'en-GB',
   // 'petitelavande.fr': 'fr-FR',
