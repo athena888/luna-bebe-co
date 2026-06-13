@@ -89,37 +89,29 @@ function ItemEditor({
   )
 }
 
-// ── Card item display (back of card) ─────────────────────────────────────────
+// ── Card item display (back of card) — words only, on-theme typography ────────
 function CardItem({
-  product, content, onEdit, onGenerate, generating,
+  content, onEdit, onGenerate, generating,
 }: {
-  product: ProductBasic
   content: CardItemContent
   onEdit: () => void
   onGenerate: () => void
   generating: boolean
 }) {
-  const img = productImg(product)
   return (
-    <div className="flex gap-3">
-      {img && (
-        /* eslint-disable-next-line @next/next/no-img-element */
-        <img src={img} alt={product.name} className="w-12 h-12 rounded object-cover border border-[#d8c7a8] shrink-0" style={{ WebkitPrintColorAdjust: 'exact' } as React.CSSProperties} onError={e => { e.currentTarget.style.display = 'none' }} />
-      )}
-      <div className="min-w-0 flex-1">
-      <h3 className="font-serif text-base text-bark-600 mb-1">{content.title}</h3>
+    <div>
+      <h3 className="font-serif text-[1.05rem] text-espresso mb-1 leading-snug">{content.title}</h3>
       {content.lines.map((l, i) => (
-        <p key={i}><span className="font-semibold">{l.k}</span> {l.v}</p>
+        <p key={i} className="text-bark-700 leading-snug"><span className="font-semibold text-espresso">{l.k}</span> {l.v}</p>
       ))}
-      {content.note && <p className="text-bark-500 mt-0.5">{content.note}</p>}
+      {content.note && <p className="font-serif italic text-bark-500 mt-1">{content.note}</p>}
       <div className="print:hidden flex gap-1 mt-1.5">
         <button onClick={onEdit} className="inline-flex items-center gap-1 text-[9px] tracking-[0.1em] uppercase text-bark-400 hover:text-bark-600 border border-cream-300 hover:border-bark-400 rounded px-2 py-0.5 transition-colors">
           <Edit2 size={9} /> Edit
         </button>
-        <button onClick={onGenerate} disabled={generating} className="inline-flex items-center gap-1 text-[9px] tracking-[0.1em] uppercase text-gold-500 hover:text-gold-600 border border-gold-200 hover:border-gold-400 rounded px-2 py-0.5 transition-colors disabled:opacity-40">
-          {generating ? <Loader size={9} className="animate-spin" /> : <Sparkles size={9} />} AI
+        <button onClick={onGenerate} disabled={generating} title="Refine the existing wording (doesn't start from scratch)" className="inline-flex items-center gap-1 text-[9px] tracking-[0.1em] uppercase text-gold-500 hover:text-gold-600 border border-gold-200 hover:border-gold-400 rounded px-2 py-0.5 transition-colors disabled:opacity-40">
+          {generating ? <Loader size={9} className="animate-spin" /> : <Sparkles size={9} />} Refine
         </button>
-      </div>
       </div>
     </div>
   )
@@ -185,9 +177,18 @@ function InsideCardContent() {
   const cardStyle = order?.card_style_data
   const sizeLabel = cardStyle?.size_label || '5 × 7 in (folded)'
 
-  // Card face background — kraft default or card style image
+  // Parse the physical card dimensions so the template + print page match it.
+  const sizeMatch = sizeLabel.match(/([\d.]+)\s*[×x]\s*([\d.]+)\s*in/i)
+  const cardW = sizeMatch ? parseFloat(sizeMatch[1]) : 5
+  const cardH = sizeMatch ? parseFloat(sizeMatch[2]) : 7
+  const folded = /folded/i.test(sizeLabel)
+
+  // Card face background — when a style is chosen, the actual card design IS the
+  // background (no kraft wash), so the print combines artwork + words.
   const faceClass = cardStyle ? 'bg-cover bg-center' : ''
-  const faceStyle = cardStyle ? { backgroundImage: `url(${cardStyle.image_url})` } : {}
+  const faceStyle = cardStyle
+    ? { backgroundImage: `url(${cardStyle.image_url})`, aspectRatio: `${cardW} / ${cardH}` }
+    : { backgroundColor: '#f3ecdc', aspectRatio: `${cardW} / ${cardH}` }
 
   // Products to display on back of card
   const displayProducts: ProductBasic[] = order?.selected_items?.length
@@ -210,7 +211,10 @@ function InsideCardContent() {
     setEditDraft(null)
   }
 
-  async function generateContent(product: ProductBasic) {
+  // From an order, "Refine" passes the EXISTING content so the AI improves what's
+  // there rather than regenerating from scratch. In the library (no order, no
+  // existing) it generates fresh.
+  async function generateContent(product: ProductBasic, existing?: CardItemContent) {
     setGenerating(product.id)
     try {
       const res = await fetch('/api/portal/card-content/generate', {
@@ -222,6 +226,7 @@ function InsideCardContent() {
           description: product.description,
           ingredients: product.ingredients,
           category: product.category,
+          existing: existing && existing.lines.length ? existing : undefined,
         }),
       })
       const data = await res.json()
@@ -267,7 +272,10 @@ function InsideCardContent() {
           <p className="font-sans text-xs text-bark-400 mt-2 max-w-2xl">
             Front uses the <strong>{order.letter_content ? "customer's personal letter" : "standard note"}</strong>.
             Back shows only the {displayProducts.length} item{displayProducts.length !== 1 ? 's' : ''} in this order.
-            Front and back print on separate pages — recommend <strong>{sizeLabel}</strong> paper each.
+            Prints at the card&rsquo;s actual size (<strong>{cardW} × {cardH} in</strong>){cardStyle ? ', with the chosen card design as the background' : ''}.
+            {folded
+              ? ' It’s a folded card — print the front (outside) and the inside (message + items) as the two pages and fold along the centre.'
+              : ' Front and back print as two separate pages.'}
           </p>
         )}
         {!order && (
@@ -285,21 +293,22 @@ function InsideCardContent() {
             Front — {sizeLabel}
           </p>
           <article
-            className={`card-face relative rounded-lg border border-[#d8c7a8] p-10 sm:p-14 overflow-hidden ${faceClass}`}
+            className={`card-face relative rounded-lg border border-[#d8c7a8] p-8 sm:p-12 overflow-hidden flex flex-col justify-center ${faceClass}`}
             style={{ backgroundColor: '#f3ecdc', ...faceStyle }}
           >
-            {/* Semi-transparent kraft overlay when a card style is active */}
+            {/* Light wash over the card artwork so the design still reads but
+                the words stay legible (the print combines artwork + text). */}
             {cardStyle && (
-              <div className="absolute inset-0 bg-[#f3ecdc]/80 pointer-events-none" style={{ WebkitPrintColorAdjust: 'exact' } as React.CSSProperties} />
+              <div className="absolute inset-0 bg-[#f5efe1]/45 pointer-events-none" style={{ WebkitPrintColorAdjust: 'exact' } as React.CSSProperties} />
             )}
             <div className="relative">
               {order?.letter_content ? (
                 /* Customer's personal letter */
                 <>
-                  <p className="font-serif italic text-2xl text-bark-600 text-center mb-8">
+                  <p className="font-serif italic text-2xl text-espresso text-center mb-8">
                     {order.recipient_name ? `Dear ${order.recipient_name},` : 'To You,'}
                   </p>
-                  <div className="space-y-4 font-sans text-[15px] text-bark-700 leading-relaxed max-w-xl mx-auto whitespace-pre-line">
+                  <div className="space-y-4 font-cormorant text-[17px] text-bark-700 leading-relaxed max-w-xl mx-auto whitespace-pre-line text-center">
                     {order.letter_content}
                   </div>
                   {order.customer_name && (
@@ -319,14 +328,14 @@ function InsideCardContent() {
             Back — {sizeLabel}
           </p>
           <article
-            className={`card-face relative rounded-lg border border-[#d8c7a8] p-10 sm:p-14 overflow-hidden ${faceClass}`}
+            className={`card-face relative rounded-lg border border-[#d8c7a8] p-8 sm:p-12 overflow-hidden flex flex-col justify-center ${faceClass}`}
             style={{ backgroundColor: '#f3ecdc', ...faceStyle }}
           >
             {cardStyle && (
-              <div className="absolute inset-0 bg-[#f3ecdc]/80 pointer-events-none" />
+              <div className="absolute inset-0 bg-[#f5efe1]/55 pointer-events-none" style={{ WebkitPrintColorAdjust: 'exact' } as React.CSSProperties} />
             )}
             <div className="relative">
-              <h2 className="font-serif text-2xl text-bark-600 text-center mb-1">What&rsquo;s in Your Box</h2>
+              <h2 className="font-serif text-2xl text-espresso text-center mb-1">What&rsquo;s in Your Box</h2>
               <p className="font-serif italic text-bark-400 text-center text-sm mb-8">Each item chosen with care. Each ingredient traced to its source.</p>
 
               {order ? (
@@ -351,10 +360,9 @@ function InsideCardContent() {
                       return (
                         <CardItem
                           key={product.id}
-                          product={product}
                           content={content}
                           onEdit={() => { setEditingId(product.id); setEditDraft(content) }}
-                          onGenerate={() => generateContent(product)}
+                          onGenerate={() => generateContent(product, content)}
                           generating={generating === product.id}
                         />
                       )
@@ -448,9 +456,13 @@ function InsideCardContent() {
 
       <style jsx global>{`
         @media print {
+          /* Print at the actual card size so the template matches the physical card. */
+          @page { size: ${cardW}in ${cardH}in; margin: 0.25in; }
           aside, header, .print\\:hidden { display: none !important; }
           main { padding: 0 !important; }
           .card-face {
+            width: 100% !important;
+            aspect-ratio: auto !important;
             break-inside: avoid;
             page-break-after: always;
             border: none !important;
