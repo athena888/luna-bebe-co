@@ -15,8 +15,8 @@ export interface MarketConfig {
   country: string               // "United States"
   currency: Currency
   enabled: boolean              // false ⇒ browse-only + waitlist banner, no checkout
-  shipCountries: string[]       // ISO-3166 alpha-2 ship-to allowlist for Stripe
-  stripeLocale: string          // Stripe Checkout `locale`
+  shipCountries: ('US' | 'GB' | 'FR')[]   // ISO-3166 ship-to allowlist (Stripe)
+  stripeLocale: 'en' | 'en-GB' | 'fr'     // Stripe Checkout `locale`
 }
 
 // Initial state: only en-US is live. en-GB and fr-FR are scaffolded (enabled:false).

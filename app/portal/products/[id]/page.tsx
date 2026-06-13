@@ -7,6 +7,7 @@ import { getAllProducts, CATEGORY_LABELS, CATEGORY_ORDER } from '@/lib/products'
 import { PRODUCT_TAGS } from '@/lib/product-tags'
 import type { ProductCategory } from '@/types'
 import { resizeImage } from '@/lib/image-resize'
+import { ProductPrices } from '@/components/portal/ProductPrices'
 import type { CertDef, ProductCert } from '@/lib/certifications'
 import { ArrowLeft, Upload, Trash2, Star, Loader, Check, Plus, Minus, X, ShieldCheck, Wand2, Sparkles } from 'lucide-react'
 
@@ -828,6 +829,9 @@ export default function ProductDetailPage() {
                   />
                 </div>
               </div>
+              {product?.id && (
+                <ProductPrices productId={product.id} basePriceCents={product.price} />
+              )}
               <div>
                 <label className={labelCls}>Category</label>
                 <select

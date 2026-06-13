@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { VatNotice } from '@/components/ui/VatNotice'
 import { SHIPPING, BOX_BASE_PRICE } from '@/lib/products'
 import type { BoxSelection, ShippingType } from '@/types'
 import { Lock } from 'lucide-react'
@@ -324,6 +325,7 @@ export default function CheckoutPage() {
                     <div className="flex justify-between font-sans text-sm text-bark-600 pt-2 border-t border-cream-200">
                       <span>Total</span><span>{formatPrice(total)}</span>
                     </div>
+                    <VatNotice className="mt-3" />
                   </div>
 
                   {/* Promo code */}

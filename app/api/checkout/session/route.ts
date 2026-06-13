@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
 import { BOX_BASE_PRICE, SHIPPING } from '@/lib/products'
+import { resolveLocale, marketFor, LOCALE_COOKIE } from '@/lib/markets'
+import { getProductPrices, BOX_BASE_BY_CURRENCY, SHIPPING_BY_CURRENCY } from '@/lib/pricing'
 import type { Product, ShippingType } from '@/types'
 
 export async function POST(req: NextRequest) {
@@ -55,39 +57,59 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    // Resolve the active market (domain → cookie → Accept-Language). Block
+    // checkout for markets that aren't live yet.
+    const locale = resolveLocale({
+      host: req.headers.get('host'),
+      cookie: req.cookies.get(LOCALE_COOKIE)?.value ?? null,
+      acceptLanguage: req.headers.get('accept-language'),
+    })
+    const market = marketFor(locale)
+    if (!market.enabled) {
+      return NextResponse.json({ error: `Checkout isn't available in ${market.country} yet.` }, { status: 403 })
+    }
+    const currency = market.currency
+    const stripeCurrency = currency.toLowerCase()
+
     const shippingOption = SHIPPING[shippingType]
+
+    // Per-currency amounts. USD uses the existing static prices (identical to
+    // before); other currencies require explicit product_prices rows.
+    const boxBase = currency === 'USD' ? BOX_BASE_PRICE : BOX_BASE_BY_CURRENCY[currency]
+    const shipAmount = currency === 'USD' ? shippingOption.price : SHIPPING_BY_CURRENCY[currency][shippingType]
+    const priceMap = currency === 'USD' ? {} : await getProductPrices(selectedItems.map(i => i.id), currency)
+
+    const itemLineItems: Array<{ price_data: { currency: string; product_data: { name: string; description?: string }; unit_amount: number }; quantity: number }> = []
+    for (const item of selectedItems) {
+      const v = item as Product & { selectedColor?: string; selectedSize?: string; selectedStyle?: string; qty?: number }
+      const unit = currency === 'USD' ? item.price : priceMap[item.id]
+      if (unit == null) {
+        return NextResponse.json({ error: `"${item.name}" isn't available in ${market.country} yet.` }, { status: 409 })
+      }
+      const stylePart = v.selectedStyle ? ` · ${v.selectedStyle}` : ''
+      const variantSuffix = v.selectedColor && v.selectedSize ? ` — ${v.selectedColor} · ${v.selectedSize}${stylePart}` : ''
+      itemLineItems.push({
+        price_data: { currency: stripeCurrency, product_data: { name: `${item.name}${variantSuffix}`, description: item.description }, unit_amount: unit },
+        quantity: Math.max(1, Math.round(v.qty ?? 1)),
+      })
+    }
 
     // Build line items for Stripe
     const lineItems = [
       {
         price_data: {
-          currency: 'usd',
+          currency: stripeCurrency,
           product_data: { name: 'Petite Lavande Box Experience', description: 'Premium magnetic box, satin ribbon, wax seal, dried lavender, personalized printed card' },
-          unit_amount: BOX_BASE_PRICE,
+          unit_amount: boxBase,
         },
         quantity: 1,
       },
-      ...selectedItems.map((item) => {
-        const v = item as Product & { selectedColor?: string; selectedSize?: string; selectedStyle?: string; qty?: number }
-        const stylePart = v.selectedStyle ? ` · ${v.selectedStyle}` : ''
-        const variantSuffix = v.selectedColor && v.selectedSize ? ` — ${v.selectedColor} · ${v.selectedSize}${stylePart}` : ''
-        return {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: `${item.name}${variantSuffix}`,
-              description: item.description,
-            },
-            unit_amount: item.price,
-          },
-          quantity: Math.max(1, Math.round(v.qty ?? 1)),
-        }
-      }),
+      ...itemLineItems,
       {
         price_data: {
-          currency: 'usd',
+          currency: stripeCurrency,
           product_data: { name: shippingOption.label, description: shippingOption.days },
-          unit_amount: shippingOption.price,
+          unit_amount: shipAmount,
         },
         quantity: 1,
       },
@@ -132,21 +154,28 @@ export async function POST(req: NextRequest) {
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
-    // Create Stripe checkout session
+    // Create Stripe checkout session. Payment methods are automatic (Stripe
+    // shows whatever's enabled in the dashboard for this currency/region —
+    // card, plus Klarna/iDEAL/Bancontact etc. where applicable). Stripe Tax is
+    // behind an env flag (enable only once VAT registrations exist).
+    const taxEnabled = process.env.STRIPE_TAX_ENABLED === 'true'
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
+      locale: market.stripeLocale,
       customer_email: shippingAddress.email,
-      shipping_address_collection: { allowed_countries: ['US'] },
+      shipping_address_collection: { allowed_countries: market.shipCountries },
       allow_promotion_codes: !promoId,
       ...(promoId ? { discounts: [{ promotion_code: promoId }] } : {}),
+      ...(taxEnabled ? { automatic_tax: { enabled: true } } : {}),
       success_url: `${baseUrl}/confirmation?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/checkout`,
       metadata: {
         order_id: order.id,
         tracking_number: trackingNumber,
         recipient_name: recipientName || '',
+        locale,
+        currency,
       },
     })
 

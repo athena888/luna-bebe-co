@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Button } from '@/components/ui/Button'
+import { VatNotice } from '@/components/ui/VatNotice'
 import { CheckCircle, Package, Pen, Truck, Phone } from 'lucide-react'
 
 const NEXT_STEPS = [
@@ -52,6 +53,7 @@ function ConfirmationInner() {
               Order reference: <span className="font-medium text-bark-600">#{orderId}</span>
             </p>
           )}
+          <VatNotice className="max-w-md mx-auto mb-8 -mt-4" />
 
           <div className="bg-cream-50 rounded-2xl border border-cream-200 p-6 sm:p-8 text-left mb-8">
             <h2 className="font-serif text-xl text-bark-600 mb-6 text-center">What Happens Next</h2>

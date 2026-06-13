@@ -11,6 +11,7 @@ import { getSiteImage } from "@/lib/site-images";
 import { CONTACT_EMAIL } from "@/lib/site-config";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import { MarketGate } from "@/components/ui/MarketGate";
 
 const dancing = Dancing_Script({ subsets: ["latin"], variable: "--font-dancing", display: "swap" });
 const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["300", "400", "500"], style: ["normal", "italic"], variable: "--font-cormorant", display: "swap" });
@@ -96,6 +97,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           url: BASE,
         }} />
         <NextIntlClientProvider messages={messages}>
+          <MarketGate />
           {children}
         </NextIntlClientProvider>
         <Suspense fallback={null}><UTMCapture /></Suspense>
