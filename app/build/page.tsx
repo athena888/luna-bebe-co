@@ -214,7 +214,6 @@ export default function BuildPage() {
   const [pickStyle, setPickStyle] = useState<string | null>(null)
   const [modalLoading, setModalLoading] = useState(false)
   const [lightbox, setLightbox] = useState<string | null>(null)
-  const [checkoutNotice, setCheckoutNotice] = useState(false)
   const [heroImg, setHeroImg] = useState<string | null>(null)
   const [heroImgMobile, setHeroImgMobile] = useState<string | null>(null)
   const [productsBg, setProductsBg] = useState<string | null>(null)
@@ -640,23 +639,12 @@ export default function BuildPage() {
           </div>
           <p className="font-sans text-[10px] text-bark-400/60 mb-4">Box fee &amp; shipping calculated at checkout</p>
           <button
-            onClick={() => { if (hasItems) setCheckoutNotice(true) }}
+            onClick={handleCheckout}
             disabled={!hasItems}
             className="w-full bg-bark-700 text-cream-50 font-sans text-[11px] tracking-[0.25em] uppercase py-4 hover:bg-bark-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Check Out
           </button>
-          {checkoutNotice && (
-            <div className="mt-3 border border-cream-300 bg-cream-50 px-4 py-3 text-center">
-              <p className="font-sans text-[11px] tracking-[0.1em] text-bark-600 leading-relaxed">
-                We&rsquo;re launching soon &mdash; follow{' '}
-                <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">@petitelavandeco</a>
-                {' '}&amp;{' '}
-                <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">Facebook</a>
-                {' '}for the announcement.
-              </p>
-            </div>
-          )}
         </div>
       </div>
 
