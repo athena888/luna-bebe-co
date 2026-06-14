@@ -17,6 +17,8 @@ export interface Contact {
   company_size: string | null
   needs: string | null
   gifts_per_year: string | null
+  first_name: string | null
+  outreach_enrolled: boolean
   created_at: string
   updated_at: string
 }
@@ -321,6 +323,18 @@ export async function getSuppressedSet(): Promise<Set<string>> {
 export async function isSuppressed(email: string): Promise<boolean> {
   const { data } = await supabaseAdmin.from('suppression').select('email').eq('email', email.trim().toLowerCase()).maybeSingle()
   return Boolean(data)
+}
+
+/** Edit the few fields the cold-outreach sender needs (from the portal). */
+export async function updateContactFields(
+  id: string,
+  patch: { outreach_enrolled?: boolean; first_name?: string | null; company?: string | null },
+): Promise<void> {
+  const row: Record<string, unknown> = { updated_at: new Date().toISOString() }
+  if (patch.outreach_enrolled !== undefined) row.outreach_enrolled = patch.outreach_enrolled
+  if (patch.first_name !== undefined) row.first_name = patch.first_name?.trim() || null
+  if (patch.company !== undefined) row.company = patch.company?.trim() || null
+  await supabaseAdmin.from('contacts').update(row).eq('id', id)
 }
 
 // A contact eligible for a cold send right now: either never emailed, or its

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getNeedsAttention, getContacts, resolveFlag, getQuarantine, reviewQuarantine } from '@/lib/outreach'
+import { getNeedsAttention, getContacts, resolveFlag, getQuarantine, reviewQuarantine, updateContactFields } from '@/lib/outreach'
+import { planOutreach } from '@/lib/outreach-send'
 
 // Admin-guarded by middleware (/api/portal/*). Powers the Outreach screen.
 export async function GET(req: NextRequest) {
@@ -17,11 +18,27 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { action, flagId, id } = await req.json()
+    const body = await req.json()
+    const { action, flagId, id } = body
     if (action === 'resolve' && flagId) { await resolveFlag(flagId); return NextResponse.json({ ok: true }) }
     if (action === 'review' && id) { await reviewQuarantine(id); return NextResponse.json({ ok: true }) }
+    if (action === 'update' && body.contactId) {
+      await updateContactFields(body.contactId, {
+        outreach_enrolled: body.outreach_enrolled,
+        first_name: body.first_name,
+        company: body.company,
+      })
+      return NextResponse.json({ ok: true })
+    }
+    if (action === 'preview') {
+      // Same planner the cron uses — shows exactly what would send, no email sent.
+      const cap = Math.max(0, Number(process.env.OUTREACH_DAILY_CAP) || 25)
+      const plan = await planOutreach(cap)
+      return NextResponse.json({ ok: true, cap, ...plan })
+    }
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
-  } catch {
+  } catch (e) {
+    console.error('outreach POST error:', e)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }

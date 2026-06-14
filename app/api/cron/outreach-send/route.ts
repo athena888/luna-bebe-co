@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { resolveMx } from 'node:dns/promises'
-import { getContactsDueForOutreach, getSuppressedSet, logOutboundEmail, emailDomain } from '@/lib/outreach'
-import { templateForTrack, renderTemplate, withFooter } from '@/lib/outreach-templates'
+import { logOutboundEmail } from '@/lib/outreach'
+import { planOutreach } from '@/lib/outreach-send'
 import { sendEmail, gmailSender } from '@/lib/gmail'
 
 export const dynamic = 'force-dynamic'
@@ -9,8 +8,8 @@ export const maxDuration = 300
 
 // Cold-outreach sender. Guarded by CRON_SECRET. Runs weekday mornings.
 //
-// Guardrails (all enforced here):
-//  • Only `outreach_enrolled` contacts are ever eligible (see getContactsDueForOutreach).
+// Guardrails (planning is shared with the portal preview via planOutreach):
+//  • Only `outreach_enrolled` contacts are ever eligible.
 //  • Suppression list + MX-record bounce guard skip bad/unsubscribed recipients.
 //  • Strict template render — REFUSES to send if any merge field is unresolved.
 //  • Hard daily cap (OUTREACH_DAILY_CAP, default 25) + jittered gap between sends.
@@ -23,12 +22,6 @@ export const maxDuration = 300
 
 const TIME_BUDGET_MS = 280_000
 
-function firstName(c: { first_name: string | null; name: string | null }): string {
-  return (c.first_name?.trim() || (c.name?.trim().split(/\s+/)[0] ?? '')).trim()
-}
-async function hasMx(domain: string): Promise<boolean> {
-  try { return (await resolveMx(domain)).length > 0 } catch { return false }
-}
 function jitterMs(): number {
   const min = Number(process.env.OUTREACH_GAP_MIN_MS) || 4000
   const max = Number(process.env.OUTREACH_GAP_MAX_MS) || 12000
@@ -50,55 +43,30 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'GOOGLE_SA_KEY not set' }, { status: 500 })
   }
 
-  const started = Date.now()
-  const [candidates, suppressed] = await Promise.all([
-    getContactsDueForOutreach(cap * 3),
-    getSuppressedSet(),
-  ])
+  const { planned, skipped, eligible } = await planOutreach(cap)
 
-  const sent: { to: string; subject: string; messageId?: string; reason: string }[] = []
-  const preview: { to: string; subject: string; body: string; reason: string }[] = []
-  const skipped: { to: string; why: string }[] = []
-
-  for (const c of candidates) {
-    if (sent.length >= cap || preview.length >= cap) break
-    if (Date.now() - started > TIME_BUDGET_MS) break
-
-    const email = c.email.trim().toLowerCase()
-    if (suppressed.has(email)) { skipped.push({ to: email, why: 'suppressed' }); continue }
-
-    const domain = emailDomain(email)
-    if (!domain || !(await hasMx(domain))) { skipped.push({ to: email, why: 'no MX record' }); continue }
-
-    const tpl = templateForTrack(c.track)
-    const rendered = renderTemplate(tpl, { first_name: firstName(c), company: c.company })
-    if (!rendered.ok) { skipped.push({ to: email, why: `unresolved merge field: ${rendered.missing.join(', ')}` }); continue }
-
-    const body = withFooter(rendered.result.body)
-    const subject = rendered.result.subject
-
-    if (dryRun) {
-      preview.push({ to: email, subject, body, reason: c.reason })
-      continue
-    }
-
-    try {
-      const res = await sendEmail({ to: email, subject, text: body, replyTo: gmailSender() })
-      await logOutboundEmail(c.id, { subject, snippet: rendered.result.body.slice(0, 280), messageId: res.messageId, track: c.track })
-      sent.push({ to: email, subject, messageId: res.messageId, reason: c.reason })
-    } catch (e) {
-      console.error('outreach send failed for', email, e)
-      skipped.push({ to: email, why: 'send error' })
-    }
-    if (sent.length < cap) await sleep(jitterMs())
+  if (dryRun) {
+    return NextResponse.json({ ok: true, dryRun: true, cap, eligible, sent: 0,
+      preview: planned, skipped })
   }
 
-  return NextResponse.json({
-    ok: true, dryRun, cap,
-    eligible: candidates.length,
-    sent: dryRun ? preview.length : sent.length,
-    skipped: skipped.length,
-    ...(dryRun ? { preview } : { sentDetail: sent }),
-    skippedDetail: skipped,
-  })
+  const started = Date.now()
+  const sent: { to: string; messageId: string }[] = []
+  const failed: { to: string; why: string }[] = [...skipped]
+
+  for (let i = 0; i < planned.length; i++) {
+    if (Date.now() - started > TIME_BUDGET_MS) break
+    const p = planned[i]
+    try {
+      const res = await sendEmail({ to: p.to, subject: p.subject, text: p.body, replyTo: gmailSender() })
+      await logOutboundEmail(p.contactId, { subject: p.subject, snippet: p.body.slice(0, 280), messageId: res.messageId, track: p.track })
+      sent.push({ to: p.to, messageId: res.messageId })
+    } catch (e) {
+      console.error('outreach send failed for', p.to, e)
+      failed.push({ to: p.to, why: 'send error' })
+    }
+    if (i < planned.length - 1) await sleep(jitterMs())
+  }
+
+  return NextResponse.json({ ok: true, dryRun: false, cap, eligible, sent: sent.length, sentDetail: sent, skipped: failed })
 }

@@ -1,17 +1,21 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader, Check, Flame, Building2, Mail } from 'lucide-react'
+import { Loader, Check, Flame, Building2, Mail, Eye } from 'lucide-react'
 import type { Contact, NeedsAttentionItem, QuarantineRow } from '@/lib/outreach'
 
-type Tab = 'needs' | 'corporate' | 'all' | 'quarantine'
+type Tab = 'needs' | 'corporate' | 'all' | 'send' | 'quarantine'
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'needs', label: 'Needs Attention' },
   { id: 'corporate', label: 'Corporate' },
   { id: 'all', label: 'All Contacts' },
+  { id: 'send', label: 'Cold Send' },
   { id: 'quarantine', label: 'Quarantine' },
 ]
+
+interface PreviewItem { to: string; subject: string; body: string; reason: string }
+interface SkippedItem { to: string; why: string }
 
 function isCorp(c?: Contact | null) { return !!c && (c.is_corporate || c.source === 'corporate_form') }
 function fmtDate(iso: string) { return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }
@@ -28,10 +32,17 @@ export default function OutreachPage() {
   const [loading, setLoading] = useState(true)
   const [resolving, setResolving] = useState<string | null>(null)
 
+  // Cold Send tab
+  const [savingId, setSavingId] = useState<string | null>(null)
+  const [previewing, setPreviewing] = useState(false)
+  const [preview, setPreview] = useState<{ planned: PreviewItem[]; skipped: SkippedItem[]; cap: number } | null>(null)
+
   async function load(t: Tab) {
     setLoading(true)
     try {
-      const res = await fetch(`/api/portal/outreach?tab=${t}`)
+      // The Cold Send tab works off the full contact list.
+      const fetchTab = t === 'send' ? 'all' : t
+      const res = await fetch(`/api/portal/outreach?tab=${fetchTab}`)
       const d = await res.json()
       if (t === 'needs') setNeeds(d.needs ?? [])
       else if (t === 'quarantine') setQuarantine(d.quarantine ?? [])
@@ -39,6 +50,30 @@ export default function OutreachPage() {
     } finally { setLoading(false) }
   }
   useEffect(() => { load(tab) }, [tab])
+
+  // Optimistically patch a contact + persist (enroll toggle / first name / company).
+  async function patchContact(id: string, patch: Partial<Contact>) {
+    setContacts(prev => prev.map(c => c.id === id ? { ...c, ...patch } : c))
+    setSavingId(id)
+    try {
+      await fetch('/api/portal/outreach', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update', contactId: id, ...patch }),
+      })
+    } finally { setSavingId(null) }
+  }
+
+  async function runPreview() {
+    setPreviewing(true); setPreview(null)
+    try {
+      const res = await fetch('/api/portal/outreach', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'preview' }),
+      })
+      const d = await res.json()
+      setPreview({ planned: d.planned ?? [], skipped: d.skipped ?? [], cap: d.cap ?? 0 })
+    } finally { setPreviewing(false) }
+  }
 
   async function resolve(flagId: string) {
     setResolving(flagId)
@@ -126,6 +161,82 @@ export default function OutreachPage() {
             ))}
           </div>
         )
+      ) : tab === 'send' ? (
+        <div>
+          {/* Intro + dry-run preview */}
+          <div className="bg-cream-50 border border-cream-200 rounded-xl p-4 mb-5">
+            <div className="flex items-start justify-between gap-4 flex-wrap">
+              <p className="font-sans text-xs text-bark-500 max-w-xl leading-relaxed">
+                Only contacts you <strong>enroll</strong> here ever get cold emails. Each needs a <strong>first name</strong> and <strong>company</strong> (the template merge fields) — rows missing either are skipped. Every send carries a CAN-SPAM footer and honors STOP automatically. The weekday cron sends up to your daily cap.
+              </p>
+              <button onClick={runPreview} disabled={previewing}
+                className="shrink-0 inline-flex items-center gap-2 bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase px-5 py-2.5 rounded hover:bg-bark-700 disabled:opacity-50">
+                {previewing ? <Loader size={13} className="animate-spin" /> : <Eye size={13} />} Preview dry run
+              </button>
+            </div>
+            {preview && (
+              <div className="mt-4 border-t border-cream-200 pt-4">
+                <p className="font-sans text-xs text-bark-500 mb-3">
+                  <strong>{preview.planned.length}</strong> would send today (cap {preview.cap}) · {preview.skipped.length} skipped. <em>Nothing was sent.</em>
+                </p>
+                <div className="space-y-3">
+                  {preview.planned.map((p, i) => (
+                    <div key={i} className="bg-white border border-cream-200 rounded-lg p-3">
+                      <p className="font-sans text-[11px] text-bark-400 mb-1">To <strong className="text-bark-600">{p.to}</strong> · <span className="capitalize">{p.reason}</span></p>
+                      <p className="font-serif text-sm text-espresso mb-1">{p.subject}</p>
+                      <pre className="font-sans text-[11px] text-bark-600 whitespace-pre-wrap leading-relaxed">{p.body}</pre>
+                    </div>
+                  ))}
+                  {preview.planned.length === 0 && (
+                    <p className="font-sans text-xs text-bark-400 italic">No one is due to send. Enroll a contact below with a first name + company, then preview again.</p>
+                  )}
+                </div>
+                {preview.skipped.length > 0 && (
+                  <div className="mt-3">
+                    <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-1">Skipped</p>
+                    {preview.skipped.map((s, i) => (
+                      <p key={i} className="font-sans text-[11px] text-bark-400">{s.to} — {s.why}</p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Enrollment table */}
+          {contacts.length === 0 ? (
+            <p className="font-sans text-sm text-bark-400 py-10 text-center">No contacts yet.</p>
+          ) : (
+            <div className="bg-white border border-cream-300 rounded-xl overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-cream-200 bg-cream-100">
+                    {['Enroll', 'First name', 'Email', 'Company', 'Status'].map(h => (
+                      <th key={h} className="px-4 py-3 text-left font-sans text-[10px] font-semibold uppercase tracking-wider text-bark-400">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {contacts.map(c => (
+                    <tr key={c.id} className="border-b border-cream-200 last:border-0">
+                      <td className="px-4 py-3">
+                        <input type="checkbox" checked={!!c.outreach_enrolled} onChange={e => patchContact(c.id, { outreach_enrolled: e.target.checked })} className="w-5 h-5 accent-bark-600" />
+                      </td>
+                      <td className="px-4 py-3">
+                        <input defaultValue={c.first_name ?? ''} onBlur={e => { if ((e.target.value.trim() || null) !== (c.first_name ?? null)) patchContact(c.id, { first_name: e.target.value }) }} placeholder="First name" className="w-28 px-2 py-1 border border-cream-300 rounded text-sm text-bark-700 focus:outline-none focus:border-bark-400" />
+                      </td>
+                      <td className="px-4 py-3"><a href={`mailto:${c.email}`} className="font-sans text-[11px] text-bark-400 underline inline-flex items-center gap-1"><Mail size={9} /> {c.email}</a></td>
+                      <td className="px-4 py-3">
+                        <input defaultValue={c.company ?? ''} onBlur={e => { if ((e.target.value.trim() || null) !== (c.company ?? null)) patchContact(c.id, { company: e.target.value }) }} placeholder="Company" className="w-36 px-2 py-1 border border-cream-300 rounded text-sm text-bark-700 focus:outline-none focus:border-bark-400" />
+                      </td>
+                      <td className="px-4 py-3 font-sans text-xs text-bark-400">{savingId === c.id ? <Loader size={12} className="animate-spin" /> : c.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       ) : (
         contacts.length === 0 ? (
           <p className="font-sans text-sm text-bark-400 py-10 text-center">No {tab === 'corporate' ? 'corporate ' : ''}contacts yet.</p>
