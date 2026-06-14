@@ -11,7 +11,7 @@ export default function PrivacyPage() {
     <article className="prose prose-sm max-w-none font-sans text-bark-600">
       <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-gold-400 mb-4">Legal</p>
       <h1 className="font-serif text-4xl font-normal text-espresso mb-2">Privacy Policy</h1>
-      <p className="text-bark-400 text-sm mb-10">Last updated: May 2025</p>
+      <p className="text-bark-400 text-sm mb-10">Last updated: June 2026</p>
 
       <Section title="1. Information We Collect">
         When you place an order, we collect your name, email address, phone number, shipping address, and payment information. Payment data is processed directly by Stripe and is never stored on our servers. We may also collect usage data (pages visited, time on site) to improve our experience.

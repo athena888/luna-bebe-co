@@ -11,7 +11,7 @@ export default function TermsPage() {
     <article className="prose prose-sm max-w-none font-sans text-bark-600">
       <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-gold-400 mb-4">Legal</p>
       <h1 className="font-serif text-4xl font-normal text-espresso mb-2">Terms of Service</h1>
-      <p className="text-bark-400 text-sm mb-10">Last updated: May 2025</p>
+      <p className="text-bark-400 text-sm mb-10">Last updated: June 2026</p>
 
       <Section title="1. Overview">
         By placing an order with Petite Lavande &amp; Co. (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;), you agree to these Terms of Service. Please read them carefully before completing your purchase.
