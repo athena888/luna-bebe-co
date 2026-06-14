@@ -110,42 +110,41 @@ export default function CardPage() {
     <>
       <Header />
       <main className="min-h-screen bg-cream-100 py-12 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
             <p className="text-xs font-sans font-semibold uppercase tracking-widest text-gold-400 mb-2">Your Card</p>
             <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-2">Customize Your Card</h1>
             <p className="font-sans text-sm text-bark-400">Pick a card design and write your message — we&rsquo;ll print it and tuck it into the box.</p>
           </div>
 
-          {/* Card style picker — whole card shown (portrait), swipe through them */}
-          {styles.length > 0 && (
-            <div className="mb-8">
-              <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-bark-400 mb-3">Choose a card design — swipe to see them all</p>
-              <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 -mx-4 px-4 sm:-mx-6 sm:px-6">
-                {styles.map(s => {
-                  const active = s.id === styleId
-                  return (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => setStyleId(s.id)}
-                      className="snap-start shrink-0 w-40 sm:w-48 text-left"
-                    >
-                      {/* A6 portrait — show the WHOLE card (no crop) */}
-                      <div className={`relative bg-cream-100 border transition-all ${active ? 'border-bark-600 ring-2 ring-bark-600' : 'border-cream-300 hover:border-bark-400'}`} style={{ aspectRatio: '41 / 58' }}>
-                        <img src={s.image_url} alt={s.alt_text || s.name} className="absolute inset-0 w-full h-full object-contain" />
-                        {active && <span className="absolute top-2 right-2 bg-bark-600 text-white rounded-full p-1 z-10"><Check size={11} /></span>}
-                      </div>
-                      <div className="pt-2">
-                        <p className="font-sans text-xs font-medium text-bark-600 truncate">{s.name}</p>
-                        <p className="font-sans text-[10px] text-bark-400">{s.size_label || ''}{s.size_label ? ' · ' : ''}{Math.max(s.word_limit, 100)} words max</p>
-                      </div>
-                    </button>
-                  )
-                })}
+          <div className="flex flex-col md:flex-row gap-6 lg:gap-8 md:items-start">
+            {/* Left — vertical carousel of whole (portrait) cards */}
+            {styles.length > 0 && (
+              <div className="md:w-48 lg:w-56 shrink-0 md:sticky md:top-6">
+                <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-bark-400 mb-3">Choose a card design — scroll to see them all</p>
+                <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto md:max-h-[78vh] scrollbar-hide snap-x md:snap-y snap-mandatory -mx-4 px-4 md:mx-0 md:px-0 md:pr-1 pb-2 md:pb-0">
+                  {styles.map(s => {
+                    const active = s.id === styleId
+                    return (
+                      <button key={s.id} type="button" onClick={() => setStyleId(s.id)} className="snap-start shrink-0 w-32 md:w-full text-left">
+                        {/* A6 portrait — whole card, no crop */}
+                        <div className={`relative bg-cream-100 border transition-all ${active ? 'border-bark-600 ring-2 ring-bark-600' : 'border-cream-300 hover:border-bark-400'}`} style={{ aspectRatio: '41 / 58' }}>
+                          <img src={s.image_url} alt={s.alt_text || s.name} className="absolute inset-0 w-full h-full object-contain" />
+                          {active && <span className="absolute top-2 right-2 bg-bark-600 text-white rounded-full p-1 z-10"><Check size={11} /></span>}
+                        </div>
+                        <div className="pt-1.5">
+                          <p className="font-sans text-xs font-medium text-bark-600 truncate">{s.name}</p>
+                          <p className="font-sans text-[10px] text-bark-400">{Math.max(s.word_limit, 100)} words max</p>
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+
+            {/* Right — write the letter */}
+            <div className="flex-1 min-w-0">
 
           {/* Step 1 — Names */}
           {phase === 'form' && (
@@ -259,6 +258,8 @@ export default function CardPage() {
               </button>
             </div>
           )}
+            </div>{/* right column */}
+          </div>{/* two-column flex */}
         </div>
       </main>
       <Footer />
