@@ -34,6 +34,7 @@ export default function CheckoutPage() {
   const [specialNote, setSpecialNote] = useState('')
   const [letterVersion, setLetterVersion] = useState<1 | 2>(1)
   const [cardStyle, setCardStyle] = useState('')
+  const [letterZone, setLetterZone] = useState<{ x: number; y: number; w: number; align: string } | null>(null)
 
   const [promoCode, setPromoCode] = useState('')
   const [promoState, setPromoState] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle')
@@ -59,6 +60,8 @@ export default function CheckoutPage() {
     if (storedVersion) setLetterVersion(parseInt(storedVersion) as 1 | 2)
     const storedCardStyle = sessionStorage.getItem('pl_card_style')
     if (storedCardStyle) setCardStyle(storedCardStyle)
+    const storedZone = sessionStorage.getItem('pl_letter_zone')
+    if (storedZone) { try { setLetterZone(JSON.parse(storedZone)) } catch { /* ignore */ } }
   }, [router])
 
   async function applyPromo() {
@@ -112,6 +115,7 @@ export default function CheckoutPage() {
           letterContent: letter,
           letterVersion: letter ? letterVersion : undefined,
           cardStyle: cardStyle || undefined,
+          letterZone: letter && letterZone ? letterZone : undefined,
           shippingType,
           promoId: promoId || undefined,
           preferredAssemblyImage: null,

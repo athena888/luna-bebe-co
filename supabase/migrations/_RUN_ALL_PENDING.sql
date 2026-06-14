@@ -463,4 +463,8 @@ alter table public.contacts add column if not exists outreach_enrolled boolean n
 -- of `name` at send time when null.
 alter table public.contacts add column if not exists first_name text;
 
+-- 22) Customer-chosen message placement on the printed card. {x,y,w,align}
+--     percentages, like card_styles.meta.textZone. Null = use the card's default.
+alter table public.orders add column if not exists letter_zone jsonb;
+
 -- Done.

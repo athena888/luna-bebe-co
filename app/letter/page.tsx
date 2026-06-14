@@ -10,9 +10,12 @@ import type { CardStyle } from '@/lib/card-styles'
 
 type Phase = 'form' | 'generating' | 'edit'
 
+type Align = 'left' | 'center' | 'right'
+type Zone = { x: number; y: number; w: number; align: Align }
+
 // Centered fallback zone, defined locally so this client page never imports the
 // server-only lib/card-styles module (which pulls in the Supabase admin client).
-const FALLBACK_ZONE = { x: 15, y: 42, w: 70, align: 'center' as const }
+const FALLBACK_ZONE: Zone = { x: 15, y: 42, w: 70, align: 'center' }
 
 function countWords(s: string) { return s.trim() ? s.trim().split(/\s+/).length : 0 }
 
@@ -28,6 +31,9 @@ export default function CardPage() {
 
   const [styles, setStyles] = useState<CardStyle[]>([])
   const [styleId, setStyleId] = useState<string | null>(null)
+  // Where the printed note sits on the card. Starts from the card's default and
+  // the customer can nudge it. Saved with the order so it prints where they place it.
+  const [zone, setZone] = useState<Zone>(FALLBACK_ZONE)
 
   useEffect(() => {
     fetch('/api/card-styles')
@@ -41,6 +47,13 @@ export default function CardPage() {
   }, [])
 
   const selectedStyle = styles.find(s => s.id === styleId) ?? null
+
+  // Reset placement to the chosen card's default whenever the card changes.
+  useEffect(() => {
+    const z = selectedStyle?.meta?.textZone
+    setZone(z ? { x: z.x, y: z.y, w: z.w, align: (z.align ?? 'center') as Align } : FALLBACK_ZONE)
+  }, [styleId]) // eslint-disable-line react-hooks/exhaustive-deps
+
   // Generous room — at least 160 words regardless of the card's stored limit.
   const wordLimit = Math.max(selectedStyle?.word_limit ?? 160, 160)
   const words = countWords(editedContent)
@@ -90,6 +103,9 @@ export default function CardPage() {
     sessionStorage.setItem('pl_sender_name', senderName)
     sessionStorage.setItem('pl_recipient_name', recipientName)
     sessionStorage.setItem('pl_card_style', selectedStyle?.name ?? '')
+    // Only store a placement when the customer used a card design.
+    if (content && selectedStyle) sessionStorage.setItem('pl_letter_zone', JSON.stringify(zone))
+    else sessionStorage.removeItem('pl_letter_zone')
   }
 
   function handleContinue() {
@@ -216,10 +232,10 @@ export default function CardPage() {
               </div>
 
               {/* Live preview — the message set on the chosen card, positioned
-                  and styled to match it. */}
+                  and styled to match it. The customer can nudge the placement. */}
               {selectedStyle && (() => {
-                const zone = selectedStyle.meta?.textZone ?? FALLBACK_ZONE
                 const isScript = (selectedStyle.meta?.font ?? 'serif') === 'script'
+                const setZ = (patch: Partial<Zone>) => setZone(z => ({ ...z, ...patch }))
                 return (
                   <div className="mb-6">
                     <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-bark-400 mb-3 text-center">Preview on your card</p>
@@ -243,7 +259,49 @@ export default function CardPage() {
                         {editedContent}
                       </div>
                     </div>
-                    <p className="font-sans text-[10px] text-bark-400 text-center mt-2">A close approximation of the printed card.</p>
+
+                    {/* Placement control — move the note over the card's empty area */}
+                    <div className="mx-auto w-full max-w-sm mt-3 bg-cream-50 border border-cream-200 rounded-xl p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-bark-400">Message placement</p>
+                        <button
+                          type="button"
+                          onClick={() => { const z = selectedStyle.meta?.textZone; setZone(z ? { x: z.x, y: z.y, w: z.w, align: (z.align ?? 'center') as Align } : FALLBACK_ZONE) }}
+                          className="font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-600 underline underline-offset-2"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                      {([
+                        { label: 'Left', key: 'x' as const, min: 0, max: 80 },
+                        { label: 'Top', key: 'y' as const, min: 0, max: 85 },
+                        { label: 'Width', key: 'w' as const, min: 30, max: 95 },
+                      ]).map(s => (
+                        <div key={s.key} className="flex items-center gap-3 mb-2">
+                          <span className="font-sans text-[11px] text-bark-500 w-12 shrink-0">{s.label}</span>
+                          <input
+                            type="range" min={s.min} max={s.max} value={zone[s.key]}
+                            onChange={e => setZ({ [s.key]: Number(e.target.value) } as Partial<Zone>)}
+                            className="flex-1 accent-[#7b876a]"
+                          />
+                          <span className="font-sans text-[10px] text-bark-400 w-9 text-right tabular-nums">{zone[s.key]}%</span>
+                        </div>
+                      ))}
+                      <div className="flex items-center gap-3 mt-3">
+                        <span className="font-sans text-[11px] text-bark-500 w-12 shrink-0">Align</span>
+                        <div className="flex gap-1">
+                          {(['left', 'center', 'right'] as Align[]).map(a => (
+                            <button
+                              key={a} type="button" onClick={() => setZ({ align: a })}
+                              className={`font-sans text-[10px] tracking-[0.1em] uppercase px-3 py-1.5 rounded border transition-colors ${zone.align === a ? 'bg-[#7b876a] text-white border-[#7b876a]' : 'bg-white text-bark-500 border-cream-300 hover:border-bark-400'}`}
+                            >
+                              {a}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <p className="font-sans text-[10px] text-bark-400 text-center mt-2">Move the dashed area over the card&rsquo;s empty space — that&rsquo;s where your note prints.</p>
                   </div>
                 )
               })()}

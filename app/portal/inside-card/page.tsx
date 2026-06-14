@@ -17,6 +17,7 @@ interface OrderData {
   customer_name: string
   recipient_name?: string
   letter_content?: string
+  letter_zone?: { x: number; y: number; w: number; align: 'left' | 'center' | 'right' } | null
   selected_items: ProductBasic[]
   card_style?: string | null
   card_style_data?: CardStyleData | null
@@ -301,24 +302,45 @@ function InsideCardContent() {
             {cardStyle && (
               <div className="absolute inset-0 bg-[#f5efe1]/45 pointer-events-none" style={{ WebkitPrintColorAdjust: 'exact' } as React.CSSProperties} />
             )}
-            <div className="relative">
-              {order?.letter_content ? (
-                /* Customer's personal letter */
-                <>
-                  <p className="font-serif italic text-2xl text-espresso text-center mb-8">
-                    {order.recipient_name ? `Dear ${order.recipient_name},` : 'To You,'}
-                  </p>
-                  <div className="space-y-4 font-cormorant text-[17px] text-bark-700 leading-relaxed max-w-xl mx-auto whitespace-pre-line text-center">
-                    {order.letter_content}
-                  </div>
-                  {order.customer_name && (
-                    <p className="font-serif italic text-bark-500 text-center mt-8">— {order.customer_name}</p>
-                  )}
-                </>
-              ) : (
-                <DefaultLetter />
-              )}
-            </div>
+            {/* When the customer chose a placement, print the note exactly where
+                they put it on the card (matches the /letter preview). Otherwise
+                fall back to the centered Dear/signature layout. */}
+            {order?.letter_content && order.letter_zone ? (
+              <div
+                className="absolute"
+                style={{
+                  left: `${order.letter_zone.x}%`, top: `${order.letter_zone.y}%`, width: `${order.letter_zone.w}%`,
+                  textAlign: order.letter_zone.align,
+                  fontFamily: 'var(--font-cormorant)',
+                  color: '#5a5147',
+                  lineHeight: 1.5,
+                  fontSize: 'clamp(8px, 2.4vw, 14px)',
+                  whiteSpace: 'pre-wrap',
+                  overflowWrap: 'break-word',
+                }}
+              >
+                {order.letter_content}
+              </div>
+            ) : (
+              <div className="relative">
+                {order?.letter_content ? (
+                  /* Customer's personal letter — centered fallback (no placement) */
+                  <>
+                    <p className="font-serif italic text-2xl text-espresso text-center mb-8">
+                      {order.recipient_name ? `Dear ${order.recipient_name},` : 'To You,'}
+                    </p>
+                    <div className="space-y-4 font-cormorant text-[17px] text-bark-700 leading-relaxed max-w-xl mx-auto whitespace-pre-line text-center">
+                      {order.letter_content}
+                    </div>
+                    {order.customer_name && (
+                      <p className="font-serif italic text-bark-500 text-center mt-8">— {order.customer_name}</p>
+                    )}
+                  </>
+                ) : (
+                  <DefaultLetter />
+                )}
+              </div>
+            )}
           </article>
         </div>
 

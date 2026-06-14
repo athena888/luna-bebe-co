@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
       letterContent,
       letterVersion,
       cardStyle,
+      letterZone,
       shippingType,
       shippingAddress,
       recipientName,
@@ -30,6 +31,7 @@ export async function POST(req: NextRequest) {
       letterContent: string
       letterVersion?: 1 | 2
       cardStyle?: string
+      letterZone?: { x: number; y: number; w: number; align: string }
       shippingType: ShippingType
       shippingAddress: {
         name: string
@@ -132,6 +134,11 @@ export async function POST(req: NextRequest) {
         letter_content: letterContent || null,
         letter_version: letterVersion || null,
         card_style: cardStyle || null,
+        letter_zone: (letterContent && letterZone
+          && ['left', 'center', 'right'].includes(letterZone.align)
+          && [letterZone.x, letterZone.y, letterZone.w].every(n => typeof n === 'number' && n >= 0 && n <= 100))
+          ? { x: letterZone.x, y: letterZone.y, w: letterZone.w, align: letterZone.align }
+          : null,
         shipping_type: shippingType,
         shipping_address: shippingAddress,
         tracking_number: trackingNumber,

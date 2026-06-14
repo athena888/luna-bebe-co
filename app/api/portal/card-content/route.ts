@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 async function fetchOrderWithStyle(orderId: string) {
   const { data: order } = await supabaseAdmin
     .from('orders')
-    .select('id, customer_name, recipient_name, letter_content, letter_version, selected_items, card_style, special_note')
+    .select('id, customer_name, recipient_name, letter_content, letter_version, selected_items, card_style, special_note, letter_zone')
     .eq('id', orderId)
     .maybeSingle()
   if (!order) return null
