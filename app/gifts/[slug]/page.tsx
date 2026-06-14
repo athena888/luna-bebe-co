@@ -82,7 +82,9 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
 
   const url = `${BASE}/gifts/${lp.slug}`
   const others = LANDING_PAGES.filter(p => p.slug !== lp.slug)
-  const heroSlotKey = `gifts.${lp.slug}.hero`
+  // Page background is one shared image across every gift guide (set in the Gift
+  // Guides editor). The per-guide `gifts.<slug>.hero` image is the hub card only.
+  const heroSlotKey = 'gifts.shared_bg'
 
   return (
     <>

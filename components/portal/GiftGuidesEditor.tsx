@@ -83,12 +83,22 @@ export function GiftGuidesEditor() {
 
   return (
     <div className="p-8 max-w-4xl">
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="font-serif text-3xl text-bark-600">Gift Guides</h1>
-        <p className="font-sans text-sm text-bark-400 mt-1">The four search-intent guides under <span className="font-mono text-xs">/gifts</span>, all collected on the <span className="font-mono text-xs">/gift-guides</span> hub. Edit each guide&rsquo;s photo, colour wash, words, tag and which products show. ✨ buttons suggest on-brand copy.</p>
+        <p className="font-sans text-sm text-bark-400 mt-1">Everything for the <span className="font-mono text-xs">/gift-guides</span> hub and the individual <span className="font-mono text-xs">/gifts</span> pages, in one place. Each guide has its own <strong>card image</strong> (its shortcut on the hub); the page <strong>background</strong> is one shared image used by all of them.</p>
       </div>
 
-      {/* Guide selector */}
+      {/* Shared background — one image behind every gift guide page */}
+      <section className="bg-white border border-cream-200 rounded-lg p-4 mb-8">
+        <p className="font-sans text-sm font-medium text-bark-600 mb-0.5">Shared page background</p>
+        <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">One image sits behind the heading on <strong>every</strong> gift guide page. Landscape · ~2000×1130.</p>
+        <div className="max-w-xs">
+          <SiteImageUploader slotKey="gifts.shared_bg" context="Shared background behind every gift guide page" ratio="16:9" hint="Soft, on-brand lifestyle · ~2000×1130" compact />
+        </div>
+        <ScrimControl scrimKey="gifts.shared_bg" defaultScrim={{ hex: '#FAF7F0', opacity: 0.8 }} label="Colour overlay (swatch)" note="cream wash over the photo so the heading stays readable — raise to soften, lower to show more photo" />
+      </section>
+
+      {/* Guide selector + Corporate */}
       <div className="flex flex-wrap gap-2 mb-8">
         {guides.map(g => (
           <button
@@ -101,7 +111,26 @@ export function GiftGuidesEditor() {
             {g.h1.replace(/^The /, '')}
           </button>
         ))}
+        <button
+          onClick={() => setActiveSlug('__corporate')}
+          className={`font-sans text-[11px] tracking-[0.1em] px-4 py-2.5 rounded-lg border transition-colors ${
+            activeSlug === '__corporate' ? 'bg-bark-600 text-cream-50 border-bark-600' : 'bg-white text-bark-500 border-cream-300 hover:border-bark-400'
+          }`}
+        >
+          Corporate
+        </button>
       </div>
+
+      {/* Corporate — just its hub card here; full page is on the Corporate tab */}
+      {activeSlug === '__corporate' && (
+        <section className="bg-white border border-cream-200 rounded-lg p-4">
+          <p className="font-sans text-sm font-medium text-bark-600 mb-0.5">Corporate — hub card image</p>
+          <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">The shortcut image for the Corporate card on the Gifting Ideas hub. The rest of the Corporate page is managed on the <strong>Corporate</strong> tab.</p>
+          <div className="max-w-[200px]">
+            <SiteImageUploader slotKey="gifts.corporate.card" context="Corporate card image on the Gifting Ideas hub" ratio="4:5" hint="Portrait card · ~1000×1250" compact />
+          </div>
+        </section>
+      )}
 
       {guide && (
         <div className="space-y-8">
@@ -110,12 +139,13 @@ export function GiftGuidesEditor() {
             View live page <ExternalLink size={12} />
           </a>
 
-          {/* Photo + colour wash */}
+          {/* Card image — the guide's shortcut on the hub */}
           <section className="bg-white border border-cream-200 rounded-lg p-4">
-            <p className="font-sans text-sm font-medium text-bark-600 mb-0.5">Hero photo</p>
-            <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">The background behind this guide&rsquo;s heading, and its cover on the Gifting Ideas hub. Landscape · ~2000×1130.</p>
-            <SiteImageUploader slotKey={heroSlot} context={`Background for the ${guide.h1} gift guide`} ratio="16:9" hint="Soft, on-brand lifestyle · ~2000×1130" compact />
-            <ScrimControl scrimKey={heroSlot} defaultScrim={{ hex: '#FAF7F0', opacity: 0.8 }} label="Colour overlay (swatch)" note="cream wash over the photo so the heading stays readable — raise to soften, lower to show more photo" />
+            <p className="font-sans text-sm font-medium text-bark-600 mb-0.5">Card image</p>
+            <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">The shortcut image for this guide on the Gifting Ideas hub. Portrait · ~1000×1250. (The page background is the shared one above.)</p>
+            <div className="max-w-[200px]">
+              <SiteImageUploader slotKey={heroSlot} context={`Card image for the ${guide.h1} gift guide`} ratio="4:5" hint="Portrait card · ~1000×1250" compact />
+            </div>
           </section>
 
           {/* Words */}

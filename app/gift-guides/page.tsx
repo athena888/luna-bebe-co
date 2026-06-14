@@ -34,7 +34,7 @@ export default async function GiftGuidesHub() {
 
   // Corporate has its own managed page — surface it here so the hub is the one
   // true "Gifting Ideas" destination.
-  const corpImg = await getSiteImages(['corporate.hero_bg'])
+  const corpImg = await getSiteImages(['gifts.corporate.card', 'corporate.hero_bg'])
   cards.push({
     slug: 'corporate',
     href: '/corporate',
@@ -42,7 +42,7 @@ export default async function GiftGuidesHub() {
     eyebrow: 'For Business',
     blurb: 'Thoughtful, beautifully finished gifts for clients, teams and new-parent colleagues — handled end to end, at any scale.',
     tag: 'Corporate',
-    image: corpImg['corporate.hero_bg']?.public_url ?? null,
+    image: corpImg['gifts.corporate.card']?.public_url ?? corpImg['corporate.hero_bg']?.public_url ?? null,
   })
 
   return (
