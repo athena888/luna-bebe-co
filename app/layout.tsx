@@ -19,6 +19,9 @@ const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["300", "400"
 const jost = Jost({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-jost", display: "swap" });
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
+// Public Crisp Website ID (safe to embed — it's exposed client-side anyway).
+// Override per-environment with NEXT_PUBLIC_CRISP_WEBSITE_ID if needed.
+const CRISP_WEBSITE_ID = process.env.NEXT_PUBLIC_CRISP_WEBSITE_ID || 'f0c4d489-7469-4696-916e-9a8c94a8fea6'
 
 // Cache the OG-image lookup so we don't hit the DB on every page render
 // (it rarely changes). 5-minute TTL, shared per server instance.
@@ -103,10 +106,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         </NextIntlClientProvider>
         <Suspense fallback={null}><UTMCapture /></Suspense>
         <CookieBanner />
-        {/* Live human chat (reply from your phone) once configured; otherwise the
-            built-in AI widget. Only one bubble shows. */}
-        {process.env.NEXT_PUBLIC_CRISP_WEBSITE_ID
-          ? <CrispChat websiteId={process.env.NEXT_PUBLIC_CRISP_WEBSITE_ID} />
+        {/* Live human chat (reply from your phone) via Crisp; the built-in AI
+            widget is the fallback when no ID is configured. Only one bubble shows.
+            The Crisp Website ID is a public identifier (embedded client-side). */}
+        {CRISP_WEBSITE_ID
+          ? <CrispChat websiteId={CRISP_WEBSITE_ID} />
           : <ChatWidget />}
 
         {/* Google Analytics */}
