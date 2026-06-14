@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { LayoutDashboard, ShoppingBag, ImagePlus, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, Gift, ShieldCheck, LineChart, Mail, LayoutTemplate, Building2, Compass } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, ShieldCheck, LineChart, LayoutTemplate, Building2, Compass } from 'lucide-react'
 
 const NAV = [
   { href: '/portal', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
@@ -11,9 +11,6 @@ const NAV = [
   { href: '/portal/orders', label: 'Orders', icon: <ShoppingBag size={16} /> },
   { href: '/portal/outreach', label: 'Outreach', icon: <Building2 size={16} /> },
   { href: '/portal/content', label: 'Pages & Content', icon: <LayoutTemplate size={16} /> },
-  { href: '/portal/products', label: 'Products', icon: <ImagePlus size={16} /> },
-  { href: '/portal/boxes', label: 'Prebuilt Boxes', icon: <Gift size={16} /> },
-  { href: '/portal/card-styles', label: 'Card Styles', icon: <Mail size={16} /> },
   { href: '/portal/cert-icons', label: 'Cert Library', icon: <ShieldCheck size={16} /> },
   { href: '/portal/inventory', label: 'Inventory', icon: <PackageSearch size={16} /> },
   { href: '/portal/stock-insights', label: 'Stock Insights', icon: <LineChart size={16} /> },
@@ -36,7 +33,7 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
       </div>
       <nav className="flex flex-col gap-1">
         {NAV.map(({ href, label, icon }) => {
-          const contentPaths = ['/portal/home-content', '/portal/story', '/portal/social', '/portal/journal', '/portal/collections', '/portal/site-images']
+          const contentPaths = ['/portal/home-content', '/portal/story', '/portal/social', '/portal/journal', '/portal/collections', '/portal/site-images', '/portal/products', '/portal/boxes', '/portal/card-styles']
           const active = pathname === href
             || (href !== '/portal' && pathname.startsWith(href))
             || (href === '/portal/content' && contentPaths.some(p => pathname.startsWith(p)))

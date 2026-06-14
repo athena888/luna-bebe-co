@@ -8,17 +8,22 @@ import HomeContentPage from '@/app/portal/home-content/page'
 import StoryPortal from '@/app/portal/story/page'
 import SocialPortalPage from '@/app/portal/social/page'
 import JournalPortal from '@/app/portal/journal/page'
+import ProductsPortal from '@/app/portal/products/page'
+import BoxesPortal from '@/app/portal/boxes/page'
+import CardStylesPortal from '@/app/portal/card-styles/page'
 import { GiftGuidesEditor } from '@/components/portal/GiftGuidesEditor'
 
-type PageId = 'home' | 'story' | 'build' | 'boxes' | 'guides' | 'corporate' | 'giftcards' | 'global' | 'social' | 'journal' | 'signin'
+type PageId = 'home' | 'story' | 'build' | 'boxes' | 'guides' | 'giftcards' | 'global' | 'social' | 'journal' | 'signin' | 'products' | 'prebuilt' | 'cardstyles'
 
 const TABS: { id: PageId; label: string }[] = [
   { id: 'home',       label: 'Homepage' },
   { id: 'story',      label: 'Story' },
+  { id: 'products',   label: 'Products' },
+  { id: 'prebuilt',   label: 'Prebuilt Boxes' },
+  { id: 'cardstyles', label: 'Card Styles' },
   { id: 'build',      label: 'Build Your Box' },
   { id: 'boxes',      label: 'Boxes Page' },
   { id: 'guides',     label: 'Gift Guides' },
-  { id: 'corporate',  label: 'Corporate' },
   { id: 'giftcards',  label: 'Gift Cards' },
   { id: 'global',     label: 'Global' },
   { id: 'social',     label: 'Social Feed' },
@@ -78,6 +83,9 @@ export default function ContentPage() {
 
         {active === 'home' && <HomeContentPage />}
         {active === 'story' && <StoryPortal />}
+        {active === 'products' && <ProductsPortal />}
+        {active === 'prebuilt' && <BoxesPortal />}
+        {active === 'cardstyles' && <CardStylesPortal />}
         {active === 'guides' && <GiftGuidesEditor />}
         {active === 'social' && <SocialPortalPage />}
         {active === 'journal' && <JournalPortal />}
@@ -149,48 +157,6 @@ export default function ContentPage() {
           </div>
         )}
 
-        {active === 'corporate' && (
-          <div className="p-8 max-w-3xl">
-            <SectionHeading title="Corporate & Team Gifting" note="The /corporate page." />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <SlotRow
-                slotKey="corporate.hero_bg"
-                label="Hero background — Desktop"
-                context="Background behind the corporate page hero on desktop"
-                ratio="21:9"
-                hint="Desktop crop · ~2000×860 (21:9). Keep subject centered."
-                where="Behind the hero heading on /corporate on desktop"
-                scrim={{ hex: '#FAF9F8', opacity: 0.40, label: 'Hero colour overlay', note: 'tint over the hero photo — raise for legibility, lower to show more photo' }}
-              />
-              <SlotRow
-                slotKey="corporate.hero_bg.mobile"
-                label="Hero background — Mobile"
-                context="Background behind the corporate page hero on mobile"
-                ratio="9:16"
-                hint="Mobile crop · ~1080×1920. Portrait — shown on phones instead of the desktop image."
-                where="Behind the hero heading on /corporate on phones"
-              />
-              <SlotRow
-                slotKey="corporate.points_bg"
-                label="Three-points band background"
-                context="Background behind the One-less-thing / Traceable / Simple-to-run band"
-                ratio="21:9"
-                hint="Shown full width, uncropped — the band height follows the image. Use a wide image with room for text · ~2000×860. White text overlays it."
-                where="Behind the dark 'One less thing / Traceable / Simple to run' band"
-                scrim={{ hex: '#181716', opacity: 0, label: 'Colour overlay', note: 'off by default so the whole image shows — raise to darken the photo' }}
-              />
-              <SlotRow
-                slotKey="corporate.form_bg"
-                label="Lead form background"
-                context="Background behind the Tell us about your team contact form"
-                ratio="16:9"
-                hint="Soft, light — form sits on top · ~2000×1130"
-                where="Behind the 'Tell us about your team' contact form"
-                scrim={{ hex: '#FAF9F8', opacity: 0.85, label: 'Colour overlay', note: 'tint over the photo so the form stays readable' }}
-              />
-            </div>
-          </div>
-        )}
 
         {active === 'giftcards' && (
           <div className="p-8 max-w-3xl">

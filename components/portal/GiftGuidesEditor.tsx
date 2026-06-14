@@ -24,6 +24,23 @@ interface Guide {
 
 interface ProductLite { id: string; name: string; category: ProductCategory; image?: string | null; active?: boolean }
 
+// Compact image slot used in the Corporate panel (merged in from the old
+// separate Corporate tab).
+function CorpSlot({ slotKey, label, ratio, hint, scrim }: {
+  slotKey: string; label: string; ratio: string; hint: string
+  scrim?: { hex: string; opacity: number; note?: string }
+}) {
+  return (
+    <div className="bg-cream-50 border border-cream-200 rounded-lg p-3">
+      <p className="font-sans text-[11px] font-medium text-bark-600 mb-1.5">{label}</p>
+      <div className="max-w-[220px]">
+        <SiteImageUploader slotKey={slotKey} context={label} ratio={ratio} hint={hint} compact />
+      </div>
+      {scrim && <ScrimControl scrimKey={slotKey} defaultScrim={{ hex: scrim.hex, opacity: scrim.opacity }} label="Colour overlay" note={scrim.note} />}
+    </div>
+  )
+}
+
 // One area to manage all four search-intent gift guides — background image,
 // colour overlay, words, tag, and exactly which products show. The individual
 // /gifts/<slug> SEO pages stay; this just makes them editable.
@@ -121,15 +138,27 @@ export function GiftGuidesEditor() {
         </button>
       </div>
 
-      {/* Corporate — just its hub card here; full page is on the Corporate tab */}
+      {/* Corporate — managed here now (the separate Corporate tab is gone) */}
       {activeSlug === '__corporate' && (
-        <section className="bg-white border border-cream-200 rounded-lg p-4">
-          <p className="font-sans text-sm font-medium text-bark-600 mb-0.5">Corporate — hub card image</p>
-          <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">The shortcut image for the Corporate card on the Gifting Ideas hub. The rest of the Corporate page is managed on the <strong>Corporate</strong> tab.</p>
-          <div className="max-w-[200px]">
-            <SiteImageUploader slotKey="gifts.corporate.card" context="Corporate card image on the Gifting Ideas hub" ratio="4:5" hint="Portrait card · ~1000×1250" compact />
-          </div>
-        </section>
+        <div className="space-y-6">
+          <section className="bg-white border border-cream-200 rounded-lg p-4">
+            <p className="font-sans text-sm font-medium text-bark-600 mb-0.5">Hub card image</p>
+            <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">The shortcut image for the Corporate card on the Gifting Ideas hub. Portrait · ~1000×1250.</p>
+            <div className="max-w-[200px]">
+              <SiteImageUploader slotKey="gifts.corporate.card" context="Corporate card image on the Gifting Ideas hub" ratio="4:5" hint="Portrait card · ~1000×1250" compact />
+            </div>
+          </section>
+          <section className="bg-white border border-cream-200 rounded-lg p-4">
+            <p className="font-sans text-sm font-medium text-bark-600 mb-0.5">Corporate page backgrounds</p>
+            <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">The images on the <span className="font-mono text-[10px]">/corporate</span> page itself.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <CorpSlot slotKey="corporate.hero_bg" label="Hero — desktop" ratio="21:9" hint="~2000×860 (21:9), subject centered" scrim={{ hex: '#FAF9F8', opacity: 0.40, note: 'tint over the hero photo — raise for legibility' }} />
+              <CorpSlot slotKey="corporate.hero_bg.mobile" label="Hero — mobile" ratio="9:16" hint="~1080×1920 portrait — shown on phones" />
+              <CorpSlot slotKey="corporate.points_bg" label="Three-points band" ratio="21:9" hint="~2000×860, room for white text" scrim={{ hex: '#181716', opacity: 0, note: 'off by default — raise to darken the photo' }} />
+              <CorpSlot slotKey="corporate.form_bg" label="Lead form background" ratio="16:9" hint="Soft, light · ~2000×1130" scrim={{ hex: '#FAF9F8', opacity: 0.85, note: 'tint so the form stays readable' }} />
+            </div>
+          </section>
+        </div>
       )}
 
       {guide && (
