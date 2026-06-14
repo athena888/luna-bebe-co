@@ -467,4 +467,7 @@ alter table public.contacts add column if not exists first_name text;
 --     percentages, like card_styles.meta.textZone. Null = use the card's default.
 alter table public.orders add column if not exists letter_zone jsonb;
 
+-- 23) Estimated $ cost per marketing task (cents). 0 = organic/free.
+alter table public.tasks add column if not exists est_cost_cents int;
+
 -- Done.

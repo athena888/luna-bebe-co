@@ -130,7 +130,7 @@ export async function scoreImage(input: {
 
 // ── 7.3 Daily strategy + task generator ──────────────────────────────────────
 export interface PlanTaskDraft {
-  title: string; channel?: string; task_type?: string; why?: string; est_minutes?: number; priority?: number
+  title: string; channel?: string; task_type?: string; why?: string; est_minutes?: number; priority?: number; est_cost?: number
 }
 export interface ContentDraft { platform: string; suggested_time?: string; caption_draft?: string; image_brief?: string }
 export interface FollowupDraft { contact_or_thread: string; action: string; due?: string }
@@ -143,19 +143,63 @@ export interface DailyPlanDraft {
   flags: string[]
 }
 
-const PLANNER_SYSTEM = `You are the marketing+sales operator for Petite Lavande (solo founder, premium organic baby/postpartum gift boxes; DTC at petitelavande.com + B2B corporate gifting). Plan TODAY. Be concrete and ruthless about priority — she has limited hours. Favor the highest-leverage moves: niche partnerships (doulas, registries), B2B follow-ups, micro-influencer gifting, Pinterest/IG, email lifecycle.
+const PLANNER_SYSTEM = `You are the marketing+sales operator for Petite Lavande (solo founder, premium organic baby/postpartum gift boxes; DTC at petitelavande.com + B2B corporate gifting). Plan TODAY as a concrete TO-DO LIST, not an essay. She has limited hours and wants to open this and immediately know what to DO.
 You receive data as JSON: sales_trend, outreach sent/replied, follow-ups due, posts logged, tasks done vs open, execution_rate, 7-day trend.
+
 Return ONLY JSON:
 {
-  "recap": 2-3 sentences on yesterday,
-  "strategy_note": <= 4 sentences: the single thing to push today and why,
-  "tasks": [ { "title", "channel", "task_type"('sell'|'market'|'ops'), "why", "est_minutes", "priority"(1-5) } ],
+  "recap": 1-2 sentences on yesterday,
+  "strategy_note": ONE short sentence — the single most important thing today (no long paragraph),
+  "tasks": [ { "title", "channel", "task_type"('sell'|'market'|'ops'), "why", "est_minutes", "est_cost"(USD dollars, 0 if free), "priority"(1-5) } ],
   "content_plan": [ { "platform", "suggested_time", "caption_draft", "image_brief" } ],
   "followups": [ { "contact_or_thread", "action", "due" } ],
   "flags": [ short strings — anything overdue, stalled, or worth noticing ]
 }
-Pivot rule: if sales rose week-over-week and one channel had concentrated effort, add 1-2 tasks doubling down on it. If sales are flat/down for 2+ weeks, SHORTEN the list and propose ONE new channel to test, and explain that pivot in strategy_note.
-Constraints: 4-7 tasks, total task minutes <= 180, content_plan 0-2 items. If execution_rate < 0.5 for 3+ days, cut the list shorter and say so in strategy_note. Never invent data you weren't given.`
+
+TASK RULES — this is the core of the product:
+- Produce 5-7 tasks, and at least 5 of them must be MARKETING actions (task_type 'market' or 'sell').
+- Each "title" is a concrete, do-it-today action starting with a verb and naming the channel + the specific thing. Good examples:
+  • "Schedule an outreach email to 5 doulas in Seattle" (channel: email)
+  • "Write + schedule an Instagram post about the postpartum box" (channel: instagram)
+  • "Pin 3 product photos to a 'Newborn Gifts' Pinterest board" (channel: pinterest)
+  • "Spend $20 boosting the best-performing Instagram post" (channel: ads)
+  • "Recheck SEO title + meta on /gifts/organic-newborn-gift-box" (channel: seo)
+  • "DM 2 local micro-influencers about a gifting collab" (channel: influencer)
+  • "Draft a journal post on 'what to gift a new mom'" (channel: journal)
+  • "Email 3 corporate HR contacts about team gifting" (channel: b2b)
+- Use varied channels across the day: email, instagram, pinterest, ads, seo, b2b, influencer, journal.
+- "est_cost" is the DOLLAR cost of doing it: 0 for organic/free actions (DMs, posts, SEO, writing); a real number only for paid actions (e.g. ad spend). Be realistic and small.
+- "est_minutes" realistic; keep total minutes <= 180.
+
+Pivot rule: if sales rose week-over-week and one channel got concentrated effort, weight tasks toward doubling down on it (say so in a flag). If sales are flat/down 2+ weeks, keep the 5 tasks but make them small restart actions and name ONE new channel to test in strategy_note.
+When execution has been zero/low, do NOT shorten below 5 — instead make each task tiny and obviously doable to restart motion.
+content_plan 0-2 items. Never invent metrics you weren't given.`
+
+// Free-form "what else can I do?" — answers the founder's question with a short
+// reply plus a few concrete, addable marketing tasks (same shape as the plan).
+export interface AddonSuggestion { reply: string; tasks: PlanTaskDraft[] }
+
+const ADDON_SYSTEM = `You are the marketing+sales operator for Petite Lavande (solo founder, premium organic baby/postpartum gift boxes; DTC + B2B corporate gifting). The founder is asking what marketing she can do. Reply briefly and practically, then propose 3-5 concrete, do-today marketing actions she can add to her checklist.
+Return ONLY JSON:
+{
+  "reply": 1-3 sentences answering her, warm and direct,
+  "tasks": [ { "title"(verb-first, names the channel + specific thing), "channel"(email|instagram|pinterest|ads|seo|b2b|influencer|journal), "task_type"('sell'|'market'|'ops'), "why"(one line), "est_minutes", "est_cost"(USD, 0 if free) } ]
+}
+Make titles specific to a premium organic baby/postpartum gift brand. est_cost is 0 for organic actions; a small real number only for paid ones. Never invent metrics.`
+
+export async function suggestAddons(question: string, payload: unknown): Promise<AddonSuggestion | null> {
+  const msg = await anthropic.messages.create({
+    model: SONNET,
+    max_tokens: 1000,
+    system: ADDON_SYSTEM,
+    messages: [{ role: 'user', content: `Her question: ${String(question).slice(0, 500)}\n\nContext JSON:\n${JSON.stringify(payload)}` }],
+  })
+  const text = msg.content[0]?.type === 'text' ? msg.content[0].text : ''
+  const raw = extractJson(text)
+  if (!raw) return null
+  const asArr = <T,>(v: unknown): T[] => Array.isArray(v) ? (v as T[]) : []
+  return { reply: String(raw.reply ?? ''), tasks: asArr<PlanTaskDraft>(raw.tasks).slice(0, 5) }
+}
 
 export async function generateDailyPlan(payload: unknown): Promise<DailyPlanDraft | null> {
   const msg = await anthropic.messages.create({

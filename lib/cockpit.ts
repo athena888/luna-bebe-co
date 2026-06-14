@@ -17,6 +17,7 @@ export interface Task {
   task_type: TaskType | null
   why: string | null
   est_minutes: number | null
+  est_cost_cents: number | null
   priority: number
   status: TaskStatus
   completed_at: string | null
@@ -92,6 +93,33 @@ export async function setTaskStatus(id: string, status: TaskStatus): Promise<voi
     status,
     completed_at: status === 'done' ? new Date().toISOString() : null,
   }).eq('id', id)
+}
+
+/** Add a single task to a day's checklist (used by the AI add-on suggester). */
+export async function createTask(date: string, t: {
+  title: string; channel?: string | null; task_type?: string | null; why?: string | null
+  est_minutes?: number | null; est_cost_cents?: number | null; priority?: number
+}): Promise<Task | null> {
+  const { data } = await supabaseAdmin.from('tasks').insert({
+    plan_date: date,
+    title: String(t.title ?? '').slice(0, 280) || 'Untitled task',
+    channel: t.channel ?? null,
+    task_type: ['sell', 'market', 'ops'].includes(String(t.task_type)) ? t.task_type : 'market',
+    why: t.why ?? null,
+    est_minutes: Number.isFinite(Number(t.est_minutes)) ? Number(t.est_minutes) : null,
+    est_cost_cents: Number.isFinite(Number(t.est_cost_cents)) ? Number(t.est_cost_cents) : 0,
+    priority: Math.min(5, Math.max(1, Number(t.priority) || 3)),
+  }).select('*').maybeSingle()
+  return (data as Task) ?? null
+}
+
+/** Recent marketing tasks for the export report (newest first). */
+export async function getTasksSince(days = 30): Promise<Task[]> {
+  const since = shiftDate(todayPT(), -days)
+  const { data } = await supabaseAdmin
+    .from('tasks').select('*').gte('plan_date', since)
+    .order('plan_date', { ascending: false }).order('priority', { ascending: true })
+  return (data ?? []) as Task[]
 }
 
 // ── Execution rate + streak ──────────────────────────────────────────────────
@@ -282,6 +310,7 @@ export async function writePlan(date: string, draft: DailyPlanDraft, execRateYes
       task_type: ['sell', 'market', 'ops'].includes(String(t.task_type)) ? t.task_type : null,
       why: t.why ?? null,
       est_minutes: Number.isFinite(Number(t.est_minutes)) ? Number(t.est_minutes) : null,
+      est_cost_cents: Number.isFinite(Number(t.est_cost)) ? Math.round(Number(t.est_cost) * 100) : 0,
       priority: Math.min(5, Math.max(1, Number(t.priority) || 3)),
     })))
   }
