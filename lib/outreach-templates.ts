@@ -22,12 +22,12 @@ export const TEMPLATES: OutreachTemplate[] = [
 
 I'm Emily, founder of Petite Lavande — we make organic newborn & postpartum gift boxes, finished by hand here in Seattle. Many attorneys and advisors send something when a client welcomes a new baby, and ours tend to be the kind people keep (and remember who it came from).
 
-If {{company}} ever marks those moments for clients, I'd love to offer you 30% off your first box so you can see the quality for yourself.
+If {{company}} ever marks those moments for clients, here's a code that's yours alone — {{code}} — for 30% off your first box, so you can see the quality for yourself.
 
 Open to it? I'm glad to send a few photos and details.
 
 Warmly,
-Emily, Founder · Petite Lavande`,
+Emily Liu, Founder · Petite Lavande`,
   },
   {
     key: 'corporate-intro',
@@ -37,12 +37,12 @@ Emily, Founder · Petite Lavande`,
 
 I'm Emily, founder of Petite Lavande — organic newborn & postpartum gift boxes, assembled and finished by hand. We help companies make their new-parent and client gifting feel personal instead of generic.
 
-If {{company}} sends gifts for new parents, baby showers, or VIP clients, I'd love to offer 30% off your first order — flexible quantities, your card, fully handled.
+If {{company}} sends gifts for new parents, baby showers, or VIP clients, here's a code that's yours alone — {{code}} — for 30% off your first order. Flexible quantities, your card, fully handled.
 
 Could I send a quick overview?
 
 Warmly,
-Emily, Founder · Petite Lavande`,
+Emily Liu, Founder · Petite Lavande`,
   },
 ]
 
@@ -65,7 +65,10 @@ export function renderTemplate(tpl: OutreachTemplate, fields: MergeFields): { ok
     company: (fields.company ?? '').trim(),
   }
   const missing = new Set<string>()
-  const sub = (s: string) => s.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, k) => {
+  const sub = (s: string) => s.replace(/\{\{\s*(\w+)\s*\}\}/g, (m, k) => {
+    // {{code}} is a unique discount code minted later (per recipient, at send
+    // time). Leave it untouched here — it must NOT count as a missing field.
+    if (k === 'code') return m
     const v = values[k]
     if (!v) { missing.add(k); return `{{${k}}}` }
     return v

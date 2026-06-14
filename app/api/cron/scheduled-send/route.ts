@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logOutboundEmail, getDueCampaigns, updateCampaignProgress, type Campaign } from '@/lib/outreach'
-import { planOutreach } from '@/lib/outreach-send'
+import { planOutreach, injectCode } from '@/lib/outreach-send'
 import { sendEmail, gmailSender } from '@/lib/gmail'
 
 export const dynamic = 'force-dynamic'
@@ -46,9 +46,11 @@ export async function GET(req: NextRequest) {
     for (let i = 0; i < planned.length; i++) {
       if (Date.now() - started > TIME_BUDGET_MS) break
       const p = planned[i]
+      const body = await injectCode(p.body)
+      if (!body) { console.error('campaign code mint failed', c.id, p.to); continue }
       try {
-        const res = await sendEmail({ to: p.to, subject: p.subject, text: p.body, replyTo: gmailSender() })
-        await logOutboundEmail(p.contactId, { subject: p.subject, snippet: p.body.slice(0, 280), messageId: res.messageId, track: p.track })
+        const res = await sendEmail({ to: p.to, subject: p.subject, text: body, replyTo: gmailSender() })
+        await logOutboundEmail(p.contactId, { subject: p.subject, snippet: body.slice(0, 280), messageId: res.messageId, track: p.track })
         sent++
       } catch (e) { console.error('campaign send failed', c.id, p.to, e) }
       if (i < planned.length - 1) await sleep(jitterMs())

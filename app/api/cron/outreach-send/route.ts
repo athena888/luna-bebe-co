@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logOutboundEmail } from '@/lib/outreach'
-import { planOutreach } from '@/lib/outreach-send'
+import { planOutreach, injectCode } from '@/lib/outreach-send'
 import { sendEmail, gmailSender } from '@/lib/gmail'
 
 export const dynamic = 'force-dynamic'
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'GOOGLE_SA_KEY not set' }, { status: 500 })
   }
 
-  const { planned, skipped, eligible } = await planOutreach(cap)
+  const { planned, skipped, eligible } = await planOutreach(cap, { sampleCode: dryRun })
 
   if (dryRun) {
     return NextResponse.json({ ok: true, dryRun: true, cap, eligible, sent: 0,
@@ -57,9 +57,11 @@ export async function GET(req: NextRequest) {
   for (let i = 0; i < planned.length; i++) {
     if (Date.now() - started > TIME_BUDGET_MS) break
     const p = planned[i]
+    const body = await injectCode(p.body)
+    if (!body) { failed.push({ to: p.to, why: 'discount code error' }); continue }
     try {
-      const res = await sendEmail({ to: p.to, subject: p.subject, text: p.body, replyTo: gmailSender() })
-      await logOutboundEmail(p.contactId, { subject: p.subject, snippet: p.body.slice(0, 280), messageId: res.messageId, track: p.track })
+      const res = await sendEmail({ to: p.to, subject: p.subject, text: body, replyTo: gmailSender() })
+      await logOutboundEmail(p.contactId, { subject: p.subject, snippet: body.slice(0, 280), messageId: res.messageId, track: p.track })
       sent.push({ to: p.to, messageId: res.messageId })
     } catch (e) {
       console.error('outreach send failed for', p.to, e)

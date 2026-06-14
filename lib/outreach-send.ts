@@ -1,6 +1,25 @@
 import { resolveMx } from 'node:dns/promises'
 import { getContactsDueForOutreach, getSuppressedSet, emailDomain, type OutreachCandidate } from './outreach'
 import { templateForTrack, templateByKey, renderTemplate, withFooter } from './outreach-templates'
+import { mintOutreachCode } from './outreach-discount'
+
+const CODE_RE = /\{\{\s*code\s*\}\}/g
+
+/**
+ * Finalize a planned body for a real send: if it has a {{code}} token, mint a
+ * unique single-use discount code and substitute it. Returns null if minting
+ * fails (caller should skip — never send a literal {{code}}).
+ */
+export async function injectCode(body: string): Promise<string | null> {
+  if (!CODE_RE.test(body)) return body
+  try {
+    const code = await mintOutreachCode()
+    return body.replace(CODE_RE, code)
+  } catch (e) {
+    console.error('outreach code mint failed:', e)
+    return null
+  }
+}
 
 // Shared planner used by BOTH the cron sender and the portal dry-run preview, so
 // what you preview is exactly what would send. Pure planning — no email is sent
@@ -32,7 +51,7 @@ function firstName(c: OutreachCandidate): string {
  */
 export async function planOutreach(
   cap: number,
-  opts: { trackFilter?: string | null; templateKey?: string | null } = {},
+  opts: { trackFilter?: string | null; templateKey?: string | null; sampleCode?: boolean } = {},
 ): Promise<OutreachPlan> {
   const [candidates, suppressed] = await Promise.all([
     getContactsDueForOutreach(cap * 3, opts.trackFilter),
@@ -56,11 +75,16 @@ export async function planOutreach(
     const rendered = renderTemplate(tpl, { first_name: firstName(c), company: c.company })
     if (!rendered.ok) { skipped.push({ to: email, why: `unresolved merge field: ${rendered.missing.join(', ')}` }); continue }
 
+    // For previews, show a representative code instead of the raw {{code}} token
+    // (no real Stripe code is minted until an actual send).
+    let body = withFooter(rendered.result.body)
+    if (opts.sampleCode) body = body.replace(CODE_RE, 'PL30-SAMPLE')
+
     planned.push({
       contactId: c.id,
       to: email,
       subject: rendered.result.subject,
-      body: withFooter(rendered.result.body),
+      body,
       reason: c.reason,
       track: c.track,
     })

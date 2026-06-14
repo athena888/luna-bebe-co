@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     if (action === 'preview') {
       // Same planner the cron uses — shows exactly what would send, no email sent.
       const cap = Math.max(0, Number(process.env.OUTREACH_DAILY_CAP) || 25)
-      const plan = await planOutreach(cap, { trackFilter: body.track_filter, templateKey: body.template_key })
+      const plan = await planOutreach(cap, { trackFilter: body.track_filter, templateKey: body.template_key, sampleCode: true })
       return NextResponse.json({ ok: true, cap, ...plan })
     }
     if (action === 'schedule') {
