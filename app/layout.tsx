@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import { CookieBanner } from "@/components/ui/CookieBanner";
 import { ChatWidget } from "@/components/ui/ChatWidget";
+import { CrispChat } from "@/components/ui/CrispChat";
 import { UTMCapture } from "@/components/ui/UTMCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { getSiteImage } from "@/lib/site-images";
@@ -102,7 +103,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         </NextIntlClientProvider>
         <Suspense fallback={null}><UTMCapture /></Suspense>
         <CookieBanner />
-        <ChatWidget />
+        {/* Live human chat (reply from your phone) once configured; otherwise the
+            built-in AI widget. Only one bubble shows. */}
+        {process.env.NEXT_PUBLIC_CRISP_WEBSITE_ID
+          ? <CrispChat websiteId={process.env.NEXT_PUBLIC_CRISP_WEBSITE_ID} />
+          : <ChatWidget />}
 
         {/* Google Analytics */}
         {GA_ID && (
