@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader, Check, Flame, Building2, Mail, Eye } from 'lucide-react'
+import { Loader, Check, Flame, Building2, Mail, Eye, Upload } from 'lucide-react'
 import type { Contact, NeedsAttentionItem, QuarantineRow } from '@/lib/outreach'
 
 type Tab = 'needs' | 'corporate' | 'all' | 'send' | 'quarantine'
@@ -73,6 +73,27 @@ export default function OutreachPage() {
       const d = await res.json()
       setPreview({ planned: d.planned ?? [], skipped: d.skipped ?? [], cap: d.cap ?? 0 })
     } finally { setPreviewing(false) }
+  }
+
+  // Bulk CSV import — needs an `email` column; name/company/track optional.
+  // Duplicates (by email) are ignored. Imported contacts are auto-enrolled.
+  const [importing, setImporting] = useState(false)
+  const [importMsg, setImportMsg] = useState('')
+  async function importCsv(file: File) {
+    setImporting(true); setImportMsg('')
+    try {
+      const csv = await file.text()
+      const res = await fetch('/api/portal/outreach/import', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ csv }),
+      })
+      const d = await res.json()
+      if (!res.ok) { setImportMsg(d.error || 'Import failed'); return }
+      setImportMsg(`Imported ${d.inserted} new · ignored ${d.duplicates} duplicate${d.duplicates === 1 ? '' : 's'}${d.invalid ? ` · ${d.invalid} invalid` : ''}.`)
+      load('send')
+    } catch {
+      setImportMsg('Import failed — check the file is a .csv with an email column.')
+    } finally { setImporting(false) }
   }
 
   async function resolve(flagId: string) {
@@ -169,11 +190,21 @@ export default function OutreachPage() {
               <p className="font-sans text-xs text-bark-500 max-w-xl leading-relaxed">
                 Only contacts you <strong>enroll</strong> here ever get cold emails. Each needs a <strong>first name</strong> and <strong>company</strong> (the template merge fields) — rows missing either are skipped. Every send carries a CAN-SPAM footer and honors STOP automatically. The weekday cron sends up to your daily cap.
               </p>
-              <button onClick={runPreview} disabled={previewing}
-                className="shrink-0 inline-flex items-center gap-2 bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase px-5 py-2.5 rounded hover:bg-bark-700 disabled:opacity-50">
-                {previewing ? <Loader size={13} className="animate-spin" /> : <Eye size={13} />} Preview dry run
-              </button>
+              <div className="shrink-0 flex items-center gap-2">
+                <label className={`inline-flex items-center gap-2 border border-bark-600 text-bark-600 font-sans text-[11px] tracking-[0.2em] uppercase px-4 py-2.5 rounded hover:bg-bark-50 cursor-pointer ${importing ? 'opacity-50 pointer-events-none' : ''}`}>
+                  {importing ? <Loader size={13} className="animate-spin" /> : <Upload size={13} />} Import CSV
+                  <input type="file" accept=".csv,text/csv" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) importCsv(f); e.target.value = '' }} />
+                </label>
+                <button onClick={runPreview} disabled={previewing}
+                  className="inline-flex items-center gap-2 bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase px-5 py-2.5 rounded hover:bg-bark-700 disabled:opacity-50">
+                  {previewing ? <Loader size={13} className="animate-spin" /> : <Eye size={13} />} Preview dry run
+                </button>
+              </div>
             </div>
+            {importMsg && <p className="font-sans text-xs text-bark-600 mt-3 bg-white border border-cream-200 rounded p-2">{importMsg}</p>}
+            <p className="font-sans text-[11px] text-bark-400 mt-2">
+              CSV needs an <strong>email</strong> column; <strong>name</strong>, <strong>company</strong> &amp; <strong>track</strong> are used if present. Duplicate emails are ignored. Imported contacts are auto-enrolled.
+            </p>
             {preview && (
               <div className="mt-4 border-t border-cream-200 pt-4">
                 <p className="font-sans text-xs text-bark-500 mb-3">

@@ -325,6 +325,61 @@ export async function isSuppressed(email: string): Promise<boolean> {
   return Boolean(data)
 }
 
+export interface ImportRecord {
+  email: string
+  name?: string | null
+  company?: string | null
+  track?: string | null
+  first_name?: string | null
+}
+export interface ImportResult { inserted: number; duplicates: number; invalid: number }
+
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+
+/**
+ * Bulk-import an outreach list. Dedupes by email — rows whose email already
+ * exists (or repeats within the file) are IGNORED, not overwritten. Imported
+ * contacts are enrolled for outreach (source='outreach_list') so they're ready
+ * to send once they have a first name + company.
+ */
+export async function bulkImportOutreachContacts(records: ImportRecord[]): Promise<ImportResult> {
+  let invalid = 0
+  // Validate + dedupe within the file.
+  const seen = new Set<string>()
+  const clean: ImportRecord[] = []
+  for (const r of records) {
+    const email = (r.email ?? '').trim().toLowerCase()
+    if (!EMAIL_RE.test(email)) { invalid++; continue }
+    if (seen.has(email)) continue
+    seen.add(email)
+    clean.push({ ...r, email })
+  }
+  if (clean.length === 0) return { inserted: 0, duplicates: 0, invalid }
+
+  // Skip anyone already in the DB.
+  const { data: existing } = await supabaseAdmin
+    .from('contacts').select('email').in('email', clean.map(r => r.email))
+  const have = new Set((existing ?? []).map(e => String(e.email).toLowerCase()))
+
+  const rows = clean.filter(r => !have.has(r.email)).map(r => ({
+    email: r.email,
+    name: r.name?.trim() || null,
+    company: r.company?.trim() || null,
+    first_name: (r.first_name?.trim() || r.name?.trim().split(/\s+/)[0] || null),
+    track: (r.track?.trim() || 'A'),
+    status: 'new',
+    source: 'outreach_list',
+    outreach_enrolled: true,
+  }))
+  const duplicates = clean.length - rows.length
+
+  if (rows.length) {
+    const { error } = await supabaseAdmin.from('contacts').insert(rows)
+    if (error) throw error
+  }
+  return { inserted: rows.length, duplicates, invalid }
+}
+
 /** Edit the few fields the cold-outreach sender needs (from the portal). */
 export async function updateContactFields(
   id: string,
