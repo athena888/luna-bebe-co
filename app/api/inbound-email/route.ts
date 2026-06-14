@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import {
   findContactByEmail, upsertContact, addTouch, createFlag, quarantineInbound, looksCorporate,
-  logOutboundEmail, logInboundTouch, closeOpenOutbound,
+  logOutboundEmail, logInboundTouch, closeOpenOutbound, addSuppression,
 } from '@/lib/outreach'
 import { classifyEmail } from '@/lib/cockpit-ai'
 import { supabaseAdmin } from '@/lib/supabase'
@@ -82,6 +82,18 @@ export async function POST(req: NextRequest) {
         await logOutboundEmail(contactId, { subject: subject ?? undefined, snippet: snippet ?? undefined, messageId: messageId ?? undefined })
       }
       return NextResponse.json({ ok: true, outbound: true, recipient })
+    }
+
+    // ── Opt-out: "STOP" / "unsubscribe" → suppress immediately, never email again.
+    const optOut = /\b(stop|unsubscribe|opt[\s-]?out|remove me)\b/i.test(`${subject ?? ''} ${snippet ?? ''}`)
+    if (optOut) {
+      await addSuppression(fromEmail, 'stop')
+      const c = await findContactByEmail(fromEmail)
+      if (c) {
+        await closeOpenOutbound(c.id)
+        await supabaseAdmin.from('contacts').update({ status: 'closed', updated_at: new Date().toISOString() }).eq('id', c.id)
+      }
+      return NextResponse.json({ ok: true, suppressed: true })
     }
 
     // ── Flow 2: inbound — classify, then match or quarantine ─────────────────

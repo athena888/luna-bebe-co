@@ -445,4 +445,22 @@ insert into storage.buckets (id, name, public)
 values ('marketing-assets', 'marketing-assets', true)
 on conflict (id) do nothing;
 
+-- 21) Cold-outreach sender (Gmail DWD) — suppression list (STOP / bounce / manual)
+--     and an outreach-eligibility flag on contacts so the sender NEVER cold-emails
+--     customers or inbound leads by accident (only contacts explicitly enrolled).
+create table if not exists public.suppression (
+  email      text primary key,
+  reason     text,                 -- stop | bounce | manual | complaint
+  created_at timestamptz not null default now()
+);
+alter table public.suppression enable row level security;
+drop policy if exists suppression_service on public.suppression;
+create policy suppression_service on public.suppression for all to service_role using (true) with check (true);
+
+-- Only contacts with outreach_enrolled = true are eligible for cold sends.
+alter table public.contacts add column if not exists outreach_enrolled boolean not null default false;
+-- First name (for the {{first_name}} merge field). Falls back to the first token
+-- of `name` at send time when null.
+alter table public.contacts add column if not exists first_name text;
+
 -- Done.

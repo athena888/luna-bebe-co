@@ -303,3 +303,82 @@ function addDaysISO(days: number): string {
   d.setUTCDate(d.getUTCDate() + days)
   return d.toISOString().slice(0, 10)
 }
+
+// ── Cold-outreach sender support ─────────────────────────────────────────────
+
+/** Add an address to the suppression list (STOP / bounce / manual / complaint). */
+export async function addSuppression(email: string, reason: string): Promise<void> {
+  await supabaseAdmin.from('suppression')
+    .upsert({ email: email.trim().toLowerCase(), reason }, { onConflict: 'email' })
+}
+
+/** Emails currently suppressed (lowercased set), for fast filtering. */
+export async function getSuppressedSet(): Promise<Set<string>> {
+  const { data } = await supabaseAdmin.from('suppression').select('email')
+  return new Set((data ?? []).map(r => String(r.email).toLowerCase()))
+}
+
+export async function isSuppressed(email: string): Promise<boolean> {
+  const { data } = await supabaseAdmin.from('suppression').select('email').eq('email', email.trim().toLowerCase()).maybeSingle()
+  return Boolean(data)
+}
+
+// A contact eligible for a cold send right now: either never emailed, or its
+// follow-up has come due — and it has NOT replied/closed.
+export interface OutreachCandidate {
+  id: string
+  email: string
+  first_name: string | null
+  name: string | null
+  company: string | null
+  track: Track
+  reason: 'new' | 'followup'
+}
+
+/**
+ * Contacts due for an outreach send. SAFETY: only `outreach_enrolled` contacts
+ * are ever eligible — customers and inbound leads are never cold-emailed.
+ *  • "new"      — enrolled, no outbound touch yet
+ *  • "followup" — has an open outbound touch whose followup_due has arrived
+ */
+export async function getContactsDueForOutreach(limit = 100): Promise<OutreachCandidate[]> {
+  const today = addDaysISO(0)
+  const { data: enrolled } = await supabaseAdmin
+    .from('contacts')
+    .select('id, email, first_name, name, company, track, status')
+    .eq('outreach_enrolled', true)
+    .not('status', 'in', '("closed")')
+    .limit(500)
+  const contacts = (enrolled ?? []) as (Contact & { first_name: string | null })[]
+  if (!contacts.length) return []
+
+  // One query for every outbound touch belonging to these contacts.
+  const ids = contacts.map(c => c.id)
+  const { data: touchRows } = await supabaseAdmin
+    .from('touches')
+    .select('contact_id, direction, status, followup_due')
+    .in('contact_id', ids).eq('direction', 'outbound')
+  const outbound = new Map<string, { status: string | null; followup_due: string | null }[]>()
+  for (const t of (touchRows ?? []) as { contact_id: string; status: string | null; followup_due: string | null }[]) {
+    const arr = outbound.get(t.contact_id) ?? []
+    arr.push({ status: t.status, followup_due: t.followup_due })
+    outbound.set(t.contact_id, arr)
+  }
+
+  const out: OutreachCandidate[] = []
+  for (const c of contacts) {
+    const touches = outbound.get(c.id) ?? []
+    const base = { id: c.id, email: c.email, first_name: c.first_name, name: c.name, company: c.company, track: c.track }
+    if (touches.length === 0) {
+      out.push({ ...base, reason: 'new' })
+    } else {
+      // Any replied/closed thread means we leave them alone.
+      const open = touches.filter(t => t.status === 'sent' || t.status === 'followup_due')
+      const replied = touches.some(t => t.status === 'replied' || t.status === 'closed')
+      const due = open.some(t => t.followup_due != null && t.followup_due <= today)
+      if (!replied && due) out.push({ ...base, reason: 'followup' })
+    }
+    if (out.length >= limit) break
+  }
+  return out
+}
