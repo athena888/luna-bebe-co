@@ -4,8 +4,10 @@ import {
   getSentLog, getCampaigns, createCampaign, cancelCampaign, getEnrolledTracks, getColdSendList,
   setContactEmailOverride,
 } from '@/lib/outreach'
-import { planOutreach } from '@/lib/outreach-send'
+import { planOutreach, injectCode } from '@/lib/outreach-send'
 import { getOutreachTemplates, saveOutreachTemplate } from '@/lib/outreach-templates-db'
+import { renderTemplate, withFooter, templateForTrack, templateByKey } from '@/lib/outreach-templates'
+import { sendEmail, gmailSender, gmailConfigured } from '@/lib/gmail'
 
 // Admin-guarded by middleware (/api/portal/*). Powers the Outreach screen.
 export async function GET(req: NextRequest) {
@@ -75,6 +77,21 @@ export async function POST(req: NextRequest) {
     if (action === 'clear_email' && body.contactId) {
       await setContactEmailOverride(body.contactId, null)
       return NextResponse.json({ ok: true })
+    }
+    if (action === 'send_test') {
+      // Fire ONE real cold email to a chosen address right now — admin-only, so it
+      // proves end-to-end delivery without the cron or CRON_SECRET.
+      const to = String(body.to ?? '').trim().toLowerCase()
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) return NextResponse.json({ error: 'Enter a valid email' }, { status: 400 })
+      if (!gmailConfigured()) return NextResponse.json({ error: 'GOOGLE_SA_KEY is not set in the environment' }, { status: 500 })
+      const templates = await getOutreachTemplates()
+      const tpl = templateByKey(body.template_key, templates) ?? templateForTrack('A', templates)
+      const rendered = renderTemplate(tpl, { first_name: 'there', company: 'your company' })
+      if (!rendered.ok) return NextResponse.json({ error: 'Template has unresolved fields' }, { status: 500 })
+      const text = await injectCode(withFooter(rendered.result.body))
+      if (!text) return NextResponse.json({ error: 'Could not mint the discount code (check Stripe)' }, { status: 500 })
+      const res = await sendEmail({ to, subject: `[TEST] ${rendered.result.subject}`, text, replyTo: gmailSender() })
+      return NextResponse.json({ ok: true, to, messageId: res.messageId })
     }
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
   } catch (e) {

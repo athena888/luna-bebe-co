@@ -172,6 +172,22 @@ export default function OutreachPage() {
   // Duplicates (by email) are ignored. Imported contacts are auto-enrolled.
   const [importing, setImporting] = useState(false)
   const [importMsg, setImportMsg] = useState('')
+  // Send-a-real-test-to-myself (fires immediately, admin-auth, no cron).
+  const [testEmail, setTestEmail] = useState('')
+  const [testing, setTesting] = useState(false)
+  const [testMsg, setTestMsg] = useState('')
+  async function sendTest() {
+    if (!testEmail.trim() || testing) return
+    setTesting(true); setTestMsg('')
+    try {
+      const res = await fetch('/api/portal/outreach', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'send_test', to: testEmail }),
+      })
+      const d = await res.json()
+      setTestMsg(res.ok ? `✓ Sent to ${d.to} — check that inbox (and Stripe for the new code).` : (d.error || 'Failed'))
+    } catch { setTestMsg('Failed — try again') } finally { setTesting(false) }
+  }
   async function importCsv(file: File) {
     setImporting(true); setImportMsg('')
     try {
@@ -298,6 +314,16 @@ export default function OutreachPage() {
             <p className="font-sans text-[11px] text-bark-400 mt-2">
               CSV needs an <strong>email</strong> column; <strong>name</strong>, <strong>company</strong> &amp; <strong>track</strong> are used if present. Duplicate emails are ignored. Imported contacts are auto-enrolled.
             </p>
+            <div className="mt-4 pt-4 border-t border-cream-200">
+              <p className="font-sans text-[11px] text-bark-500 mb-2">Send a <strong>real test email to yourself</strong> right now (fires immediately — proves delivery without waiting for the 10am run):</p>
+              <div className="flex flex-wrap gap-2">
+                <input value={testEmail} onChange={e => setTestEmail(e.target.value)} placeholder="your@email.com" className="flex-1 min-w-[180px] px-3 py-2 border border-cream-300 rounded text-sm text-bark-700 bg-white focus:outline-none focus:border-bark-400" />
+                <button onClick={sendTest} disabled={testing || !testEmail.trim()} className="inline-flex items-center gap-2 bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase px-5 py-2.5 rounded hover:bg-bark-700 disabled:opacity-50">
+                  {testing ? <Loader size={13} className="animate-spin" /> : <Send size={13} />} Send test
+                </button>
+              </div>
+              {testMsg && <p className="font-sans text-xs text-bark-600 mt-2">{testMsg}</p>}
+            </div>
             {preview && (
               <div className="mt-4 border-t border-cream-200 pt-4">
                 <p className="font-sans text-xs text-bark-500 mb-3">
