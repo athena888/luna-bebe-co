@@ -245,7 +245,7 @@ export default function OutreachPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-cream-200 bg-cream-100">
-                  {['', 'Contact', 'Company', 'Size', 'Status', 'Updated'].map(h => (
+                  {['', 'Contact', 'Company', 'Size', 'Status', 'Updated', 'Enroll'].map(h => (
                     <th key={h} className="px-4 py-3 text-left font-sans text-[10px] font-semibold uppercase tracking-wider text-bark-400">{h}</th>
                   ))}
                 </tr>
@@ -262,6 +262,11 @@ export default function OutreachPage() {
                     <td className="px-4 py-3 font-sans text-xs text-bark-400">{c.company_size || '—'}</td>
                     <td className="px-4 py-3"><span className="font-sans text-[10px] tracking-[0.1em] uppercase bg-cream-200 text-bark-500 px-2 py-0.5 rounded-full capitalize">{c.status}</span></td>
                     <td className="px-4 py-3 font-sans text-xs text-bark-400">{fmtDate(c.updated_at)}</td>
+                    <td className="px-4 py-3">
+                      {savingId === c.id
+                        ? <Loader size={12} className="animate-spin text-bark-400" />
+                        : <input type="checkbox" checked={!!c.outreach_enrolled} onChange={e => patchContact(c.id, { outreach_enrolled: e.target.checked })} className="w-4 h-4 accent-bark-600" title="Enroll for cold outreach — set a first name + company in the Cold Send tab" />}
+                    </td>
                   </tr>
                 ))}
               </tbody>
