@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Button } from '@/components/ui/Button'
-import { RefreshCw, ArrowRight, Check } from 'lucide-react'
+import { RefreshCw, ArrowRight, Check, ChevronDown, ChevronRight } from 'lucide-react'
 import type { CardStyle } from '@/lib/card-styles'
 
 type Phase = 'form' | 'generating' | 'edit'
@@ -41,8 +41,8 @@ export default function CardPage() {
   }, [])
 
   const selectedStyle = styles.find(s => s.id === styleId) ?? null
-  // Give writers room — at least 100 words regardless of the card's stored limit.
-  const wordLimit = Math.max(selectedStyle?.word_limit ?? 100, 100)
+  // Generous room — at least 160 words regardless of the card's stored limit.
+  const wordLimit = Math.max(selectedStyle?.word_limit ?? 160, 160)
   const words = countWords(editedContent)
   const overLimit = words > wordLimit
 
@@ -55,7 +55,7 @@ export default function CardPage() {
         const res = await fetch('/api/ai/letter', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ recipientName, senderName, cardName: selectedStyle?.name, cardTheme: selectedStyle?.meta?.theme }),
+          body: JSON.stringify({ recipientName, senderName, cardName: selectedStyle?.name, cardTheme: selectedStyle?.meta?.theme, wordLimit }),
         })
         const data = await res.json()
         if (data.letters?.length === 2) {
@@ -127,19 +127,27 @@ export default function CardPage() {
                     const active = s.id === styleId
                     return (
                       <button key={s.id} type="button" onClick={() => setStyleId(s.id)} className="snap-start shrink-0 w-32 md:w-full text-left">
-                        {/* A6 portrait — whole card, no crop */}
-                        <div className={`relative bg-cream-100 border transition-all ${active ? 'border-bark-600 ring-2 ring-bark-600' : 'border-cream-300 hover:border-bark-400'}`} style={{ aspectRatio: '41 / 58' }}>
+                        {/* A6 portrait — whole card, no crop. Selected frame = French herbal green. */}
+                        <div className={`relative bg-cream-100 border transition-all ${active ? 'border-[#7b876a] ring-2 ring-[#7b876a]' : 'border-cream-300 hover:border-bark-400'}`} style={{ aspectRatio: '41 / 58' }}>
                           <img src={s.image_url} alt={s.alt_text || s.name} className="absolute inset-0 w-full h-full object-contain" />
-                          {active && <span className="absolute top-2 right-2 bg-bark-600 text-white rounded-full p-1 z-10"><Check size={11} /></span>}
+                          {active && <span className="absolute top-2 right-2 bg-[#7b876a] text-white rounded-full p-1 z-10"><Check size={11} /></span>}
                         </div>
                         <div className="pt-1.5">
                           <p className="font-sans text-xs font-medium text-bark-600 truncate">{s.name}</p>
-                          <p className="font-sans text-[10px] text-bark-400">{Math.max(s.word_limit, 100)} words max</p>
+                          <p className="font-sans text-[10px] text-bark-400">{Math.max(s.word_limit, 160)} words max</p>
                         </div>
                       </button>
                     )
                   })}
                 </div>
+                {/* Carousel affordance — small & elegant */}
+                {styles.length > 1 && (
+                  <div className="flex items-center justify-center gap-1.5 mt-2 text-bark-400/70">
+                    <span className="font-sans text-[9px] tracking-[0.25em] uppercase">{styles.length} designs</span>
+                    <ChevronRight size={11} className="md:hidden animate-pulse" />
+                    <ChevronDown size={11} className="hidden md:block animate-pulse" />
+                  </div>
+                )}
               </div>
             )}
 

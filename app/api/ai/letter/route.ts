@@ -8,11 +8,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
     }
 
-    const { recipientName, senderName, cardName, cardTheme, concept } = await req.json()
+    const { recipientName, senderName, cardName, cardTheme, concept, wordLimit } = await req.json()
 
     if (!recipientName || !senderName) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
+
+    // Hard cap each letter to the card's word limit (default 160).
+    const maxWords = Math.min(300, Math.max(40, Number(wordLimit) || 160))
 
     // Tailor the letters to the card the customer chose and anything they told
     // us they want to say.
@@ -40,6 +43,7 @@ Letter 2 — ELEGANT & FORMAL: Poetic, refined, timeless. A more literary and gr
 
 Guidelines for BOTH letters:
 - Start with "Dear ${recipientName},"
+- HARD LIMIT: each letter must be ${maxWords} words or fewer (count every word). Do not exceed it.
 - 2 short paragraphs only — keep it brief
 - Focus entirely on love, joy, and the beauty of new life — purely personal and emotional
 - Do NOT mention any products, items, gifts, or what's inside the box
