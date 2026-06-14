@@ -1,3 +1,6 @@
+# Local test fixtures (may contain a personal email) — never commit
+test.csv
+
 # env — NEVER commit these
 .env
 .env.local
