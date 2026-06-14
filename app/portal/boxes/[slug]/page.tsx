@@ -100,6 +100,9 @@ export default function BoxEditorPage() {
   const fileRef = useRef<HTMLInputElement>(null)
   const [featured, setFeatured] = useState(true)
   const [active, setActive] = useState(true)
+  const [audience, setAudience] = useState<'baby' | 'mama' | 'bundle'>('bundle')
+  const [variant, setVariant] = useState<'neutral' | 'girl' | 'boy'>('neutral')
+  const [season, setSeason] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
@@ -120,6 +123,9 @@ export default function BoxEditorPage() {
       setImages(box.images ?? (box.image ? [box.image] : []))
       setFeatured(box.featured)
       setActive(box.active !== false)
+      setAudience((['baby', 'mama', 'bundle'].includes(box.audience) ? box.audience : 'bundle'))
+      setVariant((['neutral', 'girl', 'boy'].includes(box.variant) ? box.variant : 'neutral'))
+      setSeason(box.style ?? '')
       // Convert selectionRefs map to slots array
       const slotRefs = box.selectionRefs ?? {}
       const newSlots: BoxSlot[] = Object.entries(slotRefs).map(([key, ref]) => {
@@ -226,6 +232,9 @@ export default function BoxEditorPage() {
       body: JSON.stringify({
         name,
         description,
+        style: season,
+        audience,
+        variant,
         images,
         featured,
         active,
@@ -249,7 +258,7 @@ export default function BoxEditorPage() {
             <ArrowLeft size={18} />
           </button>
           <div>
-            <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 capitalize">{box.style} · {box.variant}</p>
+            <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 capitalize">{audience === 'baby' ? 'For Baby' : audience === 'mama' ? 'For Mama' : 'Baby & Mama'} · {variant}{season ? ` · ${season}` : ''}</p>
             <h1 className="font-serif text-2xl text-bark-600">{box.name}</h1>
           </div>
         </div>
@@ -270,6 +279,29 @@ export default function BoxEditorPage() {
           <div>
             <label className={labelCls}>Name</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)} className={inputCls} />
+          </div>
+          {/* Categorization — drives grouping (audience) + the badges (boy/girl + season) */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className={labelCls}>Audience (grouping)</label>
+              <select value={audience} onChange={e => setAudience(e.target.value as 'baby' | 'mama' | 'bundle')} className={inputCls}>
+                <option value="baby">For Baby</option>
+                <option value="mama">For Mama</option>
+                <option value="bundle">Baby &amp; Mama Bundle</option>
+              </select>
+            </div>
+            <div>
+              <label className={labelCls}>For (badge)</label>
+              <select value={variant} onChange={e => setVariant(e.target.value as 'neutral' | 'girl' | 'boy')} className={inputCls}>
+                <option value="neutral">Neutral</option>
+                <option value="girl">Girl</option>
+                <option value="boy">Boy</option>
+              </select>
+            </div>
+            <div>
+              <label className={labelCls}>Season (label)</label>
+              <input type="text" value={season} onChange={e => setSeason(e.target.value)} placeholder="e.g. All-Season" className={inputCls} />
+            </div>
           </div>
           <div>
             <div className="flex items-center justify-between">

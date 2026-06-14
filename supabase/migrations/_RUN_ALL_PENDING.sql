@@ -352,4 +352,7 @@ alter table public.waitlist enable row level security;
 drop policy if exists waitlist_service_write on public.waitlist;
 create policy waitlist_service_write on public.waitlist for all to service_role using (true) with check (true);
 
+-- 19) Prebuilt box audience (For Baby / For Mama / Baby & Mama Bundle).
+alter table prebuilt_boxes add column if not exists audience text not null default 'bundle';
+
 -- Done.

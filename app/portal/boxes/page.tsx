@@ -36,9 +36,16 @@ export default function BoxesPortalPage() {
     } finally { setBusy(null) }
   }
 
-  // Group by season (style) so each edition reads as its own section
-  const groups = Array.from(new Set(boxes.map(b => b.style)))
-    .map(style => ({ style, items: boxes.filter(b => b.style === style) }))
+  // Group by audience (For Baby / For Mama / Baby & Mama Bundle); season is a
+  // per-box label.
+  const AUDIENCE_GROUPS = [
+    { key: 'baby', label: 'For Baby' },
+    { key: 'mama', label: 'For Mama' },
+    { key: 'bundle', label: 'Baby & Mama Bundle' },
+  ] as const
+  const groups = AUDIENCE_GROUPS
+    .map(g => ({ style: g.label, items: boxes.filter(b => b.audience === g.key) }))
+    .filter(g => g.items.length > 0)
 
   return (
     <div className="p-4 sm:p-8">
@@ -55,7 +62,7 @@ export default function BoxesPortalPage() {
         <div className="space-y-10">
           {groups.map(({ style, items }) => (
             <div key={style}>
-              <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-4 pb-2 border-b border-cream-300">{style} Edition</p>
+              <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-4 pb-2 border-b border-cream-300">{style}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {items.map(box => {
                   const itemCount = box.items.length
@@ -73,7 +80,7 @@ export default function BoxesPortalPage() {
                             <h2 className="font-serif text-lg text-bark-600">{box.name}</h2>
                             <Settings size={14} className="text-bark-400 group-hover:text-bark-600 transition-colors" />
                           </div>
-                          <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 capitalize">{box.style} · {box.variant}</p>
+                          <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 capitalize">{box.variant}{box.style ? ` · ${box.style}` : ''}</p>
                           <p className="font-sans text-xs text-bark-400 mt-2">{itemCount}/7 items · {fmt(box.customPrice)}</p>
                         </div>
                       </Link>

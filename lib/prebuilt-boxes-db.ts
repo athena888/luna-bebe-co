@@ -12,10 +12,13 @@ export type SlotRef = { product_id: string; color?: string | null; size?: string
 type SelectionJson = Record<string, SlotRef | null>
 export type BoxItem = Product & { audience?: Audience | null }
 
+export type BoxAudience = 'baby' | 'mama' | 'bundle'
+
 export interface ResolvedBox {
   slug: string
   name: string
-  style: string
+  style: string                  // season label (e.g. "Summer", "All-Season")
+  audience: BoxAudience          // who it's for — drives the public grouping
   variant: 'neutral' | 'girl' | 'boy'
   tagline: string
   description: string
@@ -35,6 +38,7 @@ interface BoxRow {
   slug: string
   name: string
   style: string
+  audience: string | null
   variant: string
   tagline: string
   description: string
@@ -125,6 +129,7 @@ function resolveRow(row: BoxRow, productById: Map<string, Product>): ResolvedBox
     slug: row.slug,
     name: row.name,
     style: row.style,
+    audience: (['baby', 'mama', 'bundle'].includes(row.audience as string) ? row.audience : 'bundle') as BoxAudience,
     variant: (row.variant as ResolvedBox['variant']) ?? 'neutral',
     tagline: row.tagline,
     description: row.description,
@@ -166,6 +171,7 @@ export async function getBox(slug: string): Promise<ResolvedBox | null> {
 export interface UpdateBoxInput {
   name?: string
   style?: string
+  audience?: string
   variant?: string
   tagline?: string
   description?: string
@@ -183,6 +189,7 @@ export async function updateBox(slug: string, input: UpdateBoxInput): Promise<vo
   const patch: Record<string, unknown> = {}
   if (input.name !== undefined) patch.name = input.name
   if (input.style !== undefined) patch.style = input.style
+  if (input.audience !== undefined) patch.audience = input.audience
   if (input.variant !== undefined) patch.variant = input.variant
   if (input.tagline !== undefined) patch.tagline = input.tagline
   if (input.description !== undefined) patch.description = input.description

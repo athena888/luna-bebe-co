@@ -14,12 +14,16 @@ export const metadata = {
 
 export default async function BoxesPage() {
   const boxes = await getBoxes()
-  // Group by whichever styles actually exist
-  const styles = Array.from(new Set(boxes.map(b => b.style)))
-  const byStyle = styles.map(style => ({
-    style,
-    boxes: boxes.filter(b => b.style === style),
-  }))
+  // Group by AUDIENCE (For Baby / For Mama / Baby & Mama Bundle); season is a
+  // per-box label. Only non-empty groups, in this order.
+  const AUDIENCE_GROUPS = [
+    { key: 'baby', label: 'For Baby' },
+    { key: 'mama', label: 'For Mama' },
+    { key: 'bundle', label: 'Baby & Mama Bundle' },
+  ] as const
+  const byStyle = AUDIENCE_GROUPS
+    .map(g => ({ style: g.label, boxes: boxes.filter(b => b.audience === g.key) }))
+    .filter(g => g.boxes.length > 0)
 
   return (
     <>

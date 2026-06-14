@@ -407,6 +407,14 @@ function BoxSection({
 
         {/* Top: identity */}
         <div className="px-8 lg:px-12 xl:px-16 pt-12 lg:pt-16">
+          <FlyIn delay={80}>
+            <div className="flex items-center gap-2 mb-3">
+              {box.variant !== 'neutral' && (
+                <span className={`font-sans text-[9px] tracking-[0.2em] uppercase px-2.5 py-1 ${box.variant === 'girl' ? 'bg-rose-100/90 text-rose-500' : 'bg-sky-100/90 text-sky-600'}`}>{box.variant === 'girl' ? 'Girl' : 'Boy'}</span>
+              )}
+              {box.style && <span className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400">{box.style}</span>}
+            </div>
+          </FlyIn>
           <FlyIn delay={100}>
             <h2 className="font-serif text-5xl lg:text-6xl text-espresso leading-[1.02] mb-5">{box.name}</h2>
           </FlyIn>
