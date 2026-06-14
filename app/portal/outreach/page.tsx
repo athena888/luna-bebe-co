@@ -62,9 +62,7 @@ export default function OutreachPage() {
   async function load(t: Tab) {
     setLoading(true)
     try {
-      // The Cold Send tab works off the full contact list.
-      const fetchTab = t === 'send' ? 'all' : t
-      const res = await fetch(`/api/portal/outreach?tab=${fetchTab}`)
+      const res = await fetch(`/api/portal/outreach?tab=${t}`)
       const d = await res.json()
       if (t === 'needs') setNeeds(d.needs ?? [])
       else if (t === 'quarantine') setQuarantine(d.quarantine ?? [])
@@ -99,6 +97,15 @@ export default function OutreachPage() {
     })
   }
   useEffect(() => { load(tab) }, [tab])
+
+  // Remove a contact from the cold-send queue (un-enroll; keeps the contact + history).
+  async function removeFromColdSend(id: string) {
+    setContacts(cs => cs.filter(c => c.id !== id))
+    await fetch('/api/portal/outreach', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'update', contactId: id, outreach_enrolled: false }),
+    })
+  }
 
   // Optimistically patch a contact + persist (enroll toggle / first name / company).
   async function patchContact(id: string, patch: Partial<Contact>) {
@@ -237,7 +244,7 @@ export default function OutreachPage() {
           <div className="bg-cream-50 border border-cream-200 rounded-xl p-4 mb-5">
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <p className="font-sans text-xs text-bark-500 max-w-xl leading-relaxed">
-                Only contacts you <strong>enroll</strong> here ever get cold emails. Each needs a <strong>first name</strong> and <strong>company</strong> (the template merge fields) — rows missing either are skipped. Every send carries a CAN-SPAM footer and honors STOP automatically. The weekday cron sends up to your daily cap.
+                This is your <strong>send queue</strong> — enrolled contacts who haven&rsquo;t been emailed yet. Add people with <strong>Import CSV</strong>; each needs a <strong>first name</strong> and <strong>company</strong> (the merge fields). Once someone&rsquo;s emailed they drop off this list automatically. Use the trash icon to remove anyone before they send. Nothing goes out until you schedule it in <strong>Schedule &amp; Sent</strong>.
               </p>
               <div className="shrink-0 flex items-center gap-2">
                 <label className={`inline-flex items-center gap-2 border border-bark-600 text-bark-600 font-sans text-[11px] tracking-[0.2em] uppercase px-4 py-2.5 rounded hover:bg-bark-50 cursor-pointer ${importing ? 'opacity-50 pointer-events-none' : ''}`}>
@@ -291,7 +298,7 @@ export default function OutreachPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-cream-200 bg-cream-100">
-                    {['Enroll', 'First name', 'Email', 'Company', 'Status'].map(h => (
+                    {['First name', 'Email', 'Company', 'Status', ''].map(h => (
                       <th key={h} className="px-4 py-3 text-left font-sans text-[10px] font-semibold uppercase tracking-wider text-bark-400">{h}</th>
                     ))}
                   </tr>
@@ -300,9 +307,6 @@ export default function OutreachPage() {
                   {contacts.map(c => (
                     <tr key={c.id} className="border-b border-cream-200 last:border-0">
                       <td className="px-4 py-3">
-                        <input type="checkbox" checked={!!c.outreach_enrolled} onChange={e => patchContact(c.id, { outreach_enrolled: e.target.checked })} className="w-5 h-5 accent-bark-600" />
-                      </td>
-                      <td className="px-4 py-3">
                         <input defaultValue={c.first_name ?? ''} onBlur={e => { if ((e.target.value.trim() || null) !== (c.first_name ?? null)) patchContact(c.id, { first_name: e.target.value }) }} placeholder="First name" className="w-28 px-2 py-1 border border-cream-300 rounded text-sm text-bark-700 focus:outline-none focus:border-bark-400" />
                       </td>
                       <td className="px-4 py-3"><a href={`mailto:${c.email}`} className="font-sans text-[11px] text-bark-400 underline inline-flex items-center gap-1"><Mail size={9} /> {c.email}</a></td>
@@ -310,6 +314,9 @@ export default function OutreachPage() {
                         <input defaultValue={c.company ?? ''} onBlur={e => { if ((e.target.value.trim() || null) !== (c.company ?? null)) patchContact(c.id, { company: e.target.value }) }} placeholder="Company" className="w-36 px-2 py-1 border border-cream-300 rounded text-sm text-bark-700 focus:outline-none focus:border-bark-400" />
                       </td>
                       <td className="px-4 py-3 font-sans text-xs text-bark-400">{savingId === c.id ? <Loader size={12} className="animate-spin" /> : c.status}</td>
+                      <td className="px-4 py-3 text-right">
+                        <button onClick={() => removeFromColdSend(c.id)} title="Remove from cold send" className="text-bark-300 hover:text-red-500 transition-colors"><Trash2 size={15} /></button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -421,7 +428,7 @@ export default function OutreachPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-cream-200 bg-cream-100">
-                  {['', 'Contact', 'Company', 'Size', 'Status', 'Updated', 'Enroll'].map(h => (
+                  {['', 'Contact', 'Company', 'Size', 'Status', 'Updated'].map(h => (
                     <th key={h} className="px-4 py-3 text-left font-sans text-[10px] font-semibold uppercase tracking-wider text-bark-400">{h}</th>
                   ))}
                 </tr>
@@ -438,11 +445,6 @@ export default function OutreachPage() {
                     <td className="px-4 py-3 font-sans text-xs text-bark-400">{c.company_size || '—'}</td>
                     <td className="px-4 py-3"><span className="font-sans text-[10px] tracking-[0.1em] uppercase bg-cream-200 text-bark-500 px-2 py-0.5 rounded-full capitalize">{c.status}</span></td>
                     <td className="px-4 py-3 font-sans text-xs text-bark-400">{fmtDate(c.updated_at)}</td>
-                    <td className="px-4 py-3">
-                      {savingId === c.id
-                        ? <Loader size={12} className="animate-spin text-bark-400" />
-                        : <input type="checkbox" checked={!!c.outreach_enrolled} onChange={e => patchContact(c.id, { outreach_enrolled: e.target.checked })} className="w-4 h-4 accent-bark-600" title="Enroll for cold outreach — set a first name + company in the Cold Send tab" />}
-                    </td>
                   </tr>
                 ))}
               </tbody>

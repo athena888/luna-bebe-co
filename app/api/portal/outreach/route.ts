@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import {
   getNeedsAttention, getContacts, resolveFlag, getQuarantine, reviewQuarantine, updateContactFields,
-  getSentLog, getCampaigns, createCampaign, cancelCampaign, getEnrolledTracks,
+  getSentLog, getCampaigns, createCampaign, cancelCampaign, getEnrolledTracks, getColdSendList,
 } from '@/lib/outreach'
 import { planOutreach } from '@/lib/outreach-send'
 import { TEMPLATES } from '@/lib/outreach-templates'
@@ -12,6 +12,7 @@ export async function GET(req: NextRequest) {
   try {
     if (tab === 'corporate')  return NextResponse.json({ contacts: await getContacts('corporate') })
     if (tab === 'all')        return NextResponse.json({ contacts: await getContacts('all') })
+    if (tab === 'send')       return NextResponse.json({ contacts: await getColdSendList() })
     if (tab === 'quarantine') return NextResponse.json({ quarantine: await getQuarantine() })
     if (tab === 'campaigns') {
       const [campaigns, sent, tracks] = await Promise.all([getCampaigns(), getSentLog(150), getEnrolledTracks()])

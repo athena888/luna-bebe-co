@@ -136,7 +136,7 @@ export function ChatWidget() {
       {/* Bubble button */}
       <button
         onClick={() => setOpen(o => !o)}
-        className="w-13 h-13 bg-bark-600 text-cream-50 rounded-full shadow-lg hover:bg-bark-700 transition-colors flex items-center justify-center"
+        className="pl-round-full bg-bark-600 text-cream-50 shadow-lg hover:bg-bark-700 transition-colors flex items-center justify-center"
         style={{ width: 52, height: 52 }}
         aria-label="Open chat"
       >

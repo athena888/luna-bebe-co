@@ -380,6 +380,23 @@ export async function bulkImportOutreachContacts(records: ImportRecord[]): Promi
   return { inserted: rows.length, duplicates, invalid }
 }
 
+/**
+ * The cold-send queue: enrolled contacts who have NOT been emailed yet. Once a
+ * contact has any outbound email, they drop off this list automatically (so the
+ * Cold Send tab only ever shows people still waiting to be contacted).
+ */
+export async function getColdSendList(): Promise<Contact[]> {
+  const { data: enrolled } = await supabaseAdmin
+    .from('contacts').select('*').eq('outreach_enrolled', true)
+    .not('status', 'in', '("closed")').order('updated_at', { ascending: false }).limit(500)
+  const contacts = (enrolled ?? []) as Contact[]
+  if (!contacts.length) return []
+  const { data: touchRows } = await supabaseAdmin
+    .from('touches').select('contact_id').eq('direction', 'outbound').in('contact_id', contacts.map(c => c.id))
+  const emailed = new Set((touchRows ?? []).map(t => (t as { contact_id: string }).contact_id))
+  return contacts.filter(c => !emailed.has(c.id))
+}
+
 // ── Sent log ─────────────────────────────────────────────────────────────────
 export interface SentItem {
   id: string

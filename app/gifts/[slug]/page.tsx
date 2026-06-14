@@ -122,7 +122,7 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
               <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-4">{lp.eyebrow}</p>
               <h1 className="font-serif text-[2.5rem] sm:text-[3.5rem] text-espresso leading-[1.05] mb-6">{lp.h1}</h1>
               {lp.intro.map((para, i) => (
-                <p key={i} className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose mb-4">{para}</p>
+                <p key={i} className="font-cormorant text-lg sm:text-xl text-espresso-light leading-loose mb-4">{para}</p>
               ))}
               <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-8">
                 {lp.highlights.map(h => (
