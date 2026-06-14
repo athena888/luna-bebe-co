@@ -19,6 +19,7 @@ export interface Contact {
   gifts_per_year: string | null
   first_name: string | null
   outreach_enrolled: boolean
+  email_override: { subject?: string; body?: string } | null
   created_at: string
   updated_at: string
 }
@@ -511,7 +512,16 @@ export interface OutreachCandidate {
   name: string | null
   company: string | null
   track: Track
+  email_override: { subject?: string; body?: string } | null
   reason: 'new' | 'followup'
+}
+
+/** Set (or clear, with null) a contact's hand-edited cold email. */
+export async function setContactEmailOverride(
+  id: string, override: { subject?: string; body?: string } | null,
+): Promise<void> {
+  await supabaseAdmin.from('contacts')
+    .update({ email_override: override, updated_at: new Date().toISOString() }).eq('id', id)
 }
 
 /**
@@ -524,7 +534,7 @@ export async function getContactsDueForOutreach(limit = 100, trackFilter?: strin
   const today = addDaysISO(0)
   let q = supabaseAdmin
     .from('contacts')
-    .select('id, email, first_name, name, company, track, status')
+    .select('id, email, first_name, name, company, track, status, email_override')
     .eq('outreach_enrolled', true)
     .not('status', 'in', '("closed")')
     .limit(500)
@@ -549,7 +559,7 @@ export async function getContactsDueForOutreach(limit = 100, trackFilter?: strin
   const out: OutreachCandidate[] = []
   for (const c of contacts) {
     const touches = outbound.get(c.id) ?? []
-    const base = { id: c.id, email: c.email, first_name: c.first_name, name: c.name, company: c.company, track: c.track }
+    const base = { id: c.id, email: c.email, first_name: c.first_name, name: c.name, company: c.company, track: c.track, email_override: c.email_override ?? null }
     if (touches.length === 0) {
       out.push({ ...base, reason: 'new' })
     } else {

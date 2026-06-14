@@ -46,12 +46,12 @@ Emily Liu, Founder · Petite Lavande`,
   },
 ]
 
-export function templateForTrack(track: string | null | undefined): OutreachTemplate {
-  return TEMPLATES.find(t => t.track === (track === 'C' ? 'C' : 'A')) ?? TEMPLATES[0]
+export function templateForTrack(track: string | null | undefined, list: OutreachTemplate[] = TEMPLATES): OutreachTemplate {
+  return list.find(t => t.track === (track === 'C' ? 'C' : 'A')) ?? list[0]
 }
 
-export function templateByKey(key: string | null | undefined): OutreachTemplate | null {
-  return TEMPLATES.find(t => t.key === key) ?? null
+export function templateByKey(key: string | null | undefined, list: OutreachTemplate[] = TEMPLATES): OutreachTemplate | null {
+  return list.find(t => t.key === key) ?? null
 }
 
 export interface MergeFields { first_name?: string | null; company?: string | null }

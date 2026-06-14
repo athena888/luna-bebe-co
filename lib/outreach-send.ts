@@ -1,6 +1,7 @@
 import { resolveMx } from 'node:dns/promises'
 import { getContactsDueForOutreach, getSuppressedSet, emailDomain, type OutreachCandidate } from './outreach'
-import { templateForTrack, templateByKey, renderTemplate, withFooter } from './outreach-templates'
+import { templateForTrack, templateByKey, renderTemplate, withFooter, type OutreachTemplate } from './outreach-templates'
+import { getOutreachTemplates } from './outreach-templates-db'
 import { mintOutreachCode } from './outreach-discount'
 
 const CODE_RE = /\{\{\s*code\s*\}\}/g
@@ -53,11 +54,12 @@ export async function planOutreach(
   cap: number,
   opts: { trackFilter?: string | null; templateKey?: string | null; sampleCode?: boolean } = {},
 ): Promise<OutreachPlan> {
-  const [candidates, suppressed] = await Promise.all([
+  const [candidates, suppressed, templates] = await Promise.all([
     getContactsDueForOutreach(cap * 3, opts.trackFilter),
     getSuppressedSet(),
+    getOutreachTemplates(),
   ])
-  const forced = opts.templateKey ? templateByKey(opts.templateKey) : null
+  const forced = opts.templateKey ? templateByKey(opts.templateKey, templates) : null
 
   const planned: PlannedSend[] = []
   const skipped: SkippedSend[] = []
@@ -71,7 +73,13 @@ export async function planOutreach(
     const domain = emailDomain(email)
     if (!domain || !(await hasMx(domain))) { skipped.push({ to: email, why: 'no MX record (would bounce)' }); continue }
 
-    const tpl = forced ?? templateForTrack(c.track)
+    // A hand-edited email for this contact wins; otherwise the (forced or
+    // track-matched) template. Merge fields + {{code}} still resolve either way.
+    const baseTpl = forced ?? templateForTrack(c.track, templates)
+    const ov = c.email_override
+    const tpl: OutreachTemplate = ov?.body
+      ? { key: 'custom', track: c.track, subject: ov.subject?.trim() || baseTpl.subject, body: ov.body }
+      : baseTpl
     const rendered = renderTemplate(tpl, { first_name: firstName(c), company: c.company })
     if (!rendered.ok) { skipped.push({ to: email, why: `unresolved merge field: ${rendered.missing.join(', ')}` }); continue }
 

@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import {
   getNeedsAttention, getContacts, resolveFlag, getQuarantine, reviewQuarantine, updateContactFields,
   getSentLog, getCampaigns, createCampaign, cancelCampaign, getEnrolledTracks, getColdSendList,
+  setContactEmailOverride,
 } from '@/lib/outreach'
 import { planOutreach } from '@/lib/outreach-send'
-import { TEMPLATES } from '@/lib/outreach-templates'
+import { getOutreachTemplates, saveOutreachTemplate } from '@/lib/outreach-templates-db'
 
 // Admin-guarded by middleware (/api/portal/*). Powers the Outreach screen.
 export async function GET(req: NextRequest) {
@@ -15,10 +16,11 @@ export async function GET(req: NextRequest) {
     if (tab === 'send')       return NextResponse.json({ contacts: await getColdSendList() })
     if (tab === 'quarantine') return NextResponse.json({ quarantine: await getQuarantine() })
     if (tab === 'campaigns') {
-      const [campaigns, sent, tracks] = await Promise.all([getCampaigns(), getSentLog(150), getEnrolledTracks()])
-      const templates = TEMPLATES.map(t => ({ key: t.key, track: t.track, subject: t.subject }))
+      const [campaigns, sent, tracks, tpls] = await Promise.all([getCampaigns(), getSentLog(150), getEnrolledTracks(), getOutreachTemplates()])
+      const templates = tpls.map(t => ({ key: t.key, track: t.track, subject: t.subject }))
       return NextResponse.json({ campaigns, sent, tracks, templates })
     }
+    if (tab === 'templates') return NextResponse.json({ templates: await getOutreachTemplates() })
     return NextResponse.json({ needs: await getNeedsAttention() })
   } catch (e) {
     console.error('outreach GET error:', e)
@@ -62,6 +64,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, campaign })
     }
     if (action === 'cancel' && body.id) { await cancelCampaign(body.id); return NextResponse.json({ ok: true }) }
+    if (action === 'save_template' && body.key) {
+      await saveOutreachTemplate(body.key, { subject: body.subject, body: body.body })
+      return NextResponse.json({ ok: true })
+    }
+    if (action === 'save_email' && body.contactId) {
+      await setContactEmailOverride(body.contactId, { subject: body.subject, body: body.body })
+      return NextResponse.json({ ok: true })
+    }
+    if (action === 'clear_email' && body.contactId) {
+      await setContactEmailOverride(body.contactId, null)
+      return NextResponse.json({ ok: true })
+    }
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
   } catch (e) {
     console.error('outreach POST error:', e)

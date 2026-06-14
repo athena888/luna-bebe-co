@@ -491,4 +491,9 @@ alter table public.scheduled_campaigns enable row level security;
 drop policy if exists scheduled_campaigns_service on public.scheduled_campaigns;
 create policy scheduled_campaigns_service on public.scheduled_campaigns for all to service_role using (true) with check (true);
 
+-- 25) Per-recipient cold-email override ({subject, body}). When set, this exact
+--     email is used for that contact instead of the track template. Editable
+--     templates themselves live in site_content under key 'outreach.templates'.
+alter table public.contacts add column if not exists email_override jsonb;
+
 -- Done.

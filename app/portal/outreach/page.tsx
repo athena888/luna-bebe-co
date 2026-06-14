@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Loader, Check, Flame, Building2, Mail, Eye, Upload, Calendar, Send, Trash2, Clock } from 'lucide-react'
+import { useState, useEffect, Fragment } from 'react'
+import { Loader, Check, Flame, Building2, Mail, Eye, Upload, Calendar, Send, Trash2, Clock, Pencil } from 'lucide-react'
 import type { Contact, NeedsAttentionItem, QuarantineRow } from '@/lib/outreach'
 
-type Tab = 'needs' | 'corporate' | 'all' | 'send' | 'campaigns' | 'quarantine'
+type Tab = 'needs' | 'corporate' | 'all' | 'send' | 'campaigns' | 'templates' | 'quarantine'
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'needs', label: 'Needs Attention' },
@@ -12,8 +12,11 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'all', label: 'All Contacts' },
   { id: 'send', label: 'Cold Send' },
   { id: 'campaigns', label: 'Schedule & Sent' },
+  { id: 'templates', label: 'Email Templates' },
   { id: 'quarantine', label: 'Quarantine' },
 ]
+
+interface TemplateFull { key: string; track: string; subject: string; body: string }
 
 interface PreviewItem { to: string; subject: string; body: string; reason: string }
 interface SkippedItem { to: string; why: string }
@@ -59,6 +62,11 @@ export default function OutreachPage() {
   const [cWhen, setCWhen] = useState('')
   const [scheduling, setScheduling] = useState(false)
 
+  // Full templates (with body) — for the Templates editor + per-recipient prefill.
+  const [tplFull, setTplFull] = useState<TemplateFull[]>([])
+  const [editingEmailId, setEditingEmailId] = useState<string | null>(null)
+  const [emailDraft, setEmailDraft] = useState<{ subject: string; body: string }>({ subject: '', body: '' })
+
   async function load(t: Tab) {
     setLoading(true)
     try {
@@ -66,12 +74,41 @@ export default function OutreachPage() {
       const d = await res.json()
       if (t === 'needs') setNeeds(d.needs ?? [])
       else if (t === 'quarantine') setQuarantine(d.quarantine ?? [])
+      else if (t === 'templates') setTplFull(d.templates ?? [])
       else if (t === 'campaigns') {
         setCampaigns(d.campaigns ?? []); setSent(d.sent ?? []); setTracks(d.tracks ?? []); setTemplates(d.templates ?? [])
         if (!cTemplate && d.templates?.[0]) setCTemplate(d.templates[0].key)
       }
-      else setContacts(d.contacts ?? [])
+      else {
+        setContacts(d.contacts ?? [])
+        // Cold Send needs full templates to prefill a per-recipient edit.
+        if (t === 'send' && !tplFull.length) {
+          fetch('/api/portal/outreach?tab=templates').then(r => r.json()).then(x => setTplFull(x.templates ?? [])).catch(() => {})
+        }
+      }
     } finally { setLoading(false) }
+  }
+
+  function mergePreview(s: string, c: Contact): string {
+    const fn = c.first_name?.trim() || (c.name?.trim().split(/\s+/)[0] ?? '')
+    return (s || '').replace(/\{\{\s*first_name\s*\}\}/g, fn).replace(/\{\{\s*company\s*\}\}/g, c.company ?? '')
+  }
+  function openEmailEditor(c: Contact) {
+    const ov = c.email_override
+    if (ov?.body) { setEmailDraft({ subject: ov.subject ?? '', body: ov.body }); setEditingEmailId(c.id); return }
+    const t = tplFull.find(x => x.track === (c.track === 'C' ? 'C' : 'A')) ?? tplFull[0]
+    setEmailDraft({ subject: mergePreview(t?.subject ?? '', c), body: mergePreview(t?.body ?? '', c) })
+    setEditingEmailId(c.id)
+  }
+  async function saveEmail(id: string) {
+    setContacts(cs => cs.map(c => c.id === id ? { ...c, email_override: { subject: emailDraft.subject, body: emailDraft.body } } : c))
+    setEditingEmailId(null)
+    await fetch('/api/portal/outreach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'save_email', contactId: id, subject: emailDraft.subject, body: emailDraft.body }) })
+  }
+  async function clearEmail(id: string) {
+    setContacts(cs => cs.map(c => c.id === id ? { ...c, email_override: null } : c))
+    setEditingEmailId(null)
+    await fetch('/api/portal/outreach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'clear_email', contactId: id }) })
   }
 
   async function schedule() {
@@ -305,7 +342,8 @@ export default function OutreachPage() {
                 </thead>
                 <tbody>
                   {contacts.map(c => (
-                    <tr key={c.id} className="border-b border-cream-200 last:border-0">
+                    <Fragment key={c.id}>
+                    <tr className="border-b border-cream-200 last:border-0">
                       <td className="px-4 py-3">
                         <input defaultValue={c.first_name ?? ''} onBlur={e => { if ((e.target.value.trim() || null) !== (c.first_name ?? null)) patchContact(c.id, { first_name: e.target.value }) }} placeholder="First name" className="w-28 px-2 py-1 border border-cream-300 rounded text-sm text-bark-700 focus:outline-none focus:border-bark-400" />
                       </td>
@@ -314,15 +352,43 @@ export default function OutreachPage() {
                         <input defaultValue={c.company ?? ''} onBlur={e => { if ((e.target.value.trim() || null) !== (c.company ?? null)) patchContact(c.id, { company: e.target.value }) }} placeholder="Company" className="w-36 px-2 py-1 border border-cream-300 rounded text-sm text-bark-700 focus:outline-none focus:border-bark-400" />
                       </td>
                       <td className="px-4 py-3 font-sans text-xs text-bark-400">{savingId === c.id ? <Loader size={12} className="animate-spin" /> : c.status}</td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-4 py-3 text-right whitespace-nowrap">
+                        <button onClick={() => openEmailEditor(c)} title={c.email_override ? 'Edited — click to change' : "Edit this person's email"} className={`mr-3 transition-colors ${c.email_override ? 'text-gold-500 hover:text-gold-600' : 'text-bark-300 hover:text-bark-600'}`}><Pencil size={14} /></button>
                         <button onClick={() => removeFromColdSend(c.id)} title="Remove from cold send" className="text-bark-300 hover:text-red-500 transition-colors"><Trash2 size={15} /></button>
                       </td>
                     </tr>
+                    {editingEmailId === c.id && (
+                      <tr className="bg-cream-50">
+                        <td colSpan={5} className="px-4 py-4">
+                          <div className="space-y-2 max-w-2xl">
+                            <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400">Edit email for {c.first_name || c.email}</p>
+                            <input value={emailDraft.subject} onChange={e => setEmailDraft(d => ({ ...d, subject: e.target.value }))} placeholder="Subject" className="w-full px-3 py-2 border border-cream-300 rounded text-sm text-bark-700 bg-white focus:outline-none focus:border-bark-400" />
+                            <textarea value={emailDraft.body} onChange={e => setEmailDraft(d => ({ ...d, body: e.target.value }))} rows={10} className="w-full px-3 py-2 border border-cream-300 rounded text-sm text-bark-700 bg-white leading-relaxed focus:outline-none focus:border-bark-400" />
+                            <p className="font-sans text-[10px] text-bark-400">Keep <span className="font-mono">{'{{code}}'}</span> where the unique discount code should appear. The CAN-SPAM footer is added automatically.</p>
+                            <div className="flex items-center gap-2">
+                              <button onClick={() => saveEmail(c.id)} className="bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.15em] uppercase px-4 py-2 rounded hover:bg-bark-700">Save</button>
+                              <button onClick={() => setEditingEmailId(null)} className="text-bark-400 font-sans text-[10px] tracking-[0.15em] uppercase px-3 py-2">Cancel</button>
+                              {c.email_override && <button onClick={() => clearEmail(c.id)} className="text-bark-400 hover:text-red-500 font-sans text-[10px] tracking-[0.15em] uppercase px-3 py-2 ml-auto">Use template instead</button>}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                    </Fragment>
                   ))}
                 </tbody>
               </table>
             </div>
           )}
+        </div>
+      ) : tab === 'templates' ? (
+        <div className="space-y-6 max-w-2xl">
+          <p className="font-sans text-xs text-bark-500 leading-relaxed">
+            Edit your cold-email templates. Use <span className="font-mono text-[11px]">{'{{first_name}}'}</span>, <span className="font-mono text-[11px]">{'{{company}}'}</span>, and <span className="font-mono text-[11px]">{'{{code}}'}</span> (the unique discount code) where you want them filled in. The CAN-SPAM footer is added automatically. To customise one specific person&rsquo;s email instead, use the pencil in <strong>Cold Send</strong>.
+          </p>
+          {tplFull.length === 0 ? (
+            <div className="flex items-center gap-2 text-bark-400 text-sm"><Loader size={14} className="animate-spin" /> Loading…</div>
+          ) : tplFull.map(t => <TemplateCard key={t.key} t={t} />)}
         </div>
       ) : tab === 'campaigns' ? (
         <div className="space-y-8">
@@ -452,6 +518,34 @@ export default function OutreachPage() {
           </div>
         )
       )}
+    </div>
+  )
+}
+
+// One editable cold-email template (subject + body), saved to site_content.
+function TemplateCard({ t }: { t: TemplateFull }) {
+  const [subject, setSubject] = useState(t.subject)
+  const [body, setBody] = useState(t.body)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  async function save() {
+    setSaving(true); setSaved(false)
+    try {
+      await fetch('/api/portal/outreach', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save_template', key: t.key, subject, body }),
+      })
+      setSaved(true); setTimeout(() => setSaved(false), 2000)
+    } finally { setSaving(false) }
+  }
+  return (
+    <div className="bg-white border border-cream-200 rounded-xl p-4 space-y-2">
+      <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400">{t.track === 'C' ? 'Corporate' : 'General · Attorney / Advisor'}</p>
+      <input value={subject} onChange={e => setSubject(e.target.value)} placeholder="Subject" className="w-full px-3 py-2 border border-cream-300 rounded text-sm text-bark-700 focus:outline-none focus:border-bark-400" />
+      <textarea value={body} onChange={e => setBody(e.target.value)} rows={12} className="w-full px-3 py-2 border border-cream-300 rounded text-sm text-bark-700 leading-relaxed focus:outline-none focus:border-bark-400" />
+      <button onClick={save} disabled={saving} className="inline-flex items-center gap-2 bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.15em] uppercase px-4 py-2 rounded hover:bg-bark-700 disabled:opacity-50">
+        {saving ? <Loader size={12} className="animate-spin" /> : saved ? <Check size={12} /> : null} {saving ? 'Saving…' : saved ? 'Saved' : 'Save template'}
+      </button>
     </div>
   )
 }
