@@ -97,6 +97,16 @@ export default function CardStylesPage() {
     await load()
   }
 
+  // Message-placement zone (where the printed note sits) + font.
+  const zone = draft.meta?.textZone ?? { x: 15, y: 40, w: 70, align: 'center' as const }
+  const setZone = (patch: Partial<typeof zone>) =>
+    setDraft(d => {
+      const cur = d.meta?.textZone ?? { x: 15, y: 40, w: 70, align: 'center' as const }
+      return { ...d, meta: { ...(d.meta ?? {}), textZone: { ...cur, ...patch } } }
+    })
+  const setFont = (font: 'serif' | 'script') =>
+    setDraft(d => ({ ...d, meta: { ...(d.meta ?? {}), font } }))
+
   return (
     <div className="p-6 sm:p-8 max-w-5xl">
       <div className="flex items-center justify-between mb-2">
@@ -118,17 +128,17 @@ export default function CardStylesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-6">
             {/* Image */}
             <div>
-              <div className="relative aspect-[3/2] rounded-lg overflow-hidden border border-cream-300 bg-cream-100 mb-2">
+              <div className="relative rounded-lg overflow-hidden border border-cream-300 bg-cream-100 mb-2">
                 {draft.preview
-                  ? <img src={draft.preview} alt="" className="w-full h-full object-contain" />
-                  : <div className="absolute inset-0 flex items-center justify-center text-bark-300"><Upload size={20} /></div>}
-                {/* Detected message zone — where the customer's note will print */}
-                {draft.preview && draft.meta?.textZone && (
+                  ? <img src={draft.preview} alt="" className="w-full h-auto block" />
+                  : <div className="aspect-[3/4] flex items-center justify-center text-bark-300"><Upload size={20} /></div>}
+                {/* Message zone — drag the sliders below to position it */}
+                {draft.preview && (
                   <div
-                    className="absolute border border-dashed border-gold-400 bg-gold-400/10 pointer-events-none flex items-center justify-center"
-                    style={{ left: `${draft.meta.textZone.x}%`, top: `${draft.meta.textZone.y}%`, width: `${draft.meta.textZone.w}%`, height: '22%' }}
+                    className="absolute border border-dashed border-[#7b876a] bg-[#7b876a]/10 pointer-events-none flex items-center justify-center"
+                    style={{ left: `${zone.x}%`, top: `${zone.y}%`, width: `${zone.w}%`, height: '20%' }}
                   >
-                    <span className="font-sans text-[8px] tracking-[0.15em] uppercase text-gold-500/90">message here</span>
+                    <span className="font-sans text-[8px] tracking-[0.15em] uppercase text-[#5f6b4e]">message here</span>
                   </div>
                 )}
                 {detecting && (
@@ -158,6 +168,36 @@ export default function CardStylesPage() {
                 <div><label className={labelCls}>Sort order</label><input type="number" className={inputCls} value={draft.sortOrder} onChange={e => setDraft(d => ({ ...d, sortOrder: e.target.value }))} /></div>
                 <label className="flex items-center gap-2 cursor-pointer pb-2"><input type="checkbox" checked={draft.active} onChange={e => setDraft(d => ({ ...d, active: e.target.checked }))} className="accent-bark-600 w-4 h-4" /><span className="font-sans text-sm text-bark-500">Show to customers</span></label>
               </div>
+
+              {/* Message placement — fixes any card whose auto-position is off */}
+              <div className="border-t border-cream-200 pt-3">
+                <label className={labelCls}>Message placement{draft.meta?.theme ? ` · ${draft.meta.theme}` : ''}</label>
+                <p className="font-sans text-[10px] text-bark-400 mb-2">Move the dashed box over the card&rsquo;s empty area — that&rsquo;s where the printed note prints.</p>
+                {[
+                  { k: 'x' as const, label: 'Left', min: 0, max: 90 },
+                  { k: 'y' as const, label: 'Top', min: 0, max: 90 },
+                  { k: 'w' as const, label: 'Width', min: 15, max: 100 },
+                ].map(({ k, label, min, max }) => (
+                  <div key={k} className="flex items-center gap-2 mb-1.5">
+                    <span className="w-10 font-sans text-[10px] text-bark-400">{label}</span>
+                    <input type="range" min={min} max={max} value={zone[k]} onChange={e => setZone({ [k]: +e.target.value })} className="flex-1 accent-[#7b876a]" />
+                    <span className="w-8 text-right font-sans text-[10px] text-bark-500">{zone[k]}%</span>
+                  </div>
+                ))}
+                <div className="grid grid-cols-2 gap-3 mt-2">
+                  <div><label className={labelCls}>Align</label>
+                    <select value={zone.align} onChange={e => setZone({ align: e.target.value as 'left' | 'center' | 'right' })} className={inputCls}>
+                      <option value="left">Left</option><option value="center">Center</option><option value="right">Right</option>
+                    </select>
+                  </div>
+                  <div><label className={labelCls}>Font</label>
+                    <select value={draft.meta?.font ?? 'serif'} onChange={e => setFont(e.target.value as 'serif' | 'script')} className={inputCls}>
+                      <option value="serif">Serif (classic)</option><option value="script">Script (flowing)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
               {err && <p className="font-sans text-xs text-red-500">{err}</p>}
               <div className="flex gap-2 pt-1">
                 <button onClick={save} disabled={busy} className="flex items-center gap-2 bg-bark-600 text-white font-sans text-[11px] tracking-[0.2em] uppercase px-5 py-2.5 rounded hover:bg-bark-700 disabled:opacity-50">
