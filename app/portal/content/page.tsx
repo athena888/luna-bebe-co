@@ -8,14 +8,16 @@ import HomeContentPage from '@/app/portal/home-content/page'
 import StoryPortal from '@/app/portal/story/page'
 import SocialPortalPage from '@/app/portal/social/page'
 import JournalPortal from '@/app/portal/journal/page'
+import { GiftGuidesEditor } from '@/components/portal/GiftGuidesEditor'
 
-type PageId = 'home' | 'story' | 'build' | 'boxes' | 'corporate' | 'giftcards' | 'global' | 'social' | 'journal' | 'signin'
+type PageId = 'home' | 'story' | 'build' | 'boxes' | 'guides' | 'corporate' | 'giftcards' | 'global' | 'social' | 'journal' | 'signin'
 
 const TABS: { id: PageId; label: string }[] = [
   { id: 'home',       label: 'Homepage' },
   { id: 'story',      label: 'Story' },
   { id: 'build',      label: 'Build Your Box' },
   { id: 'boxes',      label: 'Boxes Page' },
+  { id: 'guides',     label: 'Gift Guides' },
   { id: 'corporate',  label: 'Corporate' },
   { id: 'giftcards',  label: 'Gift Cards' },
   { id: 'global',     label: 'Global' },
@@ -76,6 +78,7 @@ export default function ContentPage() {
 
         {active === 'home' && <HomeContentPage />}
         {active === 'story' && <StoryPortal />}
+        {active === 'guides' && <GiftGuidesEditor />}
         {active === 'social' && <SocialPortalPage />}
         {active === 'journal' && <JournalPortal />}
 

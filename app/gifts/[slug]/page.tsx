@@ -5,7 +5,8 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { JsonLd } from '@/components/ui/JsonLd'
 import { SlotBackground } from '@/components/ui/SlotBackground'
-import { LANDING_PAGES, getLandingPage } from '@/lib/landing-pages'
+import { LANDING_PAGES } from '@/lib/landing-pages'
+import { getLandingContent } from '@/lib/landing-content'
 import { getCatalog } from '@/lib/products-db'
 import { CATEGORY_LABELS } from '@/lib/products'
 import type { Product } from '@/types'
@@ -25,7 +26,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const lp = getLandingPage(slug)
+  const lp = await getLandingContent(slug)
   if (!lp) return { title: 'Not Found' }
   const url = `${BASE}/gifts/${lp.slug}`
   return {
@@ -40,7 +41,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function GiftLandingPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const lp = getLandingPage(slug)
+  const lp = await getLandingContent(slug)
   if (!lp) notFound()
 
   // Group products by category so each section has a clear heading
@@ -50,9 +51,21 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
   try {
     const catalog = await getCatalog({ activeOnly: true })
     const grouped = new Map<string, Product[]>()
-    for (const cat of lp.categories) {
-      const hits = catalog.filter(p => p.category === cat)
-      if (hits.length) grouped.set(cat, hits)
+    if (lp.productIds.length) {
+      // Admin picked explicit products — feature exactly those, grouped by category.
+      const picked = lp.productIds
+        .map(id => catalog.find(p => p.id === id))
+        .filter((p): p is (typeof catalog)[number] => Boolean(p))
+      for (const p of picked) {
+        const arr = grouped.get(p.category) ?? []
+        arr.push(p)
+        grouped.set(p.category, arr)
+      }
+    } else {
+      for (const cat of lp.categories) {
+        const hits = catalog.filter(p => p.category === cat)
+        if (hits.length) grouped.set(cat, hits)
+      }
     }
     // Fall back to all products if nothing matched
     if (grouped.size === 0) {

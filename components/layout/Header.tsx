@@ -10,9 +10,9 @@ import { LogoMark } from '@/components/ui/LogoMark'
 // specific edition section on /boxes (anchors match `edition-<slug>` there).
 const READY_MADE_EDITIONS = [
   { label: 'All', href: '/boxes' },
-  { label: 'Summer', href: '/boxes#edition-summer' },
-  { label: 'All Season', href: '/boxes#edition-all-season' },
-  { label: 'Winter', href: '/boxes#edition-winter' },
+  { label: 'For Baby', href: '/boxes#edition-for-baby' },
+  { label: 'For Mama', href: '/boxes#edition-for-mama' },
+  { label: 'Baby & Mama Bundle', href: '/boxes#edition-baby-mama-bundle' },
 ]
 
 // Cart lives in the nav row so it scrolls with the header and aligns on every
@@ -63,6 +63,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
           ))}
         </div>
       </div>
+      <Link href="/gift-guides" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Gifting Ideas</Link>
       <Link href="/gift-cards" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Gift Cards</Link>
       <Link href="/account" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>My Account</Link>
       <Link href="/story" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Stories</Link>
@@ -131,6 +132,7 @@ export function Header() {
               </div>
             </div>
 
+            <Link href="/gift-guides" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors whitespace-nowrap">Gifting Ideas</Link>
             <Link href="/gift-cards" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors whitespace-nowrap">Gift Cards</Link>
             <Link href="/story" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors whitespace-nowrap">Stories</Link>
           </nav>

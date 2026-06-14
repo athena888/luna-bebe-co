@@ -85,14 +85,11 @@ export function Footer() {
               </ul>
             </div>
 
-            {/* Gift Guides (search-intent landing pages) */}
+            {/* Gifting Ideas — single hub (filter by occasion in-page) */}
             <div>
-              <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-espresso mb-4 font-medium">Gift Guides</p>
+              <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-espresso mb-4 font-medium">Gifting</p>
               <ul className="space-y-2.5 text-xs font-sans">
-                <li><Link href="/gifts/organic-newborn-gift-box" className="text-espresso hover:text-espresso transition-colors">Organic Newborn Box</Link></li>
-                <li><Link href="/gifts/gender-neutral-baby-gift-box" className="text-espresso hover:text-espresso transition-colors">Gender-Neutral Box</Link></li>
-                <li><Link href="/gifts/postpartum-care-package" className="text-espresso hover:text-espresso transition-colors">Postpartum Care</Link></li>
-                <li><Link href="/gifts/luxury-baby-shower-gift" className="text-espresso hover:text-espresso transition-colors">Luxury Shower Gift</Link></li>
+                <li><Link href="/gift-guides" className="text-espresso hover:text-espresso transition-colors">Gifting Ideas</Link></li>
                 <li><Link href="/corporate" className="text-espresso hover:text-espresso transition-colors">Corporate &amp; Team Gifting</Link></li>
               </ul>
             </div>
