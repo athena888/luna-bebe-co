@@ -48,6 +48,10 @@ export function templateForTrack(track: string | null | undefined): OutreachTemp
   return TEMPLATES.find(t => t.track === (track === 'C' ? 'C' : 'A')) ?? TEMPLATES[0]
 }
 
+export function templateByKey(key: string | null | undefined): OutreachTemplate | null {
+  return TEMPLATES.find(t => t.key === key) ?? null
+}
+
 export interface MergeFields { first_name?: string | null; company?: string | null }
 
 export interface RenderResult { subject: string; body: string }

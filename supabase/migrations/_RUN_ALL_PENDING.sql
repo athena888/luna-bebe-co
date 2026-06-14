@@ -470,4 +470,25 @@ alter table public.orders add column if not exists letter_zone jsonb;
 -- 23) Estimated $ cost per marketing task (cents). 0 = organic/free.
 alter table public.tasks add column if not exists est_cost_cents int;
 
+-- 24) Scheduled outreach campaigns — send a whole enrolled list at a chosen time.
+--     A frequent cron fires each campaign when scheduled_at arrives, honoring
+--     suppression / MX / merge-field / cap guards. Resumable across ticks.
+create table if not exists public.scheduled_campaigns (
+  id            uuid primary key default gen_random_uuid(),
+  name          text,
+  scheduled_at  timestamptz not null,
+  track_filter  text,                          -- null = all enrolled
+  template_key  text not null,
+  per_run_cap   int,                            -- null = OUTREACH_DAILY_CAP
+  status        text not null default 'scheduled', -- scheduled | sending | sent | canceled
+  sent_count    int not null default 0,
+  skipped_count int not null default 0,
+  created_at    timestamptz not null default now(),
+  sent_at       timestamptz
+);
+create index if not exists scheduled_campaigns_due_idx on public.scheduled_campaigns (status, scheduled_at);
+alter table public.scheduled_campaigns enable row level security;
+drop policy if exists scheduled_campaigns_service on public.scheduled_campaigns;
+create policy scheduled_campaigns_service on public.scheduled_campaigns for all to service_role using (true) with check (true);
+
 -- Done.

@@ -1,24 +1,35 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader, Check, Flame, Building2, Mail, Eye, Upload } from 'lucide-react'
+import { Loader, Check, Flame, Building2, Mail, Eye, Upload, Calendar, Send, Trash2, Clock } from 'lucide-react'
 import type { Contact, NeedsAttentionItem, QuarantineRow } from '@/lib/outreach'
 
-type Tab = 'needs' | 'corporate' | 'all' | 'send' | 'quarantine'
+type Tab = 'needs' | 'corporate' | 'all' | 'send' | 'campaigns' | 'quarantine'
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'needs', label: 'Needs Attention' },
   { id: 'corporate', label: 'Corporate' },
   { id: 'all', label: 'All Contacts' },
   { id: 'send', label: 'Cold Send' },
+  { id: 'campaigns', label: 'Schedule & Sent' },
   { id: 'quarantine', label: 'Quarantine' },
 ]
 
 interface PreviewItem { to: string; subject: string; body: string; reason: string }
 interface SkippedItem { to: string; why: string }
+interface Campaign { id: string; name: string | null; scheduled_at: string; track_filter: string | null; template_key: string; status: string; sent_count: number; skipped_count: number; sent_at: string | null }
+interface SentRow { id: string; subject: string | null; status: string | null; created_at: string; contact: { name: string | null; email: string; company: string | null } | null }
+interface TrackOpt { track: string; count: number }
+interface TemplateOpt { key: string; track: string; subject: string }
 
 function isCorp(c?: Contact | null) { return !!c && (c.is_corporate || c.source === 'corporate_form') }
 function fmtDate(iso: string) { return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }
+function statusStyle(s: string): string {
+  if (s === 'sent') return 'bg-sage-100 text-sage-600'
+  if (s === 'sending') return 'bg-gold-100 text-gold-600'
+  if (s === 'canceled') return 'bg-cream-200 text-bark-400'
+  return 'bg-cream-200 text-bark-600' // scheduled
+}
 
 function CorpBadge() {
   return <span className="inline-flex items-center gap-1 bg-bark-700 text-cream-50 font-sans text-[9px] tracking-[0.15em] uppercase px-2 py-0.5 rounded"><Building2 size={9} /> Corp</span>
@@ -37,6 +48,17 @@ export default function OutreachPage() {
   const [previewing, setPreviewing] = useState(false)
   const [preview, setPreview] = useState<{ planned: PreviewItem[]; skipped: SkippedItem[]; cap: number } | null>(null)
 
+  // Schedule & Sent tab
+  const [campaigns, setCampaigns] = useState<Campaign[]>([])
+  const [sent, setSent] = useState<SentRow[]>([])
+  const [tracks, setTracks] = useState<TrackOpt[]>([])
+  const [templates, setTemplates] = useState<TemplateOpt[]>([])
+  const [cName, setCName] = useState('')
+  const [cTrack, setCTrack] = useState('')
+  const [cTemplate, setCTemplate] = useState('')
+  const [cWhen, setCWhen] = useState('')
+  const [scheduling, setScheduling] = useState(false)
+
   async function load(t: Tab) {
     setLoading(true)
     try {
@@ -46,8 +68,35 @@ export default function OutreachPage() {
       const d = await res.json()
       if (t === 'needs') setNeeds(d.needs ?? [])
       else if (t === 'quarantine') setQuarantine(d.quarantine ?? [])
+      else if (t === 'campaigns') {
+        setCampaigns(d.campaigns ?? []); setSent(d.sent ?? []); setTracks(d.tracks ?? []); setTemplates(d.templates ?? [])
+        if (!cTemplate && d.templates?.[0]) setCTemplate(d.templates[0].key)
+      }
       else setContacts(d.contacts ?? [])
     } finally { setLoading(false) }
+  }
+
+  async function schedule() {
+    if (!cWhen || !cTemplate || scheduling) return
+    setScheduling(true)
+    try {
+      // Convert the local datetime-local value to a real UTC instant here, so the
+      // server stores the exact moment the founder picked in her timezone.
+      const scheduled_at = new Date(cWhen).toISOString()
+      await fetch('/api/portal/outreach', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'schedule', name: cName || null, track_filter: cTrack || null, template_key: cTemplate, scheduled_at }),
+      })
+      setCName(''); setCWhen('')
+      load('campaigns')
+    } finally { setScheduling(false) }
+  }
+
+  async function cancelCampaign(id: string) {
+    setCampaigns(cs => cs.map(c => c.id === id ? { ...c, status: 'canceled' } : c))
+    await fetch('/api/portal/outreach', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'cancel', id }),
+    })
   }
   useEffect(() => { load(tab) }, [tab])
 
@@ -267,6 +316,102 @@ export default function OutreachPage() {
               </table>
             </div>
           )}
+        </div>
+      ) : tab === 'campaigns' ? (
+        <div className="space-y-8">
+          {/* Schedule a send to a whole list */}
+          <div className="bg-cream-50 border border-cream-200 rounded-xl p-4">
+            <p className="font-sans text-sm font-medium text-bark-600 mb-1 flex items-center gap-2"><Calendar size={15} /> Schedule a send to a whole list</p>
+            <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">
+              At the chosen time, this emails every <strong>enrolled</strong> contact in the audience who hasn&rsquo;t been emailed yet. Same guards apply (skips suppressed / bad addresses / missing first name or company). It sends in batches of your daily cap and resumes until the list is done. Timing precision is about 30 minutes.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label className="block">
+                <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400">Name (optional)</span>
+                <input value={cName} onChange={e => setCName(e.target.value)} placeholder="e.g. Seattle attorneys — round 1" className="mt-1 w-full px-3 py-2 border border-cream-300 rounded text-sm text-bark-700 bg-white focus:outline-none focus:border-bark-400" />
+              </label>
+              <label className="block">
+                <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400">Audience</span>
+                <select value={cTrack} onChange={e => setCTrack(e.target.value)} className="mt-1 w-full px-3 py-2 border border-cream-300 rounded text-sm text-bark-700 bg-white">
+                  <option value="">All enrolled ({tracks.reduce((s, t) => s + t.count, 0)})</option>
+                  {tracks.map(t => <option key={t.track} value={t.track}>Track {t.track} ({t.count})</option>)}
+                </select>
+              </label>
+              <label className="block">
+                <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400">Template</span>
+                <select value={cTemplate} onChange={e => setCTemplate(e.target.value)} className="mt-1 w-full px-3 py-2 border border-cream-300 rounded text-sm text-bark-700 bg-white">
+                  {templates.map(t => <option key={t.key} value={t.key}>{t.key} — {t.subject}</option>)}
+                </select>
+              </label>
+              <label className="block">
+                <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400">Date &amp; time</span>
+                <input type="datetime-local" value={cWhen} onChange={e => setCWhen(e.target.value)} className="mt-1 w-full px-3 py-2 border border-cream-300 rounded text-sm text-bark-700 bg-white focus:outline-none focus:border-bark-400" />
+              </label>
+            </div>
+            <button onClick={schedule} disabled={scheduling || !cWhen || !cTemplate}
+              className="mt-3 inline-flex items-center gap-2 bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase px-5 py-2.5 rounded hover:bg-bark-700 disabled:opacity-50">
+              {scheduling ? <Loader size={13} className="animate-spin" /> : <Send size={13} />} Schedule send
+            </button>
+          </div>
+
+          {/* Campaigns */}
+          <div>
+            <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">Campaigns</p>
+            {campaigns.length === 0 ? (
+              <p className="font-sans text-sm text-bark-400 py-4">No campaigns scheduled yet.</p>
+            ) : (
+              <div className="space-y-2">
+                {campaigns.map(c => (
+                  <div key={c.id} className="bg-white border border-cream-200 rounded-xl p-3.5 flex items-center justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="font-sans text-sm text-bark-700">{c.name || 'Outreach send'} <span className="text-bark-400">· {c.track_filter ? `Track ${c.track_filter}` : 'All enrolled'}</span></p>
+                      <p className="font-sans text-[11px] text-bark-400 flex items-center gap-1"><Clock size={10} />{new Date(c.scheduled_at).toLocaleString()} · {c.template_key}</p>
+                      {(c.sent_count > 0 || c.skipped_count > 0) && <p className="font-sans text-[11px] text-sage-600">{c.sent_count} sent · {c.skipped_count} skipped</p>}
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className={`font-sans text-[10px] tracking-[0.1em] uppercase px-2 py-0.5 rounded-full ${statusStyle(c.status)}`}>{c.status}</span>
+                      {(c.status === 'scheduled' || c.status === 'sending') && (
+                        <button onClick={() => cancelCampaign(c.id)} title="Cancel" className="text-bark-300 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Sent log */}
+          <div>
+            <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">Sent log — who you&rsquo;ve emailed</p>
+            {sent.length === 0 ? (
+              <p className="font-sans text-sm text-bark-400 py-4">Nothing sent yet.</p>
+            ) : (
+              <div className="bg-white border border-cream-300 rounded-xl overflow-hidden">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-cream-200 bg-cream-100">
+                      {['Contact', 'Subject', 'Sent', 'Status'].map(h => (
+                        <th key={h} className="px-4 py-3 text-left font-sans text-[10px] font-semibold uppercase tracking-wider text-bark-400">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sent.map(s => (
+                      <tr key={s.id} className="border-b border-cream-200 last:border-0">
+                        <td className="px-4 py-3">
+                          <p className="font-sans text-sm text-bark-700">{s.contact?.name || s.contact?.company || '—'}</p>
+                          <span className="font-sans text-[11px] text-bark-400">{s.contact?.email}</span>
+                        </td>
+                        <td className="px-4 py-3 font-sans text-xs text-bark-600 max-w-[260px] truncate">{s.subject || '—'}</td>
+                        <td className="px-4 py-3 font-sans text-xs text-bark-400 whitespace-nowrap">{new Date(s.created_at).toLocaleDateString()}</td>
+                        <td className="px-4 py-3"><span className="font-sans text-[10px] uppercase tracking-[0.1em] text-bark-500">{s.status}</span></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       ) : (
         contacts.length === 0 ? (

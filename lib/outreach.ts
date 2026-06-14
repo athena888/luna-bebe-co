@@ -380,6 +380,99 @@ export async function bulkImportOutreachContacts(records: ImportRecord[]): Promi
   return { inserted: rows.length, duplicates, invalid }
 }
 
+// ── Sent log ─────────────────────────────────────────────────────────────────
+export interface SentItem {
+  id: string
+  subject: string | null
+  status: string | null
+  created_at: string
+  contact: Contact | null
+}
+
+/** Recent outbound emails (who, subject, when) for the Sent log. */
+export async function getSentLog(limit = 200): Promise<SentItem[]> {
+  const { data } = await supabaseAdmin
+    .from('touches')
+    .select('id, subject, status, created_at, contact:contacts(*)')
+    .eq('direction', 'outbound').eq('channel', 'email')
+    .order('created_at', { ascending: false }).limit(limit)
+  return (data ?? []) as unknown as SentItem[]
+}
+
+/** Distinct tracks among enrolled contacts — for the campaign audience picker. */
+export async function getEnrolledTracks(): Promise<{ track: string; count: number }[]> {
+  const { data } = await supabaseAdmin.from('contacts').select('track').eq('outreach_enrolled', true)
+  const counts = new Map<string, number>()
+  for (const r of (data ?? []) as { track: string | null }[]) {
+    const t = r.track || 'A'
+    counts.set(t, (counts.get(t) ?? 0) + 1)
+  }
+  return [...counts.entries()].map(([track, count]) => ({ track, count })).sort((a, b) => (a.track < b.track ? -1 : 1))
+}
+
+// ── Scheduled campaigns ──────────────────────────────────────────────────────
+export interface Campaign {
+  id: string
+  name: string | null
+  scheduled_at: string
+  track_filter: string | null
+  template_key: string
+  per_run_cap: number | null
+  status: 'scheduled' | 'sending' | 'sent' | 'canceled'
+  sent_count: number
+  skipped_count: number
+  created_at: string
+  sent_at: string | null
+}
+
+export async function createCampaign(input: {
+  name?: string | null; scheduled_at: string; track_filter?: string | null; template_key: string; per_run_cap?: number | null
+}): Promise<Campaign | null> {
+  const { data } = await supabaseAdmin.from('scheduled_campaigns').insert({
+    name: input.name?.trim() || null,
+    scheduled_at: input.scheduled_at,
+    track_filter: input.track_filter || null,
+    template_key: input.template_key,
+    per_run_cap: input.per_run_cap ?? null,
+  }).select('*').maybeSingle()
+  return (data as Campaign) ?? null
+}
+
+export async function getCampaigns(): Promise<Campaign[]> {
+  const { data } = await supabaseAdmin.from('scheduled_campaigns')
+    .select('*').order('scheduled_at', { ascending: false }).limit(100)
+  return (data ?? []) as Campaign[]
+}
+
+export async function cancelCampaign(id: string): Promise<void> {
+  await supabaseAdmin.from('scheduled_campaigns').update({ status: 'canceled' })
+    .eq('id', id).in('status', ['scheduled', 'sending'])
+}
+
+/** Campaigns whose time has arrived and still have sending to do. */
+export async function getDueCampaigns(nowIso: string): Promise<Campaign[]> {
+  const { data } = await supabaseAdmin.from('scheduled_campaigns')
+    .select('*').in('status', ['scheduled', 'sending']).lte('scheduled_at', nowIso)
+    .order('scheduled_at', { ascending: true })
+  return (data ?? []) as Campaign[]
+}
+
+export async function updateCampaignProgress(id: string, patch: {
+  status?: Campaign['status']; addSent?: number; addSkipped?: number; sent_at?: string | null
+}): Promise<void> {
+  const row: Record<string, unknown> = {}
+  if (patch.status) row.status = patch.status
+  if (patch.sent_at !== undefined) row.sent_at = patch.sent_at
+  // Increment counters atomically-ish by reading current then writing.
+  if (patch.addSent || patch.addSkipped) {
+    const { data } = await supabaseAdmin.from('scheduled_campaigns').select('sent_count, skipped_count').eq('id', id).maybeSingle()
+    const cur = (data as { sent_count: number; skipped_count: number } | null)
+    row.sent_count = (cur?.sent_count ?? 0) + (patch.addSent ?? 0)
+    row.skipped_count = (cur?.skipped_count ?? 0) + (patch.addSkipped ?? 0)
+  }
+  if (Object.keys(row).length) await supabaseAdmin.from('scheduled_campaigns').update(row).eq('id', id)
+}
+
 /** Edit the few fields the cold-outreach sender needs (from the portal). */
 export async function updateContactFields(
   id: string,
@@ -410,14 +503,16 @@ export interface OutreachCandidate {
  *  • "new"      — enrolled, no outbound touch yet
  *  • "followup" — has an open outbound touch whose followup_due has arrived
  */
-export async function getContactsDueForOutreach(limit = 100): Promise<OutreachCandidate[]> {
+export async function getContactsDueForOutreach(limit = 100, trackFilter?: string | null): Promise<OutreachCandidate[]> {
   const today = addDaysISO(0)
-  const { data: enrolled } = await supabaseAdmin
+  let q = supabaseAdmin
     .from('contacts')
     .select('id, email, first_name, name, company, track, status')
     .eq('outreach_enrolled', true)
     .not('status', 'in', '("closed")')
     .limit(500)
+  if (trackFilter) q = q.eq('track', trackFilter)
+  const { data: enrolled } = await q
   const contacts = (enrolled ?? []) as (Contact & { first_name: string | null })[]
   if (!contacts.length) return []
 
