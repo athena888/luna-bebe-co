@@ -318,7 +318,7 @@ function BoxImages({ box }: { box: ResolvedBox }) {
 
   if (n === 0) {
     return (
-      <div className="absolute inset-0 bg-cream-100 flex items-center justify-center">
+      <div className="relative aspect-[4/5] lg:absolute lg:inset-0 lg:aspect-auto bg-cream-100 flex items-center justify-center">
         <span className="font-script text-4xl text-bark-300">Petite Lavande</span>
       </div>
     )
@@ -326,7 +326,7 @@ function BoxImages({ box }: { box: ResolvedBox }) {
 
   return (
     <>
-      <img src={images[idx]} alt={box.name} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500" />
+      <img src={images[idx]} alt={box.name} className="w-full h-auto object-contain lg:absolute lg:inset-0 lg:h-full lg:object-cover transition-opacity duration-500" />
       {n > 1 && (
         <>
           <button
@@ -380,8 +380,10 @@ function BoxSection({
       style={{ minHeight: '95vh' }}
     >
       {/* Image — 60% width on desktop, full height, flies in from the image side */}
-      <FlyIn from={flip ? 'right' : 'left'} className={`relative w-full lg:w-[60%] overflow-hidden ${flip ? 'lg:order-2' : ''}`} style={{ minHeight: '65vw', flex: '0 0 auto' }}>
-        <div className="absolute inset-0">
+      {/* Mobile: image flows at its natural height (shown in full). Desktop: fills
+          the 60% column. */}
+      <FlyIn from={flip ? 'right' : 'left'} className={`relative w-full lg:w-[60%] overflow-hidden lg:min-h-[95vh] ${flip ? 'lg:order-2' : ''}`} style={{ flex: '0 0 auto' }}>
+        <div className="relative lg:absolute lg:inset-0">
           <BoxImages box={box} />
         </div>
         {box.variant && box.variant !== 'neutral' && (
