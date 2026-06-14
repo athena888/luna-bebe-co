@@ -177,3 +177,129 @@ export async function quarantineInbound(input: { from_email: string; subject?: s
     likely_corporate: looksCorporate(from),
   })
 }
+
+// ── Outreach ledger (Marketing Cockpit) ──────────────────────────────────────
+// The `touches` table is the unified ledger: an outbound touch = a cold email
+// you sent (with a follow-up due date); an inbound touch = a classified reply.
+
+export interface OutboundTouchInput {
+  subject?: string
+  snippet?: string
+  messageId?: string
+  track?: string
+  followupDays?: number   // default 4
+}
+
+/** Log a cold email you sent (captured via BCC). Sets follow-up = +N days. */
+export async function logOutboundEmail(contactId: string, t: OutboundTouchInput): Promise<void> {
+  const days = t.followupDays ?? 4
+  await supabaseAdmin.from('touches').insert({
+    contact_id: contactId,
+    direction: 'outbound',
+    channel: 'email',
+    subject: t.subject ?? null,
+    snippet: (t.snippet ?? '').slice(0, 2000) || null,
+    message_id: t.messageId ?? null,
+    track: t.track ?? null,
+    status: 'sent',
+    followup_due: addDaysISO(days),
+  })
+}
+
+export interface ClassifiedInbound {
+  category?: string
+  intent?: string
+  sentiment?: string
+  requiresFollowup?: boolean
+  suggestedFollowup?: string | null
+}
+
+/** Log a classified inbound reply/email as a touch. */
+export async function logInboundTouch(contactId: string, t: { subject?: string; snippet?: string; messageId?: string; inReplyTo?: string } & ClassifiedInbound): Promise<void> {
+  await supabaseAdmin.from('touches').insert({
+    contact_id: contactId,
+    direction: 'inbound',
+    channel: 'email',
+    subject: t.subject ?? null,
+    snippet: (t.snippet ?? '').slice(0, 2000) || null,
+    message_id: t.messageId ?? null,
+    in_reply_to: t.inReplyTo ?? null,
+    category: t.category ?? null,
+    intent: t.intent ?? null,
+    sentiment: t.sentiment ?? null,
+    requires_followup: t.requiresFollowup ?? false,
+    followup_due: t.suggestedFollowup ?? null,
+  })
+}
+
+/** Close the loop on any open outbound thread for a contact (a reply arrived). */
+export async function closeOpenOutbound(contactId: string): Promise<void> {
+  await supabaseAdmin.from('touches')
+    .update({ status: 'replied', followup_due: null })
+    .eq('contact_id', contactId).eq('direction', 'outbound').in('status', ['sent', 'followup_due'])
+}
+
+export interface FollowupDue {
+  id: string
+  contact_id: string
+  subject: string | null
+  snippet: string | null
+  followup_due: string
+  status: string
+  contact: Contact | null
+}
+
+/** Open outbound emails whose follow-up date has arrived (or passed). */
+export async function getFollowupsDue(): Promise<FollowupDue[]> {
+  const today = addDaysISO(0)
+  const { data } = await supabaseAdmin
+    .from('touches')
+    .select('id, contact_id, subject, snippet, followup_due, status, contact:contacts(*)')
+    .eq('direction', 'outbound').in('status', ['sent', 'followup_due'])
+    .not('followup_due', 'is', null).lte('followup_due', today)
+    .order('followup_due', { ascending: true })
+  return (data ?? []) as unknown as FollowupDue[]
+}
+
+/** Mark a follow-up as sent again (push the due date out) or closed. */
+export async function advanceFollowup(touchId: string, action: 'sent' | 'close'): Promise<void> {
+  await supabaseAdmin.from('touches').update(
+    action === 'close'
+      ? { status: 'closed', followup_due: null }
+      : { status: 'sent', followup_due: addDaysISO(4) }
+  ).eq('id', touchId)
+}
+
+export interface TriageItem {
+  id: string
+  contact_id: string
+  subject: string | null
+  snippet: string | null
+  category: string | null
+  intent: string | null
+  sentiment: string | null
+  created_at: string
+  contact: Contact | null
+}
+
+// Priority order for the inbox: B2B replies + partnership invites first.
+const TRIAGE_RANK: Record<string, number> = {
+  b2b_reply: 0, partnership_invite: 1, customer_inquiry: 2,
+  vendor_supplier: 3, inbound_pitch: 4, other: 5, spam_newsletter: 6,
+}
+
+/** Recent classified inbound, most important first. */
+export async function getInboxTriage(limit = 25): Promise<TriageItem[]> {
+  const { data } = await supabaseAdmin
+    .from('touches')
+    .select('id, contact_id, subject, snippet, category, intent, sentiment, created_at, contact:contacts(*)')
+    .eq('direction', 'inbound').order('created_at', { ascending: false }).limit(limit)
+  const rows = (data ?? []) as unknown as TriageItem[]
+  return rows.sort((a, b) => (TRIAGE_RANK[a.category ?? 'other'] ?? 5) - (TRIAGE_RANK[b.category ?? 'other'] ?? 5))
+}
+
+function addDaysISO(days: number): string {
+  const d = new Date()
+  d.setUTCDate(d.getUTCDate() + days)
+  return d.toISOString().slice(0, 10)
+}

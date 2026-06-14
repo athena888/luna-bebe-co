@@ -3,10 +3,11 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { LayoutDashboard, ShoppingBag, Phone, ImagePlus, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, Gift, ShieldCheck, LineChart, Mail, LayoutTemplate, Building2 } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, Phone, ImagePlus, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, Gift, ShieldCheck, LineChart, Mail, LayoutTemplate, Building2, Compass } from 'lucide-react'
 
 const NAV = [
   { href: '/portal', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
+  { href: '/portal/cockpit', label: 'Daily Cockpit', icon: <Compass size={16} /> },
   { href: '/portal/orders', label: 'Orders', icon: <ShoppingBag size={16} /> },
   { href: '/portal/outreach', label: 'Outreach', icon: <Building2 size={16} /> },
   { href: '/portal/issues', label: 'Phone Issues', icon: <Phone size={16} /> },

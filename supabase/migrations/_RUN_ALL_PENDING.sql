@@ -355,4 +355,94 @@ create policy waitlist_service_write on public.waitlist for all to service_role 
 -- 19) Prebuilt box audience (For Baby / For Mama / Baby & Mama Bundle).
 alter table prebuilt_boxes add column if not exists audience text not null default 'bundle';
 
+-- 20) Marketing Cockpit (Phase 1) — extends touches into the outreach ledger
+--     and adds the daily plan / task / content tables + the marketing-assets
+--     storage bucket. Reuses contacts/touches/flags/inbound_quarantine.
+alter table public.touches add column if not exists subject text;
+alter table public.touches add column if not exists message_id text;
+alter table public.touches add column if not exists in_reply_to text;
+alter table public.touches add column if not exists category text;
+alter table public.touches add column if not exists intent text;
+alter table public.touches add column if not exists sentiment text;
+alter table public.touches add column if not exists requires_followup boolean not null default false;
+alter table public.touches add column if not exists followup_due date;
+alter table public.touches add column if not exists status text;
+alter table public.touches add column if not exists track text;
+create index if not exists touches_followup_idx on public.touches (followup_due) where followup_due is not null;
+create index if not exists touches_message_idx on public.touches (message_id);
+create index if not exists touches_status_idx on public.touches (status);
+
+create table if not exists public.daily_plans (
+  id            uuid primary key default gen_random_uuid(),
+  plan_date     date unique not null,
+  recap         text,
+  strategy_note text,
+  exec_rate     numeric,
+  flags         jsonb,
+  created_at    timestamptz not null default now()
+);
+alter table public.daily_plans enable row level security;
+drop policy if exists daily_plans_service on public.daily_plans;
+create policy daily_plans_service on public.daily_plans for all to service_role using (true) with check (true);
+
+create table if not exists public.tasks (
+  id            uuid primary key default gen_random_uuid(),
+  plan_date     date not null,
+  title         text not null,
+  channel       text,
+  task_type     text,
+  why           text,
+  est_minutes   int,
+  priority      int not null default 3,
+  status        text not null default 'open',
+  completed_at  timestamptz,
+  created_at    timestamptz not null default now()
+);
+create index if not exists tasks_plan_idx on public.tasks (plan_date);
+alter table public.tasks enable row level security;
+drop policy if exists tasks_service on public.tasks;
+create policy tasks_service on public.tasks for all to service_role using (true) with check (true);
+
+create table if not exists public.content_assets (
+  id              uuid primary key default gen_random_uuid(),
+  storage_path    text not null,
+  public_url      text,
+  product         text,
+  platform        text,
+  brand_fit       int,
+  craft           int,
+  composite       int,
+  color_on_brand  boolean,
+  verdict         text,
+  recommended_use text,
+  strengths       jsonb,
+  fixes           jsonb,
+  created_at      timestamptz not null default now()
+);
+alter table public.content_assets enable row level security;
+drop policy if exists content_assets_service on public.content_assets;
+create policy content_assets_service on public.content_assets for all to service_role using (true) with check (true);
+
+create table if not exists public.content_queue (
+  id             uuid primary key default gen_random_uuid(),
+  plan_date      date not null,
+  platform       text not null,
+  suggested_time text,
+  caption_draft  text,
+  image_brief    text,
+  asset_id       uuid references public.content_assets(id) on delete set null,
+  status         text not null default 'suggested',
+  posted_at      timestamptz,
+  post_url       text,
+  created_at     timestamptz not null default now()
+);
+create index if not exists content_queue_plan_idx on public.content_queue (plan_date);
+alter table public.content_queue enable row level security;
+drop policy if exists content_queue_service on public.content_queue;
+create policy content_queue_service on public.content_queue for all to service_role using (true) with check (true);
+
+insert into storage.buckets (id, name, public)
+values ('marketing-assets', 'marketing-assets', true)
+on conflict (id) do nothing;
+
 -- Done.
