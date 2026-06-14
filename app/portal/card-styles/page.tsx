@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Loader, Plus, Trash2, Check, Upload, Sparkles } from 'lucide-react'
+import Link from 'next/link'
+import { Loader, Plus, Trash2, Check, Upload, Sparkles, ArrowRight } from 'lucide-react'
 import { resizeImage } from '@/lib/image-resize'
 import type { CardStyle, CardMeta } from '@/lib/card-styles'
 
@@ -117,9 +118,12 @@ export default function CardStylesPage() {
           </button>
         )}
       </div>
-      <p className="font-sans text-sm text-bark-400 mb-8 max-w-2xl">
+      <p className="font-sans text-sm text-bark-400 mb-3 max-w-2xl">
         Upload the printed greeting-card designs customers can choose from. Each style has a physical size and a word limit for the printed message.
       </p>
+      <Link href="/portal/inside-card" className="inline-flex items-center gap-1.5 font-sans text-[11px] tracking-[0.1em] uppercase text-gold-500 hover:text-gold-600 mb-8">
+        Edit inside-card item content (back-of-card descriptions) <ArrowRight size={12} />
+      </Link>
 
       {/* Editor */}
       {editing !== null && (
