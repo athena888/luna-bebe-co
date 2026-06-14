@@ -17,30 +17,32 @@ export const TEMPLATES: OutreachTemplate[] = [
   {
     key: 'general-intro',
     track: 'A',
-    subject: 'a gentler kind of baby gift, from Petite Lavande',
+    subject: "a thoughtful gift for your clients' biggest moments",
     body: `Hi {{first_name}},
 
-I'm reaching out from Petite Lavande — we make organic newborn and postpartum gift boxes, finished by hand and traced to their source. Most baby gifts forget the mother; ours begin with her.
+I'm Emily, founder of Petite Lavande — we make organic newborn & postpartum gift boxes, finished by hand here in Seattle. Many attorneys and advisors send something when a client welcomes a new baby, and ours tend to be the kind people keep (and remember who it came from).
 
-If {{company}} ever sends gifts for new parents — clients, members, or your own team — I'd love to show you what we put together. No rush, and happy to send a sample.
+If {{company}} ever marks those moments for clients, I'd love to offer you 30% off your first box so you can see the quality for yourself.
+
+Open to it? I'm glad to send a few photos and details.
 
 Warmly,
-Emily`,
+Emily, Founder · Petite Lavande`,
   },
   {
     key: 'corporate-intro',
     track: 'C',
-    subject: 'corporate new-parent gifting, done properly',
+    subject: 'corporate new-parent gifting, done beautifully',
     body: `Hi {{first_name}},
 
-I'm Emily, founder of Petite Lavande — organic newborn + postpartum gift boxes, assembled and finished by hand. We work with companies who want their new-parent and client gifting to feel personal rather than transactional.
+I'm Emily, founder of Petite Lavande — organic newborn & postpartum gift boxes, assembled and finished by hand. We help companies make their new-parent and client gifting feel personal instead of generic.
 
-If {{company}} sends gifts for new parents, baby showers, or VIP clients, I'd love to put a small proposal together — flexible quantities, your card, fully handled.
+If {{company}} sends gifts for new parents, baby showers, or VIP clients, I'd love to offer 30% off your first order — flexible quantities, your card, fully handled.
 
-Could I send you a sample box?
+Could I send a quick overview?
 
 Warmly,
-Emily`,
+Emily, Founder · Petite Lavande`,
   },
 ]
 
