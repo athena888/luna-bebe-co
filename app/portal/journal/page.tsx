@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader, Plus, Trash2, Check, ArrowLeft } from 'lucide-react'
+import { Loader, Plus, Trash2, Check, ArrowLeft, Sparkles } from 'lucide-react'
 
 interface PostLite {
   id: string
@@ -29,6 +29,7 @@ export default function JournalPortal() {
   const [editing, setEditing] = useState<Draft | null>(null)
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState('')
+  const [aiBusy, setAiBusy] = useState(false)
 
   async function load() {
     setLoading(true)
@@ -60,6 +61,31 @@ export default function JournalPortal() {
     setEditing(null); await load()
   }
 
+  // Draft excerpt / meta description / slug from the title + body. Fills only the
+  // fields that are still empty — never overwrites what you've already written.
+  async function aiFill() {
+    if (!editing) return
+    setAiBusy(true); setErr('')
+    try {
+      const r = await fetch('/api/portal/journal/ai-suggest', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: editing.title, bodyText: editing.bodyText }),
+      })
+      const d = await r.json()
+      if (!r.ok) { setErr(d.error || 'AI assist failed'); return }
+      setEditing(e => {
+        if (!e) return e
+        const next = { ...e }
+        if (!next.excerpt?.trim() && d.excerpt) next.excerpt = d.excerpt
+        if (!next.metaDescription?.trim() && d.metaDescription) next.metaDescription = d.metaDescription
+        if (!next.slug?.trim() && d.slug) next.slug = d.slug
+        return next
+      })
+    } catch {
+      setErr('AI assist failed. Please try again.')
+    } finally { setAiBusy(false) }
+  }
+
   // ── Editor ──
   if (editing) {
     const e = editing
@@ -71,6 +97,14 @@ export default function JournalPortal() {
           </button>
           <div className="flex items-center gap-3">
             {e.id && <button onClick={() => remove(e.id!)} className="flex items-center gap-1.5 font-sans text-[11px] tracking-[0.1em] uppercase text-bark-400 hover:text-red-500 transition-colors"><Trash2 size={14} /> Delete</button>}
+            <button
+              onClick={aiFill}
+              disabled={aiBusy || (!e.title?.trim() && !e.bodyText?.trim())}
+              title="Fill the empty excerpt, meta description & slug from your title and body"
+              className="flex items-center gap-2 border border-[#9A80BD]/40 text-[#7C61A8] font-sans text-[11px] tracking-[0.15em] uppercase px-4 py-2.5 rounded hover:bg-[#9A80BD]/10 transition-colors disabled:opacity-40"
+            >
+              {aiBusy ? <Loader size={13} className="animate-spin" /> : <Sparkles size={13} />} {aiBusy ? 'Writing…' : 'AI assist'}
+            </button>
             <button onClick={save} disabled={saving} className="flex items-center gap-2 bg-bark-600 text-white font-sans text-[11px] tracking-[0.2em] uppercase px-6 py-2.5 rounded hover:bg-bark-700 transition-colors disabled:opacity-40">
               {saving ? <Loader size={13} className="animate-spin" /> : <Check size={13} />} {saving ? 'Saving…' : 'Save'}
             </button>
