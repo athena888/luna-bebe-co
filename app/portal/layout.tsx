@@ -11,9 +11,9 @@ const NAV = [
   { href: '/portal/orders', label: 'Orders', icon: <ShoppingBag size={16} /> },
   { href: '/portal/outreach', label: 'Outreach', icon: <Building2 size={16} /> },
   { href: '/portal/discounts', label: 'Discount Codes', icon: <Tag size={16} /> },
-  // First Year shipment tracker — only while the sub-line is enabled.
+  // The First Year sub-line admin — only while it's enabled.
   ...(process.env.NEXT_PUBLIC_FIRST_YEAR_ENABLED === 'true'
-    ? [{ href: '/portal/shipments', label: 'First Year', icon: <Package size={16} /> }]
+    ? [{ href: '/portal/first-year', label: 'First Year', icon: <Package size={16} /> }]
     : []),
   { href: '/portal/content', label: 'Pages & Content', icon: <LayoutTemplate size={16} /> },
   { href: '/portal/cert-icons', label: 'Cert Library', icon: <ShieldCheck size={16} /> },
@@ -42,6 +42,7 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
             || (href !== '/portal' && pathname.startsWith(href))
             || (href === '/portal/content' && contentPaths.some(p => pathname.startsWith(p)))
             || (href === '/portal/analytics' && pathname.startsWith('/portal/stock-insights'))
+            || (href === '/portal/first-year' && pathname.startsWith('/portal/shipments'))
           return (
             <Link
               key={href}

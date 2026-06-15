@@ -1,6 +1,30 @@
 import { supabaseAdmin } from './supabase'
+import { FIRST_YEAR_PRODUCT } from './first-year'
 
-// Admin reads/writes for The First Year scheduled shipments (Task 5). Server-only.
+// Admin reads/writes for The First Year sub-line. Server-only.
+
+// ── Set product (editable name/price/description; overrides the code default) ──
+export interface FirstYearProduct { id: string; name: string; description: string; priceCents: number }
+
+export async function getFirstYearProduct(): Promise<FirstYearProduct> {
+  try {
+    const { data } = await supabaseAdmin.from('site_content').select('value').eq('key', 'first_year.product').maybeSingle()
+    const ov = (data?.value as Partial<FirstYearProduct> | undefined) ?? {}
+    return {
+      id: FIRST_YEAR_PRODUCT.id,
+      name: ov.name?.trim() || FIRST_YEAR_PRODUCT.name,
+      description: ov.description?.trim() || FIRST_YEAR_PRODUCT.description,
+      priceCents: Number.isFinite(Number(ov.priceCents)) && Number(ov.priceCents) > 0 ? Number(ov.priceCents) : FIRST_YEAR_PRODUCT.priceCents,
+    }
+  } catch {
+    return { ...FIRST_YEAR_PRODUCT }
+  }
+}
+
+export async function saveFirstYearProduct(p: { name?: string; description?: string; priceCents?: number }): Promise<void> {
+  await supabaseAdmin.from('site_content')
+    .upsert({ key: 'first_year.product', value: p, updated_at: new Date().toISOString() }, { onConflict: 'key' })
+}
 
 export interface ShipmentRow {
   id: string
