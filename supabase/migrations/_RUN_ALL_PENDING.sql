@@ -496,4 +496,29 @@ create policy scheduled_campaigns_service on public.scheduled_campaigns for all 
 --     templates themselves live in site_content under key 'outreach.templates'.
 alter table public.contacts add column if not exists email_override jsonb;
 
+-- 26) "The First Year" sub-line (additive, flag-gated). Existing products keep
+--     product_type='standard' so nothing changes. scheduled_shipments records the
+--     3 future-dated obligations created when someone buys the set.
+alter table public.products add column if not exists product_type text not null default 'standard';
+
+create table if not exists public.scheduled_shipments (
+  id                  uuid primary key default gen_random_uuid(),
+  order_id            uuid references public.orders(id),
+  set_product_id      text,
+  shipment_index      int,          -- 1 / 2 / 3
+  label               text,         -- 'Welcome' / 'Growing' / 'One'
+  target_month_offset int,          -- 0 / 6 / 12
+  status              text not null default 'pending', -- pending | size_confirmed | shipped
+  planned_size        text,
+  ship_by_date        date,
+  notice_sent_at      timestamptz,  -- 2-week advance notice (Task 6)
+  confirm_token       text,         -- tokenized, login-free size-confirm page
+  recipient_email     text,
+  created_at          timestamptz not null default now()
+);
+create index if not exists scheduled_shipments_due_idx on public.scheduled_shipments (status, ship_by_date);
+alter table public.scheduled_shipments enable row level security;
+drop policy if exists scheduled_shipments_service on public.scheduled_shipments;
+create policy scheduled_shipments_service on public.scheduled_shipments for all to service_role using (true) with check (true);
+
 -- Done.
