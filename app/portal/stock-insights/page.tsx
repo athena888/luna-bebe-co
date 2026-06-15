@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { LineChart, Loader2, TrendingUp, Package, Search, FileText } from 'lucide-react'
+import { InsightsTabs } from '@/components/portal/InsightsTabs'
 
 interface ColorStat { color: string; units: number }
 interface SizeStat { size: string; units: number }
@@ -93,6 +94,7 @@ export default function StockInsightsPage() {
 
   return (
     <div className="p-4 sm:p-8">
+      <InsightsTabs active="stock" />
       <div className="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div>
           <h1 className="font-serif text-3xl text-bark-600 flex items-center gap-2"><LineChart size={26} className="text-gold-400" /> Stock Insights</h1>

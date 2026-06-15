@@ -73,31 +73,24 @@ export function Footer() {
           </div>
 
           {/* Link columns */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-12 text-center">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 mb-12 text-center">
 
-            {/* Shop */}
+            {/* Shop & Gift — merged */}
             <div>
-              <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-espresso mb-4 font-medium">Shop</p>
-              <ul className="space-y-2.5 text-xs font-sans">
+              <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-espresso mb-4 font-semibold">Shop &amp; Gift</p>
+              <ul className="space-y-2.5 text-[13px] font-sans font-medium">
+                <li><Link href="/gift-guides" className="text-espresso hover:text-espresso transition-colors">Gifting Ideas</Link></li>
                 <li><Link href="/boxes" className="text-espresso hover:text-espresso transition-colors">Ready-Made Boxes</Link></li>
                 <li><Link href="/build" className="text-espresso hover:text-espresso transition-colors">Build Your Own Box</Link></li>
-                <li><Link href="/gift-cards" className="text-espresso hover:text-espresso transition-colors">Gift Cards</Link></li>
-              </ul>
-            </div>
-
-            {/* Gifting Ideas — single hub (filter by occasion in-page) */}
-            <div>
-              <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-espresso mb-4 font-medium">Gifting</p>
-              <ul className="space-y-2.5 text-xs font-sans">
-                <li><Link href="/gift-guides" className="text-espresso hover:text-espresso transition-colors">Gifting Ideas</Link></li>
                 <li><Link href="/corporate" className="text-espresso hover:text-espresso transition-colors">Corporate &amp; Team Gifting</Link></li>
+                <li><Link href="/gift-cards" className="text-espresso hover:text-espresso transition-colors">Gift Cards</Link></li>
               </ul>
             </div>
 
             {/* About */}
             <div>
-              <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-espresso mb-4 font-medium">About</p>
-              <ul className="space-y-2.5 text-xs font-sans">
+              <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-espresso mb-4 font-semibold">About</p>
+              <ul className="space-y-2.5 text-[13px] font-sans font-medium">
                 <li><Link href="/story" className="text-espresso hover:text-espresso transition-colors">Our Story</Link></li>
                 <li><Link href="/journal" className="text-espresso hover:text-espresso transition-colors">The Journal</Link></li>
                 <li><Link href="/track" className="text-espresso hover:text-espresso transition-colors">Track Order</Link></li>
@@ -107,8 +100,8 @@ export function Footer() {
 
             {/* Contact */}
             <div>
-              <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-espresso mb-4 font-medium">Contact</p>
-              <ul className="space-y-2.5 text-xs font-sans">
+              <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-espresso mb-4 font-semibold">Contact</p>
+              <ul className="space-y-2.5 text-[13px] font-sans font-medium">
                 <li><a href={`mailto:${CONTACT_EMAIL}`} className="text-espresso hover:text-espresso transition-colors break-all">hello@<br />petitelavande.com</a></li>
                 <li><a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="text-espresso hover:text-espresso transition-colors">Instagram</a></li>
                 <li><a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="text-espresso hover:text-espresso transition-colors">Facebook</a></li>

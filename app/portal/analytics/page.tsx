@@ -1,6 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase'
 import { TrendingUp, ShoppingBag, DollarSign, ExternalLink } from 'lucide-react'
 import { UTMLinkBuilder } from './UTMLinkBuilder'
+import { InsightsTabs } from '@/components/portal/InsightsTabs'
 
 function fmt(cents: number) { return `$${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })}` }
 function pct(n: number, total: number) { return total === 0 ? '0%' : `${Math.round((n / total) * 100)}%` }
@@ -136,6 +137,7 @@ export default async function AnalyticsPage() {
 
   return (
     <div className="p-4 sm:p-8">
+      <InsightsTabs active="channels" />
       <div className="mb-8">
         <h1 className="font-serif text-3xl text-bark-600">Ad Channel Analytics</h1>
         <p className="font-sans text-sm text-bark-400 mt-1">

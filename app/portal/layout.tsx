@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { LayoutDashboard, ShoppingBag, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, ShieldCheck, LineChart, LayoutTemplate, Building2, Compass } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, ShieldCheck, LayoutTemplate, Building2, Compass } from 'lucide-react'
 
 const NAV = [
   { href: '/portal', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
@@ -13,7 +13,6 @@ const NAV = [
   { href: '/portal/content', label: 'Pages & Content', icon: <LayoutTemplate size={16} /> },
   { href: '/portal/cert-icons', label: 'Cert Library', icon: <ShieldCheck size={16} /> },
   { href: '/portal/inventory', label: 'Inventory', icon: <PackageSearch size={16} /> },
-  { href: '/portal/stock-insights', label: 'Stock Insights', icon: <LineChart size={16} /> },
   { href: '/portal/webhooks', label: 'Webhooks', icon: <Webhook size={16} /> },
   { href: '/portal/analytics', label: 'Analytics', icon: <TrendingUp size={16} /> },
 ]
@@ -37,6 +36,7 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
           const active = pathname === href
             || (href !== '/portal' && pathname.startsWith(href))
             || (href === '/portal/content' && contentPaths.some(p => pathname.startsWith(p)))
+            || (href === '/portal/analytics' && pathname.startsWith('/portal/stock-insights'))
           return (
             <Link
               key={href}

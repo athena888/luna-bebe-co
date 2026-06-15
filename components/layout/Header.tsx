@@ -88,11 +88,12 @@ export function Header() {
 
       {/* Nav bar */}
       <div className="border-b border-cream-300">
-        <div className="relative w-full pl-4 sm:pl-9 pr-3 sm:pr-6 h-[80px] flex items-center justify-between">
+        <div className="relative w-full pl-4 sm:pl-9 pr-3 sm:pr-6 h-[92px] sm:h-[112px] flex items-center justify-between">
 
-          {/* Logo — seal mark + flat wordmark lockup, links home */}
+          {/* Logo — seal mark + flat wordmark lockup, links home. Taller banner
+              lets the seal grow without changing the wordmark/nav sizing. */}
           <Link href="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0" aria-label="Petite Lavande — home">
-            <LogoMark className="h-11 sm:h-16 w-auto shrink-0" style={{ color: '#574540' }} alt="Petite Lavande" />
+            <LogoMark className="h-14 sm:h-[5.25rem] w-auto shrink-0" style={{ color: '#574540' }} alt="Petite Lavande" />
             <span
               className="uppercase inline-block"
               style={{
