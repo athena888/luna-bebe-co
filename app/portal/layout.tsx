@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { LayoutDashboard, ShoppingBag, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, ShieldCheck, LayoutTemplate, Building2, Compass, Tag } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, ShieldCheck, LayoutTemplate, Building2, Compass, Tag, Package } from 'lucide-react'
 
 const NAV = [
   { href: '/portal', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
@@ -11,6 +11,10 @@ const NAV = [
   { href: '/portal/orders', label: 'Orders', icon: <ShoppingBag size={16} /> },
   { href: '/portal/outreach', label: 'Outreach', icon: <Building2 size={16} /> },
   { href: '/portal/discounts', label: 'Discount Codes', icon: <Tag size={16} /> },
+  // First Year shipment tracker — only while the sub-line is enabled.
+  ...(process.env.NEXT_PUBLIC_FIRST_YEAR_ENABLED === 'true'
+    ? [{ href: '/portal/shipments', label: 'First Year', icon: <Package size={16} /> }]
+    : []),
   { href: '/portal/content', label: 'Pages & Content', icon: <LayoutTemplate size={16} /> },
   { href: '/portal/cert-icons', label: 'Cert Library', icon: <ShieldCheck size={16} /> },
   { href: '/portal/inventory', label: 'Inventory', icon: <PackageSearch size={16} /> },
