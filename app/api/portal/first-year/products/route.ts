@@ -26,12 +26,19 @@ export async function PUT(req: NextRequest) {
     const b = await req.json()
     if (!b.id) return NextResponse.json({ error: 'id required' }, { status: 400 })
     const num = (v: unknown) => (v === '' || v == null || !Number.isFinite(Number(v)) ? null : Math.round(Number(v)))
+    const str = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : null)
     await updateFirstYearProduct(b.id, {
       name: b.name,
       description: b.description,
       price_cents: num(b.price_cents),
-      sizes: b.sizes ?? null,
+      sizes: str(b.sizes),
+      sold_out_sizes: str(b.sold_out_sizes),
+      materials: str(b.materials),
+      size_detail: str(b.size_detail),
       shipment_index: num(b.shipment_index),
+      wholesale_rmb_cents: num(b.wholesale_rmb_cents),
+      weight_grams: num(b.weight_grams),
+      us_ship_cents: num(b.us_ship_cents),
       sort_order: Number.isFinite(Number(b.sort_order)) ? Math.round(Number(b.sort_order)) : 0,
       published: !!b.published,
     })

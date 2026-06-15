@@ -543,4 +543,15 @@ alter table public.first_year_products enable row level security;
 drop policy if exists first_year_products_service on public.first_year_products;
 create policy first_year_products_service on public.first_year_products for all to service_role using (true) with check (true);
 
+-- 28) First Year products: material + size detail (their own fields), per-size
+--     out-of-stock list (hidden on the site; NO quantities), and the cost inputs
+--     used to compute landed cost + profit (wholesale in RMB, item weight, and
+--     US domestic shipping). Customer never sees cost — admin profit only.
+alter table public.first_year_products add column if not exists materials          text;
+alter table public.first_year_products add column if not exists size_detail        text;
+alter table public.first_year_products add column if not exists sold_out_sizes      text;   -- comma list, hidden on the public page
+alter table public.first_year_products add column if not exists wholesale_rmb_cents int;    -- supplier cost, in RMB cents (¥)
+alter table public.first_year_products add column if not exists weight_grams        int;    -- for the ¥75/kg China→US freight estimate
+alter table public.first_year_products add column if not exists us_ship_cents       int;    -- domestic US shipping to the customer, in USD cents
+
 -- Done.

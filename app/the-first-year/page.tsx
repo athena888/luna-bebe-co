@@ -26,7 +26,15 @@ function priceLabel(cents: number | null) {
   return cents != null ? `$${(cents / 100).toFixed(0)}` : ''
 }
 
+// Sizes the customer can actually buy = all sizes minus the ones marked out of stock.
+function inStockSizes(p: FirstYearProductRow): string {
+  const all = (p.sizes ?? '').split(',').map(s => s.trim()).filter(Boolean)
+  const out = new Set((p.sold_out_sizes ?? '').split(',').map(s => s.trim()).filter(Boolean))
+  return all.filter(s => !out.has(s)).join(', ')
+}
+
 function ProductCard({ p }: { p: FirstYearProductRow }) {
+  const sizes = inStockSizes(p)
   return (
     <div className="text-center">
       <div className="aspect-[4/5] bg-white border border-[#e7ddc9] overflow-hidden mb-4">
@@ -37,8 +45,13 @@ function ProductCard({ p }: { p: FirstYearProductRow }) {
             : <div className="w-full h-full flex items-center justify-center text-[#c9bda6] font-serif">Petite Lavande</div>}
       </div>
       <h3 className="font-serif text-lg text-espresso">{p.name || 'Untitled'}</h3>
-      {p.sizes && <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-[#A7AE95] mt-1">Size {p.sizes}</p>}
+      {sizes && <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-[#A7AE95] mt-1">Size {sizes}</p>}
       {p.description && <p className="font-cormorant text-base text-[#6F5B4D] leading-relaxed mt-2 max-w-xs mx-auto">{p.description}</p>}
+      {(p.materials || p.size_detail) && (
+        <p className="font-sans text-[11px] text-[#6F5B4D]/80 mt-2 max-w-xs mx-auto leading-relaxed">
+          {[p.materials, p.size_detail].filter(Boolean).join(' · ')}
+        </p>
+      )}
       {p.price_cents != null && <p className="font-sans text-sm text-espresso mt-2">{priceLabel(p.price_cents)}</p>}
       {p.images[0] && p.video_url && (
         <video src={p.video_url} preload="none" muted loop playsInline controls className="w-full max-w-[12rem] mx-auto mt-3 border border-[#e7ddc9]" />

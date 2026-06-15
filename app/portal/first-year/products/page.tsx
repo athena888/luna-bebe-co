@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { Loader, Plus, Trash2, Check, ArrowLeft, Sparkles, Upload, Film, X, ImageIcon } from 'lucide-react'
+import { landedCostUsdCents, profitUsdCents, fmtUsd, RMB_TO_USD, FREIGHT_RMB_PER_KG } from '@/lib/first-year-pricing'
 
 interface FYProduct {
   id: string
@@ -10,11 +11,22 @@ interface FYProduct {
   description: string
   price_cents: number | null
   sizes: string | null
+  sold_out_sizes: string | null
+  materials: string | null
+  size_detail: string | null
   shipment_index: number | null
   images: string[]
   video_url: string | null
+  wholesale_rmb_cents: number | null
+  weight_grams: number | null
+  us_ship_cents: number | null
   sort_order: number
   published: boolean
+}
+
+const splitSizes = (s: string | null) => (s ?? '').split(',').map(x => x.trim()).filter(Boolean)
+function costOf(p: FYProduct) {
+  return { wholesaleRmbCents: p.wholesale_rmb_cents, weightGrams: p.weight_grams, usShipCents: p.us_ship_cents }
 }
 
 const SHIPMENTS = [
@@ -121,6 +133,16 @@ export default function FirstYearProductsPage() {
                 <p className="font-serif text-lg text-bark-600 truncate">{p.name || 'Untitled product'}</p>
                 <p className="font-sans text-xs text-bark-400">{p.price_cents != null ? `$${(p.price_cents / 100).toFixed(2)}` : 'No price'} · {p.images.length} photo{p.images.length === 1 ? '' : 's'}{p.video_url ? ' · video' : ''}</p>
               </div>
+              {(() => {
+                const profit = profitUsdCents(p.price_cents, costOf(p))
+                return (
+                  <div className="text-right shrink-0">
+                    {profit != null
+                      ? <><p className={`font-serif text-base ${profit >= 0 ? 'text-sage-600' : 'text-red-500'}`}>{fmtUsd(profit)}</p><p className="font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400">profit / sale</p></>
+                      : <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-300">add cost</p>}
+                  </div>
+                )
+              })()}
               <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 shrink-0">Edit →</span>
             </button>
           ))}
@@ -200,12 +222,19 @@ function Editor({ product, setProduct, onSave, onDelete, onBack, saving, err }: 
       if (!p.name.trim() && d.name) patch.name = d.name
       if (!p.description.trim() && d.description) patch.description = d.description
       if (!(p.sizes ?? '').trim() && d.sizes) patch.sizes = d.sizes
+      if (!(p.materials ?? '').trim() && d.ingredients) patch.materials = d.ingredients
+      if (!(p.size_detail ?? '').trim() && d.size_detail) patch.size_detail = d.size_detail
+      if (p.wholesale_rmb_cents == null && d.wholesale_rmb_cents) patch.wholesale_rmb_cents = d.wholesale_rmb_cents
+      if (p.weight_grams == null && d.weight_grams) patch.weight_grams = d.weight_grams
       if (p.price_cents == null && d.suggested_price_cents) patch.price_cents = d.suggested_price_cents
       set(patch)
-      if (d.ingredients || d.size_detail) {
-        setLocalErr('') // not an error — show what was read as a hint
-        setReadNote([d.ingredients && `Material: ${d.ingredients}`, d.size_detail && `Sizes: ${d.size_detail}`].filter(Boolean).join('  ·  '))
-      }
+      setReadNote([
+        d.ingredients && `Material: ${d.ingredients}`,
+        d.sizes && `Sizes: ${d.sizes}`,
+        d.size_detail && d.size_detail,
+        d.wholesale_rmb_cents && `Wholesale ¥${(d.wholesale_rmb_cents / 100).toFixed(0)}`,
+        d.weight_grams && `~${d.weight_grams}g`,
+      ].filter(Boolean).join('  ·  '))
     } catch { setLocalErr('Could not read the screenshot') } finally { setAiBusy(false) }
   }
 
@@ -227,7 +256,7 @@ function Editor({ product, setProduct, onSave, onDelete, onBack, saving, err }: 
         {/* AI from screenshot */}
         <div className="bg-[#9A80BD]/5 border border-[#9A80BD]/20 rounded-lg p-4">
           <p className="font-sans text-sm font-medium text-bark-600 flex items-center gap-1.5 mb-1"><Sparkles size={14} className="text-[#7C61A8]" /> Draft from a screenshot</p>
-          <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">Upload a supplier listing / photo (showing the item and its cost). AI drafts the name, description, and a suggested retail price — filling only the empty fields below.</p>
+          <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">Upload the supplier screenshots (incl. Chinese). AI reads the material, size chart, and wholesale price + weight, and drafts the name &amp; style description — filling only the empty fields below.</p>
           <button onClick={() => aiInputRef.current?.click()} disabled={aiBusy} className="inline-flex items-center gap-2 border border-[#9A80BD]/40 text-[#7C61A8] font-sans text-[11px] tracking-[0.15em] uppercase px-4 py-2 rounded hover:bg-[#9A80BD]/10 transition-colors disabled:opacity-40">
             {aiBusy ? <Loader size={13} className="animate-spin" /> : <Sparkles size={13} />} {aiBusy ? 'Reading…' : 'Upload screenshot(s)'}
           </button>
@@ -262,6 +291,44 @@ function Editor({ product, setProduct, onSave, onDelete, onBack, saving, err }: 
           <label className={labelCls}>Description</label>
           <textarea rows={3} className={inputCls + ' resize-none leading-relaxed'} value={p.description} onChange={e => set({ description: e.target.value })} />
         </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className={labelCls}>Material</label>
+            <input className={inputCls} value={p.materials ?? ''} onChange={e => set({ materials: e.target.value })} placeholder="100% cotton" />
+          </div>
+          <div>
+            <label className={labelCls}>Size detail</label>
+            <input className={inputCls} value={p.size_detail ?? ''} onChange={e => set({ size_detail: e.target.value })} placeholder="Bust 31cm · length 36cm (size 90)" />
+          </div>
+        </div>
+
+        {/* Per-size stock — out-of-stock sizes are hidden on the product page (no quantities) */}
+        {splitSizes(p.sizes).length > 0 && (
+          <div>
+            <label className={labelCls}>Size availability</label>
+            <div className="flex flex-wrap gap-2">
+              {splitSizes(p.sizes).map(sz => {
+                const out = splitSizes(p.sold_out_sizes).includes(sz)
+                return (
+                  <button
+                    key={sz}
+                    type="button"
+                    onClick={() => {
+                      const cur = splitSizes(p.sold_out_sizes)
+                      const next = out ? cur.filter(x => x !== sz) : [...cur, sz]
+                      set({ sold_out_sizes: next.join(', ') || null })
+                    }}
+                    className={`font-sans text-xs px-3 py-1.5 rounded border transition-colors ${out ? 'border-cream-300 text-bark-300 line-through bg-cream-100' : 'border-sage-300 text-sage-600 bg-sage-50'}`}
+                  >
+                    {sz}{out ? ' · out' : ''}
+                  </button>
+                )
+              })}
+            </div>
+            <p className="font-sans text-[11px] text-bark-400 mt-2">Tap a size to mark it <strong>out of stock</strong> — out-of-stock sizes are hidden on the product page. No quantities tracked.</p>
+          </div>
+        )}
 
         {/* Photos */}
         <div>
@@ -305,6 +372,48 @@ function Editor({ product, setProduct, onSave, onDelete, onBack, saving, err }: 
             </label>
           )}
           <p className="font-sans text-[11px] text-bark-400 mt-2">A short clip (3–6s, under ~4MB). Loads only when played, so it never slows the page.</p>
+        </div>
+
+        {/* Costs & profit — admin only, never shown to customers */}
+        <div className="bg-cream-100/60 border border-cream-300 rounded-lg p-4">
+          <p className="font-sans text-sm font-medium text-bark-600 mb-1">Costs &amp; profit <span className="font-normal text-bark-400">· only you see this</span></p>
+          <p className="font-sans text-[11px] text-bark-400 mb-4 leading-relaxed">Landed cost = wholesale (¥) + China→US freight (¥{FREIGHT_RMB_PER_KG}/kg × weight) + your US shipping, converted at ¥1 ≈ ${RMB_TO_USD.toFixed(3)}.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className={labelCls}>Wholesale (¥ RMB)</label>
+              <input type="number" min={0} step="1" className={inputCls}
+                value={p.wholesale_rmb_cents != null ? (p.wholesale_rmb_cents / 100).toString() : ''}
+                onChange={e => set({ wholesale_rmb_cents: e.target.value === '' ? null : Math.round(Number(e.target.value) * 100) })} placeholder="¥48" />
+            </div>
+            <div>
+              <label className={labelCls}>Weight (grams)</label>
+              <input type="number" min={0} step="1" className={inputCls}
+                value={p.weight_grams != null ? p.weight_grams.toString() : ''}
+                onChange={e => set({ weight_grams: e.target.value === '' ? null : Math.round(Number(e.target.value)) })} placeholder="250" />
+            </div>
+            <div>
+              <label className={labelCls}>US shipping ($)</label>
+              <input type="number" min={0} step="0.01" className={inputCls}
+                value={p.us_ship_cents != null ? (p.us_ship_cents / 100).toString() : ''}
+                onChange={e => set({ us_ship_cents: e.target.value === '' ? null : Math.round(Number(e.target.value) * 100) })} placeholder="6.00" />
+            </div>
+          </div>
+          {(() => {
+            const cost = costOf(p)
+            const landed = landedCostUsdCents(cost)
+            const profit = profitUsdCents(p.price_cents, cost)
+            return (
+              <div className="flex flex-wrap items-center gap-x-8 gap-y-2 mt-4 pt-4 border-t border-cream-300">
+                <div><span className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mr-2">Landed cost</span><span className="font-serif text-lg text-bark-600">{fmtUsd(landed)}</span></div>
+                <div><span className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mr-2">Retail</span><span className="font-serif text-lg text-bark-600">{fmtUsd(p.price_cents)}</span></div>
+                <div><span className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mr-2">Profit / sale</span>
+                  {profit != null
+                    ? <span className={`font-serif text-xl ${profit >= 0 ? 'text-sage-600' : 'text-red-500'}`}>{fmtUsd(profit)}</span>
+                    : <span className="font-sans text-xs text-bark-400">set a retail price &amp; wholesale</span>}
+                </div>
+              </div>
+            )
+          })()}
         </div>
 
         <label className="flex items-center gap-2.5 cursor-pointer pt-1">

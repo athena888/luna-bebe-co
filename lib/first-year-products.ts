@@ -9,25 +9,39 @@ export interface FirstYearProductRow {
   description: string
   price_cents: number | null
   sizes: string | null
+  sold_out_sizes: string | null
+  materials: string | null
+  size_detail: string | null
   shipment_index: number | null
   images: string[]
   video_url: string | null
+  wholesale_rmb_cents: number | null
+  weight_grams: number | null
+  us_ship_cents: number | null
   sort_order: number
   published: boolean
 }
 
-const COLS = 'id, name, description, price_cents, sizes, shipment_index, images, video_url, sort_order, published'
+const COLS = 'id, name, description, price_cents, sizes, sold_out_sizes, materials, size_detail, shipment_index, images, video_url, wholesale_rmb_cents, weight_grams, us_ship_cents, sort_order, published'
+
+const numOrNull = (v: unknown) => (v == null || !Number.isFinite(Number(v)) ? null : Number(v))
 
 function normalize(r: Record<string, unknown>): FirstYearProductRow {
   return {
     id: String(r.id),
     name: String(r.name ?? ''),
     description: String(r.description ?? ''),
-    price_cents: r.price_cents == null ? null : Number(r.price_cents),
+    price_cents: numOrNull(r.price_cents),
     sizes: (r.sizes as string | null) ?? null,
-    shipment_index: r.shipment_index == null ? null : Number(r.shipment_index),
+    sold_out_sizes: (r.sold_out_sizes as string | null) ?? null,
+    materials: (r.materials as string | null) ?? null,
+    size_detail: (r.size_detail as string | null) ?? null,
+    shipment_index: numOrNull(r.shipment_index),
     images: Array.isArray(r.images) ? (r.images as string[]) : [],
     video_url: (r.video_url as string | null) ?? null,
+    wholesale_rmb_cents: numOrNull(r.wholesale_rmb_cents),
+    weight_grams: numOrNull(r.weight_grams),
+    us_ship_cents: numOrNull(r.us_ship_cents),
     sort_order: Number(r.sort_order ?? 0),
     published: Boolean(r.published),
   }
@@ -78,9 +92,15 @@ export interface FirstYearProductPatch {
   description?: string
   price_cents?: number | null
   sizes?: string | null
+  sold_out_sizes?: string | null
+  materials?: string | null
+  size_detail?: string | null
   shipment_index?: number | null
   images?: string[]
   video_url?: string | null
+  wholesale_rmb_cents?: number | null
+  weight_grams?: number | null
+  us_ship_cents?: number | null
   sort_order?: number
   published?: boolean
 }

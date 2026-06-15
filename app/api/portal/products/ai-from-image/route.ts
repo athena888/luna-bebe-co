@@ -19,6 +19,8 @@ From the image(s), return ONLY a JSON object, no prose, no markdown fences:
   "sizes": the available size options from the size chart as a short comma-separated list, e.g. "66, 73, 80, 90, 100" or "S, M". "" if no chart is shown.
   "size_detail": one short English line summarizing the measurements (in cm) or the model's fit reference, if useful; else "".
   "cost_cents": the wholesale/cost price you can actually read in the image, in cents, or null,
+  "wholesale_rmb_cents": if the wholesale/cost price shown is in Chinese yuan (¥/RMB/元), that price in RMB CENTS (e.g. ¥48 → 4800), else null,
+  "weight_grams": your best estimate of the item's shipping weight in grams (a baby outfit/set is roughly 150–400g; socks ~30g), as an integer,
   "suggested_price_cents": a sensible boutique RETAIL price in cents (if a cost is visible, ~2.5–3x cost rounded to a clean number; otherwise infer from the item type and premium positioning — a full outfit/set sits higher than a single small accessory),
   "price_reasoning": one short sentence on how you set the price (note when no cost was visible).
 }
@@ -56,6 +58,8 @@ export async function POST(req: NextRequest) {
       sizes: String(raw.sizes ?? '').slice(0, 200),
       size_detail: String(raw.size_detail ?? '').slice(0, 300),
       cost_cents: cents(raw.cost_cents),
+      wholesale_rmb_cents: cents(raw.wholesale_rmb_cents),
+      weight_grams: cents(raw.weight_grams),
       suggested_price_cents: cents(raw.suggested_price_cents),
       price_reasoning: String(raw.price_reasoning ?? '').slice(0, 200),
     })

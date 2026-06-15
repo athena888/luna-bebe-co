@@ -14,12 +14,12 @@ You are shown a numbered set of photos (image 0, image 1, …). Several photos m
 
 Your job is to GROUP the photos by product: every distinct product becomes one group, and each photo belongs to exactly one group. Attach each info/size page to the product group it describes (match by style number or by the item shown).
 
-For each group return: the photo indexes in it; a short product name (<= 6 words, English); a 2-3 sentence description of the STYLE woven with the fabric (English); the fabric/materials translated to concise English (or ""); the available sizes as a short comma list from the chart (e.g. "66, 73, 80, 90" or ""); and a sensible boutique RETAIL price in cents (infer from the item type — a full outfit/set sits higher than a small accessory — unless a cost is visibly shown).
+For each group return: the photo indexes in it; a short product name (<= 6 words, English); a 2-3 sentence description of the STYLE woven with the fabric (English); the fabric/materials translated to concise English (or ""); the available sizes as a short comma list from the chart (e.g. "66, 73, 80, 90" or ""); a short size_detail line (key measurements in cm or the model fit, or ""); the wholesale price in RMB CENTS if shown in yuan (¥48 → 4800, else null); a weight_grams estimate (baby outfit ~150–400g, socks ~30g); and a sensible boutique RETAIL price in cents (infer from the item type — a full outfit/set sits higher than a small accessory — unless a cost is visibly shown).
 
 Return ONLY a JSON object, no prose, no markdown fences:
 {
   "groups": [
-    { "photos": [0,2,5], "name": "...", "description": "...", "ingredients": "100% cotton", "sizes": "66, 73, 80, 90", "suggested_price_cents": 4800 }
+    { "photos": [0,2,5], "name": "...", "description": "...", "ingredients": "100% cotton", "sizes": "66, 73, 80, 90", "size_detail": "Bust 31cm, length 36cm (size 90)", "wholesale_rmb_cents": 4800, "weight_grams": 250, "suggested_price_cents": 4800 }
   ]
 }
 
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     const m = text.match(/\{[\s\S]*\}/)
     if (!m) return NextResponse.json({ error: 'AI could not group the photos. Try again.' }, { status: 502 })
 
-    let parsed: { groups?: Array<{ photos?: number[]; name?: string; description?: string; ingredients?: string; sizes?: string; suggested_price_cents?: number }> } = {}
+    let parsed: { groups?: Array<{ photos?: number[]; name?: string; description?: string; ingredients?: string; sizes?: string; size_detail?: string; wholesale_rmb_cents?: number; weight_grams?: number; suggested_price_cents?: number }> } = {}
     try { parsed = JSON.parse(m[0]) } catch { return NextResponse.json({ error: 'AI returned an unreadable result. Try again.' }, { status: 502 }) }
 
     const cents = (v: unknown) => (Number.isFinite(Number(v)) ? Math.max(0, Math.round(Number(v))) : null)
@@ -58,8 +58,11 @@ export async function POST(req: NextRequest) {
       return {
         name: String(g.name ?? '').slice(0, 80),
         description: String(g.description ?? '').slice(0, 600),
-        ingredients: String(g.ingredients ?? '').slice(0, 300),
+        materials: String(g.ingredients ?? '').slice(0, 300),
         sizes: String(g.sizes ?? '').slice(0, 200),
+        size_detail: String(g.size_detail ?? '').slice(0, 300),
+        wholesale_rmb_cents: cents(g.wholesale_rmb_cents),
+        weight_grams: cents(g.weight_grams),
         price_cents: cents(g.suggested_price_cents),
         images: idxs.map(i => list[i]),
       }
@@ -67,7 +70,7 @@ export async function POST(req: NextRequest) {
 
     // Safety net: any photo the model forgot becomes its own ungrouped product.
     const leftovers = list.filter((_, i) => !seen.has(i))
-    for (const url of leftovers) groups.push({ name: '', description: '', ingredients: '', sizes: '', price_cents: null, images: [url] })
+    for (const url of leftovers) groups.push({ name: '', description: '', materials: '', sizes: '', size_detail: '', wholesale_rmb_cents: null, weight_grams: null, price_cents: null, images: [url] })
 
     if (!groups.length) return NextResponse.json({ error: 'No groups produced. Try again.' }, { status: 502 })
     return NextResponse.json({ groups })
