@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
+import { storeCheckoutEnabled, STORE_CLOSED_MESSAGE } from '@/lib/store-flags'
 
 export async function POST(req: NextRequest) {
+  // Gift cards are part of the main store — paused with it (The First Year stays open).
+  if (!storeCheckoutEnabled()) {
+    return NextResponse.json({ error: STORE_CLOSED_MESSAGE }, { status: 403 })
+  }
   try {
     const { amount, recipientEmail, recipientName, senderName, senderEmail, message } = await req.json()
 

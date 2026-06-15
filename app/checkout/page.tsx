@@ -9,6 +9,8 @@ import { SHIPPING, BOX_BASE_PRICE } from '@/lib/products'
 import type { BoxSelection, ShippingType } from '@/types'
 import { Lock } from 'lucide-react'
 import Image from 'next/image'
+import { storeCheckoutEnabled } from '@/lib/store-flags'
+import { ShopClosed } from '@/components/ShopClosed'
 
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
 function boxItemTotal(selection: BoxSelection) { return Object.values(selection).reduce((sum, p) => sum + (p?.price ?? 0) * ((p as { qty?: number })?.qty ?? 1), 0) }
@@ -87,6 +89,9 @@ export default function CheckoutPage() {
       setPromoState('invalid')
     }
   }
+
+  // Main store paused while inventory isn't ready (The First Year stays open).
+  if (!storeCheckoutEnabled()) return <ShopClosed />
 
   if (!selection) return null
 

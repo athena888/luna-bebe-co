@@ -5,8 +5,13 @@ import { BOX_BASE_PRICE, SHIPPING } from '@/lib/products'
 import { resolveLocale, marketFor, LOCALE_COOKIE } from '@/lib/markets'
 import { getProductPrices, BOX_BASE_BY_CURRENCY, SHIPPING_BY_CURRENCY } from '@/lib/pricing'
 import type { Product, ShippingType } from '@/types'
+import { storeCheckoutEnabled, STORE_CLOSED_MESSAGE } from '@/lib/store-flags'
 
 export async function POST(req: NextRequest) {
+  // Main store paused while inventory isn't ready (The First Year has its own checkout).
+  if (!storeCheckoutEnabled()) {
+    return NextResponse.json({ error: STORE_CLOSED_MESSAGE }, { status: 403 })
+  }
   try {
     const {
       selectedItems,

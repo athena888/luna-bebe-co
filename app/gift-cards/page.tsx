@@ -6,6 +6,8 @@ import { Footer } from '@/components/layout/Footer'
 import { Gift, Lock } from 'lucide-react'
 import { SlotImage } from '@/components/ui/SlotImage'
 import { SlotBackground } from '@/components/ui/SlotBackground'
+import { storeCheckoutEnabled } from '@/lib/store-flags'
+import { ShopClosed } from '@/components/ShopClosed'
 
 const AMOUNTS = [
   { value: 5000,  label: '$50',  popular: false },
@@ -49,6 +51,9 @@ export default function GiftCardsPage() {
       setLoading(false)
     }
   }
+
+  // Gift cards are part of the main store — paused with it (The First Year stays open).
+  if (!storeCheckoutEnabled()) return <ShopClosed />
 
   return (
     <>
