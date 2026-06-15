@@ -8,8 +8,6 @@ import { LogoMark } from '@/components/ui/LogoMark'
 
 // Ready-Made editions — the label links to all boxes; the dropdown jumps to a
 // specific edition section on /boxes (anchors match `edition-<slug>` there).
-// "The First Year" sub-line nav link — only shows when the flag is on.
-const FIRST_YEAR_ON = process.env.NEXT_PUBLIC_FIRST_YEAR_ENABLED === 'true'
 
 const READY_MADE_EDITIONS = [
   { label: 'All', href: '/boxes' },
@@ -66,7 +64,6 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
           ))}
         </div>
       </div>
-      {FIRST_YEAR_ON && <Link href="/the-first-year" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>The First Year</Link>}
       <Link href="/gift-cards" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Gift Cards</Link>
       <Link href="/account" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>My Account</Link>
       <Link href="/story" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Stories</Link>
@@ -137,7 +134,6 @@ export function Header() {
               </div>
             </div>
 
-            {FIRST_YEAR_ON && <Link href="/the-first-year" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors whitespace-nowrap">The First Year</Link>}
             <Link href="/gift-cards" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors whitespace-nowrap">Gift Cards</Link>
             <Link href="/story" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors whitespace-nowrap">Stories</Link>
           </nav>

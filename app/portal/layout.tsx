@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { LayoutDashboard, ShoppingBag, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, ShieldCheck, LayoutTemplate, Building2, Compass, Tag, Package } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, ShieldCheck, LayoutTemplate, Building2, Compass, Tag } from 'lucide-react'
 
 const NAV = [
   { href: '/portal', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
@@ -11,10 +11,6 @@ const NAV = [
   { href: '/portal/orders', label: 'Orders', icon: <ShoppingBag size={16} /> },
   { href: '/portal/outreach', label: 'Outreach', icon: <Building2 size={16} /> },
   { href: '/portal/discounts', label: 'Discount Codes', icon: <Tag size={16} /> },
-  // The First Year sub-line admin — only while it's enabled.
-  ...(process.env.NEXT_PUBLIC_FIRST_YEAR_ENABLED === 'true'
-    ? [{ href: '/portal/first-year', label: 'First Year', icon: <Package size={16} /> }]
-    : []),
   { href: '/portal/content', label: 'Pages & Content', icon: <LayoutTemplate size={16} /> },
   { href: '/portal/cert-icons', label: 'Cert Library', icon: <ShieldCheck size={16} /> },
   { href: '/portal/inventory', label: 'Inventory', icon: <PackageSearch size={16} /> },
@@ -42,7 +38,6 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
             || (href !== '/portal' && pathname.startsWith(href))
             || (href === '/portal/content' && contentPaths.some(p => pathname.startsWith(p)))
             || (href === '/portal/analytics' && pathname.startsWith('/portal/stock-insights'))
-            || (href === '/portal/first-year' && pathname.startsWith('/portal/shipments'))
           return (
             <Link
               key={href}

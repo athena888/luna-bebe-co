@@ -19,10 +19,6 @@
     {
       "path": "/api/cron/scheduled-send",
       "schedule": "0 17 * * *"
-    },
-    {
-      "path": "/api/cron/shipment-notices",
-      "schedule": "0 14 * * *"
     }
   ]
 }
