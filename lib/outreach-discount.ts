@@ -21,7 +21,13 @@ async function ensureCoupon() {
 export async function mintOutreachCode(): Promise<string> {
   await ensureCoupon()
   const code = `PL30${randomUUID().replace(/-/g, '').slice(0, 6).toUpperCase()}`
+  // This Stripe API version nests the coupon under `promotion` (top-level
+  // `coupon` is rejected as an unknown parameter).
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const promo = await (stripe.promotionCodes.create as any)({ coupon: COUPON_ID, code, max_redemptions: 1 })
+  const promo = await (stripe.promotionCodes.create as any)({
+    promotion: { type: 'coupon', coupon: COUPON_ID },
+    code,
+    max_redemptions: 1,
+  })
   return (promo as { code: string }).code
 }
