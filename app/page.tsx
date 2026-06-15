@@ -24,10 +24,13 @@ import { CONTACT_EMAIL } from '@/lib/site-config'
 const PERK_ICONS = [Package, PenLine, Leaf, Heart]
 
 export const metadata: Metadata = {
-  title: 'Petite Lavande — Luxury Curated Baby Gift Boxes',
-  description: 'Build a bespoke luxury baby shower gift box. Choose 5 premium organic items, add a personalized printed card, and deliver an unforgettable unboxing experience.',
+  // `absolute` so the "| Petite Lavande" template isn't appended (avoids the
+  // brand name appearing twice in the homepage title).
+  title: { absolute: 'Petite Lavande — Luxury Organic Baby & New-Mama Gift Boxes' },
+  description: 'Bespoke luxury baby gift boxes — soft GOTS-cotton organic clothing, gentle botanical care, and a personalized printed card. Newborn & postpartum gifts, finished by hand and shipped with love.',
+  keywords: ['organic baby gift box', 'luxury baby gift', 'newborn gift box', 'postpartum gift', 'new mama gift'],
   alternates: { canonical: process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com' },
-  openGraph: { title: 'Petite Lavande', description: 'Luxury curated organic baby gift boxes — built item by item, shipped with love.' },
+  openGraph: { title: 'Petite Lavande — Luxury Organic Baby Gifts', description: 'Organic newborn & postpartum gift boxes — built item by item, finished by hand, shipped with love.' },
 }
 
 // Revalidate bestsellers periodically so they reflect real sales
