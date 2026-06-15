@@ -149,9 +149,9 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
       </button>
 
       <div className={`pt-3.5 pb-1 ${soldOut ? 'opacity-40' : ''}`}>
-        <h3 className="font-sans text-sm text-bark-600 leading-snug mb-1">{product.name}</h3>
+        <h3 className="font-sans text-sm text-espresso leading-snug mb-1">{product.name}</h3>
         <div className="flex items-center justify-between gap-1">
-          <span className={`font-sans text-xs text-bark-400 ${soldOut ? 'line-through' : ''}`}>{formatPrice(product.price)}</span>
+          <span className={`font-sans text-xs text-espresso-light ${soldOut ? 'line-through' : ''}`}>{formatPrice(product.price)}</span>
           {!soldOut && (
             <button onClick={onToggle}
               className={`w-5 h-5 flex items-center justify-center shrink-0 transition-colors ${

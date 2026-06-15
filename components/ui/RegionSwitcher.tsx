@@ -26,13 +26,13 @@ export function RegionSwitcher() {
   }
 
   return (
-    <label className="inline-flex items-center gap-1.5 text-bark-400">
-      <Globe size={13} className="shrink-0" />
+    <label className="inline-flex items-center gap-1.5 text-espresso">
+      <Globe size={14} className="shrink-0" />
       <select
         aria-label="Region and currency"
         value={current}
         onChange={e => choose(e.target.value as Locale)}
-        className="bg-transparent font-sans text-[11px] text-bark-500 focus:outline-none cursor-pointer"
+        className="bg-transparent font-sans text-[13px] font-medium text-espresso focus:outline-none cursor-pointer"
       >
         {LOCALES.map(loc => (
           <option key={loc} value={loc}>
