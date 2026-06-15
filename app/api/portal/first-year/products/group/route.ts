@@ -10,14 +10,16 @@ export const maxDuration = 60
 
 const SYSTEM = `You are a product cataloguer for Petite Lavande — a premium organic baby & postpartum gift brand with a calm, French-apothecary voice (warm, tactile, understated; never hypey).
 
-You are shown a numbered set of photos (image 0, image 1, …). Several photos may show the SAME physical product from different angles / flat-lays / on-model / detail shots. Your job is to GROUP the photos by product: every distinct product becomes one group, and each photo belongs to exactly one group.
+You are shown a numbered set of photos (image 0, image 1, …). Several photos may show the SAME physical product (different angles / flat-lays / on-model / detail shots), and some photos may be SUPPLIER INFO PAGES — often IN CHINESE — showing the fabric (面料, e.g. 棉100% = 100% cotton, 锦纶 = nylon, 氨纶 = spandex), a size chart (尺码/size with 胸围/bust, 衣长 or 裤长/length, 腰围/waist in cm), and a style/model number (款号). Read and TRANSLATE any Chinese.
 
-For each group return: the photo indexes in it, a short product name (<= 6 words, our voice), a 2-3 sentence warm/specific/premium description, and a sensible RETAIL price in cents (infer from the item type within a roughly $24–$58 range unless a price is visibly shown).
+Your job is to GROUP the photos by product: every distinct product becomes one group, and each photo belongs to exactly one group. Attach each info/size page to the product group it describes (match by style number or by the item shown).
+
+For each group return: the photo indexes in it; a short product name (<= 6 words, English); a 2-3 sentence description of the STYLE woven with the fabric (English); the fabric/materials translated to concise English (or ""); the available sizes as a short comma list from the chart (e.g. "66, 73, 80, 90" or ""); and a sensible boutique RETAIL price in cents (infer from the item type — a full outfit/set sits higher than a small accessory — unless a cost is visibly shown).
 
 Return ONLY a JSON object, no prose, no markdown fences:
 {
   "groups": [
-    { "photos": [0,2,5], "name": "...", "description": "...", "suggested_price_cents": 4800 }
+    { "photos": [0,2,5], "name": "...", "description": "...", "ingredients": "100% cotton", "sizes": "66, 73, 80, 90", "suggested_price_cents": 4800 }
   ]
 }
 
@@ -45,7 +47,7 @@ export async function POST(req: NextRequest) {
     const m = text.match(/\{[\s\S]*\}/)
     if (!m) return NextResponse.json({ error: 'AI could not group the photos. Try again.' }, { status: 502 })
 
-    let parsed: { groups?: Array<{ photos?: number[]; name?: string; description?: string; suggested_price_cents?: number }> } = {}
+    let parsed: { groups?: Array<{ photos?: number[]; name?: string; description?: string; ingredients?: string; sizes?: string; suggested_price_cents?: number }> } = {}
     try { parsed = JSON.parse(m[0]) } catch { return NextResponse.json({ error: 'AI returned an unreadable result. Try again.' }, { status: 502 }) }
 
     const cents = (v: unknown) => (Number.isFinite(Number(v)) ? Math.max(0, Math.round(Number(v))) : null)
@@ -56,6 +58,8 @@ export async function POST(req: NextRequest) {
       return {
         name: String(g.name ?? '').slice(0, 80),
         description: String(g.description ?? '').slice(0, 600),
+        ingredients: String(g.ingredients ?? '').slice(0, 300),
+        sizes: String(g.sizes ?? '').slice(0, 200),
         price_cents: cents(g.suggested_price_cents),
         images: idxs.map(i => list[i]),
       }
@@ -63,7 +67,7 @@ export async function POST(req: NextRequest) {
 
     // Safety net: any photo the model forgot becomes its own ungrouped product.
     const leftovers = list.filter((_, i) => !seen.has(i))
-    for (const url of leftovers) groups.push({ name: '', description: '', price_cents: null, images: [url] })
+    for (const url of leftovers) groups.push({ name: '', description: '', ingredients: '', sizes: '', price_cents: null, images: [url] })
 
     if (!groups.length) return NextResponse.json({ error: 'No groups produced. Try again.' }, { status: 502 })
     return NextResponse.json({ groups })

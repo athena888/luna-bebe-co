@@ -148,6 +148,7 @@ function Editor({ product, setProduct, onSave, onDelete, onBack, saving, err }: 
   const [vidBusy, setVidBusy] = useState(false)
   const [aiBusy, setAiBusy] = useState(false)
   const [localErr, setLocalErr] = useState('')
+  const [readNote, setReadNote] = useState('')
   const aiInputRef = useRef<HTMLInputElement>(null)
 
   async function addImage(file: File) {
@@ -188,7 +189,7 @@ function Editor({ product, setProduct, onSave, onDelete, onBack, saving, err }: 
 
   // Draft name / description / price from uploaded screenshots — fills empty fields only.
   async function draftFromScreenshots(files: FileList) {
-    setAiBusy(true); setLocalErr('')
+    setAiBusy(true); setLocalErr(''); setReadNote('')
     try {
       const fd = new FormData()
       Array.from(files).slice(0, 4).forEach(f => fd.append('images', f))
@@ -198,8 +199,13 @@ function Editor({ product, setProduct, onSave, onDelete, onBack, saving, err }: 
       const patch: Partial<FYProduct> = {}
       if (!p.name.trim() && d.name) patch.name = d.name
       if (!p.description.trim() && d.description) patch.description = d.description
+      if (!(p.sizes ?? '').trim() && d.sizes) patch.sizes = d.sizes
       if (p.price_cents == null && d.suggested_price_cents) patch.price_cents = d.suggested_price_cents
       set(patch)
+      if (d.ingredients || d.size_detail) {
+        setLocalErr('') // not an error — show what was read as a hint
+        setReadNote([d.ingredients && `Material: ${d.ingredients}`, d.size_detail && `Sizes: ${d.size_detail}`].filter(Boolean).join('  ·  '))
+      }
     } catch { setLocalErr('Could not read the screenshot') } finally { setAiBusy(false) }
   }
 
@@ -226,6 +232,7 @@ function Editor({ product, setProduct, onSave, onDelete, onBack, saving, err }: 
             {aiBusy ? <Loader size={13} className="animate-spin" /> : <Sparkles size={13} />} {aiBusy ? 'Reading…' : 'Upload screenshot(s)'}
           </button>
           <input ref={aiInputRef} type="file" accept="image/*" multiple className="hidden" onChange={e => { if (e.target.files?.length) draftFromScreenshots(e.target.files); e.target.value = '' }} />
+          {readNote && <p className="font-sans text-[11px] text-[#7C61A8] mt-3 leading-relaxed">Read from your screenshot — {readNote}</p>}
         </div>
 
         <div>

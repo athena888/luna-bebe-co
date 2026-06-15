@@ -9,6 +9,7 @@ interface Group {
   name: string
   description: string
   price_cents: number | null
+  sizes?: string
   images: string[]
 }
 
@@ -181,14 +182,18 @@ export default function BulkUploadPage() {
                       <label className={labelCls}>Name</label>
                       <input className={inputCls} value={g.name} onChange={e => setGroup(i, { name: e.target.value })} placeholder="Product name" />
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                      <div className="sm:col-span-1">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div>
                         <label className={labelCls}>Price (USD)</label>
                         <input type="number" min={0} step="1" className={inputCls}
                           value={g.price_cents != null ? (g.price_cents / 100).toString() : ''}
                           onChange={e => setGroup(i, { price_cents: e.target.value === '' ? null : Math.round(Number(e.target.value) * 100) })} placeholder="—" />
                       </div>
-                      <div className="sm:col-span-3">
+                      <div>
+                        <label className={labelCls}>Sizes</label>
+                        <input className={inputCls} value={g.sizes ?? ''} onChange={e => setGroup(i, { sizes: e.target.value })} placeholder="66, 73, 80, 90" />
+                      </div>
+                      <div className="col-span-2">
                         <label className={labelCls}>Description</label>
                         <textarea rows={2} className={inputCls + ' resize-none leading-relaxed'} value={g.description} onChange={e => setGroup(i, { description: e.target.value })} />
                       </div>

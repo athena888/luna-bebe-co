@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 export async function POST(req: NextRequest) {
   try {
     const { groups, shipment_index } = await req.json() as {
-      groups?: Array<{ name?: string; description?: string; price_cents?: number | null; images?: string[] }>
+      groups?: Array<{ name?: string; description?: string; price_cents?: number | null; sizes?: string; images?: string[] }>
       shipment_index?: number | null
     }
     const list = (groups ?? []).filter(g => Array.isArray(g.images) && g.images.length > 0)
@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
       await updateFirstYearProduct(row.id, {
         name: (g.name ?? '').slice(0, 80),
         description: (g.description ?? '').slice(0, 600),
+        sizes: (g.sizes ?? '').slice(0, 200) || null,
         price_cents: g.price_cents == null || !Number.isFinite(Number(g.price_cents)) ? null : Math.round(Number(g.price_cents)),
         images: (g.images ?? []).filter(u => typeof u === 'string'),
         shipment_index: ship,
