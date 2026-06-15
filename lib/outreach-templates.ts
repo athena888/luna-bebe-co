@@ -79,8 +79,10 @@ export function renderTemplate(tpl: OutreachTemplate, fields: MergeFields): { ok
   return { ok: true, result: { subject, body } }
 }
 
-// CAN-SPAM footer: physical address + a clear opt-out. Appended to every send.
+// CAN-SPAM footer: a contact email, a physical postal address (legally required
+// for commercial email — use a PO Box in BUSINESS_ADDRESS to keep a home address
+// private), and a clear opt-out. Appended to every send.
 export function withFooter(body: string): string {
   const address = (process.env.BUSINESS_ADDRESS || 'Petite Lavande LLC').replace(/[\r\n]+/g, ', ')
-  return `${body}\n\n—\n${address}\nReply STOP to opt out and we won't email you again.`
+  return `${body}\n\n—\nhello@petitelavande.com\n${address}\nReply STOP to opt out and we won't email you again.`
 }

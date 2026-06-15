@@ -4,7 +4,10 @@ import { templateForTrack, templateByKey, renderTemplate, withFooter, type Outre
 import { getOutreachTemplates } from './outreach-templates-db'
 import { mintOutreachCode } from './outreach-discount'
 
-const CODE_RE = /\{\{\s*code\s*\}\}/g
+// Fresh regex per use — a shared /g regex keeps lastIndex state across .test()
+// calls, which silently skips replacement on later emails after any throw.
+const hasCodeToken = (s: string) => /\{\{\s*code\s*\}\}/.test(s)
+const fillCode = (s: string, code: string) => s.replace(/\{\{\s*code\s*\}\}/g, code)
 
 /**
  * Finalize a planned body for a real send: if it has a {{code}} token, mint a
@@ -12,10 +15,10 @@ const CODE_RE = /\{\{\s*code\s*\}\}/g
  * fails (caller should skip — never send a literal {{code}}).
  */
 export async function injectCode(body: string): Promise<string | null> {
-  if (!CODE_RE.test(body)) return body
+  if (!hasCodeToken(body)) return body
   try {
     const code = await mintOutreachCode()
-    return body.replace(CODE_RE, code)
+    return fillCode(body, code)
   } catch (e) {
     console.error('outreach code mint failed:', e)
     return null
@@ -86,7 +89,7 @@ export async function planOutreach(
     // For previews, show a representative code instead of the raw {{code}} token
     // (no real Stripe code is minted until an actual send).
     let body = withFooter(rendered.result.body)
-    if (opts.sampleCode) body = body.replace(CODE_RE, 'PL30-SAMPLE')
+    if (opts.sampleCode) body = fillCode(body, 'PL30-SAMPLE')
 
     planned.push({
       contactId: c.id,
