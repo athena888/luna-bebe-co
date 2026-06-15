@@ -89,9 +89,14 @@ export default function FirstYearProductsPage() {
           <h1 className="font-serif text-3xl text-bark-600">First Year — Products</h1>
           <p className="font-sans text-sm text-bark-400 mt-1">Upload the individual items in this line — photos, a short video, price, sizes.</p>
         </div>
-        <button onClick={newProduct} disabled={creating} className="flex items-center gap-2 bg-bark-600 text-white font-sans text-[11px] tracking-[0.2em] uppercase px-5 py-2.5 rounded hover:bg-bark-700 transition-colors shrink-0 disabled:opacity-50">
-          {creating ? <Loader size={15} className="animate-spin" /> : <Plus size={15} />} New product
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          <Link href="/portal/first-year/products/bulk" className="flex items-center gap-2 border border-[#9A80BD]/40 text-[#7C61A8] font-sans text-[11px] tracking-[0.2em] uppercase px-4 py-2.5 rounded hover:bg-[#9A80BD]/10 transition-colors">
+            <Sparkles size={15} /> Bulk add
+          </Link>
+          <button onClick={newProduct} disabled={creating} className="flex items-center gap-2 bg-bark-600 text-white font-sans text-[11px] tracking-[0.2em] uppercase px-5 py-2.5 rounded hover:bg-bark-700 transition-colors disabled:opacity-50">
+            {creating ? <Loader size={15} className="animate-spin" /> : <Plus size={15} />} New product
+          </button>
+        </div>
       </div>
       {err && <p className="font-sans text-xs text-red-500 mb-4">{err}</p>}
 
