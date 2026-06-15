@@ -15,6 +15,9 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
   const inventory = inventoryRes.data ?? { quantity: 0 }
   const gallery = galleryRes.data ?? []
+  const { data: overrideRow } = await supabaseAdmin
+    .from('product_overrides').select('hover_video').eq('product_id', id).maybeSingle()
+  const videoUrl: string | null = overrideRow?.hover_video ?? null
 
   // If the gallery table has no rows but the product already has a storefront
   // photo (uploaded via the products list / bulk import, which only writes
@@ -56,6 +59,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
   return NextResponse.json({
     product,
+    videoUrl,
     inventory: { quantity: inventory.quantity },
     gallery,
     sales: { units, revenue, lastOrderedAt },

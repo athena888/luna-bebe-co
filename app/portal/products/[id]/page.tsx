@@ -8,6 +8,7 @@ import { PRODUCT_TAGS } from '@/lib/product-tags'
 import type { ProductCategory } from '@/types'
 import { resizeImage } from '@/lib/image-resize'
 import { ProductPrices } from '@/components/portal/ProductPrices'
+import { ProductVideoUpload } from '@/components/portal/ProductVideoUpload'
 import type { CertDef, ProductCert } from '@/lib/certifications'
 import { ArrowLeft, Upload, Trash2, Star, Loader, Check, Plus, Minus, X, ShieldCheck, Wand2, Sparkles } from 'lucide-react'
 
@@ -101,6 +102,7 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
   const [aiImgBusy, setAiImgBusy] = useState(false)
   const [aiImgInfo, setAiImgInfo] = useState<{ cost: number | null; reasoning: string } | null>(null)
   const [aiImgErr, setAiImgErr] = useState('')
+  const [videoUrl, setVideoUrl] = useState<string | null>(null)
   async function draftFromImages(files: FileList) {
     setAiImgBusy(true); setAiImgErr(''); setAiImgInfo(null)
     try {
@@ -159,6 +161,7 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
     if (res.ok) {
       const data = await res.json()
       setProduct(data.product)
+      setVideoUrl(data.videoUrl ?? null)
       setGallery(sortGallery(data.gallery ?? []))
       setInventory(data.inventory.quantity)
       if (data.sales) setSales(data.sales)
@@ -802,6 +805,10 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
               </label>
               {aiImgErr && <p className="font-sans text-xs text-red-500 mt-2">{aiImgErr}</p>}
               {aiImgInfo && <p className="font-sans text-[11px] text-bark-500 mt-2">{aiImgInfo.cost != null ? `Cost read: $${(aiImgInfo.cost / 100).toFixed(2)}. ` : ''}{aiImgInfo.reasoning}</p>}
+            </div>
+
+            <div className="mb-4">
+              <ProductVideoUpload productId={id} initialUrl={videoUrl} poster={product.image ?? null} />
             </div>
 
             <div className="space-y-4">
