@@ -275,3 +275,28 @@ export async function sendOrderConfirmationEmail({
     `,
   })
 }
+
+// The First Year — 2-week advance notice + size-confirmation link (Task 6).
+export async function sendShipmentNoticeEmail({
+  to, label, confirmUrl, recipientName,
+}: {
+  to: string; label: string; confirmUrl: string; recipientName?: string | null
+}) {
+  const baby = recipientName?.trim() || 'your little one'
+  const html = `
+    <div style="max-width:520px;margin:0 auto;background:#FBF4EA;">
+      ${brandHeader}
+      <div style="padding:0 32px;font-family:Georgia,serif;color:#41342A;text-align:center;">
+        <h1 style="font-family:Georgia,serif;font-weight:normal;font-size:26px;margin:0 0 16px;">A little one is growing</h1>
+        <p style="font-size:16px;line-height:1.7;color:#6F5B4D;margin:0 0 22px;">
+          Hard to believe how fast it goes. ${baby}'s <strong>${label}</strong> shipment from The First Year is almost ready to send.
+          Take a moment to confirm the size so it fits just right — then watch the mail.
+        </p>
+        <a href="${confirmUrl}" style="display:inline-block;background:#41342A;color:#FBF4EA;font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:14px 36px;margin:4px 0 12px;">Confirm the size</a>
+        <p style="font-family:sans-serif;font-size:11px;color:#A7AE95;margin:14px 0 0;">No account needed — it takes a few seconds.</p>
+      </div>
+      ${brandFooter}
+    </div>
+  `
+  await resend.emails.send({ from: FROM, to, subject: `A little one is growing — ${baby}'s next Petite Lavande arrival`, html })
+}
