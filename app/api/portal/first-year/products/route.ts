@@ -8,7 +8,15 @@ export const dynamic = 'force-dynamic'
 // Admin CRUD for the First Year product catalog. Guarded by /api/portal/* middleware.
 
 export async function GET() {
-  return NextResponse.json({ products: await listFirstYearProducts() })
+  try {
+    return NextResponse.json({ products: await listFirstYearProducts() })
+  } catch (e) {
+    console.error('first-year products list error:', e)
+    return NextResponse.json(
+      { products: [], error: 'Could not load products. Re-run the latest migration (_RUN_ALL_PENDING.sql) in Supabase, then refresh.' },
+      { status: 200 },
+    )
+  }
 }
 
 // Create a blank draft, return it so the editor can open immediately.

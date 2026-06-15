@@ -53,6 +53,7 @@ export default function FirstYearProductsPage() {
       const r = await fetch('/api/portal/first-year/products')
       const d = await r.json()
       setProducts(d.products ?? [])
+      if (d.error) setErr(d.error)
     } finally { setLoading(false) }
   }
   useEffect(() => { load() }, [])
