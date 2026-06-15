@@ -39,11 +39,18 @@ export default function FirstYearAdminPage() {
         <p className="font-sans text-sm text-bark-400 mt-1">Manage the sub-line. The set is one purchasable product (one payment, three shipments).</p>
       </div>
 
-      <Link href="/portal/shipments" className="inline-flex items-center gap-2 mb-8 bg-white border border-cream-300 rounded-lg px-4 py-3 hover:border-bark-400 transition-colors">
-        <Package size={16} className="text-gold-400" />
-        <span className="font-sans text-sm text-bark-600">Scheduled shipments</span>
-        <ArrowRight size={14} className="text-bark-400 ml-1" />
-      </Link>
+      <div className="flex flex-wrap gap-3 mb-8">
+        <Link href="/portal/first-year/products" className="inline-flex items-center gap-2 bg-white border border-cream-300 rounded-lg px-4 py-3 hover:border-bark-400 transition-colors">
+          <Package size={16} className="text-gold-400" />
+          <span className="font-sans text-sm text-bark-600">Products — upload photos & video</span>
+          <ArrowRight size={14} className="text-bark-400 ml-1" />
+        </Link>
+        <Link href="/portal/shipments" className="inline-flex items-center gap-2 bg-white border border-cream-300 rounded-lg px-4 py-3 hover:border-bark-400 transition-colors">
+          <Package size={16} className="text-gold-400" />
+          <span className="font-sans text-sm text-bark-600">Scheduled shipments</span>
+          <ArrowRight size={14} className="text-bark-400 ml-1" />
+        </Link>
+      </div>
 
       <div className="bg-white border border-cream-200 rounded-xl p-5 space-y-4">
         <p className="font-sans text-sm font-medium text-bark-600">The set product</p>

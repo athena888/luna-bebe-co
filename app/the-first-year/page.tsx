@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { firstYearEnabled, FIRST_YEAR_SHIPMENTS } from '@/lib/first-year'
+import { listPublishedFirstYearProducts, type FirstYearProductRow } from '@/lib/first-year-products'
 import { FirstYearCTA } from './FirstYearCTA'
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
@@ -15,11 +16,43 @@ export const metadata: Metadata = {
   robots: { index: false }, // dark until the line is fully launched
 }
 
+// Re-fetch the catalog periodically so newly published products appear.
+export const revalidate = 60
+
 // Sub-line landing page — its own room, shared brand DNA. Additive + flag-gated:
 // hidden entirely unless NEXT_PUBLIC_FIRST_YEAR_ENABLED='true'. Styling is scoped
 // (local Tailwind classes only) so nothing global changes.
-export default function FirstYearPage() {
+function priceLabel(cents: number | null) {
+  return cents != null ? `$${(cents / 100).toFixed(0)}` : ''
+}
+
+function ProductCard({ p }: { p: FirstYearProductRow }) {
+  return (
+    <div className="text-center">
+      <div className="aspect-[4/5] bg-white border border-[#e7ddc9] overflow-hidden mb-4">
+        {p.images[0]
+          ? <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
+          : p.video_url
+            ? <video src={p.video_url} preload="none" muted loop playsInline controls className="w-full h-full object-cover" />
+            : <div className="w-full h-full flex items-center justify-center text-[#c9bda6] font-serif">Petite Lavande</div>}
+      </div>
+      <h3 className="font-serif text-lg text-espresso">{p.name || 'Untitled'}</h3>
+      {p.sizes && <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-[#A7AE95] mt-1">Size {p.sizes}</p>}
+      {p.description && <p className="font-cormorant text-base text-[#6F5B4D] leading-relaxed mt-2 max-w-xs mx-auto">{p.description}</p>}
+      {p.price_cents != null && <p className="font-sans text-sm text-espresso mt-2">{priceLabel(p.price_cents)}</p>}
+      {p.images[0] && p.video_url && (
+        <video src={p.video_url} preload="none" muted loop playsInline controls className="w-full max-w-[12rem] mx-auto mt-3 border border-[#e7ddc9]" />
+      )}
+    </div>
+  )
+}
+
+export default async function FirstYearPage() {
   if (!firstYearEnabled()) notFound()
+
+  const products = await listPublishedFirstYearProducts()
+  const byShipment = (idx: number) => products.filter(p => p.shipment_index === idx)
+  const unassigned = products.filter(p => p.shipment_index == null)
 
   return (
     <>
@@ -73,6 +106,42 @@ export default function FirstYearPage() {
             </div>
           </div>
         </section>
+
+        {/* The pieces themselves — uploaded in Portal → First Year → Products */}
+        {products.length > 0 && (
+          <section className="px-6 py-16 sm:py-24 border-t border-[#e7ddc9]">
+            <div className="max-w-5xl mx-auto">
+              <div className="text-center mb-14">
+                <p className="font-sans text-[10px] tracking-[0.45em] uppercase text-[#9A80BD] mb-2">Inside the set</p>
+                <h2 className="font-serif text-2xl sm:text-3xl text-espresso">The pieces</h2>
+              </div>
+
+              {FIRST_YEAR_SHIPMENTS.map(s => {
+                const items = byShipment(s.index)
+                if (!items.length) return null
+                return (
+                  <div key={s.index} className="mb-16 last:mb-0">
+                    <div className="text-center mb-8">
+                      <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-[#9A80BD]">{s.numeral} · {s.label}</p>
+                      <p className="font-sans text-[11px] tracking-[0.15em] uppercase text-[#A7AE95] mt-1">{s.milestone}</p>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-10">
+                      {items.map(p => <ProductCard key={p.id} p={p} />)}
+                    </div>
+                  </div>
+                )
+              })}
+
+              {unassigned.length > 0 && (
+                <div className="mb-0">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-10">
+                    {unassigned.map(p => <ProductCard key={p.id} p={p} />)}
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* Closing */}
         <section className="px-6 py-20 text-center border-t border-[#e7ddc9]">
