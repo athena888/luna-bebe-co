@@ -82,10 +82,14 @@ function ProductPicker({ products, value, onChange }: { products: CatalogProduct
   )
 }
 
-export default function BoxEditorPage() {
+// Works as a standalone route (/portal/boxes/[slug]) AND embedded inline in the
+// Prebuilt Boxes content tab (slugProp + onBack provided → no navigation, sidebar
+// stays put).
+export default function BoxEditorPage({ slugProp, onBack }: { slugProp?: string; onBack?: () => void } = {}) {
   const params = useParams()
   const router = useRouter()
-  const slug = params.slug as string
+  const slug = slugProp ?? (params.slug as string)
+  const goBack = onBack ?? (() => router.push('/portal/boxes'))
 
   const [box, setBox] = useState<ResolvedBox | null>(null)
   const [products, setProducts] = useState<CatalogProduct[]>([])
@@ -254,7 +258,7 @@ export default function BoxEditorPage() {
     <div className="p-4 sm:p-8 max-w-3xl">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
-          <button onClick={() => router.push('/portal/boxes')} className="text-bark-400 hover:text-bark-600 transition-colors">
+          <button onClick={goBack} className="text-bark-400 hover:text-bark-600 transition-colors">
             <ArrowLeft size={18} />
           </button>
           <div>

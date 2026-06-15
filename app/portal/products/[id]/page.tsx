@@ -72,10 +72,13 @@ function sortGallery(imgs: GalleryImage[]): GalleryImage[] {
   })
 }
 
-export default function ProductDetailPage() {
+// Standalone route (/portal/products/[id]) AND embeddable inline in the Products
+// content tab (idProp + onBack → no navigation, sidebar stays).
+export default function ProductDetailPage({ idProp, onBack }: { idProp?: string; onBack?: () => void } = {}) {
   const params = useParams()
   const router = useRouter()
-  const id = params.id as string
+  const id = idProp ?? (params.id as string)
+  const goBack = onBack ?? (() => router.push('/portal/products'))
 
   const baseProduct = getAllProducts().find(p => p.id === id)
 
@@ -397,7 +400,7 @@ export default function ProductDetailPage() {
       const res = await fetch(`/api/portal/products/${id}/split`, { method: 'POST' })
       const data = await res.json()
       if (!res.ok) { alert(data.error || 'Split failed'); setSaving(false); return }
-      router.push('/portal/products')
+      goBack()
     } catch {
       alert('Split failed'); setSaving(false)
     }
@@ -513,7 +516,7 @@ export default function ProductDetailPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
-          <button onClick={() => router.push('/portal/products')} className="text-bark-400 hover:text-bark-600 transition-colors">
+          <button onClick={() => goBack()} className="text-bark-400 hover:text-bark-600 transition-colors">
             <ArrowLeft size={18} />
           </button>
           <div>

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import ProductDetailPage from './[id]/page'
 import { CATEGORY_LABELS, CATEGORY_ORDER } from '@/lib/products'
 import { PRODUCT_TAGS } from '@/lib/product-tags'
 import { resizeImage } from '@/lib/image-resize'
@@ -20,9 +21,11 @@ type UploadState = 'idle' | 'uploading' | 'done' | 'error'
 function ProductImageCard({
   product,
   onDelete,
+  onEdit,
 }: {
   product: Product & { active?: boolean; needs_review?: boolean; featured?: boolean }
   onDelete: (id: string) => void
+  onEdit: (id: string) => void
 }) {
   const [state, setState] = useState<UploadState>('idle')
   const [imageUrl, setImageUrl] = useState<string | null>(product.image ?? null)
@@ -129,14 +132,13 @@ function ProductImageCard({
           )}
         </div>
         <div className="flex items-center gap-1 shrink-0">
-          <Link
-            href={`/portal/products/${product.id}`}
+          <button
+            onClick={e => { e.stopPropagation(); onEdit(product.id) }}
             className="p-1.5 rounded-lg hover:bg-cream-200 text-bark-400 hover:text-bark-600 transition-colors"
             title="Edit product details"
-            onClick={e => e.stopPropagation()}
           >
             <Settings size={14} />
-          </Link>
+          </button>
           <button
             onClick={() => onDelete(product.id)}
             className="p-1.5 rounded-lg hover:bg-red-50 text-bark-400 hover:text-red-500 transition-colors"
@@ -612,6 +614,7 @@ export default function ProductsPortalPage() {
   const [mergeSel, setMergeSel] = useState<string[]>([])
   const [mergeTarget, setMergeTarget] = useState<string>('')
   const [merging, setMerging] = useState(false)
+  const [editing, setEditing] = useState<string | null>(null) // edit inline (keeps the sidebar)
 
   function toggleMergeSel(pid: string) {
     setMergeSel(prev => {
@@ -702,6 +705,9 @@ export default function ProductsPortalPage() {
     items: visibleProducts.filter(p => p.category === cat),
   })).filter(g => g.items.length > 0)
 
+  // Edit a product inline so the Pages & Content sidebar never disappears.
+  if (editing) return <ProductDetailPage idProp={editing} onBack={() => { setEditing(null); load() }} />
+
   return (
     <div className="p-4 sm:p-8">
       <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
@@ -775,7 +781,7 @@ export default function ProductsPortalPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {items.map(product => (
                 <div key={product.id} className="relative">
-                  <ProductImageCard product={product} onDelete={handleDelete} />
+                  <ProductImageCard product={product} onDelete={handleDelete} onEdit={setEditing} />
                   {mergeMode && (
                     <button
                       onClick={() => toggleMergeSel(product.id)}

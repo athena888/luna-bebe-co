@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import Link from 'next/link'
 import Image from 'next/image'
 import { Loader, Settings, Package, Eye, EyeOff } from 'lucide-react'
 import type { ResolvedBox } from '@/lib/prebuilt-boxes-db'
+import BoxEditorPage from './[slug]/page'
 
 function fmt(cents?: number) { return cents != null ? `$${(cents / 100).toFixed(0)}` : '—' }
 
@@ -12,6 +12,7 @@ export default function BoxesPortalPage() {
   const [boxes, setBoxes] = useState<ResolvedBox[]>([])
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState<string | null>(null)
+  const [editing, setEditing] = useState<string | null>(null) // edit inline (keeps the sidebar)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -47,6 +48,9 @@ export default function BoxesPortalPage() {
     .map(g => ({ style: g.label, items: boxes.filter(b => b.audience === g.key) }))
     .filter(g => g.items.length > 0)
 
+  // Edit a box inline so the Pages & Content sidebar never disappears.
+  if (editing) return <BoxEditorPage slugProp={editing} onBack={() => { setEditing(null); load() }} />
+
   return (
     <div className="p-4 sm:p-8">
       <div className="mb-8">
@@ -68,7 +72,7 @@ export default function BoxesPortalPage() {
                   const itemCount = box.items.length
                   return (
                     <div key={box.slug} className={`bg-white border rounded-xl overflow-hidden transition-colors ${box.active ? 'border-cream-300' : 'border-cream-300 opacity-70'}`}>
-                      <Link href={`/portal/boxes/${box.slug}`} className="block group">
+                      <button type="button" onClick={() => setEditing(box.slug)} className="block group w-full text-left">
                         <div className="relative aspect-[4/3] bg-cream-200">
                           {box.image
                             ? <Image src={box.image} alt={box.name} fill className="object-cover" unoptimized />
@@ -83,7 +87,7 @@ export default function BoxesPortalPage() {
                           <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 capitalize">{box.variant}{box.style ? ` · ${box.style}` : ''}</p>
                           <p className="font-sans text-xs text-bark-400 mt-2">{itemCount}/7 items · {fmt(box.customPrice)}</p>
                         </div>
-                      </Link>
+                      </button>
                       <div className="px-4 pb-4">
                         <button
                           onClick={() => toggleActive(box.slug, !box.active)}
