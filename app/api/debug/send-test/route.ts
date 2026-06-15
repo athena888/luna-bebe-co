@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getOutreachTemplates } from '@/lib/outreach-templates-db'
 import { renderTemplate, withFooter, templateForTrack } from '@/lib/outreach-templates'
-import { injectCode } from '@/lib/outreach-send'
+import { mintOutreachCode } from '@/lib/outreach-discount'
 import { sendEmail, gmailSender, gmailConfigured } from '@/lib/gmail'
 
 export const dynamic = 'force-dynamic'
@@ -21,8 +21,11 @@ export async function GET(req: NextRequest) {
     const tpl = templateForTrack('A', templates)
     const r = renderTemplate(tpl, { first_name: 'Emily', company: 'Petite Lavande' })
     if (!r.ok) return NextResponse.json({ ok: false, reason: 'render', missing: r.missing })
-    const text = await injectCode(withFooter(r.result.body))
-    if (!text) return NextResponse.json({ ok: false, reason: 'code mint failed (Stripe)' })
+    // Surface the real Stripe error (don't swallow it).
+    let code: string
+    try { code = await mintOutreachCode() }
+    catch (e) { return NextResponse.json({ ok: false, reason: 'stripe', detail: e instanceof Error ? e.message : String(e) }) }
+    const text = withFooter(r.result.body).replace(/\{\{\s*code\s*\}\}/g, code)
     const res = await sendEmail({ to, subject: `[TEST] ${r.result.subject}`, text, replyTo: gmailSender() })
     return NextResponse.json({ ok: true, sender: gmailSender(), to, messageId: res.messageId })
   } catch (e) {
