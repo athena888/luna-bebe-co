@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { firstYearEnabled, FIRST_YEAR_SHIPMENTS } from '@/lib/first-year'
+import { FirstYearCTA } from './FirstYearCTA'
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
@@ -44,12 +45,8 @@ export default function FirstYearPage() {
               first birthday. Each one hand-finished, sized to the moment, and wrapped to be remembered.
             </p>
 
-            <div className="mt-10">
-              {/* Phase 2 wires this to add the set product to the existing cart. */}
-              <a href="mailto:hello@petitelavande.com?subject=The%20First%20Year"
-                className="inline-block bg-espresso text-[#FBF4EA] font-sans text-[11px] tracking-[0.28em] uppercase px-12 py-4 hover:opacity-90 transition-opacity">
-                Reserve The First Year
-              </a>
+            <div className="mt-10 flex justify-center">
+              <FirstYearCTA />
             </div>
           </div>
         </section>

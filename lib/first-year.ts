@@ -5,6 +5,22 @@ export function firstYearEnabled(): boolean {
   return process.env.NEXT_PUBLIC_FIRST_YEAR_ENABLED === 'true'
 }
 
+// The single purchasable set product (one Stripe payment, three shipments).
+// Price is a placeholder — edit here (or via the Phase-5 admin) when set.
+export const FIRST_YEAR_PRODUCT = {
+  id: 'first-year-set',
+  name: 'The First Year',
+  description: 'A gift that arrives three times — at birth, around six months, and near the first birthday.',
+  priceCents: 29500,
+}
+
+/** ship_by_date = order date + monthOffset, as YYYY-MM-DD. */
+export function shipByDate(orderDate: Date, monthOffset: number): string {
+  const d = new Date(orderDate)
+  d.setMonth(d.getMonth() + monthOffset)
+  return d.toISOString().slice(0, 10)
+}
+
 // The three scheduled shipments that make up the set. target_month_offset drives
 // the future-dated obligations created at purchase (Task 2 / Task 4).
 export interface FirstYearShipment {

@@ -3,6 +3,7 @@ import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
 import { sendOrderConfirmationEmail, sendGiftCardEmail } from '@/lib/resend'
 import type { Order } from '@/types'
+import { FIRST_YEAR_PRODUCT, FIRST_YEAR_SHIPMENTS, shipByDate } from '@/lib/first-year'
 
 export async function handleStripeEvent(event: Stripe.Event) {
   switch (event.type) {
@@ -18,6 +19,12 @@ export async function handleStripeEvent(event: Stripe.Event) {
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+  // The First Year set — create the order + 3 scheduled shipments (additive).
+  if (session.metadata?.first_year === '1') {
+    await handleFirstYearPurchase(session)
+    return
+  }
+
   // Gift card — Stripe-side idempotency keys keep retries from creating duplicate coupons
   if (session.metadata?.type === 'gift_card') {
     const { recipient_email, recipient_name, sender_name, message, amount } = session.metadata
@@ -102,4 +109,58 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     total: order.total_amount,
     trackingNumber: order.tracking_number,
   }).catch(err => console.error('Confirmation email error:', err))
+}
+
+// The First Year: create one order + the 3 future-dated scheduled shipments.
+// Idempotent on the payment intent so webhook replays don't duplicate.
+async function handleFirstYearPurchase(session: Stripe.Checkout.Session) {
+  const paymentIntent = session.payment_intent as string
+  const { data: existing } = await supabaseAdmin
+    .from('orders').select('id').eq('stripe_payment_intent', paymentIntent).maybeSingle()
+  if (existing) return
+
+  const email = session.customer_details?.email ?? ''
+  const name = session.customer_details?.name ?? 'Customer'
+  const phone = session.customer_details?.phone ?? null
+  // Shipping shape varies by API version — read defensively.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const s = session as any
+  const ship = s.shipping_details ?? s.collected_information?.shipping_details ?? null
+  const addr = ship?.address ?? session.customer_details?.address ?? {}
+  const shippingAddress = {
+    name: ship?.name ?? name, email, phone,
+    line1: addr?.line1 ?? '', line2: addr?.line2 ?? '',
+    city: addr?.city ?? '', state: addr?.state ?? '', zip: addr?.postal_code ?? '',
+  }
+  const total = session.amount_total ?? FIRST_YEAR_PRODUCT.priceCents
+  const trackingNumber = crypto.randomUUID()
+
+  const { data: order } = await supabaseAdmin.from('orders').insert({
+    customer_name: name, customer_email: email, customer_phone: phone,
+    selected_items: [{ id: FIRST_YEAR_PRODUCT.id, name: FIRST_YEAR_PRODUCT.name, price: FIRST_YEAR_PRODUCT.priceCents, category: 'set' }],
+    special_note: 'The First Year — 3-shipment set',
+    shipping_type: 'standard', shipping_address: shippingAddress,
+    tracking_number: trackingNumber, total_amount: total,
+    status: 'processing', stripe_payment_intent: paymentIntent,
+  }).select().single()
+  if (!order) return
+
+  const now = new Date()
+  await supabaseAdmin.from('scheduled_shipments').insert(
+    FIRST_YEAR_SHIPMENTS.map(sh => ({
+      order_id: order.id,
+      set_product_id: FIRST_YEAR_PRODUCT.id,
+      shipment_index: sh.index,
+      label: sh.label,
+      target_month_offset: sh.monthOffset,
+      status: 'pending',
+      ship_by_date: shipByDate(now, sh.monthOffset),
+      recipient_email: email,
+    }))
+  )
+
+  await sendOrderConfirmationEmail({
+    customerName: name, customerEmail: email, orderId: order.id,
+    recipientName: undefined, total, trackingNumber,
+  }).catch(err => console.error('First Year confirmation email error:', err))
 }
