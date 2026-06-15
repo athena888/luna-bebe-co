@@ -103,6 +103,21 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
   const [aiImgInfo, setAiImgInfo] = useState<{ cost: number | null; reasoning: string } | null>(null)
   const [aiImgErr, setAiImgErr] = useState('')
   const [videoUrl, setVideoUrl] = useState<string | null>(null)
+  const [stockBusy, setStockBusy] = useState(false)
+  async function stockRewrite() {
+    if (!product) return
+    const soldOut = [...new Set(variants.filter(v => (v.quantity ?? 0) <= 0).map(v => v.size))]
+    const inStock = [...new Set(variants.filter(v => (v.quantity ?? 0) > 0).map(v => v.size))]
+    setStockBusy(true)
+    try {
+      const res = await fetch('/api/portal/products/ai-stock-rewrite', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: product.name, description: product.description, soldOut, inStock }),
+      })
+      const d = await res.json()
+      if (d.description) setProduct(p => p ? { ...p, description: d.description } : p)
+    } finally { setStockBusy(false) }
+  }
   async function draftFromImages(files: FileList) {
     setAiImgBusy(true); setAiImgErr(''); setAiImgInfo(null)
     try {
@@ -841,6 +856,15 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
                     >
                       {improveLoading === 'description' ? <Loader size={12} className="animate-spin" /> : <Wand2 size={12} />}
                       Improve
+                    </button>
+                    <button
+                      onClick={stockRewrite}
+                      disabled={stockBusy || !product.description.trim()}
+                      title="Revise copy for current stock (handles sold-out sizes gracefully)"
+                      className="flex items-center gap-1 text-gold-600 hover:text-gold-700 disabled:opacity-40 font-sans text-[9px] tracking-[0.15em] uppercase"
+                    >
+                      {stockBusy ? <Loader size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                      For stock
                     </button>
                     {originalDescription && (
                       <button
