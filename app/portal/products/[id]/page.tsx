@@ -97,6 +97,28 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
   const [aiScanning, setAiScanning] = useState(false)
   const [aiNames, setAiNames] = useState<string[]>([])
   const [aiMsg, setAiMsg] = useState('')
+  // Draft-from-screenshot (vision) state
+  const [aiImgBusy, setAiImgBusy] = useState(false)
+  const [aiImgInfo, setAiImgInfo] = useState<{ cost: number | null; reasoning: string } | null>(null)
+  const [aiImgErr, setAiImgErr] = useState('')
+  async function draftFromImages(files: FileList) {
+    setAiImgBusy(true); setAiImgErr(''); setAiImgInfo(null)
+    try {
+      const fd = new FormData()
+      Array.from(files).slice(0, 4).forEach(f => fd.append('images', f))
+      const res = await fetch('/api/portal/products/ai-from-image', { method: 'POST', body: fd })
+      const d = await res.json()
+      if (!res.ok) { setAiImgErr(d.error || 'Failed'); return }
+      setProduct(p => p ? {
+        ...p,
+        name: d.name || p.name,
+        description: d.description || p.description,
+        ingredients: d.ingredients || p.ingredients,
+        price: d.suggested_price_cents ?? p.price,
+      } : p)
+      setAiImgInfo({ cost: d.cost_cents ?? null, reasoning: d.price_reasoning || '' })
+    } catch { setAiImgErr('Failed — try again') } finally { setAiImgBusy(false) }
+  }
   const [detectedColors, setDetectedColors] = useState<Array<{ name: string; hex: string }> | null>(null)
   const [colorDetecting, setColorDetecting] = useState(false)
   const [dropVariant, setDropVariant] = useState<number | null>(null)
@@ -769,6 +791,18 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
               </button>
             </div>
             {aiMsg && <p className="font-sans text-[11px] text-bark-500 bg-cream-50 border border-cream-200 rounded px-3 py-2 mb-3">{aiMsg}</p>}
+
+            {/* AI: draft this product from a photo / supplier screenshot */}
+            <div className="bg-gradient-to-br from-gold-50/50 to-cream-50 border border-gold-200 rounded-lg p-4 mb-4">
+              <p className="font-sans text-sm font-medium text-bark-600 mb-1 flex items-center gap-1.5"><Sparkles size={14} className="text-gold-400" /> Draft from a screenshot</p>
+              <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">Upload a product photo or supplier screenshot (with the cost if it&rsquo;s shown). AI drafts the name, description, materials, and a suggested retail price — edit anything after.</p>
+              <label className={`inline-flex items-center gap-2 font-sans text-[11px] tracking-[0.15em] uppercase px-4 py-2.5 rounded cursor-pointer transition-colors ${aiImgBusy ? 'bg-cream-200 text-bark-400' : 'bg-bark-600 text-cream-50 hover:bg-bark-700'}`}>
+                {aiImgBusy ? <Loader size={14} className="animate-spin" /> : <Upload size={14} />} {aiImgBusy ? 'Reading…' : 'Upload screenshot'}
+                <input type="file" accept="image/*" multiple disabled={aiImgBusy} className="hidden" onChange={e => { if (e.target.files?.length) draftFromImages(e.target.files); e.target.value = '' }} />
+              </label>
+              {aiImgErr && <p className="font-sans text-xs text-red-500 mt-2">{aiImgErr}</p>}
+              {aiImgInfo && <p className="font-sans text-[11px] text-bark-500 mt-2">{aiImgInfo.cost != null ? `Cost read: $${(aiImgInfo.cost / 100).toFixed(2)}. ` : ''}{aiImgInfo.reasoning}</p>}
+            </div>
 
             <div className="space-y-4">
               <div>
