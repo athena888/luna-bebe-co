@@ -61,16 +61,17 @@ export default async function PortalDashboard() {
           <div className="space-y-2">
             {[
               { href: '/portal/orders', label: 'View all orders →' },
-              { href: '/portal/issues', label: 'View phone issues →' },
+              { href: '/portal/cockpit', label: 'Daily Cockpit →' },
+              { href: '/portal/outreach', label: 'Outreach →' },
             ].map(({ href, label }) => (
               <a key={href} href={href} className="block font-sans text-sm text-gold-500 hover:text-gold-600 transition-colors">{label}</a>
             ))}
           </div>
         </div>
         <div className="bg-cream-50 rounded-2xl border border-cream-200 p-6">
-          <h2 className="font-serif text-xl text-bark-600 mb-2">Support Line</h2>
+          <h2 className="font-serif text-xl text-bark-600 mb-2">Customer Chat</h2>
           <p className="font-sans text-sm text-bark-400 leading-relaxed">
-            Your AI phone assistant is active 24/7 at <span className="font-medium text-bark-600">+1 (800) 586-2269</span>. All calls are logged and appear under Phone Issues.
+            Live chat is active on your site. Reply to customers from the <span className="font-medium text-bark-600">Crisp app</span> on your phone; the AI covers common questions when you&rsquo;re offline.
           </p>
         </div>
       </div>
