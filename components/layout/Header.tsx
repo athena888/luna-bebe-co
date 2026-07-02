@@ -147,7 +147,7 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
 
         {/* Desktop */}
         <div className={`hidden md:block relative w-full px-9 transition-all duration-500 ${expanded ? 'py-5' : 'py-3'}`}>
-          <div className={`flex items-center justify-center transition-all duration-500 ${expanded ? 'flex-col gap-3' : 'flex-row gap-8'}`}>
+          <div className={`flex items-center transition-all duration-500 ${expanded ? 'flex-col justify-center gap-3' : 'flex-row justify-start gap-8'}`}>
             <Wordmark light={light} expanded={expanded} />
             <nav className="flex items-center gap-6 lg:gap-9 font-sans text-[11px] tracking-[0.2em] transition-all duration-500">
               <NavLinks light={light} />
