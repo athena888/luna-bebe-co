@@ -3,6 +3,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { SlotImage } from '@/components/ui/SlotImage'
+import { HandHeart, Leaf, Phone } from 'lucide-react'
 import { CorporateForm } from './CorporateForm'
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
@@ -21,14 +22,17 @@ export const metadata: Metadata = {
 
 const POINTS = [
   {
+    Icon: HandHeart,
     title: 'One less thing for your team',
     body: 'Tell us the due date and the address; we handle the rest, including a hand-written card from your company.',
   },
   {
+    Icon: Leaf,
     title: 'Traceable, not generic',
     body: 'Organic cotton garments, botanical bath goods, and a card that tells the story of every item. We don’t curate. We trace.',
   },
   {
+    Icon: Phone,
     title: 'Simple to run',
     body: 'Volume pricing, invoicing available, and a single point of contact who answers same-day.',
   },
@@ -39,8 +43,9 @@ const POINTS = [
 function Points({ className = '' }: { className?: string }) {
   return (
     <div className={`grid text-center ${className}`}>
-      {POINTS.map(({ title, body }) => (
+      {POINTS.map(({ Icon, title, body }) => (
         <div key={title}>
+          <Icon size={26} strokeWidth={1.5} className="text-gold-300 mx-auto mb-4" />
           <div className="w-8 h-px bg-gold-400 mb-5 mx-auto" />
           <h2 className="font-serif text-xl text-cream-50 mb-3 leading-snug">{title}</h2>
           <p className="font-sans text-sm text-cream-100/85 leading-relaxed">{body}</p>
