@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { PRODUCTS, CATEGORY_LABELS, CATEGORY_ORDER, getAllProducts } from '@/lib/products'
+import { PRODUCTS, CATEGORY_LABELS, CATEGORY_ORDER, getAllProducts, BOX_BASE_PRICE } from '@/lib/products'
 import type { Product, ProductCategory } from '@/types'
 import { Check, X, Plus, Minus, ShieldCheck, Leaf, ZoomIn } from 'lucide-react'
 import Image from 'next/image'
@@ -495,10 +495,10 @@ export default function BuildPage() {
               <div
                 ref={el => { if (el) scrollRefs.current.set(cat, el); else scrollRefs.current.delete(cat) }}
                 onScroll={() => handleCategoryScroll(cat)}
-                className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-pl-6 sm:scroll-pl-9 gap-5 px-6 sm:px-9 pb-2"
+                className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-pl-6 sm:scroll-pl-9 gap-2.5 sm:gap-5 px-6 sm:px-9 pb-2"
               >
                 {(catalog[cat] ?? []).map(product => (
-                  <div key={product.id} className="snap-start shrink-0 w-[calc((100%-1.25rem)/2)] sm:w-[calc((100%-3.75rem)/4)]">
+                  <div key={product.id} className="snap-start shrink-0 w-[66%] sm:w-[calc((100%-3.75rem)/4)]">
                     <ProductCard
                       product={product}
                       selected={isProductSelected(product.id)}
@@ -554,9 +554,11 @@ export default function BuildPage() {
         {/* Free shipping progress */}
         {(() => {
           const threshold = 15000
-          const pct = Math.min(subtotal / threshold, 1)
-          const earned = subtotal >= threshold
-          const remaining = threshold - subtotal
+          // Count the real box price toward free shipping (items + the box base).
+          const towardFree = subtotal + BOX_BASE_PRICE
+          const pct = Math.min(towardFree / threshold, 1)
+          const earned = towardFree >= threshold
+          const remaining = Math.max(0, threshold - towardFree)
           return (
             <div className="shrink-0 px-6 pt-4 pb-3 border-b border-cream-100">
               <p className="font-sans text-[11px] text-center text-bark-500 mb-3">

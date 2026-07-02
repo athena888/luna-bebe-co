@@ -10,7 +10,6 @@ import type { BoxSelection, ShippingType } from '@/types'
 import { Lock } from 'lucide-react'
 import Image from 'next/image'
 import { storeCheckoutEnabled } from '@/lib/store-flags'
-import { ShopClosed } from '@/components/ShopClosed'
 
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
 function boxItemTotal(selection: BoxSelection) { return Object.values(selection).reduce((sum, p) => sum + (p?.price ?? 0) * ((p as { qty?: number })?.qty ?? 1), 0) }
@@ -89,9 +88,6 @@ export default function CheckoutPage() {
       setPromoState('invalid')
     }
   }
-
-  // Main store paused while inventory isn't ready (The First Year stays open).
-  if (!storeCheckoutEnabled()) return <ShopClosed />
 
   if (!selection) return null
 
@@ -365,18 +361,26 @@ export default function CheckoutPage() {
                     )}
                   </div>
 
-                  {/* Pay button */}
+                  {/* Pay button — hidden while the shop is paused (page stays viewable) */}
                   <div className="px-6 py-6">
                     {error && <p className="font-sans text-xs text-red-500 mb-4">{error}</p>}
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-bark-700 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
-                    >
-                      <Lock size={12} />
-                      {isSubmitting ? 'Processing...' : 'Pay Securely'}
-                    </button>
-                    <p className="text-center font-sans text-[10px] text-bark-400/50 mt-3">Powered by Stripe · 256-bit SSL</p>
+                    {storeCheckoutEnabled() ? (
+                      <>
+                        <button
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-bark-700 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+                        >
+                          <Lock size={12} />
+                          {isSubmitting ? 'Processing...' : 'Pay Securely'}
+                        </button>
+                        <p className="text-center font-sans text-[10px] text-bark-400/50 mt-3">Powered by Stripe · 256-bit SSL</p>
+                      </>
+                    ) : (
+                      <div className="text-center border border-cream-300 bg-cream-50 py-4 px-4">
+                        <p className="font-sans text-[11px] tracking-[0.1em] text-bark-500 leading-relaxed">Checkout opens soon — you can build and preview, but purchases are paused for now.</p>
+                      </div>
+                    )}
                   </div>
 
                 </div>

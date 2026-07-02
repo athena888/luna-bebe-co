@@ -7,7 +7,6 @@ import { Gift, Lock } from 'lucide-react'
 import { SlotImage } from '@/components/ui/SlotImage'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { storeCheckoutEnabled } from '@/lib/store-flags'
-import { ShopClosed } from '@/components/ShopClosed'
 
 const AMOUNTS = [
   { value: 5000,  label: '$50',  popular: false },
@@ -51,9 +50,6 @@ export default function GiftCardsPage() {
       setLoading(false)
     }
   }
-
-  // Gift cards are part of the main store — paused with it (The First Year stays open).
-  if (!storeCheckoutEnabled()) return <ShopClosed />
 
   return (
     <>
@@ -131,15 +127,23 @@ export default function GiftCardsPage() {
 
               {error && <p className="font-sans text-xs text-red-500">{error}</p>}
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-bark-700 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
-              >
-                <Lock size={12} />
-                {loading ? 'Processing...' : `Purchase $${(amount / 100).toFixed(0)} Gift Card`}
-              </button>
-              <p className="text-center font-sans text-[10px] text-bark-400/50">Powered by Stripe · 256-bit SSL</p>
+              {storeCheckoutEnabled() ? (
+                <>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-bark-700 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+                  >
+                    <Lock size={12} />
+                    {loading ? 'Processing...' : `Purchase $${(amount / 100).toFixed(0)} Gift Card`}
+                  </button>
+                  <p className="text-center font-sans text-[10px] text-bark-400/50">Powered by Stripe · 256-bit SSL</p>
+                </>
+              ) : (
+                <div className="text-center border border-cream-300 bg-cream-50 py-4 px-4">
+                  <p className="font-sans text-[11px] tracking-[0.1em] text-bark-500 leading-relaxed">Gift cards open soon — this page is here to preview; purchases are paused for now.</p>
+                </div>
+              )}
             </form>
 
             {/* Preview */}

@@ -10,7 +10,7 @@ import { RotatingImage } from './RotatingImage'
 const STEPS = [
   { Icon: Package, title: 'Build Your Box', body: 'Choose from curated organic items across thoughtful categories — or start from a ready-made set.' },
   { Icon: PenLine, title: 'Customize Your Card', body: 'Pick a card design and your message — we print it on premium card stock.' },
-  { Icon: Truck, title: 'We Ship With Care', body: 'Arrives sealed with a wax stamp, linen ribbon, and dried lavender.' },
+  { Icon: Truck, title: 'We Ship With Care', body: 'A beautiful natural sea grass box, kraft outside.' },
 ]
 
 export function StepsFeature({ images, side = 'left' }: { images: string[]; side?: 'left' | 'right' }) {
@@ -41,21 +41,21 @@ export function StepsFeature({ images, side = 'left' }: { images: string[]; side
         <div className="max-w-md">
           <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-4">Begin</p>
           <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-espresso leading-[1.05]">Create Something</h2>
-          <p className="font-script text-3xl sm:text-4xl text-gold-400 mb-8">unforgettable.</p>
+          <p className="font-script text-3xl sm:text-4xl text-gold-400 mb-9">unforgettable.</p>
 
-          <div className="space-y-6">
+          <div className="space-y-7">
             {STEPS.map((s, i) => (
               <div
                 key={s.title}
                 className={`flex items-start gap-4 transition-all duration-500 ease-out ${(shown || reduce) ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}
                 style={{ transitionDelay: reduce ? '0ms' : `${150 + i * 180}ms` }}
               >
-                <span className="shrink-0 w-10 h-10 rounded-full pl-round-full border border-gold-300 flex items-center justify-center">
-                  <s.Icon size={16} strokeWidth={1.5} className="text-gold-500" />
+                <span className="shrink-0 w-9 h-9 rounded-full pl-round-full border border-gold-300 flex items-center justify-center mt-0.5">
+                  <s.Icon size={15} strokeWidth={1.5} className="text-gold-500" />
                 </span>
-                <div>
-                  <h3 className="font-serif text-lg text-espresso mb-1 leading-tight">{s.title}</h3>
-                  <p className="font-cormorant text-base text-bark-400 leading-relaxed">{s.body}</p>
+                <div className="pt-0.5">
+                  <h3 className="font-sans text-[11px] tracking-[0.18em] uppercase text-espresso mb-1.5">{s.title}</h3>
+                  <p className="font-sans text-[13px] text-bark-400 leading-relaxed">{s.body}</p>
                 </div>
               </div>
             ))}

@@ -140,16 +140,19 @@ export function Footer() {
 
           {/* Copyright + legal — same container, separated by a divider */}
           <div className="pt-6 border-t border-cream-300">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <p className="font-sans text-[10px] text-espresso">© {new Date().getFullYear()} Petite Lavande. Sent with love.</p>
-              <div className="flex flex-wrap items-center gap-4 font-sans text-[10px] text-espresso">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+              <p className="font-sans text-[11px] text-espresso">© {new Date().getFullYear()} Petite Lavande. Sent with love.</p>
+              <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-sans text-[11px] text-espresso">
                 <RegionSwitcher />
-                <span className="text-espresso/40">·</span>
-                <Link href="/legal/privacy" className="hover:text-espresso transition-colors">Privacy</Link>
-                <span className="text-espresso/40">·</span>
-                <Link href="/legal/terms" className="hover:text-espresso transition-colors">Terms</Link>
-                <span className="text-espresso/40">·</span>
-                <Link href="/legal/returns" className="hover:text-espresso transition-colors">Returns</Link>
+                <span className="text-espresso/40 hidden sm:inline">·</span>
+                {/* Privacy · Terms · Returns — kept on one line */}
+                <div className="flex items-center gap-2.5 whitespace-nowrap">
+                  <Link href="/legal/privacy" className="hover:text-espresso transition-colors">Privacy</Link>
+                  <span className="text-espresso/40">·</span>
+                  <Link href="/legal/terms" className="hover:text-espresso transition-colors">Terms</Link>
+                  <span className="text-espresso/40">·</span>
+                  <Link href="/legal/returns" className="hover:text-espresso transition-colors">Returns</Link>
+                </div>
               </div>
             </div>
           </div>
