@@ -58,7 +58,8 @@ function Sprig({ light }: { light: boolean }) {
 // Brand lockup: lavender sprig to the LEFT of the wordmark (no seal logo in the
 // header — the seal lives elsewhere across the site). Fraunces wordmark.
 function Wordmark({ light }: { light: boolean }) {
-  const color = light ? '#FBF4EA' : '#574540'
+  // Solid state: match the sprig's lavender. Over the hero: cream-white (white sprig).
+  const color = light ? '#FBF4EA' : '#9D8BBC'
   return (
     <Link href="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0" aria-label="Petite Lavande — home">
       <Sprig light={light} />
