@@ -48,13 +48,8 @@ function Wordmark({ light }: { light: boolean }) {
   return (
     <Link href="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0" aria-label="Petite Lavande — home">
       <LavenderSprig className="h-9 sm:h-12 w-auto shrink-0" style={{ color }} title="Petite Lavande" />
-      <span className="flex flex-col leading-none">
-        <span style={{ fontFamily: 'var(--font-cormorant)', fontSize: 'clamp(1.35rem, 5.5vw, 2.15rem)', fontWeight: 500, letterSpacing: '0.015em', color }}>
-          Petite Lavande
-        </span>
-        <span className="font-sans uppercase" style={{ fontSize: '0.5rem', letterSpacing: '0.35em', color, opacity: 0.85, marginTop: '4px' }}>
-          Organic Cotton
-        </span>
+      <span style={{ fontFamily: 'var(--font-fraunces)', fontSize: 'clamp(1.35rem, 5.5vw, 2.15rem)', fontWeight: 500, letterSpacing: '0.01em', lineHeight: 1, color }}>
+        Petite Lavande
       </span>
     </Link>
   )
