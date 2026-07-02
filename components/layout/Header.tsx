@@ -55,17 +55,26 @@ function Sprig({ light }: { light: boolean }) {
   return <img src={src} alt="" className="h-9 sm:h-12 w-auto shrink-0 object-contain" onError={() => setErr(true)} />
 }
 
-// Brand lockup: lavender sprig to the LEFT of the wordmark (no seal logo in the
-// header — the seal lives elsewhere across the site). Fraunces wordmark.
+// Full brand lockup (wordmark + flanking sprigs, baked into one image): white
+// version over the hero, coloured version on the solid bar. Falls back to the
+// sprig + Fraunces wordmark if the lockup image isn't present yet.
 function Wordmark({ light }: { light: boolean }) {
-  // Solid state: match the sprig's lavender. Over the hero: cream-white (white sprig).
-  const color = light ? '#FBF4EA' : '#9D8BBC'
+  const src = light ? '/logo-white.png' : '/logo-color.png'
+  const [err, setErr] = useState(false)
+  useEffect(() => { setErr(false) }, [src])
   return (
-    <Link href="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0" aria-label="Petite Lavande — home">
-      <Sprig light={light} />
-      <span style={{ fontFamily: 'var(--font-fraunces)', fontSize: 'clamp(1.35rem, 5.5vw, 2.15rem)', fontWeight: 500, letterSpacing: '0.01em', lineHeight: 1, color }}>
-        Petite Lavande
-      </span>
+    <Link href="/" className="flex items-center shrink-0 min-w-0" aria-label="Petite Lavande — home">
+      {err ? (
+        <span className="flex items-center gap-2 sm:gap-2.5">
+          <Sprig light={light} />
+          <span style={{ fontFamily: 'var(--font-fraunces)', fontSize: 'clamp(1.35rem, 5.5vw, 2.15rem)', fontWeight: 500, lineHeight: 1, color: light ? '#FBF4EA' : '#9D8BBC' }}>
+            Petite Lavande
+          </span>
+        </span>
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={src} alt="Petite Lavande" onError={() => setErr(true)} className="h-10 sm:h-16 w-auto max-w-[70vw] object-contain object-left" />
+      )}
     </Link>
   )
 }
