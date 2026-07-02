@@ -482,7 +482,7 @@ export default function BuildPage() {
                 className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-pl-6 sm:scroll-pl-9 gap-2.5 sm:gap-5 px-6 sm:px-9 pb-2"
               >
                 {(catalog[cat] ?? []).map(product => (
-                  <div key={product.id} className="snap-start shrink-0 w-[66%] sm:w-[calc((100%-3.75rem)/4)]">
+                  <div key={product.id} className="snap-start shrink-0 w-[66%] sm:w-[calc((100%-3.75rem)/4)] lg:w-[calc((100%-5rem)/5)]">
                     <ProductCard
                       product={product}
                       selected={isProductSelected(product.id)}

@@ -81,19 +81,22 @@ export function Footer() {
             <p className="font-serif italic text-espresso text-sm">Fait avec amour, pour vous.</p>
           </div>
 
-          {/* Find us — social + email icons + labels (no heading), above the signup */}
+          {/* Find us — social + email icons + labels + handle/address subline, above the signup */}
           <div className="flex justify-center gap-10 mb-12">
-            <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 text-bark-400 hover:text-bark-600 transition-colors">
+            <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1.5 text-bark-400 hover:text-bark-600 transition-colors">
               <IgIcon />
               <span className="font-sans text-[10px] tracking-[0.2em] uppercase">Instagram</span>
+              <span className="font-sans text-[10px] text-bark-400/70 tracking-wide">@petitelavandeco</span>
             </a>
-            <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 text-bark-400 hover:text-bark-600 transition-colors">
+            <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1.5 text-bark-400 hover:text-bark-600 transition-colors">
               <FbIcon />
               <span className="font-sans text-[10px] tracking-[0.2em] uppercase">Facebook</span>
+              <span className="font-sans text-[10px] text-bark-400/70 tracking-wide">@petitelavandeco</span>
             </a>
-            <a href={`mailto:${CONTACT_EMAIL}`} className="flex flex-col items-center gap-2 text-bark-400 hover:text-bark-600 transition-colors">
+            <a href={`mailto:${CONTACT_EMAIL}`} className="flex flex-col items-center gap-1.5 text-bark-400 hover:text-bark-600 transition-colors">
               <Mail size={22} strokeWidth={1.5} />
               <span className="font-sans text-[10px] tracking-[0.2em] uppercase">Email</span>
+              <span className="font-sans text-[10px] text-bark-400/70 tracking-wide break-all">{CONTACT_EMAIL}</span>
             </a>
           </div>
 
