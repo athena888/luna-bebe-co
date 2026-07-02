@@ -9,6 +9,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { CATEGORY_LABELS } from '@/lib/products'
 import { ReviewSection } from '@/components/ui/ReviewSection'
+import { CertBadges } from '@/components/ui/CertBadges'
 import type { Product } from '@/types'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
@@ -278,6 +279,19 @@ export default function ProductDetailClient() {
                     </p>
                   )}
                 </div>
+
+                {/* Certifications — compact, single line, below the description */}
+                {(() => {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const pc = ((product as any).certifications ?? []) as any[]
+                  if (pc.length === 0 && !isOrganicProduct(product)) return null
+                  return (
+                    <div className="border-t border-cream-300 py-4">
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                      <CertBadges certs={pc as any} organic={product.organic} />
+                    </div>
+                  )
+                })()}
 
                 {/* Ingredients — collapsible */}
                 {product.ingredients && (

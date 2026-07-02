@@ -57,12 +57,12 @@ export function CertBadges({ certs, organic }: { certs: ResolvedCert[]; organic?
 
   return (
     <>
-      {/* Badge row */}
-      <div className="flex items-center gap-2 flex-wrap">
+      {/* Badge row — compact, single line (scrolls on very narrow screens) */}
+      <div className="flex items-center gap-1.5 flex-nowrap overflow-x-auto scrollbar-hide">
         {organicOnly && (
-          <span className="flex items-center gap-2 border border-sage-200 bg-sage-50 px-3 py-2 rounded-lg pl-round" title="Made with organic cotton">
-            <span className="w-[22px] h-[22px] rounded-full pl-round-full bg-sage-500 flex items-center justify-center shrink-0"><Leaf size={13} className="text-white" /></span>
-            <span className="font-sans text-[11px] tracking-[0.08em] uppercase text-sage-700 whitespace-nowrap">Organic</span>
+          <span className="shrink-0 flex items-center gap-1.5 border border-sage-200 bg-sage-50 px-2 py-1 rounded pl-round" title="Made with organic cotton">
+            <span className="w-4 h-4 rounded-full pl-round-full bg-sage-500 flex items-center justify-center shrink-0"><Leaf size={10} className="text-white" /></span>
+            <span className="font-sans text-[9px] tracking-[0.06em] uppercase text-sage-700 whitespace-nowrap">Organic</span>
           </span>
         )}
         {active.map((cert, idx) => {
@@ -71,10 +71,10 @@ export function CertBadges({ certs, organic }: { certs: ResolvedCert[]; organic?
             <button
               key={cert.key}
               onClick={() => openModal(idx)}
-              className={`flex items-center gap-2 border transition-colors px-3 py-2 rounded-lg pl-round group ${tone.wrap}`}
+              className={`shrink-0 flex items-center gap-1.5 border transition-colors px-2 py-1 rounded pl-round group ${tone.wrap}`}
             >
-              <CertIcon c={cert} size={14} />
-              <span className={`font-sans text-[11px] tracking-[0.08em] uppercase whitespace-nowrap transition-colors ${tone.text}`}>{label(cert)}</span>
+              <CertIcon c={cert} size={10} />
+              <span className={`font-sans text-[9px] tracking-[0.06em] uppercase whitespace-nowrap transition-colors ${tone.text}`}>{label(cert)}</span>
             </button>
           )
         })}

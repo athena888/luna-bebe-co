@@ -184,8 +184,15 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
               </span>
             )}
 
-            {/* Cert badges */}
-            <div className="border-t border-b border-cream-300 py-4">
+            {/* Description */}
+            <div className="border-t border-cream-300 py-3.5">
+              <p className="text-base text-bark-600 leading-relaxed" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                {clean(desc)}
+              </p>
+            </div>
+
+            {/* Cert badges — below the description */}
+            <div className="border-t border-cream-300 py-4">
               {(certs.length > 0 || product.organic) ? (
                 <CertBadges certs={certs} organic={product.organic} />
               ) : (
@@ -198,13 +205,6 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
                   ))}
                 </div>
               )}
-            </div>
-
-            {/* Description */}
-            <div className="border-t border-cream-300 py-3.5">
-              <p className="text-base text-bark-600 leading-relaxed" style={{ fontFamily: 'var(--font-cormorant)' }}>
-                {clean(desc)}
-              </p>
             </div>
 
             {ingredients && (

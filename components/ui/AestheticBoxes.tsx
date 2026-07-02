@@ -231,14 +231,14 @@ function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => 
             <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-2">{item.category}</p>
             <h2 className="font-serif text-2xl lg:text-3xl text-espresso leading-tight mb-2">{item.name}</h2>
             <p className="font-sans text-base text-bark-400 mb-2">{fmt(item.price)}</p>
-            {(certs.length > 0 || item.organic) && (
-              <div className="border-t border-b border-cream-300 py-4 mt-2">
-                <CertBadges certs={certs} organic={item.organic} />
+            {description && (
+              <div className="border-t border-cream-300 py-3.5 mt-2">
+                <p className="text-base text-bark-600 leading-relaxed" style={{ fontFamily: 'var(--font-cormorant)' }}>{description}</p>
               </div>
             )}
-            {description && (
-              <div className="border-t border-cream-300 py-3.5">
-                <p className="text-base text-bark-600 leading-relaxed" style={{ fontFamily: 'var(--font-cormorant)' }}>{description}</p>
+            {(certs.length > 0 || item.organic) && (
+              <div className="border-t border-cream-300 py-4">
+                <CertBadges certs={certs} organic={item.organic} />
               </div>
             )}
             {ingredients && (

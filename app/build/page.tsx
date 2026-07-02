@@ -715,10 +715,16 @@ export default function BuildPage() {
                 </span>
               )}
 
-              {/* Certificate collection — in the trust-banner position, keeping the
-                  dividers. Falls back to the shipping/handcrafted/gift-ready badges
-                  for products without certifications. */}
-              <div className="border-t border-b border-cream-300 py-4">
+              {/* Description */}
+              <div className="border-t border-cream-300 py-3.5">
+                <p className="text-base text-bark-600 leading-relaxed" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                  {cleanGots(modalProduct.description)}
+                </p>
+              </div>
+
+              {/* Certifications — below the description. Falls back to the
+                  shipping/handcrafted/gift-ready badges when there are none. */}
+              <div className="border-t border-cream-300 py-4">
                 {(modalCerts.length > 0 || modalProduct.organic) ? (
                   <CertBadges certs={modalCerts} organic={modalProduct.organic} />
                 ) : (
@@ -731,13 +737,6 @@ export default function BuildPage() {
                     ))}
                   </div>
                 )}
-              </div>
-
-              {/* Description / Materials / Cotton — each divided like the detail page */}
-              <div className="border-t border-cream-300 py-3.5">
-                <p className="text-base text-bark-600 leading-relaxed" style={{ fontFamily: 'var(--font-cormorant)' }}>
-                  {cleanGots(modalProduct.description)}
-                </p>
               </div>
               {modalProduct.ingredients && (
                 <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
