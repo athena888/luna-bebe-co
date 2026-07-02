@@ -98,10 +98,7 @@ function ItemEntry({ item, onOpen }: { item: BoxItem; onOpen: (i: BoxItem) => vo
           : <span className="absolute inset-0 flex items-center justify-center text-lg">{item.imageEmoji}</span>}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="flex items-baseline justify-between gap-2">
-          <p className="font-sans text-xs text-bark-600 leading-snug group-hover:text-bark-800 line-clamp-2">{item.name}</p>
-          <span className="font-sans text-[11px] text-bark-500 shrink-0">{fmt(item.price)}</span>
-        </div>
+        <p className="font-sans text-xs text-bark-600 leading-snug group-hover:text-bark-800 line-clamp-2">{item.name}</p>
         <div className="flex items-center gap-2 flex-wrap mt-0.5">
           <span className="font-sans text-[9px] tracking-[0.15em] uppercase text-gold-400">{item.category}</span>
           {item.organic && <span className="inline-flex items-center gap-0.5 text-sage-600"><Leaf size={9} /><span className="font-sans text-[8px] tracking-[0.1em] uppercase">Organic</span></span>}
@@ -124,7 +121,7 @@ function ItemsList({ box, onOpen }: { box: ResolvedBox; onOpen: (i: BoxItem) => 
       {baby.length > 0 && (
         <div>
           <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">For Baby</p>
-          <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-x-3 gap-y-4">
             {baby.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} onOpen={onOpen} />)}
           </div>
         </div>
@@ -132,7 +129,7 @@ function ItemsList({ box, onOpen }: { box: ResolvedBox; onOpen: (i: BoxItem) => 
       {mama.length > 0 && (
         <div>
           <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">For Mama</p>
-          <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-x-3 gap-y-4">
             {mama.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} onOpen={onOpen} />)}
           </div>
         </div>
@@ -382,8 +379,8 @@ function BoxSection({
       {/* Image — 60% width on desktop, full height, flies in from the image side */}
       {/* Mobile: image flows at its natural height (shown in full). Desktop: fills
           the 60% column. */}
-      <FlyIn from={flip ? 'right' : 'left'} className={`relative w-full lg:w-[60%] overflow-hidden lg:h-[90vh] ${flip ? 'lg:order-2' : ''}`} style={{ flex: '0 0 auto' }}>
-        {/* Web: photo is exactly 90vh. Mobile: fixed ~80svh. */}
+      <FlyIn from={flip ? 'right' : 'left'} className={`relative w-full lg:w-[60%] overflow-hidden lg:min-h-[90vh] ${flip ? 'lg:order-2' : ''}`} style={{ flex: '0 0 auto' }}>
+        {/* Web: image covers the whole column. Mobile: fixed ~80svh. */}
         <div className="relative h-[80svh] lg:h-auto lg:absolute lg:inset-0">
           <BoxImages box={box} />
         </div>

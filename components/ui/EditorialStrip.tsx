@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 
 type MediaItem = { id: string; url: string; type: 'image' | 'video' }
@@ -68,6 +69,10 @@ export function EditorialStrip() {
         <div className="text-center px-6">
           <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-cream-200/90 mb-4" style={{ textShadow: '0 1px 10px rgba(0,0,0,0.4)' }}>Handcrafted With Love</p>
           <h2 className="font-serif text-4xl sm:text-5xl text-cream-50 leading-tight" style={{ textShadow: '0 1px 14px rgba(0,0,0,0.4)' }}>Every detail, intentional.</h2>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
+            <Link href="/build" className="bg-cream-50 text-bark-600 font-sans text-[9px] tracking-[0.2em] uppercase px-8 py-3.5 hover:bg-cream-100 transition-colors">Build Your Own Box</Link>
+            <Link href="/boxes" className="border border-cream-50/70 text-cream-50 font-sans text-[9px] tracking-[0.2em] uppercase px-8 py-3.5 hover:bg-cream-50/10 transition-colors">Shop Gift Ideas</Link>
+          </div>
         </div>
       </div>
 

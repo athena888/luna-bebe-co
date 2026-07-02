@@ -87,30 +87,19 @@ export default async function HomePage() {
           {/* pt reserves a safe zone for the fixed header so the copy never rides under it */}
           <div className="relative z-10 w-full min-h-[85vh] sm:min-h-[92vh] px-6 sm:px-12 pt-36 sm:pt-44 pb-10 sm:pb-14 flex flex-col justify-end items-end">
             <div className="hero-rise w-full max-w-[300px] sm:max-w-sm text-right" style={{ animationDelay: '0.35s' }}>
-              <h1 className="font-serif text-[2.25rem] sm:text-[4.5rem] text-cream-50 leading-[1.05] mb-3">
+              <h1 className="font-serif text-[2.25rem] sm:text-[3.25rem] text-cream-50 leading-[1.05] mb-3">
                 A New Chapter,<br />Wrapped in Care.
               </h1>
-              <p className="font-serif italic text-cream-200/80 text-sm sm:text-base leading-relaxed mb-6 sm:mb-8">This is the moment Petite Lavande was made for.</p>
-              <div className="flex flex-col gap-2 items-end">
-                <Link
-                  href="/build"
-                  className="bg-cream-50 text-bark-600 font-sans text-[9px] tracking-[0.2em] uppercase px-6 sm:px-9 py-3 sm:py-3.5 hover:bg-cream-100 transition-colors"
-                >
-                  Build Your Own Box
-                </Link>
-                <Link
-                  href="/boxes"
-                  className="border border-cream-50/70 text-cream-50 font-sans text-[9px] tracking-[0.2em] uppercase px-6 sm:px-9 py-3 sm:py-3.5 hover:bg-cream-50/10 transition-colors"
-                >
-                  Shop Ready-Made
-                </Link>
-              </div>
+              <p className="font-serif italic text-cream-200/80 text-sm sm:text-base leading-relaxed">This is the moment Petite Lavande was made for.</p>
             </div>
           </div>
         </section>
 
-        {/* ── Perks bar — attached directly under the hero (matches header banner, espresso text) ── */}
-        <section className="bg-[#FEF8F4] border-b border-cream-300">
+        {/* ── Best Sellers — right below the hero ── */}
+        <PrebuiltBoxesSection />
+
+        {/* ── Perks bar — below the Best Sellers carousel ── */}
+        <section className="bg-[#FEF8F4] border-t border-b border-cream-300">
           <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4">
             {content.perks.map(({ label, sub }, i) => {
               const Icon = PERK_ICONS[i % PERK_ICONS.length]
@@ -127,9 +116,6 @@ export default async function HomePage() {
             })}
           </div>
         </section>
-
-        {/* ── Curated Gift Sets — moved to right below the hero ── */}
-        <PrebuiltBoxesSection />
 
         {/* ── Shop by Occasion — images only ── */}
         <div className="border-t border-cream-300">
