@@ -126,6 +126,12 @@ function ItemEntry({ item, onOpen }: { item: BoxItem; onOpen: (i: BoxItem) => vo
         <p className="font-sans text-xs text-bark-600 leading-snug group-hover:text-bark-800 line-clamp-2">{item.name}</p>
         <div className="flex items-center gap-2 flex-wrap mt-0.5">
           <span className="font-sans text-[9px] tracking-[0.15em] uppercase text-gold-400">{item.category}</span>
+          {(item as CartItem & { selectedColorHex?: string }).selectedColorHex && (
+            <span className="inline-flex items-center gap-1">
+              <span className="pl-swatch w-3 h-3 rounded-full border border-cream-300 shrink-0" style={{ backgroundColor: (item as CartItem & { selectedColorHex?: string }).selectedColorHex }} />
+              <span className="font-sans text-[9px] text-bark-400 capitalize">{(item as CartItem).selectedColor}</span>
+            </span>
+          )}
           {item.organic && <span className="inline-flex items-center gap-0.5 text-sage-600"><Leaf size={9} /><span className="font-sans text-[8px] tracking-[0.1em] uppercase">Organic</span></span>}
         </div>
       </div>

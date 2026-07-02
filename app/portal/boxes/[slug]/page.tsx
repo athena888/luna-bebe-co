@@ -9,7 +9,8 @@ import { resizeImage } from '@/lib/image-resize'
 import { SiteImageUploader } from '@/components/portal/SiteImageUploader'
 
 type CatalogProduct = { id: string; name: string; category: string; has_variants?: boolean; price: number; image?: string | null }
-type BoxSlot = { key: string; label: string; product_id: string | null; color?: string | null; size?: string | null; audience?: Audience | null }
+type BoxSlot = { key: string; label: string; product_id: string | null; color?: string | null; color_hex?: string | null; size?: string | null; audience?: Audience | null }
+type ColorOpt = { color: string; color_hex: string | null }
 
 const SLOT_TEMPLATES: Array<{ key: string; label: string }> = [
   { key: 'swaddle', label: 'Swaddle / Blanket' },
@@ -111,6 +112,26 @@ export default function BoxEditorPage({ slugProp, onBack }: { slugProp?: string;
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
   const [categoryWarning, setCategoryWarning] = useState<string | null>(null)
+  const [colorsByProduct, setColorsByProduct] = useState<Record<string, ColorOpt[]>>({})
+
+  // Fetch each slot product's available colours (from its variants) for the picker.
+  useEffect(() => {
+    const ids = Array.from(new Set(slots.map(s => s.product_id).filter((x): x is string => !!x)))
+    ids.filter(id => !(id in colorsByProduct)).forEach(async id => {
+      try {
+        const r = await fetch(`/api/products/${id}`)
+        const d = await r.json()
+        const seen = new Map<string, string | null>()
+        for (const v of (d.variants ?? [])) { if (v.color && !seen.has(v.color)) seen.set(v.color, v.color_hex ?? null) }
+        setColorsByProduct(prev => ({ ...prev, [id]: Array.from(seen, ([color, color_hex]) => ({ color, color_hex })) }))
+      } catch { setColorsByProduct(prev => ({ ...prev, [id]: [] })) }
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slots])
+
+  function updateSlotColor(slotKey: string, color: string, colorHex: string | null) {
+    setSlots(prev => prev.map(s => s.key === slotKey ? { ...s, color: color || undefined, color_hex: color ? (colorHex ?? undefined) : undefined } : s))
+  }
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -139,6 +160,7 @@ export default function BoxEditorPage({ slugProp, onBack }: { slugProp?: string;
           label: template?.label || key,
           product_id: (ref as SlotRef)?.product_id ?? null,
           color: (ref as SlotRef)?.color ?? undefined,
+          color_hex: (ref as SlotRef)?.color_hex ?? undefined,
           size: (ref as SlotRef)?.size ?? undefined,
           audience: (ref as SlotRef)?.audience ?? null,
         }
@@ -223,6 +245,7 @@ export default function BoxEditorPage({ slugProp, onBack }: { slugProp?: string;
         selection[slot.key] = {
           product_id: slot.product_id,
           color: slot.color || undefined,
+          color_hex: slot.color_hex || undefined,
           size: slot.size || undefined,
           audience: slot.audience ?? undefined,
         }
@@ -490,6 +513,22 @@ export default function BoxEditorPage({ slugProp, onBack }: { slugProp?: string;
                       </button>
                     ))}
                   </div>
+                  {/* Colour picker — swatches from the product's variants */}
+                  {slot.product_id && (colorsByProduct[slot.product_id]?.length ?? 0) > 0 && (
+                    <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                      {colorsByProduct[slot.product_id].map(({ color, color_hex }) => (
+                        <button
+                          key={color}
+                          type="button"
+                          title={color}
+                          onClick={() => updateSlotColor(slot.key, slot.color === color ? '' : color, color_hex)}
+                          className={`pl-swatch w-6 h-6 rounded-full border-2 transition-all ${slot.color === color ? 'border-bark-600 scale-110' : 'border-cream-300 hover:border-bark-400'}`}
+                          style={{ backgroundColor: color_hex || '#e5e0d8' }}
+                        />
+                      ))}
+                      {slot.color && <span className="font-sans text-[10px] text-bark-500 ml-1 capitalize">{slot.color}</span>}
+                    </div>
+                  )}
                 </div>
                 <button
                   type="button"

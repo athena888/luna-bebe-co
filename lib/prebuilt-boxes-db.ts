@@ -7,7 +7,7 @@ const SLOTS = ['swaddle', 'garment', 'bath', 'keepsake', 'mom', 'extra1', 'extra
 type Slot = typeof SLOTS[number]
 
 export type Audience = 'baby' | 'mama'
-export type SlotRef = { product_id: string; color?: string | null; size?: string | null; audience?: Audience | null }
+export type SlotRef = { product_id: string; color?: string | null; color_hex?: string | null; size?: string | null; audience?: Audience | null }
 // SelectionJson now supports arbitrary keys for dynamic slots
 type SelectionJson = Record<string, SlotRef | null>
 export type BoxItem = Product & { audience?: Audience | null }
@@ -114,8 +114,8 @@ function resolveRow(row: BoxRow, productById: Map<string, Product>): ResolvedBox
     if (!ref?.product_id) continue
     const product = productById.get(ref.product_id)
     if (!product) continue
-    const base = ref.color && ref.size
-      ? ({ ...product, selectedColor: ref.color, selectedSize: ref.size } as Product)
+    const base = ref.color
+      ? ({ ...product, selectedColor: ref.color, selectedColorHex: ref.color_hex ?? undefined, ...(ref.size ? { selectedSize: ref.size } : {}) } as Product)
       : product
     items.push({ ...base, audience: ref.audience ?? null })
   }
