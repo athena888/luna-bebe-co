@@ -127,7 +127,7 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
   const light = transparent
 
   return (
-    <header className={overHero ? 'fixed top-0 inset-x-0 z-40' : 'sticky top-0 z-40 bg-[#FEF8F4]'}>
+    <header className={overHero ? 'fixed top-0 inset-x-0 z-40' : 'relative z-40 bg-[#FEF8F4]'}>
 
       {/* Coming-soon announcement strip */}
       <div className="bg-[#4A3B30] text-cream-50 text-center py-2.5 px-4">
