@@ -822,6 +822,11 @@ export default function BuildPage() {
                 </div>
               )}
 
+              {/* Low-stock note for the specific chosen variant */}
+              {modalHasVariants && pickedVariant && pickedVariant.quantity > 0 && pickedVariant.quantity <= 3 && (
+                <p className="font-sans text-[11px] tracking-[0.08em] text-red-600 mb-1">{pickedVariant.quantity} left</p>
+              )}
+
               <div className="mt-auto pt-4">
                 {modalHasVariants ? (
                   allVariantsOut ? (

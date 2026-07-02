@@ -424,7 +424,7 @@ function BoxSection({
       {/* Info panel — desktop: 95vh min-height, full panel scrolls so nothing is ever cut off;
            mobile: natural flow */}
       <div
-        className={`relative isolate lg:w-[40%] flex flex-col lg:h-full lg:overflow-y-auto ${flip ? 'lg:order-1' : ''}`}
+        className={`relative isolate lg:w-[40%] flex flex-col lg:h-full lg:overflow-hidden ${flip ? 'lg:order-1' : ''}`}
         style={panelBg ? {
           backgroundImage: `linear-gradient(rgba(255,255,255,0.88), rgba(255,255,255,0.88)), url(${panelBg})`,
           backgroundSize: 'cover',
@@ -436,7 +436,7 @@ function BoxSection({
         )}
 
         {/* Top: identity */}
-        <div className="px-8 lg:px-12 xl:px-16 pt-12 lg:pt-16">
+        <div className="px-8 lg:px-12 xl:px-16 pt-8 lg:pt-8">
           <FlyIn delay={80}>
             <div className="flex items-center gap-2 mb-3">
               {box.style && <span className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400">{box.style}</span>}
@@ -457,11 +457,12 @@ function BoxSection({
           )}
         </div>
 
-        {/* Middle: items — always fully visible, inner scroll if list is very long */}
+        {/* Middle: items — the ONLY scroll region on desktop; grows to fill the
+            space between the fixed identity (top) and price/buy (bottom). */}
         {box.items.length > 0 && (
-          <div className="px-8 lg:px-12 xl:px-16 mt-8">
-            <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-4">What&apos;s Inside</p>
-            <div className="max-h-[320px] lg:max-h-[50vh] overflow-y-auto scrollbar-hide pr-1 pb-2">
+          <div className="px-8 lg:px-12 xl:px-16 mt-8 lg:mt-6 lg:flex-1 lg:min-h-0 flex flex-col">
+            <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-4 shrink-0">What&apos;s Inside</p>
+            <div className="max-h-[320px] lg:max-h-none lg:flex-1 lg:min-h-0 overflow-y-auto scrollbar-hide pr-1 pb-2">
               <ItemsList box={box} onOpen={onPreview} />
             </div>
           </div>
