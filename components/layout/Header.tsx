@@ -73,7 +73,7 @@ function Wordmark({ light }: { light: boolean }) {
         </span>
       ) : (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt="Petite Lavande" onError={() => setErr(true)} className="h-10 sm:h-16 w-auto max-w-[70vw] object-contain object-left" />
+        <img src={src} alt="Petite Lavande" onError={() => setErr(true)} className="h-14 sm:h-20 w-auto max-w-[62vw] sm:max-w-none object-contain" />
       )}
     </Link>
   )
@@ -136,30 +136,36 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
         </p>
       </div>
 
-      {/* Nav bar */}
+      {/* Nav bar — centered logo on top, nav links beneath; controls pinned right
+          (hamburger left on mobile), all vertically centered on the logo row. */}
       <div className={`transition-colors duration-300 ${transparent ? 'bg-gradient-to-b from-black/30 via-black/10 to-transparent' : 'bg-[#FEF8F4] border-b border-cream-300 shadow-sm'}`}>
-        <div className="relative w-full pl-4 sm:pl-9 pr-4 sm:pr-6 h-[92px] sm:h-[112px] flex items-center justify-between">
+        <div className="relative w-full px-3 sm:px-9 py-3 sm:py-4 flex flex-col items-center gap-2 sm:gap-3">
 
-          <Wordmark light={light} />
-
-          <nav className="hidden md:flex flex-1 items-center justify-center gap-5 lg:gap-7 px-4 font-sans text-[11px] tracking-[0.2em]">
-            <NavLinks light={light} />
-          </nav>
-
-          <div className="flex items-center gap-0.5 justify-self-end">
-            <Link href="/account" className={`hidden md:flex w-11 h-11 items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`} title="My Account">
-              <User size={16} />
-            </Link>
-            <CartButton light={light} />
+          {/* Controls row — aligned to the logo's height band */}
+          <div className="absolute left-3 right-3 sm:left-6 sm:right-6 top-3 sm:top-4 h-14 sm:h-20 flex items-center pointer-events-none z-10">
             <button
-              className={`md:hidden w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50' : 'text-bark-600 hover:text-bark-700'}`}
+              className={`md:hidden pointer-events-auto w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50' : 'text-bark-600 hover:text-bark-700'}`}
               onClick={() => setOpen(!open)}
               title={open ? 'Close menu' : 'Open menu'}
               aria-label={open ? 'Close menu' : 'Open menu'}
             >
               {open ? <X size={20} /> : <Menu size={20} />}
             </button>
+            <div className="ml-auto pointer-events-auto flex items-center gap-0.5">
+              <Link href="/account" className={`hidden md:flex w-11 h-11 items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`} title="My Account">
+                <User size={16} />
+              </Link>
+              <CartButton light={light} />
+            </div>
           </div>
+
+          {/* Centered, enlarged logo */}
+          <Wordmark light={light} />
+
+          {/* Nav links below the logo (desktop) */}
+          <nav className="hidden md:flex items-center justify-center gap-6 lg:gap-9 font-sans text-[11px] tracking-[0.2em]">
+            <NavLinks light={light} />
+          </nav>
         </div>
       </div>
 
