@@ -306,6 +306,38 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
   )
 }
 
+// ─── Mobile grid card (2-up) — bigger images than the carousel's peek layout ──
+function MobileGridCard({ product, onOpen }: { product: Product; onOpen: () => void }) {
+  const [phase, setPhase] = useState(0)
+  const src = getImgSrc(product, phase)
+  return (
+    <button onClick={onOpen} className="group text-left w-full">
+      <div className="relative w-full overflow-hidden" style={{ aspectRatio: '3/4' }}>
+        {src ? (
+          <Image src={src} alt={product.name} fill unoptimized sizes="50vw" className="object-cover"
+            onError={() => setPhase(p => p + 1)} />
+        ) : (
+          <div className="w-full h-full bg-white flex items-center justify-center" style={{ fontSize: 'clamp(3rem,16vw,4rem)' }}>{product.imageEmoji}</div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent pointer-events-none" />
+        {product.tag && (
+          <div className="absolute top-2 left-2"><span className="font-sans text-[8px] tracking-[0.15em] uppercase bg-gold-400/30 backdrop-blur-sm text-gold-100 px-1.5 py-0.5">{product.tag}</span></div>
+        )}
+        {isOrganic(product) && (
+          <div className="absolute bottom-2 right-2 flex flex-col items-center gap-0.5 pointer-events-none">
+            <span className="font-sans text-[7px] tracking-[0.18em] uppercase text-white drop-shadow">Organic</span>
+            <span className="w-5 h-5 rounded-full pl-round-full bg-sage-500/90 flex items-center justify-center shadow"><Leaf size={11} className="text-white" /></span>
+          </div>
+        )}
+        <div className="absolute bottom-0 inset-x-0 p-3 pointer-events-none">
+          <p className="font-sans text-xs font-medium text-white leading-snug drop-shadow line-clamp-2">{product.name}</p>
+          <p className="font-sans text-[11px] text-white/70">{formatPrice(product.price)}</p>
+        </div>
+      </div>
+    </button>
+  )
+}
+
 // ─── Carousel ────────────────────────────────────────────────────────────────
 
 export function ProductCarousel({ products }: { products: Product[] }) {
@@ -408,7 +440,15 @@ export function ProductCarousel({ products }: { products: Product[] }) {
 
   return (
     <>
-      <div className="relative select-none">
+      {/* Mobile: 2-up grid (bigger, all products visible) */}
+      <div className="md:hidden grid grid-cols-2 gap-2.5 px-4">
+        {products.map(product => (
+          <MobileGridCard key={product.id} product={product} onOpen={() => setModal(product)} />
+        ))}
+      </div>
+
+      {/* Desktop: center-snap carousel */}
+      <div className="relative select-none hidden md:block">
         <button
           onClick={goPrev}
           className="absolute left-2 sm:left-4 top-[40%] -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white/90 shadow-md flex items-center justify-center text-bark-600 hover:bg-white transition-all"
