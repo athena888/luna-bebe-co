@@ -141,8 +141,9 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
       <div className={`transition-colors duration-300 ${transparent ? 'bg-gradient-to-b from-black/30 via-black/10 to-transparent' : 'bg-[#FEF8F4] border-b border-cream-300 shadow-sm'}`}>
         <div className="relative w-full px-3 sm:px-9 py-3 sm:py-4 flex flex-col items-center gap-2 sm:gap-3">
 
-          {/* Controls row — aligned to the logo's height band */}
-          <div className="absolute left-3 right-3 sm:left-6 sm:right-6 top-3 sm:top-4 h-14 sm:h-20 flex items-center pointer-events-none z-10">
+          {/* Controls row — nudged down to line up with the wordmark text (the
+              sprigs sit higher, so the text center is ~61% down the lockup). */}
+          <div className="absolute left-3 right-3 sm:left-6 sm:right-6 top-3 sm:top-4 h-14 sm:h-20 translate-y-[6px] sm:translate-y-[10px] flex items-center pointer-events-none z-10">
             <button
               className={`md:hidden pointer-events-auto w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50' : 'text-bark-600 hover:text-bark-700'}`}
               onClick={() => setOpen(!open)}

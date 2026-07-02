@@ -14,7 +14,10 @@ type ResolvedCert = ProductCert & Partial<CertDef>
 export function isGots(c: ResolvedCert): boolean {
   return /gots|global organic textile/i.test(`${c.key ?? ''} ${c.name ?? ''}`)
 }
-function label(c: ResolvedCert): string { return isGots(c) ? 'Organic' : (c.name ?? c.key) }
+function label(c: ResolvedCert): string {
+  if (isGots(c)) return 'Organic'
+  return (c.name ?? c.key).replace(/\s+100\b/, '') // "OEKO-TEX 100" → "OEKO-TEX"
+}
 
 // Give each cert badge its own muted tone (Organic stays sage); the rest cycle
 // through gold / rose / terra so the row isn't one flat colour.
