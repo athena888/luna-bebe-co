@@ -69,15 +69,22 @@
 
 * { box-sizing: border-box; }
 
+/* Kill horizontal scroll at the root too — on iOS Safari, overflow-x on <body>
+   alone doesn't clip fixed/off-canvas descendants (drawers, peek carousels),
+   which shows up as a left gap / not-full-width on mobile. Clipping <html> as
+   well closes that. `clip` keeps position:sticky working (unlike hidden). */
+html { overflow-x: clip; max-width: 100%; }
+
 body {
   background-color: #FFFFFF;
   color: #383734;
   font-family: "Jost", ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow-x: clip;
+  max-width: 100%;
 }
 /* Prevent any child from causing horizontal scroll */
-main { overflow-x: hidden; }
+main { overflow-x: clip; }
 
 /* Noralee uses Cormorant as their body serif and Delores (≈ Playfair) as display */
 h1, h2, h3, h4 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 300; }

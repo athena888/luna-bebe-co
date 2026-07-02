@@ -9,6 +9,8 @@ import { LANDING_PAGES } from '@/lib/landing-pages'
 import { getLandingContent } from '@/lib/landing-content'
 import { getCatalog } from '@/lib/products-db'
 import { CATEGORY_LABELS } from '@/lib/products'
+import { supabaseAdmin } from '@/lib/supabase'
+import { ProductGridCard } from '@/components/ui/ProductGridCard'
 import type { Product } from '@/types'
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
@@ -79,6 +81,27 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
       products: products.slice(0, 4),
     }))
   } catch { /* show page without grid */ }
+
+  // One batched query for a secondary (hover/alt) image per product on this page.
+  // Pick the first gallery image that isn't the primary shown on the card.
+  const secondaryById = new Map<string, string>()
+  try {
+    const ids = byCategory.flatMap(g => g.products.map(p => p.id))
+    if (ids.length) {
+      const { data: rows } = await supabaseAdmin
+        .from('product_gallery')
+        .select('product_id, image_url, is_primary, sort_order')
+        .in('product_id', ids)
+        .order('is_primary', { ascending: false })
+        .order('sort_order', { ascending: true })
+      const primaryOf = new Map(byCategory.flatMap(g => g.products).map(p => [p.id, productImage(p)]))
+      for (const r of rows ?? []) {
+        const url = (r as { image_url?: string }).image_url
+        const pid = (r as { product_id: string }).product_id
+        if (url && !secondaryById.has(pid) && url !== primaryOf.get(pid)) secondaryById.set(pid, url)
+      }
+    }
+  } catch { /* no secondary images — cards render primary only */ }
 
   const url = `${BASE}/gifts/${lp.slug}`
   const others = LANDING_PAGES.filter(p => p.slug !== lp.slug)
@@ -159,25 +182,12 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
                   {/* Product cards */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
                     {products.map(p => (
-                      <Link key={p.id} href={`/products/${p.id}`} className="group">
-                        {/* Image */}
-                        <div className="relative aspect-[4/5] bg-[#FBF7F0] overflow-hidden mb-3 border border-cream-200">
-                          {productImage(p) ? (
-                            <img
-                              src={productImage(p)}
-                              alt={p.name}
-                              className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500"
-                            />
-                          ) : (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <span className="text-4xl select-none opacity-40">{p.imageEmoji}</span>
-                            </div>
-                          )}
-                        </div>
-                        {/* Info */}
-                        <h3 className="font-serif text-base text-bark-600 leading-snug mb-0.5 group-hover:text-bark-800 transition-colors">{p.name}</h3>
-                        <p className="font-sans text-xs text-bark-400">${(p.price / 100).toFixed(0)}</p>
-                      </Link>
+                      <ProductGridCard
+                        key={p.id}
+                        product={p}
+                        primarySrc={productImage(p) || null}
+                        secondarySrc={secondaryById.get(p.id) ?? null}
+                      />
                     ))}
                   </div>
                 </div>
