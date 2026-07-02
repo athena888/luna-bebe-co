@@ -2,9 +2,16 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Eye } from 'lucide-react'
+import { Eye, Leaf } from 'lucide-react'
 import type { Product } from '@/types'
 import { QuickViewModal } from './QuickViewModal'
+
+// Organic if explicitly flagged, else inferred from tag/ingredients/name.
+function isOrganic(p: Product): boolean {
+  if (p.organic) return true
+  const hay = `${p.tag ?? ''} ${p.ingredients ?? ''} ${p.name ?? ''}`.toLowerCase()
+  return hay.includes('organic') || hay.includes('gots')
+}
 
 // Collection-grid product card with:
 //  · Feature 1 — an optional secondary image: cross-fade on hover/focus (desktop),
@@ -73,6 +80,14 @@ export function ProductGridCard({ product, primarySrc, secondarySrc }: {
           />
         ) : (
           <Link href={pdp} aria-label={product.name} className="absolute inset-0 z-10" />
+        )}
+
+        {/* Organic indicator — leaf + small word, matching the homepage carousel. */}
+        {isOrganic(product) && (
+          <div className="absolute bottom-2 right-2 z-10 flex flex-col items-center gap-0.5 pointer-events-none">
+            <span className="font-sans text-[8px] tracking-[0.18em] uppercase text-white drop-shadow">Organic</span>
+            <span className="w-6 h-6 rounded-full pl-round-full bg-sage-500/90 flex items-center justify-center shadow-md"><Leaf size={12} className="text-white" /></span>
+          </div>
         )}
 
         {/* Mobile 2-dot indicator. */}

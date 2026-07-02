@@ -13,13 +13,6 @@ function productImg(p: { id: string; image?: string | null }): string | null {
   return p.image ?? (SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${p.id}.jpg` : null)
 }
 
-// Variant badge — girl / boy / neutral, color-coded.
-function variantBadge(box: ResolvedBox): { label: string; cls: string } {
-  const v = box.variant
-  if (v === 'girl') return { label: 'Girl', cls: 'bg-rose-100/90 text-rose-500' }
-  if (v === 'boy') return { label: 'Boy', cls: 'bg-sky-100/90 text-sky-600' }
-  return { label: 'Neutral', cls: 'bg-cream-100/95 text-bark-500' }
-}
 
 function boxTotal(box: ResolvedBox): number {
   return box.customPrice ?? (BOX_BASE_PRICE + box.items.reduce((s, p) => s + (p?.price ?? 0), 0))
@@ -44,7 +37,6 @@ function BoxModal({ box, onClose }: { box: ResolvedBox; onClose: () => void }) {
           {box.image
             ? <Image src={box.image} alt={box.name} fill className="object-cover" unoptimized />
             : <div className="absolute inset-0 flex items-center justify-center text-bark-300"><Package size={32} /></div>}
-          <span className={`absolute top-3 left-3 font-sans text-[9px] tracking-[0.2em] uppercase px-2.5 py-1 ${variantBadge(box).cls}`}>{variantBadge(box).label}</span>
         </div>
 
         {/* Details */}
@@ -128,8 +120,6 @@ export function PrebuiltBoxesSection() {
               {box.image
                 ? <Image src={box.image} alt={box.name} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" unoptimized sizes="(max-width:640px) 78vw, 380px" />
                 : <div className="absolute inset-0 flex items-center justify-center text-bark-300"><Package size={32} /></div>}
-              {/* Variant label — girl / boy / neutral */}
-              <span className={`absolute top-3 left-3 font-sans text-[9px] tracking-[0.2em] uppercase px-2.5 py-1 ${variantBadge(box).cls}`}>{variantBadge(box).label}</span>
               {/* Hover hint — make it obviously clickable */}
               <div className="absolute inset-0 bg-bark-900/0 group-hover:bg-bark-900/30 transition-colors flex items-end justify-center pb-5 opacity-0 group-hover:opacity-100">
                 <span className="bg-cream-50 text-bark-700 font-sans text-[10px] tracking-[0.2em] uppercase px-5 py-2.5">View set →</span>

@@ -18,14 +18,9 @@ function label(c: ResolvedCert): string { return isGots(c) ? 'Organic' : (c.name
 
 // Give each cert badge its own muted tone (Organic stays sage); the rest cycle
 // through gold / rose / terra so the row isn't one flat colour.
-function certTone(c: ResolvedCert, idx: number): { wrap: string; text: string } {
-  if (isGots(c)) return { wrap: 'border-sage-200 bg-sage-50 hover:border-sage-300', text: 'text-sage-700' }
-  const tones = [
-    { wrap: 'border-gold-300 bg-gold-100/40 hover:border-gold-400', text: 'text-gold-600' },
-    { wrap: 'border-rose-300 bg-rose-100/50 hover:border-rose-400', text: 'text-rose-400' },
-    { wrap: 'border-terra-300 bg-terra-100/60 hover:border-terra-400', text: 'text-terra-500' },
-  ]
-  return tones[idx % tones.length]
+// Every cert badge shares one calm, uniform tone (no per-cert colour-coding).
+function certTone(_c: ResolvedCert, _idx: number): { wrap: string; text: string } {
+  return { wrap: 'border-cream-300 bg-cream-100 hover:border-bark-300', text: 'text-bark-600' }
 }
 
 function CertIcon({ c, size }: { c: ResolvedCert; size: number }) {

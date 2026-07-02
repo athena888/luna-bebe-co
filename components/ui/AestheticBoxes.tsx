@@ -318,7 +318,7 @@ function BoxImages({ box }: { box: ResolvedBox }) {
 
   if (n === 0) {
     return (
-      <div className="relative aspect-[4/5] lg:absolute lg:inset-0 lg:aspect-auto bg-cream-100 flex items-center justify-center">
+      <div className="relative h-full lg:absolute lg:inset-0 bg-cream-100 flex items-center justify-center">
         <span className="font-script text-4xl text-bark-300">Petite Lavande</span>
       </div>
     )
@@ -326,7 +326,7 @@ function BoxImages({ box }: { box: ResolvedBox }) {
 
   return (
     <>
-      <img src={images[idx]} alt={box.name} className="w-full h-auto object-contain lg:absolute lg:inset-0 lg:h-full lg:object-cover transition-opacity duration-500" />
+      <img src={images[idx]} alt={box.name} className="w-full h-full object-cover lg:absolute lg:inset-0 transition-opacity duration-500" />
       {n > 1 && (
         <>
           <button
@@ -383,14 +383,10 @@ function BoxSection({
       {/* Mobile: image flows at its natural height (shown in full). Desktop: fills
           the 60% column. */}
       <FlyIn from={flip ? 'right' : 'left'} className={`relative w-full lg:w-[60%] overflow-hidden lg:min-h-[95vh] ${flip ? 'lg:order-2' : ''}`} style={{ flex: '0 0 auto' }}>
-        <div className="relative lg:absolute lg:inset-0">
+        {/* Mobile: fixed ~80svh (matches the web's fixed height); desktop fills the column. */}
+        <div className="relative h-[80svh] lg:h-auto lg:absolute lg:inset-0">
           <BoxImages box={box} />
         </div>
-        {box.variant && box.variant !== 'neutral' && (
-          <span className="absolute top-5 left-5 font-sans text-[9px] tracking-[0.2em] uppercase bg-white/85 text-bark-600 px-3 py-1.5 capitalize">
-            {box.variant}
-          </span>
-        )}
       </FlyIn>
 
       {/* Info panel — desktop: 95vh min-height, full panel scrolls so nothing is ever cut off;
@@ -411,9 +407,6 @@ function BoxSection({
         <div className="px-8 lg:px-12 xl:px-16 pt-12 lg:pt-16">
           <FlyIn delay={80}>
             <div className="flex items-center gap-2 mb-3">
-              {box.variant !== 'neutral' && (
-                <span className={`font-sans text-[9px] tracking-[0.2em] uppercase px-2.5 py-1 ${box.variant === 'girl' ? 'bg-rose-100/90 text-rose-500' : 'bg-sky-100/90 text-sky-600'}`}>{box.variant === 'girl' ? 'Girl' : 'Boy'}</span>
-              )}
               {box.style && <span className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400">{box.style}</span>}
             </div>
           </FlyIn>

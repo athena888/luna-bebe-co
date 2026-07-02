@@ -57,6 +57,14 @@
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes heroRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+/* Homepage hero entrance — image fades in, words rise in just after. */
+.hero-fade { animation: fadeIn 1.4s ease both; }
+.hero-rise { animation: heroRise 1s ease both; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-fade, .hero-rise { animation: none; }
+}
 @keyframes floatMark {
   0%   { transform: translateY(0px)   rotate(-4deg); }
   25%  { transform: translateY(-3px)  rotate(-1deg); }

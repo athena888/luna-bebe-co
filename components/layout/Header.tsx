@@ -2,24 +2,13 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { Menu, X, User, ShoppingBag, ChevronDown } from 'lucide-react'
+import { Menu, X, User, ShoppingBag } from 'lucide-react'
 import { cartCount } from '@/lib/cart'
-import { LogoMark } from '@/components/ui/LogoMark'
+import { LavenderSprig } from '@/components/ui/LavenderSprig'
 
-// Ready-Made editions — the label links to all boxes; the dropdown jumps to a
-// specific edition section on /boxes (anchors match `edition-<slug>` there).
-
-const READY_MADE_EDITIONS = [
-  { label: 'All', href: '/boxes' },
-  { label: 'For Baby', href: '/boxes#edition-for-baby' },
-  { label: 'For Mama', href: '/boxes#edition-for-mama' },
-  { label: 'Baby & Mama Bundle', href: '/boxes#edition-baby-mama-bundle' },
-]
-
-// Cart lives in the nav row so it scrolls with the header and aligns on every
-// page. On the build page it opens the bag drawer in place; elsewhere it links
-// to /build. Badge updates live via the 'pl:cart' event fired by writeCart().
-function CartButton() {
+// Cart lives in the nav row so it scrolls with the header. On the build page it
+// opens the bag drawer in place; elsewhere it links to /build.
+function CartButton({ light }: { light: boolean }) {
   const pathname = usePathname()
   const [count, setCount] = useState(0)
   useEffect(() => {
@@ -40,41 +29,82 @@ function CartButton() {
     <Link
       href="/build"
       onClick={e => { if (pathname?.startsWith('/build')) { e.preventDefault(); window.dispatchEvent(new Event('pl:open-bag')) } }}
-      className="relative p-2.5 text-bark-500 hover:text-bark-700 transition-colors flex items-center justify-center"
+      className={`relative w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50 hover:text-white' : 'text-bark-500 hover:text-bark-700'}`}
       title="Your box"
       aria-label="Your box"
     >
       <ShoppingBag size={18} strokeWidth={1.5} />
       {count > 0 && (
-        <span className="absolute top-0.5 right-0.5 min-w-[15px] h-[15px] px-1 bg-bark-600 text-cream-50 rounded-full text-[9px] font-sans flex items-center justify-center leading-none">{count}</span>
+        <span className="absolute top-1 right-1 min-w-[15px] h-[15px] px-1 bg-bark-600 text-cream-50 rounded-full text-[9px] font-sans flex items-center justify-center leading-none">{count}</span>
       )}
     </Link>
   )
 }
 
+// Brand lockup: lavender sprig to the LEFT of the wordmark (no seal logo in the
+// header — the seal lives elsewhere across the site). Mixed-case serif per brand.
+function Wordmark({ light }: { light: boolean }) {
+  const color = light ? '#FBF4EA' : '#574540'
+  return (
+    <Link href="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0" aria-label="Petite Lavande — home">
+      <LavenderSprig className="h-9 sm:h-12 w-auto shrink-0" style={{ color }} title="Petite Lavande" />
+      <span className="flex flex-col leading-none">
+        <span style={{ fontFamily: 'var(--font-cormorant)', fontSize: 'clamp(1.35rem, 5.5vw, 2.15rem)', fontWeight: 500, letterSpacing: '0.015em', color }}>
+          Petite Lavande
+        </span>
+        <span className="font-sans uppercase" style={{ fontSize: '0.5rem', letterSpacing: '0.35em', color, opacity: 0.85, marginTop: '4px' }}>
+          Organic Cotton
+        </span>
+      </span>
+    </Link>
+  )
+}
+
+function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) {
+  const base = light ? 'text-cream-50/90 hover:text-white' : 'text-[#7A6B60] hover:text-espresso'
+  const cls = `uppercase ${base} transition-colors whitespace-nowrap`
+  return (
+    <>
+      <Link href="/build" className={cls} onClick={onClick}>Build Your Own Box</Link>
+      {/* Gifting Ideas → the ready-made / pre-made boxes page (no dropdown for now) */}
+      <Link href="/boxes" className={cls} onClick={onClick}>Gifting Ideas</Link>
+      <Link href="/gift-cards" className={cls} onClick={onClick}>Gift Cards</Link>
+      <Link href="/story" className={cls} onClick={onClick}>Stories</Link>
+    </>
+  )
+}
+
 function MobileMenu({ onClose }: { onClose: () => void }) {
   return (
-    <div className="md:hidden bg-[#FEF8F4] border-b border-cream-300 px-6 py-8 flex flex-col gap-6">
-      <Link href="/build" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Build Your Own Box</Link>
-      <div>
-        <Link href="/gift-guides" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Gifting Ideas</Link>
-        <div className="mt-3 ml-3 flex flex-col gap-3 border-l border-cream-300 pl-4">
-          {READY_MADE_EDITIONS.map(e => (
-            <Link key={e.label} href={e.href} className="text-[10px] font-sans tracking-[0.2em] uppercase text-bark-300 hover:text-bark-500 transition-colors" onClick={onClose}>{e.label}</Link>
-          ))}
-        </div>
-      </div>
-      <Link href="/gift-cards" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Gift Cards</Link>
-      <Link href="/account" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>My Account</Link>
-      <Link href="/story" className="text-[11px] font-sans tracking-[0.2em] uppercase text-bark-400" onClick={onClose}>Stories</Link>
+    <div className="md:hidden bg-[#FEF8F4] border-b border-cream-300 px-6 py-8 flex flex-col gap-6 font-sans text-[11px] tracking-[0.2em]">
+      <NavLinks light={false} onClick={onClose} />
+      <Link href="/account" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors" onClick={onClose}>My Account</Link>
     </div>
   )
 }
 
-export function Header() {
+// `overHero`: on pages whose first section is a full-bleed hero, the header sits
+// transparent over the image at the top (cream-white text) and turns into the
+// normal solid bar once the user scrolls. Pages without a hero pass nothing and
+// get the solid in-flow header.
+export function Header({ overHero = false }: { overHero?: boolean }) {
   const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    if (!overHero) return
+    const onScroll = () => setScrolled(window.scrollY > 40)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [overHero])
+
+  // Transparent only while over the hero, at the top, and the mobile menu is closed.
+  const transparent = overHero && !scrolled && !open
+  const light = transparent
+
   return (
-    <header className="relative z-40 bg-[#FEF8F4]">
+    <header className={overHero ? 'fixed top-0 inset-x-0 z-40' : 'relative z-40 bg-[#FEF8F4]'}>
 
       {/* Coming-soon announcement strip */}
       <div className="bg-[#4A3B30] text-cream-50 text-center py-2.5 px-4">
@@ -88,77 +118,33 @@ export function Header() {
       </div>
 
       {/* Nav bar */}
-      <div className="border-b border-cream-300">
-        <div className="relative w-full pl-4 sm:pl-9 pr-3 sm:pr-6 h-[92px] sm:h-[112px] flex items-center justify-between">
+      <div className={`transition-colors duration-300 ${transparent ? 'bg-gradient-to-b from-black/30 via-black/10 to-transparent' : 'bg-[#FEF8F4] border-b border-cream-300 shadow-sm'}`}>
+        <div className="relative w-full pl-4 sm:pl-9 pr-4 sm:pr-6 h-[92px] sm:h-[112px] flex items-center justify-between">
 
-          {/* Logo — seal mark + flat wordmark lockup, links home. Taller banner
-              lets the seal grow without changing the wordmark/nav sizing. */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0" aria-label="Petite Lavande — home">
-            <LogoMark className="h-14 sm:h-[5.25rem] w-auto shrink-0" style={{ color: '#574540' }} alt="Petite Lavande" />
-            <span
-              className="uppercase inline-block"
-              style={{
-                fontFamily: 'var(--font-cormorant)',
-                fontSize: 'clamp(1.35rem, 6vw, 2.1rem)',
-                fontWeight: 450,
-                lineHeight: 1,
-                color: '#574540',
-                letterSpacing: '0.168em',
-                transform: 'scaleX(0.92)',
-                transformOrigin: 'left center',
-              }}
-            >
-              Petite Lavande
-            </span>
-          </Link>
+          <Wordmark light={light} />
 
-          {/* Nav — center (flows between logo and icons, never overlaps) */}
-          <nav className="hidden md:flex flex-1 items-center justify-center gap-5 lg:gap-7 px-4 font-sans text-[11px] tracking-[0.2em] text-[#7A6B60]">
-            <Link href="/build" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors whitespace-nowrap">Build Your Own Box</Link>
-
-            {/* Gifting Ideas — links to the hub, with the ready-made edition
-                dropdown on hover */}
-            <div className="relative group">
-              <Link href="/gift-guides" className="flex items-center gap-1 uppercase text-[#7A6B60] hover:text-espresso transition-colors whitespace-nowrap">
-                Gifting Ideas
-                <ChevronDown size={12} className="text-[#A89990] group-hover:text-[#7A6B60] transition-colors" />
-              </Link>
-              <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 hidden group-hover:block group-focus-within:block z-50">
-                <div className="bg-white border border-cream-200 shadow-xl py-1 min-w-[170px]">
-                  {READY_MADE_EDITIONS.map(e => (
-                    <Link key={e.label} href={e.href} className="block px-5 py-2.5 uppercase text-[#7A6B60] hover:bg-cream-100 hover:text-espresso transition-colors">
-                      {e.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <Link href="/gift-cards" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors whitespace-nowrap">Gift Cards</Link>
-            <Link href="/story" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors whitespace-nowrap">Stories</Link>
+          <nav className="hidden md:flex flex-1 items-center justify-center gap-5 lg:gap-7 px-4 font-sans text-[11px] tracking-[0.2em]">
+            <NavLinks light={light} />
           </nav>
 
-          {/* Right slot */}
-          <div className="flex items-center gap-1.5 md:gap-0.5 justify-self-end">
-            <Link href="/account" className="hidden md:flex p-2.5 text-bark-400 hover:text-bark-600 transition-colors" title="My Account">
+          <div className="flex items-center gap-0.5 justify-self-end">
+            <Link href="/account" className={`hidden md:flex w-11 h-11 items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`} title="My Account">
               <User size={16} />
             </Link>
-            <CartButton />
+            <CartButton light={light} />
             <button
-              className="md:hidden p-2.5 text-bark-600 hover:text-bark-700 transition-colors flex items-center justify-center"
+              className={`md:hidden w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50' : 'text-bark-600 hover:text-bark-700'}`}
               onClick={() => setOpen(!open)}
               title={open ? 'Close menu' : 'Open menu'}
+              aria-label={open ? 'Close menu' : 'Open menu'}
             >
-              {open ? <X size={18} /> : <Menu size={18} />}
+              {open ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile menu */}
-      {open && (
-        <MobileMenu onClose={() => setOpen(false)} />
-      )}
+      {open && <MobileMenu onClose={() => setOpen(false)} />}
     </header>
   )
 }

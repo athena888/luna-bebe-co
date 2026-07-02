@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ChevronDown, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronDown, X, ChevronLeft, ChevronRight, Leaf } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { CATEGORY_LABELS } from '@/lib/products'
@@ -40,6 +40,13 @@ function clean(s?: string | null): string {
 // the product (controlled in the admin Certifications section).
 function hasGotsCert(p: { certifications?: Array<{ key?: string; name?: string }> } | null): boolean {
   return (p?.certifications ?? []).some(c => /gots|global organic textile/i.test(`${c.key ?? ''} ${c.name ?? ''}`))
+}
+// Organic if explicitly flagged, else inferred from tag/ingredients/name.
+function isOrganicProduct(p: Product | null): boolean {
+  if (!p) return false
+  if (p.organic) return true
+  const hay = `${p.tag ?? ''} ${p.ingredients ?? ''} ${p.name ?? ''}`.toLowerCase()
+  return hay.includes('organic') || hay.includes('gots')
 }
 
 function Spinner() {
@@ -165,6 +172,13 @@ export default function ProductDetailClient() {
                         ) : (
                           <div className="absolute inset-0 flex items-center justify-center text-6xl bg-cream-200">
                             {idx === 0 && <span className="select-none">{product.imageEmoji}</span>}
+                          </div>
+                        )}
+                        {/* Organic indicator on the main photo (leaf + word), like the carousel. */}
+                        {idx === 0 && show && isOrganicProduct(product) && (
+                          <div className="absolute bottom-2.5 right-2.5 z-10 flex flex-col items-center gap-0.5 pointer-events-none">
+                            <span className="font-sans text-[9px] tracking-[0.18em] uppercase text-white drop-shadow">Organic</span>
+                            <span className="w-7 h-7 rounded-full pl-round-full bg-sage-500/90 flex items-center justify-center shadow-md"><Leaf size={13} className="text-white" /></span>
                           </div>
                         )}
                       </button>
