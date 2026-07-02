@@ -34,8 +34,8 @@ export function EditorialFeature({
         <RotatingImage urls={images} alt={alt} />
       </div>
 
-      {/* Text */}
-      <div className={`flex items-center px-6 sm:px-12 lg:px-20 py-14 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
+      {/* Text — top-aligned with the image */}
+      <div className={`flex items-start px-6 sm:px-12 lg:px-20 pt-8 sm:pt-10 pb-12 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
         <div className="max-w-md">{children}</div>
       </div>
     </div>

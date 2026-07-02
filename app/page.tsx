@@ -13,10 +13,9 @@ import { ParallaxLayer } from '@/components/ui/ParallaxLayer'
 import { getHomeContent } from '@/lib/home-content'
 import { getHomeGalleries } from '@/lib/site-images'
 import { getActiveSocialPosts } from '@/lib/social-posts'
-import { Package, PenLine, Leaf, Heart, Mail } from 'lucide-react'
+import { Package, PenLine, Leaf, Heart } from 'lucide-react'
 import { TestimonialsCarousel } from '@/components/ui/TestimonialsCarousel'
 import { SlotBackground } from '@/components/ui/SlotBackground'
-import { CONTACT_EMAIL } from '@/lib/site-config'
 
 // Icons for the under-hero perks bar, mapped by index to the default perks.
 const PERK_ICONS = [Package, PenLine, Leaf, Heart]
@@ -198,41 +197,11 @@ export default async function HomePage() {
           </SlotBackground>
         )}
 
-        {/* ── Contact / Social ── */}
-        <section className="border-t border-cream-300 bg-[#FEF8F4]">
-          {/* Social icon strip — compact */}
-          <div className="py-8 px-6">
-            <div className="max-w-4xl mx-auto text-center">
-              <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-2">Connect</p>
-              <h2 className="font-serif text-2xl sm:text-3xl text-espresso mb-6">Find Us</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-cream-300">
-                {[
-                  { label: 'Email', sub: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}`,
-                    icon: <Mail size={18} strokeWidth={1.5} className="text-bark-400 mx-auto mb-2.5" /> },
-                  { label: 'Instagram', sub: '@petitelavandeco', href: 'https://www.instagram.com/petitelavandeco',
-                    icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-bark-400 mx-auto mb-2.5"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> },
-                  { label: 'Facebook', sub: 'Petite Lavande', href: 'https://www.facebook.com/profile.php?id=61590439437590',
-                    icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-bark-400 mx-auto mb-2.5"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> },
-                  { label: 'TikTok', sub: '@petitelavandeco', href: 'https://www.tiktok.com/@petitelavandeco',
-                    icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px] text-bark-400 mx-auto mb-2.5"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg> },
-                ].map(({ label, sub, href, icon }) => (
-                  <a key={label} href={href}
-                    target={href.startsWith('mailto') ? undefined : '_blank'}
-                    rel={href.startsWith('mailto') ? undefined : 'noopener noreferrer'}
-                    className="bg-[#FEF8F4] py-6 px-4 flex flex-col items-center hover:bg-cream-100 transition-colors group"
-                  >
-                    {icon}
-                    <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-600 mb-0.5 group-hover:text-bark-800 transition-colors">{label}</p>
-                    <p className="font-sans text-[10px] text-bark-400 break-all">{sub}</p>
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Instagram photo grid — shows when posts have been uploaded in Portal → Social Feed */}
-          {igPosts.length > 0 && (
-            <div className="border-t border-cream-300">
+        {/* ── Instagram feed — shows when posts are uploaded in Portal → Social Feed
+             (the Find Us contact strip lives in the footer now) ── */}
+        {igPosts.length > 0 && (
+          <section className="border-t border-cream-300 bg-[#FEF8F4]">
+            <div>
               <div className="py-4 text-center">
                 <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer"
                   className="font-sans text-[9px] tracking-[0.35em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
@@ -260,8 +229,8 @@ export default async function HomePage() {
                 ))}
               </div>
             </div>
-          )}
-        </section>
+          </section>
+        )}
 
         {/* ── 9. Dark CTA — now carries the three steps ── */}
         <section className="relative py-10 sm:py-14 px-6 text-center overflow-hidden bg-bark-600">

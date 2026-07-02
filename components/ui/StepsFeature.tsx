@@ -36,12 +36,13 @@ export function StepsFeature({ images, side = 'left' }: { images: string[]; side
         <RotatingImage urls={images} alt="Create something unforgettable" />
       </div>
 
-      {/* Copy + steps */}
-      <div className={`flex items-center px-6 sm:px-12 lg:px-20 py-14 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
+      {/* Copy + steps — top-aligned with the image */}
+      <div className={`flex items-start px-6 sm:px-12 lg:px-20 pt-8 sm:pt-10 pb-12 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
         <div className="max-w-md">
           <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-4">Begin</p>
-          <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-espresso leading-[1.05]">Create Something</h2>
-          <p className="font-script text-3xl sm:text-4xl text-gold-400 mb-9">unforgettable.</p>
+          <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-espresso leading-[1.15] mb-9">
+            Create Something <span className="font-script text-gold-400" style={{ fontSize: '1.05em' }}>unforgettable.</span>
+          </h2>
 
           <div className="space-y-7">
             {STEPS.map((s, i) => (

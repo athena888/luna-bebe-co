@@ -63,7 +63,7 @@ function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
   const [err, setErr] = useState(false)
   useEffect(() => { setErr(false) }, [src])
   // Bigger at the hero top; shrinks to normal on scroll. transition-all animates height.
-  const sizeCls = expanded ? 'h-16 sm:h-24' : 'h-12 sm:h-16'
+  const sizeCls = expanded ? 'h-16 sm:h-24' : 'h-10 sm:h-[3.25rem]'
   return (
     <Link href="/" className="flex items-center shrink-0 min-w-0" aria-label="Petite Lavande — home">
       {err ? (
@@ -151,14 +151,11 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
             <Wordmark light={light} expanded={expanded} />
             {/* Compact: nav fills the row and centres (nudged down + reserving the
                 right icon space) so it lines up with the wordmark text. */}
-            <nav className={`flex items-center gap-6 lg:gap-9 font-sans text-[11px] tracking-[0.2em] transition-all duration-500 ${expanded ? '' : 'flex-1 justify-center translate-y-[8px] pr-24'}`}>
+            <nav className={`flex items-center gap-6 lg:gap-9 font-sans text-[11px] tracking-[0.2em] transition-all duration-500 ${expanded ? '' : 'flex-1 justify-center pr-24'}`}>
               <NavLinks light={light} />
             </nav>
           </div>
-          <div
-            className="absolute right-9 flex items-center gap-0.5"
-            style={{ top: '50%', transform: expanded ? 'translateY(-50%)' : 'translateY(calc(-50% + 8px))' }}
-          >
+          <div className="absolute right-9 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
             <Link href="/account" className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`} title="My Account">
               <User size={16} />
             </Link>

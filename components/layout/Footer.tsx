@@ -83,15 +83,15 @@ export function Footer() {
 
           {/* Find us — social + email icons + labels (no heading), above the signup */}
           <div className="flex justify-center gap-10 mb-12">
-            <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 text-espresso-light hover:text-espresso transition-colors">
+            <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 text-bark-400 hover:text-bark-600 transition-colors">
               <IgIcon />
               <span className="font-sans text-[10px] tracking-[0.2em] uppercase">Instagram</span>
             </a>
-            <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 text-espresso-light hover:text-espresso transition-colors">
+            <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 text-bark-400 hover:text-bark-600 transition-colors">
               <FbIcon />
               <span className="font-sans text-[10px] tracking-[0.2em] uppercase">Facebook</span>
             </a>
-            <a href={`mailto:${CONTACT_EMAIL}`} className="flex flex-col items-center gap-2 text-espresso-light hover:text-espresso transition-colors">
+            <a href={`mailto:${CONTACT_EMAIL}`} className="flex flex-col items-center gap-2 text-bark-400 hover:text-bark-600 transition-colors">
               <Mail size={22} strokeWidth={1.5} />
               <span className="font-sans text-[10px] tracking-[0.2em] uppercase">Email</span>
             </a>
@@ -114,7 +114,6 @@ export function Footer() {
                 <li><Link href="/gift-guides" className="text-espresso hover:text-espresso transition-colors">Gifting Ideas</Link></li>
                 <li><Link href="/boxes" className="text-espresso hover:text-espresso transition-colors">Ready-Made Boxes</Link></li>
                 <li><Link href="/build" className="text-espresso hover:text-espresso transition-colors">Build Your Own Box</Link></li>
-                <li><Link href="/corporate" className="text-espresso hover:text-espresso transition-colors">Corporate &amp; Team Gifting</Link></li>
                 <li><Link href="/gift-cards" className="text-espresso hover:text-espresso transition-colors">Gift Cards</Link></li>
               </ul>
             </div>
@@ -130,13 +129,13 @@ export function Footer() {
               </ul>
             </div>
 
-            {/* Contact */}
+            {/* Corporate */}
             <div>
-              <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-espresso mb-4 font-semibold">Contact</p>
+              <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-espresso mb-4 font-semibold">Corporate</p>
               <ul className="space-y-2.5 text-[13px] font-sans font-medium">
-                <li><a href={`mailto:${CONTACT_EMAIL}`} className="text-espresso hover:text-espresso transition-colors break-all">hello@<br />petitelavande.com</a></li>
-                <li><a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="text-espresso hover:text-espresso transition-colors">Instagram</a></li>
-                <li><a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="text-espresso hover:text-espresso transition-colors">Facebook</a></li>
+                <li><Link href="/corporate" className="text-espresso hover:text-espresso transition-colors">Corporate &amp; Team Gifting</Link></li>
+                <li><Link href="/corporate" className="text-espresso hover:text-espresso transition-colors">Bulk &amp; Custom Orders</Link></li>
+                <li><a href={`mailto:${CONTACT_EMAIL}`} className="text-espresso hover:text-espresso transition-colors break-all">Corporate Enquiries</a></li>
               </ul>
             </div>
 
