@@ -63,7 +63,7 @@ function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
   const [err, setErr] = useState(false)
   useEffect(() => { setErr(false) }, [src])
   // Bigger at the hero top; shrinks to normal on scroll. transition-all animates height.
-  const sizeCls = expanded ? 'h-16 sm:h-24' : 'h-11 sm:h-14'
+  const sizeCls = expanded ? 'h-16 sm:h-24' : 'h-12 sm:h-16'
   return (
     <Link href="/" className="flex items-center shrink-0 min-w-0" aria-label="Petite Lavande — home">
       {err ? (
@@ -146,14 +146,19 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
       <div className={`transition-colors duration-500 ${transparent ? 'bg-gradient-to-b from-black/30 via-black/10 to-transparent' : 'bg-[#FEF8F4] border-b border-cream-300 shadow-sm'}`}>
 
         {/* Desktop */}
-        <div className={`hidden md:block relative w-full px-9 transition-all duration-500 ${expanded ? 'py-5' : 'py-3'}`}>
-          <div className={`flex items-center transition-all duration-500 ${expanded ? 'flex-col justify-center gap-3' : 'flex-row justify-start gap-8'}`}>
+        <div className={`hidden md:block relative w-full px-9 transition-all duration-500 ${expanded ? 'py-5' : 'py-2'}`}>
+          <div className={`flex items-center transition-all duration-500 ${expanded ? 'flex-col justify-center gap-3' : 'flex-row gap-6'}`}>
             <Wordmark light={light} expanded={expanded} />
-            <nav className="flex items-center gap-6 lg:gap-9 font-sans text-[11px] tracking-[0.2em] transition-all duration-500">
+            {/* Compact: nav fills the row and centres (nudged down + reserving the
+                right icon space) so it lines up with the wordmark text. */}
+            <nav className={`flex items-center gap-6 lg:gap-9 font-sans text-[11px] tracking-[0.2em] transition-all duration-500 ${expanded ? '' : 'flex-1 justify-center translate-y-[8px] pr-24'}`}>
               <NavLinks light={light} />
             </nav>
           </div>
-          <div className="absolute right-9 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+          <div
+            className="absolute right-9 flex items-center gap-0.5"
+            style={{ top: '50%', transform: expanded ? 'translateY(-50%)' : 'translateY(calc(-50% + 8px))' }}
+          >
             <Link href="/account" className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`} title="My Account">
               <User size={16} />
             </Link>

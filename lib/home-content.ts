@@ -41,7 +41,7 @@ export const DEFAULT_HOME_CONTENT: HomeContent = {
   perks: [
     { label: 'Free Shipping', sub: 'On orders over $150' },
     { label: 'Personalized Card', sub: 'Printed for every box' },
-    { label: 'Organic Cotton', sub: 'From a GOTS-certified maker' },
+    { label: 'Organic Cotton', sub: 'From GOTS-certified makers' },
     { label: 'Gift-Ready', sub: 'Wax seal & ribbon, always' },
   ],
   why: {

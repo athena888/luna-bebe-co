@@ -53,7 +53,7 @@ export const JOURNAL_POSTS: JournalPost[] = [
     body: [
       { p: 'Organic is no longer a nice-to-have — for many new parents it is the standard. But "organic" alone does not make a gift memorable. The best organic baby shower gifts of 2026 pair genuinely better materials with the kind of presentation that makes the moment feel special.' },
       { h2: 'Look for GOTS-certified cotton' },
-      { p: 'When it comes to anything that touches a newborn, cotton made with GOTS-certified organic cotton from a GOTS-certified maker is the gold standard. It means the fibre is grown and processed to a strict organic and ethical standard — softer on skin, and gentler on the planet.' },
+      { p: 'When it comes to anything that touches a newborn, cotton made with GOTS-certified organic cotton from GOTS-certified makers is the gold standard. It means the fibre is grown and processed to a strict organic and ethical standard — softer on skin, and gentler on the planet.' },
       { h2: 'Do not forget mom' },
       { p: 'The gifts people remember most are the ones that include the mother. A botanical bath set, calming lavender, or a small French luxury alongside the baby pieces turns a standard shower gift into something thoughtful.' },
       { h2: 'Our 2026 edit' },

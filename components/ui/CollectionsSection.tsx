@@ -232,17 +232,17 @@ export function CollectionsSection({ initial }: { initial?: CollectionsInitial }
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Mobile: 2-up, flush (no gap), with outer padding so the edges aren't cut off */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 px-4 sm:px-0">
         {categories.map((cat, i) => (
           <div
             key={cat.id}
-            className={`group relative overflow-hidden cursor-pointer border-b border-cream-300
-              sm:border-b-0 sm:border-r
-              ${i === categories.length - 1 ? 'sm:border-r-0' : ''}
+            className={`group relative overflow-hidden cursor-pointer border-cream-300
+              sm:border-r ${i === categories.length - 1 ? 'sm:border-r-0' : ''}
               lg:border-r lg:last:border-r-0`}
             onClick={() => setActive(cat)}
           >
-            <div className="relative w-full aspect-[4/3] sm:aspect-[3/4] lg:aspect-none lg:h-[clamp(300px,58vh,600px)]">
+            <div className="relative w-full aspect-[3/4] lg:aspect-none lg:h-[clamp(300px,58vh,600px)]">
               <Image
                 src={cat.img}
                 alt={cat.label}
