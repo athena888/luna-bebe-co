@@ -3,6 +3,22 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { ArrowRight } from 'lucide-react'
+
+// lucide no longer ships brand marks, so inline the two we use.
+function IgIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.9" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+function FbIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+      <path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z" />
+    </svg>
+  )
+}
 import { CONTACT_EMAIL } from '@/lib/site-config'
 import { LogoMark } from '@/components/ui/LogoMark'
 import { SlotBackground } from '@/components/ui/SlotBackground'
@@ -63,6 +79,18 @@ export function Footer() {
             <LogoMark className="h-24 w-auto mx-auto mb-4" style={{ color: '#4A3B30' }} alt="Petite Lavande" />
             <div className="font-serif text-3xl tracking-[0.15em] uppercase text-espresso mb-2">Petite Lavande</div>
             <p className="font-serif italic text-espresso text-sm">Fait avec amour, pour vous.</p>
+          </div>
+
+          {/* Find us — social icons + labels (no heading), above the signup */}
+          <div className="flex justify-center gap-12 mb-12">
+            <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 text-espresso hover:text-espresso/60 transition-colors">
+              <IgIcon />
+              <span className="font-sans text-[10px] tracking-[0.2em] uppercase">Instagram</span>
+            </a>
+            <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 text-espresso hover:text-espresso/60 transition-colors">
+              <FbIcon />
+              <span className="font-sans text-[10px] tracking-[0.2em] uppercase">Facebook</span>
+            </a>
           </div>
 
           {/* Email signup — 10% off the first order */}

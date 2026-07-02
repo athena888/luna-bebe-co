@@ -59,8 +59,8 @@ export const DEFAULT_HOME_CONTENT: HomeContent = {
       {
         slot: 'inside',
         eyebrow: 'Made With Love',
-        title: 'From the source,\nto her.',
-        body: 'Every piece is traced to its origin — organic cotton grown without pesticides, soft enough for the most delicate new skin, alongside French finishing touches chosen for their quiet beauty. Nothing rushed, nothing filler. Each box is then closed by hand with a wax seal and linen ribbon, tucked with dried lavender, as though it were always meant for her.',
+        title: 'For the mother,\nas much as the baby.',
+        body: 'Most gifts celebrate the baby and quietly forget her — ours begin with her. A botanical lavender bouquet and wellness rituals to soften the long days, each chosen the way a daughter would choose for her own mother. Every piece is traced to its origin — organic cotton grown without pesticides, soft enough for the most delicate new skin. Nothing rushed, nothing filler; each box is closed by hand with a wax seal and linen ribbon, tucked with dried lavender, as though it were always meant for her.',
         bullets: ['Wellness care for mama', 'Organic cotton, no pesticides', 'Botanical lavender bouquet', 'Customized card', 'Wax seal & linen ribbon'],
       },
     ],
