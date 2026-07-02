@@ -44,17 +44,15 @@ export function PrebuiltBoxesSection() {
               {box.image
                 ? <Image src={box.image} alt={box.name} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" unoptimized sizes="(max-width:640px) 78vw, 380px" />
                 : <div className="absolute inset-0 flex items-center justify-center text-bark-300"><Package size={32} /></div>}
-              {/* Hover hint — make it obviously clickable */}
-              <div className="absolute inset-0 bg-bark-900/0 group-hover:bg-bark-900/30 transition-colors flex items-end justify-center pb-5 opacity-0 group-hover:opacity-100">
-                <span className="bg-cream-50 text-bark-700 font-sans text-[10px] tracking-[0.2em] uppercase px-5 py-2.5">View set →</span>
+              {/* Name + price baked onto the image */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
+              <div className="absolute bottom-0 inset-x-0 p-4">
+                <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-cream-100/80 mb-1">{box.style}</p>
+                <div className="flex items-baseline justify-between gap-2">
+                  <h3 className="font-serif text-xl text-white truncate drop-shadow">{box.name}</h3>
+                  <span className="font-serif text-lg text-white shrink-0 drop-shadow">{fmt(boxTotal(box))}</span>
+                </div>
               </div>
-            </div>
-            <div className="pt-3 flex items-baseline justify-between gap-2">
-              <div className="min-w-0">
-                <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400">{box.style}</p>
-                <h3 className="font-serif text-xl text-bark-600 truncate">{box.name}</h3>
-              </div>
-              <span className="font-serif text-lg text-bark-600 shrink-0">{fmt(boxTotal(box))}</span>
             </div>
           </Link>
         ))}

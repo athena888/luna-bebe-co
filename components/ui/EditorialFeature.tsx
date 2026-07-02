@@ -30,7 +30,7 @@ export function EditorialFeature({
   return (
     <div ref={ref} className="grid grid-cols-1 md:grid-cols-2 items-stretch overflow-hidden">
       {/* Image — flush to its edge, sharp corners, large */}
-      <div className={`relative aspect-[4/3] md:aspect-auto md:min-h-[80vh] bg-cream-200 ${side === 'right' ? 'md:order-2' : 'md:order-1'} transition-all duration-[800ms] ease-out ${shown ? 'translate-x-0 opacity-100' : hidden}`}>
+      <div className={`relative aspect-[4/3] md:aspect-auto md:h-[70vh] bg-cream-200 ${side === 'right' ? 'md:order-2' : 'md:order-1'} transition-all duration-[800ms] ease-out ${shown ? 'translate-x-0 opacity-100' : hidden}`}>
         <RotatingImage urls={images} alt={alt} />
       </div>
 

@@ -232,14 +232,12 @@ export function CollectionsSection({ initial }: { initial?: CollectionsInitial }
 
   return (
     <>
-      {/* Mobile: 2-up, flush (no gap), with outer padding so the edges aren't cut off */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 px-4 sm:px-0">
-        {categories.map((cat, i) => (
+      {/* Full-bleed 2-up on mobile / 4-up on desktop; hairline dividers via gap-px */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-cream-300">
+        {categories.map((cat) => (
           <div
             key={cat.id}
-            className={`group relative overflow-hidden cursor-pointer border-cream-300
-              sm:border-r ${i === categories.length - 1 ? 'sm:border-r-0' : ''}
-              lg:border-r lg:last:border-r-0`}
+            className="group relative overflow-hidden cursor-pointer bg-cream-200"
             onClick={() => setActive(cat)}
           >
             <div className="relative w-full aspect-[3/4] lg:aspect-none lg:h-[clamp(300px,58vh,600px)]">
@@ -250,12 +248,13 @@ export function CollectionsSection({ initial }: { initial?: CollectionsInitial }
                 className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
                 unoptimized
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-bark-800/50 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
               <div className="absolute top-4 left-0 right-0 text-center px-3 hidden sm:block">
                 <p className="font-sans text-[8px] tracking-[0.35em] uppercase text-white/70">{cat.sub}</p>
               </div>
-              <div className="absolute bottom-0 inset-x-0 flex justify-center pb-5 px-4">
-                <span className="w-full max-w-[180px] text-center bg-white/95 text-bark-700 font-sans text-[9px] tracking-[0.2em] uppercase px-3 py-2.5 group-hover:bg-white transition-colors shadow-sm">
+              {/* Label — text only, baked over the image (no button background) */}
+              <div className="absolute bottom-0 inset-x-0 flex justify-center pb-5 px-3">
+                <span className="text-center text-white font-sans text-[10px] tracking-[0.2em] uppercase px-2 py-1 drop-shadow-md">
                   {cat.label}
                 </span>
               </div>

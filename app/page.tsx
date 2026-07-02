@@ -2,10 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { getProductById, FEATURED_IDS } from '@/lib/products'
-import type { Product } from '@/types'
-import { ProductCarousel } from '@/components/ui/ProductCarousel'
 import { EditorialFeature } from '@/components/ui/EditorialFeature'
+import { StepsFeature } from '@/components/ui/StepsFeature'
 import { EditorialStrip } from '@/components/ui/EditorialStrip'
 import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
@@ -15,7 +13,7 @@ import { ParallaxLayer } from '@/components/ui/ParallaxLayer'
 import { getHomeContent } from '@/lib/home-content'
 import { getHomeGalleries } from '@/lib/site-images'
 import { getActiveSocialPosts } from '@/lib/social-posts'
-import { Package, PenLine, Leaf, Heart, Truck, Mail } from 'lucide-react'
+import { Package, PenLine, Leaf, Heart, Mail } from 'lucide-react'
 import { TestimonialsCarousel } from '@/components/ui/TestimonialsCarousel'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { CONTACT_EMAIL } from '@/lib/site-config'
@@ -41,20 +39,6 @@ function homeImg(slot: string) {
   return `${SUPABASE_URL}/storage/v1/object/public/home-images/${slot}.jpg`
 }
 
-
-async function getBestsellers(): Promise<Product[]> {
-  try {
-    const { getBestsellerProducts } = await import('@/lib/bestsellers')
-    const { products } = await getBestsellerProducts(8)
-    return products
-  } catch (e) {
-    console.error('getBestsellers failed, using static featured:', e)
-    return FEATURED_IDS.flatMap(id => {
-      const p = getProductById(id)
-      return p ? [p] : []
-    })
-  }
-}
 
 const SUPABASE_URL_ENV = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 function collectionImg(slot: string) {
@@ -86,8 +70,8 @@ async function getCollectionsData() {
 }
 
 export default async function HomePage() {
-  const [featured, collectionsData, content, galleries, igPosts] = await Promise.all([
-    getBestsellers(), getCollectionsData(), getHomeContent(), getHomeGalleries(['hero', 'box', 'brand', 'inside']), getActiveSocialPosts(6),
+  const [collectionsData, content, galleries, igPosts] = await Promise.all([
+    getCollectionsData(), getHomeContent(), getHomeGalleries(['hero', 'box', 'brand', 'inside']), getActiveSocialPosts(6),
   ])
 
   return (
@@ -173,9 +157,12 @@ export default async function HomePage() {
           {/* Editable image features — image + copy edited together in the portal.
               Images alternate flush-left / flush-right as they fly in. */}
           {content.why.features.map((f, i) => {
+            const imgs = galleries[f.slot] ?? [homeImg(f.slot)]
+            // First beat = the "Create Something Unforgettable" 3-step how-it-works.
+            if (i === 0) return <StepsFeature key={i} images={imgs} side="left" />
             const bullets = f.bullets.filter(b => b.trim())
             return (
-              <EditorialFeature key={i} images={galleries[f.slot] ?? [homeImg(f.slot)]} alt={f.eyebrow || 'Petite Lavande'} side={i % 2 === 0 ? 'left' : 'right'}>
+              <EditorialFeature key={i} images={imgs} alt={f.eyebrow || 'Petite Lavande'} side={i % 2 === 0 ? 'left' : 'right'}>
                 {f.eyebrow && <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">{f.eyebrow}</p>}
                 <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-espresso leading-[1.05] mb-5 whitespace-pre-line">{f.title}</h2>
                 <p className="font-cormorant text-lg text-bark-400 leading-loose whitespace-pre-line">{f.body}</p>
@@ -193,23 +180,6 @@ export default async function HomePage() {
             )
           })}
 
-        </section>
-
-        {/* ── Bestsellers — center-snap looping carousel, above the editorial strip ── */}
-        <section className="border-t border-cream-300 pt-16 pb-12">
-          <div className="pl-6 sm:pl-9 pr-6 mb-10 flex items-end justify-between">
-            <div>
-              <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Curated Picks</p>
-              <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-espresso">Bestsellers</h2>
-            </div>
-            <Link
-              href="/build"
-              className="hidden sm:inline-block font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 hover:text-bark-700 transition-colors border-b border-bark-400 pb-0.5"
-            >
-              View All →
-            </Link>
-          </div>
-          <ProductCarousel products={featured} />
         </section>
 
         {/* ── Editorial strip — video or image ── */}
@@ -307,22 +277,6 @@ export default async function HomePage() {
               Create Something
             </h2>
             <p className="font-script text-4xl text-gold-300 mb-10">unforgettable.</p>
-
-            {/* Three simple steps */}
-            <div className="grid grid-cols-3 gap-4 sm:gap-8 mb-10 text-center">
-              {[
-                { Icon: Package, title: 'Build Your Box', body: 'Choose from curated organic items across thoughtful categories — or start from a ready-made set.' },
-                { Icon: PenLine, title: 'Customize Your Card', body: 'Pick a card design and your message — we print it on premium card stock.' },
-                { Icon: Truck, title: 'We Ship With Care', body: 'Arrives sealed with a wax stamp, linen ribbon, and dried lavender.' },
-              ].map(({ Icon, title, body }) => (
-                <div key={title}>
-                  <Icon size={18} strokeWidth={1.5} className="text-gold-300 mx-auto mb-3 sm:mb-4 sm:size-[22px]" />
-                  <div className="w-6 sm:w-8 h-px bg-cream-300/30 mx-auto mb-3 sm:mb-4" />
-                  <h3 className="font-serif text-sm sm:text-lg text-cream-50 mb-1.5 sm:mb-2.5 leading-tight">{title}</h3>
-                  <p className="font-sans text-[10px] sm:text-xs text-cream-200/70 leading-snug sm:leading-loose hidden sm:block">{body}</p>
-                </div>
-              ))}
-            </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
