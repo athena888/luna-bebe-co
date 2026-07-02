@@ -148,13 +148,13 @@ export default function GiftCardsPage() {
 
             {/* Preview */}
             <div className="lg:col-span-2">
-              <div className="sticky top-24 bg-bark-700 text-center overflow-hidden">
+              <div className="sticky top-24 bg-espresso text-center overflow-hidden">
                 <SlotImage slotKey="giftcard.visual" className="w-full aspect-[3/2] overflow-hidden" />
                 <div className="p-8 pt-6">
                   <Gift size={32} className="text-gold-300 mx-auto mb-4" />
                 <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-gold-400 mb-2">Petite Lavande</p>
                 <p className="font-serif text-4xl text-cream-100 mb-1">${(amount / 100).toFixed(0)}</p>
-                <p className="font-sans text-sm text-cream-400 mb-6">Gift Card</p>
+                <p className="font-sans text-sm text-cream-50 mb-6">Gift Card</p>
                 {recipientName && (
                   <p className="font-sans text-xs text-cream-300 mb-1">For: <span className="text-cream-100">{recipientName}</span></p>
                 )}
