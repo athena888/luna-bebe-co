@@ -1,11 +1,16 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
 import { Leaf, X, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react'
 import { CertBadges } from '@/components/ui/CertBadges'
 import type { ResolvedBox, BoxItem } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
+import { writeCart, type CartItem } from '@/lib/cart'
+
+const BOX_SIZES = ['0–3 mo', '3–6 mo'] as const
+const isGarment = (i: BoxItem) => /garment|swaddle|romper|kimono|clothes|onesie|bodysuit|sleep/i.test(`${i.category ?? ''} ${i.name ?? ''}`)
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 const SHOW_BOTANICAL = process.env.NEXT_PUBLIC_CARD_BOTANICAL_BG === 'true'
@@ -62,27 +67,47 @@ function PriceBlock({ box }: { box: ResolvedBox }) {
   )
 }
 
-function BuyBox(_: { items: BoxItem[] }) {
-  const [notice, setNotice] = useState(false)
+// Loads the box's items (with the chosen box size on garments) into the cart and
+// goes to checkout. Checkout shows the box; the Pay button is hidden while paused.
+function BuyBox({ box, size }: { box: ResolvedBox; size: string }) {
+  const router = useRouter()
+  function buy() {
+    const items: CartItem[] = box.items.map(it => ({
+      ...it,
+      qty: 1,
+      lineKey: it.id,
+      selectedColor: (it as CartItem).selectedColor,
+      selectedSize: isGarment(it) ? size : (it as CartItem).selectedSize,
+    }))
+    writeCart(items)
+    router.push('/checkout')
+  }
+  return (
+    <button
+      onClick={buy}
+      className="w-full bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase py-4 hover:bg-bark-700 transition-colors"
+    >
+      Buy This Box
+    </button>
+  )
+}
+
+// Box-level size selector (0–3 / 3–6 mo), applied to the garments at checkout.
+function SizePicker({ size, setSize }: { size: string; setSize: (s: string) => void }) {
   return (
     <div>
-      <button
-        onClick={() => setNotice(true)}
-        className="w-full bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase py-4 hover:bg-bark-700 transition-colors"
-      >
-        Buy This Box
-      </button>
-      {notice && (
-        <div className="mt-3 border border-cream-300 bg-cream-50 px-4 py-3 text-center">
-          <p className="font-sans text-[11px] tracking-[0.1em] text-bark-600 leading-relaxed">
-            We&rsquo;re launching soon &mdash; follow us on{' '}
-            <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">Instagram</a>
-            {' '}&amp;{' '}
-            <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">Facebook</a>
-            {' '}for the announcement.
-          </p>
-        </div>
-      )}
+      <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-2">Size</p>
+      <div className="flex gap-2">
+        {BOX_SIZES.map(s => (
+          <button
+            key={s}
+            onClick={() => setSize(s)}
+            className={`flex-1 border px-3 py-2.5 font-sans text-xs transition-colors ${size === s ? 'border-bark-600 bg-bark-600 text-cream-50' : 'border-cream-300 text-bark-600 hover:border-bark-400'}`}
+          >
+            {s}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
@@ -140,6 +165,8 @@ function ItemsList({ box, onOpen }: { box: ResolvedBox; onOpen: (i: BoxItem) => 
 
 // Mobile modal — items + price + buy.
 function ItemsModal({ box, onClose, onPreview }: { box: ResolvedBox; onClose: () => void; onPreview: (i: BoxItem) => void }) {
+  const [size, setSize] = useState<string>(BOX_SIZES[0])
+  const hasGarment = box.items.some(isGarment)
   return (
     <div className="fixed inset-0 z-[60] bg-bark-900/55 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-6" onClick={onClose}>
       <div className="bg-white w-full sm:max-w-lg max-h-[88vh] flex flex-col overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
@@ -154,8 +181,9 @@ function ItemsModal({ box, onClose, onPreview }: { box: ResolvedBox; onClose: ()
           <ItemsList box={box} onOpen={onPreview} />
         </div>
         <div className="shrink-0 px-6 py-4 border-t border-cream-200 space-y-3">
+          {hasGarment && <SizePicker size={size} setSize={setSize} />}
           <PriceBlock box={box} />
-          <BuyBox items={box.items} />
+          <BuyBox box={box} size={size} />
         </div>
       </div>
     </div>
@@ -363,6 +391,8 @@ function BoxSection({
   onOpenItems: (b: ResolvedBox) => void; onPreview: (i: BoxItem) => void
 }) {
   const [panelBg, setPanelBg] = useState<string | null>(null)
+  const [size, setSize] = useState<string>(BOX_SIZES[0])
+  const hasGarment = box.items.some(isGarment)
   useEffect(() => {
     fetch(`/api/site-images?keys=boxes.info_bg`)
       .then(r => r.json())
@@ -435,8 +465,9 @@ function BoxSection({
         {/* Bottom: price + buy */}
         <FlyIn delay={450} className="px-8 lg:px-12 xl:px-16 pb-12 lg:pb-10 mt-6">
           <div className="border-t border-cream-300 pt-6 space-y-5">
+            {hasGarment && <SizePicker size={size} setSize={setSize} />}
             <PriceBlock box={box} />
-            <BuyBox items={box.items} />
+            <BuyBox box={box} size={size} />
           </div>
         </FlyIn>
       </div>
