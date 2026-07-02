@@ -41,13 +41,27 @@ function CartButton({ light }: { light: boolean }) {
   )
 }
 
+// The lavender sprig. Over the hero (light) we use the white cut-out; on the
+// solid bar the coloured version. Falls back to the built-in SVG if the PNG
+// isn't present yet.
+function Sprig({ light }: { light: boolean }) {
+  const src = light ? '/sprig-white.png' : '/sprig-color.png'
+  const [err, setErr] = useState(false)
+  useEffect(() => { setErr(false) }, [src])
+  if (err) {
+    return <LavenderSprig className="h-9 sm:h-12 w-auto shrink-0" style={{ color: light ? '#FBF4EA' : '#8B79B0' }} title="Petite Lavande" />
+  }
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={src} alt="" className="h-9 sm:h-12 w-auto shrink-0 object-contain" onError={() => setErr(true)} />
+}
+
 // Brand lockup: lavender sprig to the LEFT of the wordmark (no seal logo in the
-// header — the seal lives elsewhere across the site). Mixed-case serif per brand.
+// header — the seal lives elsewhere across the site). Fraunces wordmark.
 function Wordmark({ light }: { light: boolean }) {
   const color = light ? '#FBF4EA' : '#574540'
   return (
     <Link href="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0" aria-label="Petite Lavande — home">
-      <LavenderSprig className="h-9 sm:h-12 w-auto shrink-0" style={{ color }} title="Petite Lavande" />
+      <Sprig light={light} />
       <span style={{ fontFamily: 'var(--font-fraunces)', fontSize: 'clamp(1.35rem, 5.5vw, 2.15rem)', fontWeight: 500, letterSpacing: '0.01em', lineHeight: 1, color }}>
         Petite Lavande
       </span>
