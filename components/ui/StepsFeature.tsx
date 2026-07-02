@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { Package, PenLine, Truck } from 'lucide-react'
 import { RotatingImage } from './RotatingImage'
 
@@ -31,20 +32,19 @@ export function StepsFeature({ images, side = 'left' }: { images: string[]; side
 
   return (
     <div ref={ref} className="grid grid-cols-1 md:grid-cols-2 items-stretch overflow-hidden">
-      {/* Image — 70vh so it fits one screen; flies in from its edge */}
-      <div className={`relative aspect-[4/3] md:aspect-auto md:h-[70vh] bg-cream-200 ${side === 'right' ? 'md:order-2' : 'md:order-1'} transition-all duration-[800ms] ease-out ${shown ? 'translate-x-0 opacity-100' : imgHidden}`}>
+      {/* Image — 85vh; flies in from its edge */}
+      <div className={`relative aspect-[4/3] md:aspect-auto md:h-[85vh] bg-cream-200 ${side === 'right' ? 'md:order-2' : 'md:order-1'} transition-all duration-[800ms] ease-out ${shown ? 'translate-x-0 opacity-100' : imgHidden}`}>
         <RotatingImage urls={images} alt="Create something unforgettable" />
       </div>
 
-      {/* Copy + steps — top-aligned with the image */}
-      <div className={`flex items-start px-6 sm:px-12 lg:px-20 pt-8 sm:pt-10 pb-12 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
-        <div className="max-w-md">
-          <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-4">Begin</p>
-          <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-espresso leading-[1.15] mb-9">
+      {/* Copy + steps — top-aligned with the image, spread to fill its height */}
+      <div className={`flex flex-col justify-center px-6 sm:px-12 lg:px-20 py-8 sm:py-10 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
+        <div className="max-w-md w-full">
+          <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-espresso leading-[1.15] mb-10">
             Create Something <span className="font-script text-gold-400" style={{ fontSize: '1.05em' }}>unforgettable.</span>
           </h2>
 
-          <div className="space-y-7">
+          <div className="space-y-8 sm:space-y-10">
             {STEPS.map((s, i) => (
               <div
                 key={s.title}
@@ -60,6 +60,11 @@ export function StepsFeature({ images, side = 'left' }: { images: string[]; side
                 </div>
               </div>
             ))}
+          </div>
+
+          <div className="flex flex-wrap gap-3 mt-10">
+            <Link href="/build" className="bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-bark-700 transition-colors">Build Your Own Box</Link>
+            <Link href="/boxes" className="border border-bark-300 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:border-bark-600 transition-colors">Shop Ready-Made</Link>
           </div>
         </div>
       </div>

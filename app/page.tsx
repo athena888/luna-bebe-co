@@ -232,33 +232,6 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* ── 9. Dark CTA — now carries the three steps ── */}
-        <section className="relative py-10 sm:py-14 px-6 text-center overflow-hidden bg-bark-600">
-          <RotatingImage urls={galleries.box} alt="Petite Lavande gift box" className="opacity-40" />
-          <div className="relative z-10 max-w-3xl mx-auto">
-            <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-5">Begin</p>
-            <h2 className="font-serif text-4xl sm:text-5xl text-cream-50 leading-tight mb-2">
-              Create Something
-            </h2>
-            <p className="font-script text-4xl text-gold-300 mb-10">unforgettable.</p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/build"
-                className="bg-cream-50 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-cream-100 transition-colors"
-              >
-                Build Your Own Box
-              </Link>
-              <Link
-                href="/boxes"
-                className="border border-cream-300/40 text-cream-300 font-sans text-[10px] tracking-[0.25em] uppercase px-10 py-4 hover:border-cream-50 hover:text-cream-50 transition-colors"
-              >
-                Shop Ready-Made
-              </Link>
-            </div>
-          </div>
-        </section>
-
       </main>
       <Footer />
     </>
