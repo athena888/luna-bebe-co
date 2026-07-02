@@ -61,10 +61,11 @@ function variantKey(id: string, color?: string, size?: string, style?: string) {
 }
 
 // ── Product Card ─────────────────────────────────────────────────────────────
-const ProductCard = memo(function ProductCard({ product, selected, onToggle, onOpen, soldOut, hoverImage, hoverVideo, certs }: {
+const ProductCard = memo(function ProductCard({ product, selected, onToggle, onOpen, soldOut, hoverImage, hoverVideo, certs, stock }: {
   product: Product; selected: boolean; onToggle: () => void; onOpen: () => void; soldOut: boolean
-  hoverImage?: string; hoverVideo?: string; certs?: ResolvedCert[]
+  hoverImage?: string; hoverVideo?: string; certs?: ResolvedCert[]; stock?: number
 }) {
+  const lowStock = typeof stock === 'number' && stock > 0 && stock <= 3
   const [imgFailed, setImgFailed] = useState(false)
   const [hoverImgFailed, setHoverImgFailed] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -134,6 +135,9 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
 
       <div className={`pt-3.5 pb-1 ${soldOut ? 'opacity-40' : ''}`}>
         <h3 className="font-sans text-sm text-espresso leading-snug mb-1">{product.name}</h3>
+        {!soldOut && lowStock && (
+          <p className="font-sans text-[10px] tracking-[0.08em] text-red-600 mb-1">{stock} left</p>
+        )}
         <div className="flex items-center justify-between gap-1">
           <span className={`font-sans text-xs text-espresso-light ${soldOut ? 'line-through' : ''}`}>{formatPrice(product.price)}</span>
           {!soldOut && (
@@ -489,6 +493,7 @@ export default function BuildPage() {
                       onToggle={() => product.has_variants ? openModal(product) : toggle(product)}
                       onOpen={() => openModal(product)}
                       soldOut={isSoldOut(product.id)}
+                      stock={inventory[product.id]}
                       hoverImage={hoverMedia[product.id]?.image}
                       hoverVideo={hoverMedia[product.id]?.video}
                       certs={productCerts[product.id]}
