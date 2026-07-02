@@ -58,22 +58,24 @@ function Sprig({ light }: { light: boolean }) {
 // Full brand lockup (wordmark + flanking sprigs, baked into one image): white
 // version over the hero, coloured version on the solid bar. Falls back to the
 // sprig + Fraunces wordmark if the lockup image isn't present yet.
-function Wordmark({ light }: { light: boolean }) {
+function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
   const src = light ? '/logo-white.png' : '/logo-color.png'
   const [err, setErr] = useState(false)
   useEffect(() => { setErr(false) }, [src])
+  // Bigger at the hero top; shrinks to normal on scroll. transition-all animates height.
+  const sizeCls = expanded ? 'h-16 sm:h-24' : 'h-11 sm:h-14'
   return (
     <Link href="/" className="flex items-center shrink-0 min-w-0" aria-label="Petite Lavande — home">
       {err ? (
         <span className="flex items-center gap-2 sm:gap-2.5">
           <Sprig light={light} />
-          <span style={{ fontFamily: 'var(--font-fraunces)', fontSize: 'clamp(1.35rem, 5.5vw, 2.15rem)', fontWeight: 500, lineHeight: 1, color: light ? '#FBF4EA' : '#9D8BBC' }}>
+          <span style={{ fontFamily: 'var(--font-fraunces)', fontSize: expanded ? 'clamp(1.55rem, 6vw, 2.6rem)' : 'clamp(1.2rem, 5vw, 1.85rem)', fontWeight: 500, lineHeight: 1, color: light ? '#FBF4EA' : '#9D8BBC', transition: 'font-size 500ms' }}>
             Petite Lavande
           </span>
         </span>
       ) : (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt="Petite Lavande" onError={() => setErr(true)} className="h-14 sm:h-20 w-auto max-w-[62vw] sm:max-w-none object-contain" />
+        <img src={src} alt="Petite Lavande" onError={() => setErr(true)} className={`${sizeCls} w-auto max-w-[62vw] sm:max-w-none object-contain transition-all duration-500`} />
       )}
     </Link>
   )
@@ -118,8 +120,10 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
     return () => window.removeEventListener('scroll', onScroll)
   }, [overHero])
 
-  // Transparent only while over the hero, at the top, and the mobile menu is closed.
-  const transparent = overHero && !scrolled && !open
+  // expanded = big centered logo with nav beneath (hero top). On scroll (or on a
+  // page without a hero) it collapses to the compact logo-beside-nav bar.
+  const expanded = overHero && !scrolled
+  const transparent = expanded && !open
   const light = transparent
 
   return (
@@ -136,37 +140,41 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
         </p>
       </div>
 
-      {/* Nav bar — centered logo on top, nav links beneath; controls pinned right
-          (hamburger left on mobile), all vertically centered on the logo row. */}
-      <div className={`transition-colors duration-300 ${transparent ? 'bg-gradient-to-b from-black/30 via-black/10 to-transparent' : 'bg-[#FEF8F4] border-b border-cream-300 shadow-sm'}`}>
-        <div className="relative w-full px-3 sm:px-9 py-3 sm:py-4 flex flex-col items-center gap-2 sm:gap-3">
+      {/* Nav bar — Organic-Zoo style: at the hero top, a big centered logo with the
+          nav beneath it; on scroll it collapses smoothly to a compact bar with the
+          nav beside the logo. Pages without a hero start compact. */}
+      <div className={`transition-colors duration-500 ${transparent ? 'bg-gradient-to-b from-black/30 via-black/10 to-transparent' : 'bg-[#FEF8F4] border-b border-cream-300 shadow-sm'}`}>
 
-          {/* Controls row — nudged down to line up with the wordmark text (the
-              sprigs sit higher, so the text center is ~61% down the lockup). */}
-          <div className="absolute left-3 right-3 sm:left-6 sm:right-6 top-3 sm:top-4 h-14 sm:h-20 translate-y-[6px] sm:translate-y-[10px] flex items-center pointer-events-none z-10">
-            <button
-              className={`md:hidden pointer-events-auto w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50' : 'text-bark-600 hover:text-bark-700'}`}
-              onClick={() => setOpen(!open)}
-              title={open ? 'Close menu' : 'Open menu'}
-              aria-label={open ? 'Close menu' : 'Open menu'}
-            >
-              {open ? <X size={20} /> : <Menu size={20} />}
-            </button>
-            <div className="ml-auto pointer-events-auto flex items-center gap-0.5">
-              <Link href="/account" className={`hidden md:flex w-11 h-11 items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`} title="My Account">
-                <User size={16} />
-              </Link>
-              <CartButton light={light} />
-            </div>
+        {/* Desktop */}
+        <div className={`hidden md:block relative w-full px-9 transition-all duration-500 ${expanded ? 'py-5' : 'py-3'}`}>
+          <div className={`flex items-center justify-center transition-all duration-500 ${expanded ? 'flex-col gap-3' : 'flex-row gap-8'}`}>
+            <Wordmark light={light} expanded={expanded} />
+            <nav className="flex items-center gap-6 lg:gap-9 font-sans text-[11px] tracking-[0.2em] transition-all duration-500">
+              <NavLinks light={light} />
+            </nav>
           </div>
+          <div className="absolute right-9 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+            <Link href="/account" className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`} title="My Account">
+              <User size={16} />
+            </Link>
+            <CartButton light={light} />
+          </div>
+        </div>
 
-          {/* Centered, enlarged logo */}
-          <Wordmark light={light} />
-
-          {/* Nav links below the logo (desktop) */}
-          <nav className="hidden md:flex items-center justify-center gap-6 lg:gap-9 font-sans text-[11px] tracking-[0.2em]">
-            <NavLinks light={light} />
-          </nav>
+        {/* Mobile — logo centered (shrinks on scroll); hamburger left, cart right */}
+        <div className="md:hidden relative w-full px-3 flex items-center justify-center py-3 min-h-[60px]">
+          <button
+            className={`absolute left-1 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50' : 'text-bark-600 hover:text-bark-700'}`}
+            onClick={() => setOpen(!open)}
+            title={open ? 'Close menu' : 'Open menu'}
+            aria-label={open ? 'Close menu' : 'Open menu'}
+          >
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
+          <Wordmark light={light} expanded={expanded} />
+          <div className="absolute right-1 top-1/2 -translate-y-1/2">
+            <CartButton light={light} />
+          </div>
         </div>
       </div>
 
