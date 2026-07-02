@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Loader2, Printer, ArrowLeft } from 'lucide-react'
 
 interface Row {
+  id: string
   productId: string; name: string; image: string | null
   color: string; color_code: string; color_hex: string | null; style: string; size: string
   quantity: number; sell: number; cost: number; ratio: number | null
@@ -16,6 +17,9 @@ function fmt(cents: number) { return cents ? `$${(cents / 100).toFixed(2)}` : '�
 export default function StockReportPage() {
   const [rows, setRows] = useState<Row[]>([])
   const [loading, setLoading] = useState(true)
+  // Raw dollar strings being typed into the Cost inputs, keyed by variant id.
+  const [costEdits, setCostEdits] = useState<Record<string, string>>({})
+  const [savingId, setSavingId] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/portal/inventory/stock-report')
@@ -24,6 +28,34 @@ export default function StockReportPage() {
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
+
+  // Persist an edited cost (dollars) to the variant; ratio recomputes from state.
+  async function saveCost(row: Row) {
+    const raw = costEdits[row.id]
+    if (raw === undefined) return                       // nothing typed
+    const dollars = raw.trim() === '' ? null : Number(raw)
+    if (dollars != null && (isNaN(dollars) || dollars < 0)) return
+    const newCost = dollars == null ? 0 : Math.round(dollars * 100)
+    if (newCost === row.cost) {                          // unchanged — just drop the draft
+      setCostEdits(prev => { const n = { ...prev }; delete n[row.id]; return n })
+      return
+    }
+    setSavingId(row.id)
+    try {
+      const res = await fetch('/api/portal/inventory/stock-report', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ variantId: row.id, unitPrice: dollars }),
+      })
+      if (res.ok) {
+        setRows(prev => prev.map(r => r.id === row.id
+          ? { ...r, cost: newCost, ratio: newCost > 0 ? r.sell / newCost : null }
+          : r))
+        setCostEdits(prev => { const n = { ...prev }; delete n[row.id]; return n })
+      }
+    } catch { /* leave the draft so the admin can retry */ }
+    finally { setSavingId(null) }
+  }
 
   const now = new Date()
   const totalUnits = rows.reduce((s, r) => s + r.quantity, 0)
@@ -92,14 +124,30 @@ export default function StockReportPage() {
                   <td className="px-2 py-2 font-sans text-xs text-bark-600">{r.size}</td>
                   <td className="px-2 py-2 text-center font-sans text-xs text-bark-700">{r.quantity}</td>
                   <td className="px-2 py-2 text-right font-sans text-xs text-bark-600">{fmt(r.sell)}</td>
-                  <td className="px-2 py-2 text-right font-sans text-xs text-bark-600">{fmt(r.cost)}</td>
+                  <td className="px-2 py-2 text-right whitespace-nowrap">
+                    {/* Print shows the plain value; on screen it's an editable input. */}
+                    <span className="hidden print:inline font-sans text-xs text-bark-600">{fmt(r.cost)}</span>
+                    <span className="print:hidden inline-flex items-center justify-end gap-0.5">
+                      <span className="font-sans text-xs text-bark-400">$</span>
+                      <input
+                        type="number" step="0.01" min="0"
+                        value={costEdits[r.id] ?? (r.cost ? (r.cost / 100).toFixed(2) : '')}
+                        onChange={e => setCostEdits(prev => ({ ...prev, [r.id]: e.target.value }))}
+                        onBlur={() => saveCost(r)}
+                        onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }}
+                        placeholder="—"
+                        disabled={savingId === r.id}
+                        className="w-16 text-right bg-transparent font-sans text-xs text-bark-700 tabular-nums border-b border-cream-300 focus:border-gold-400 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:opacity-50"
+                      />
+                    </span>
+                  </td>
                   <td className="px-2 py-2 text-right font-sans text-xs font-medium text-bark-700">{r.ratio ? `${r.ratio.toFixed(2)}×` : '—'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
-        <p className="font-sans text-[10px] text-bark-400 mt-4">Sell÷Cost shows your markup multiple (e.g. 3.00× means retail is 3× your unit cost). Sell price is the product&rsquo;s retail; cost is the per-unit cost recorded on the variant.</p>
+        <p className="print:hidden font-sans text-[10px] text-bark-400 mt-4">Only admin-verified products appear here (published, not flagged for review). Type a per-unit <strong>Cost</strong> and it saves automatically — the Sell÷Cost markup multiple updates on the spot (e.g. 3.00× means retail is 3× your unit cost). Sell price is the product&rsquo;s retail.</p>
       </div>
     </div>
   )

@@ -409,13 +409,12 @@ function BoxSection({
   return (
     <section
       id={`box-${box.slug}`}
-      className="scroll-mt-20 flex flex-col lg:flex-row border-b border-cream-300"
-      style={{ minHeight: '90vh' }}
+      className="scroll-mt-20 flex flex-col lg:flex-row border-b border-cream-300 min-h-[80svh] lg:min-h-0 lg:h-screen"
     >
       {/* Image — 60% width on desktop, full height, flies in from the image side */}
       {/* Mobile: image flows at its natural height (shown in full). Desktop: fills
           the 60% column. */}
-      <FlyIn from={flip ? 'right' : 'left'} className={`relative w-full lg:w-[60%] overflow-hidden lg:min-h-[90vh] ${flip ? 'lg:order-2' : ''}`} style={{ flex: '0 0 auto' }}>
+      <FlyIn from={flip ? 'right' : 'left'} className={`relative w-full lg:w-[60%] overflow-hidden lg:h-full ${flip ? 'lg:order-2' : ''}`} style={{ flex: '0 0 auto' }}>
         {/* Web: image covers the whole column. Mobile: fixed ~80svh. */}
         <div className="relative h-[80svh] lg:h-auto lg:absolute lg:inset-0">
           <BoxImages box={box} />
@@ -425,7 +424,7 @@ function BoxSection({
       {/* Info panel — desktop: 95vh min-height, full panel scrolls so nothing is ever cut off;
            mobile: natural flow */}
       <div
-        className={`relative isolate lg:w-[40%] flex flex-col lg:min-h-[90vh] lg:overflow-y-auto ${flip ? 'lg:order-1' : ''}`}
+        className={`relative isolate lg:w-[40%] flex flex-col lg:h-full lg:overflow-y-auto ${flip ? 'lg:order-1' : ''}`}
         style={panelBg ? {
           backgroundImage: `linear-gradient(rgba(255,255,255,0.88), rgba(255,255,255,0.88)), url(${panelBg})`,
           backgroundSize: 'cover',

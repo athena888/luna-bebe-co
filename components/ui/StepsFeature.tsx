@@ -38,7 +38,7 @@ export function StepsFeature({ images, side = 'left' }: { images: string[]; side
       </div>
 
       {/* Copy + steps — top-aligned with the image, spread to fill its height */}
-      <div className={`flex flex-col justify-center px-6 sm:px-12 lg:px-20 py-8 sm:py-10 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
+      <div className={`flex flex-col justify-start px-6 sm:px-12 lg:px-20 pt-2 sm:pt-4 pb-8 sm:pb-10 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
         <div className="max-w-md w-full">
           <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-espresso leading-[1.15] mb-10">
             Create Something <span className="font-script text-gold-400" style={{ fontSize: '1.05em' }}>unforgettable.</span>

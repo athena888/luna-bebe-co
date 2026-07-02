@@ -143,7 +143,7 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
       {/* Nav bar — Organic-Zoo style: at the hero top, a big centered logo with the
           nav beneath it; on scroll it collapses smoothly to a compact bar with the
           nav beside the logo. Pages without a hero start compact. */}
-      <div className={`transition-colors duration-500 ${transparent ? 'bg-gradient-to-b from-black/30 via-black/10 to-transparent' : 'bg-[#FEF8F4] border-b border-cream-300'}`}>
+      <div className={`transition-colors duration-500 ${!overHero ? 'sticky top-0 z-40' : ''} ${transparent ? 'bg-gradient-to-b from-black/30 via-black/10 to-transparent' : 'bg-[#FEF8F4] border-b border-cream-300'}`}>
 
         {/* Desktop */}
         <div className={`hidden md:block relative w-full px-9 transition-all duration-500 ${expanded ? 'py-5' : 'py-2'}`}>

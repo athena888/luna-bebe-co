@@ -80,11 +80,11 @@ export default function GiftCardsPage() {
                       key={opt.value}
                       type="button"
                       onClick={() => setAmount(opt.value)}
-                      className={`relative py-5 border font-serif text-2xl transition-colors ${amount === opt.value ? 'border-bark-600 bg-cream-100 text-espresso' : 'border-cream-300 text-bark-400 hover:border-bark-400'}`}
+                      className={`relative py-5 border font-serif text-2xl transition-colors ${amount === opt.value ? 'border-gold-400 bg-[#FBF3EC] text-espresso' : 'border-cream-300 text-bark-400 hover:border-gold-300'}`}
                     >
                       {opt.label}
                       {opt.popular && (
-                        <span className="absolute top-2 right-2 font-sans text-[9px] tracking-[0.15em] uppercase bg-gold-100 text-gold-500 px-1.5 py-0.5">Popular</span>
+                        <span className="absolute top-2 right-2 font-sans text-[9px] tracking-[0.15em] uppercase bg-gold-400 text-white px-1.5 py-0.5">Popular</span>
                       )}
                     </button>
                   ))}

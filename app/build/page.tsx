@@ -6,7 +6,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { PRODUCTS, CATEGORY_LABELS, CATEGORY_ORDER, getAllProducts, BOX_BASE_PRICE } from '@/lib/products'
 import type { Product, ProductCategory } from '@/types'
-import { Check, X, Plus, Minus, ShieldCheck, Leaf, ZoomIn } from 'lucide-react'
+import { Check, X, Plus, Minus, Leaf, ZoomIn } from 'lucide-react'
 import Image from 'next/image'
 import { memo, useCallback, useMemo, useState as useLocalState } from 'react'
 import { CertBadges } from '@/components/ui/CertBadges'
@@ -122,30 +122,14 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
           </div>
         )}
 
-        {/* Cert logos — overlay; GOTS shown as our Organic leaf, not the official logo */}
-        {(() => {
-          const list = (certs ?? []).filter(c => !isGots(c))
-          const showOrganic = !!product.organic || (certs ?? []).some(isGots)
-          if (!showOrganic && list.length === 0) return null
-          return (
-            <div className="absolute bottom-2 left-2 flex items-center gap-1 z-10">
-              {showOrganic && (
-                <div className="w-5 h-5 rounded-full pl-round-full bg-sage-500 flex items-center justify-center shadow-sm" title="Made with organic cotton">
-                  <Leaf size={12} className="text-white" />
-                </div>
-              )}
-              {list.slice(0, 3).map(cert => (
-                <div key={cert.key} className="w-5 h-5 relative bg-white/90 rounded-full pl-round-full p-0.5 backdrop-blur-sm" title={cert.name || cert.key}>
-                  {cert.iconUrl ? (
-                    <Image src={cert.iconUrl} alt={cert.name || cert.key} fill className="object-contain" />
-                  ) : (
-                    <ShieldCheck size={14} className="text-gold-400" />
-                  )}
-                </div>
-              ))}
-            </div>
-          )
-        })()}
+        {/* Organic indicator only — the other certificates live on the product
+            detail page. Label sits on top of the leaf. */}
+        {(!!product.organic || (certs ?? []).some(isGots)) && (
+          <div className="absolute bottom-2 left-2 z-10 flex flex-col items-center gap-0.5 pointer-events-none" title="Made with organic cotton">
+            <span className="font-sans text-[8px] tracking-[0.18em] uppercase text-white drop-shadow">Organic</span>
+            <span className="w-5 h-5 rounded-full pl-round-full bg-sage-500/90 flex items-center justify-center shadow-sm"><Leaf size={12} className="text-white" /></span>
+          </div>
+        )}
       </button>
 
       <div className={`pt-3.5 pb-1 ${soldOut ? 'opacity-40' : ''}`}>

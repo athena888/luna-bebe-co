@@ -98,22 +98,31 @@ export default async function HomePage() {
         {/* ── Best Sellers — right below the hero ── */}
         <PrebuiltBoxesSection />
 
-        {/* ── Perks bar — below the Best Sellers carousel ── */}
-        <section className="bg-[#FEF8F4] border-t border-b border-cream-300">
-          <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4">
-            {content.perks.map(({ label, sub }, i) => {
-              const Icon = PERK_ICONS[i % PERK_ICONS.length]
-              return (
-                <div key={label} className={`text-center py-5 px-4 border-cream-300
-                  ${i % 2 === 0 ? 'border-r' : ''}
-                  ${i < 2 ? 'border-b md:border-b-0' : ''}
-                  md:border-r md:last:border-r-0`}>
-                  <Icon size={18} className="text-espresso mb-2 mx-auto" strokeWidth={1.5} />
-                  <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-espresso mb-0.5">{label}</p>
-                  <p className="font-sans text-[9px] text-espresso/80 tracking-wide">{sub}</p>
-                </div>
-              )
-            })}
+        {/* ── What makes it special — editable intro + the promise perks,
+             combined into one block right under Best Sellers ── */}
+        <section className="bg-cream-white">
+          {/* Editable intro */}
+          <div className="max-w-3xl mx-auto text-center px-6 sm:px-8 pt-12 sm:pt-16 pb-8 sm:pb-10">
+            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">{content.why.eyebrow}</p>
+            <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-espresso leading-tight mb-5">{content.why.title}</h2>
+            <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose">{content.why.intro}</p>
+          </div>
+          {/* The promise perks */}
+          <div className="max-w-6xl mx-auto px-6 sm:px-10 pb-12 sm:pb-16">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-4 md:divide-x md:divide-cream-300/80 border-t border-cream-300 pt-12 sm:pt-14">
+              {content.perks.map(({ label, sub }, i) => {
+                const Icon = PERK_ICONS[i % PERK_ICONS.length]
+                return (
+                  <div key={label} className="flex flex-col items-center text-center px-3 sm:px-5">
+                    <span className="w-12 h-12 rounded-full pl-round-full border border-gold-300/70 flex items-center justify-center mb-4">
+                      <Icon size={19} className="text-gold-500" strokeWidth={1.5} />
+                    </span>
+                    <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-espresso mb-1.5">{label}</p>
+                    <p className="font-cormorant text-sm text-bark-400 leading-snug">{sub}</p>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         </section>
 
@@ -122,17 +131,9 @@ export default async function HomePage() {
           <CollectionsSection initial={collectionsData ?? undefined} />
         </div>
 
-        {/* ── What makes it special — editable intro + editorial features, all from Portal → Home Content ── */}
+        {/* ── Editorial features — image + copy edited together in Portal → Home Content.
+             (The "What makes it special" intro now lives up under Best Sellers.) ── */}
         <section className="border-t border-cream-300 bg-cream-white">
-
-          {/* Editable intro */}
-          <div className="max-w-3xl mx-auto text-center px-6 sm:px-8 pt-10 sm:pt-14 pb-6 sm:pb-10">
-            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">{content.why.eyebrow}</p>
-            <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-espresso leading-tight mb-5">{content.why.title}</h2>
-            <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose">
-              {content.why.intro}
-            </p>
-          </div>
 
           {/* Editable image features — image + copy edited together in the portal.
               Images alternate flush-left / flush-right as they fly in. */}
