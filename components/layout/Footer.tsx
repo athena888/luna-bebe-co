@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Mail } from 'lucide-react'
 
 // lucide no longer ships brand marks, so inline the two we use.
 function IgIcon() {
@@ -81,15 +81,19 @@ export function Footer() {
             <p className="font-serif italic text-espresso text-sm">Fait avec amour, pour vous.</p>
           </div>
 
-          {/* Find us — social icons + labels (no heading), above the signup */}
-          <div className="flex justify-center gap-12 mb-12">
-            <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 text-espresso hover:text-espresso/60 transition-colors">
+          {/* Find us — social + email icons + labels (no heading), above the signup */}
+          <div className="flex justify-center gap-10 mb-12">
+            <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 text-espresso-light hover:text-espresso transition-colors">
               <IgIcon />
               <span className="font-sans text-[10px] tracking-[0.2em] uppercase">Instagram</span>
             </a>
-            <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 text-espresso hover:text-espresso/60 transition-colors">
+            <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 text-espresso-light hover:text-espresso transition-colors">
               <FbIcon />
               <span className="font-sans text-[10px] tracking-[0.2em] uppercase">Facebook</span>
+            </a>
+            <a href={`mailto:${CONTACT_EMAIL}`} className="flex flex-col items-center gap-2 text-espresso-light hover:text-espresso transition-colors">
+              <Mail size={22} strokeWidth={1.5} />
+              <span className="font-sans text-[10px] tracking-[0.2em] uppercase">Email</span>
             </a>
           </div>
 
