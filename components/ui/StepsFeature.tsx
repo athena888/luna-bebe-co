@@ -32,39 +32,38 @@ export function StepsFeature({ images, side = 'left' }: { images: string[]; side
 
   return (
     <div ref={ref} className="grid grid-cols-1 md:grid-cols-2 items-stretch overflow-hidden">
-      {/* Image — 85vh; flies in from its edge */}
+      {/* Image — 85vh; flies in from its edge. Its height sets the row height,
+          so the sage panel never extends past the photo. */}
       <div className={`relative aspect-[4/3] md:aspect-auto md:h-[85vh] bg-cream-200 ${side === 'right' ? 'md:order-2' : 'md:order-1'} transition-all duration-[800ms] ease-out ${shown ? 'translate-x-0 opacity-100' : imgHidden}`}>
         <RotatingImage urls={images} alt="Create something unforgettable" />
       </div>
 
-      {/* Copy + steps — top-aligned with the image, spread to fill its height */}
-      <div className={`flex flex-col justify-start px-6 sm:px-12 lg:px-20 pt-2 sm:pt-4 pb-8 sm:pb-10 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
+      {/* Solid sage panel — white centred copy (registry-style), same height as the image */}
+      <div className={`bg-sage-400 flex flex-col items-center justify-center text-center px-8 sm:px-14 lg:px-20 py-12 md:py-0 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
         <div className="max-w-md w-full">
-          <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-espresso leading-[1.15] mb-10">
-            Create Something <span className="font-script text-gold-400" style={{ fontSize: '1.05em' }}>unforgettable.</span>
+          <h2 className="font-serif text-[1.9rem] sm:text-[2.5rem] text-white leading-[1.15] mb-8 sm:mb-10">
+            Create Something Unforgettable
           </h2>
 
-          <div className="space-y-8 sm:space-y-10">
+          <div className="space-y-6 sm:space-y-7">
             {STEPS.map((s, i) => (
               <div
                 key={s.title}
-                className={`flex items-start gap-4 transition-all duration-500 ease-out ${(shown || reduce) ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}
+                className={`transition-all duration-500 ease-out ${(shown || reduce) ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}
                 style={{ transitionDelay: reduce ? '0ms' : `${150 + i * 180}ms` }}
               >
-                <span className="shrink-0 w-9 h-9 rounded-full pl-round-full border border-gold-300 flex items-center justify-center mt-0.5">
-                  <s.Icon size={15} strokeWidth={1.5} className="text-gold-500" />
+                <span className="w-10 h-10 mx-auto rounded-full pl-round-full border border-white/50 flex items-center justify-center mb-2.5">
+                  <s.Icon size={15} strokeWidth={1.5} className="text-white" />
                 </span>
-                <div className="pt-0.5">
-                  <h3 className="font-sans text-[11px] tracking-[0.18em] uppercase text-espresso mb-1.5">{s.title}</h3>
-                  <p className="font-sans text-[13px] text-bark-400 leading-relaxed">{s.body}</p>
-                </div>
+                <h3 className="font-sans text-[11px] tracking-[0.22em] uppercase text-white mb-1">{s.title}</h3>
+                <p className="font-serif text-[15px] text-white/85 leading-relaxed">{s.body}</p>
               </div>
             ))}
           </div>
 
-          <div className="flex flex-wrap gap-3 mt-10">
-            <Link href="/build" className="bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-bark-700 transition-colors">Build Your Own Box</Link>
-            <Link href="/boxes" className="border border-bark-300 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:border-bark-600 transition-colors">Shop Ready-Made</Link>
+          <div className="flex flex-wrap gap-3 justify-center mt-9 sm:mt-11">
+            <Link href="/build" className="bg-white text-sage-500 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-cream-100 transition-colors">Build Your Own Box</Link>
+            <Link href="/boxes" className="border border-white/60 text-white font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-white/10 transition-colors">Shop Ready-Made</Link>
           </div>
         </div>
       </div>
