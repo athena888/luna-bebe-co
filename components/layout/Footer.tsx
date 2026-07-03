@@ -62,7 +62,7 @@ export function Footer() {
     <footer className="font-medium">
       {/* Main footer — optional owner-managed background sits behind everything;
           a translucent scrim keeps the cream look (and text legible) when set. */}
-      <SlotBackground slotKey="footer.bg" scrim="bg-cream-100/30" className="bg-cream-100 border-t border-cream-300">
+      <SlotBackground slotKey="footer.bg" scrim="bg-cream-100/30" className="bg-cream-100">
         <div className="max-w-6xl mx-auto px-6 py-10 sm:py-12">
 
           {/* Top row — brand + newsletter (left) · link columns (right) */}

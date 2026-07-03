@@ -78,12 +78,14 @@ export default function AccountPage() {
     setOrders([])
   }
 
-  const inputClass = "w-full px-4 py-3 border border-cream-300 bg-cream-50 font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-bark-400 transition-colors"
+  // Mirrors the Track an Order page: top-aligned content, serif labels, white
+  // inputs with a gold focus ring.
+  const inputClass = "w-full px-4 py-3 border border-cream-300 bg-white font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-gold-400 transition-colors"
 
   if (!user) {
     return (
-      <SlotBackground slotKey="signin.bg" scrim="bg-cream-50/85" className="min-h-screen flex items-center justify-center px-6 py-20">
-        <div className="max-w-md w-full">
+      <SlotBackground slotKey="signin.bg" scrim="bg-cream-50/85" className="min-h-screen">
+        <div className="max-w-xl mx-auto px-6 py-14">
         <div className="text-center mb-10">
           <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">My Account</p>
           <h1 className="font-serif text-4xl text-espresso">Sign In</h1>
@@ -97,7 +99,7 @@ export default function AccountPage() {
         ) : (
           <form onSubmit={handleMagicLink} className="space-y-4">
             <div>
-              <label className="block font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">Email Address</label>
+              <label className="block font-serif text-lg text-espresso mb-2">Email Address</label>
               <input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@email.com" className={inputClass} />
             </div>
             {authError && <p className="font-sans text-xs text-red-500">{authError}</p>}

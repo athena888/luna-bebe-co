@@ -43,7 +43,7 @@ export default async function StoryPage() {
               </div>
             )}
             <div className="space-y-4 sm:order-1 sm:flex-1 min-w-0">
-              <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400">{content.founder.eyebrow}</p>
+              <p className="font-sans text-[12px] tracking-[0.3em] uppercase font-bold text-[#7A8E7C]">{content.founder.eyebrow}</p>
               {content.founder.paragraphs.map((para, i) => (
                 i === 0
                   ? <p key={i} className="font-playfair text-lg text-espresso leading-snug">{para}</p>
@@ -87,16 +87,15 @@ export default async function StoryPage() {
           <div className="absolute inset-0 bg-bark-900/50" aria-hidden="true" />
           <div className="relative z-10 max-w-3xl mx-auto px-6 py-24 sm:py-32 text-center">
             <ScrollFlyIn from="down">
-              <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-cream-100/80 mb-4">{content.hero.eyebrow}</p>
+              <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-[#8A9B63] mb-4">{content.hero.eyebrow}</p>
               <h2
-                className="text-3xl sm:text-4xl lg:text-5xl text-[#8A9B63] leading-tight mb-14"
+                className="text-3xl sm:text-4xl lg:text-5xl text-gold-300 leading-tight mb-14"
                 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400 }}
               >
                 {content.hero.heading}
               </h2>
             </ScrollFlyIn>
             <ScrollFlyIn from="down">
-              <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-300 mb-4">{content.french.eyebrow}</p>
               <div className="max-w-xl mx-auto">
                 {content.french.paragraphs.map((para, i) => (
                   <p key={i} className="font-sans text-sm text-cream-white leading-relaxed mb-4">{para}</p>
