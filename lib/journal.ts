@@ -46,8 +46,8 @@ export const JOURNAL_POSTS: JournalPost[] = [
   {
     slug: 'best-organic-baby-shower-gifts-2026',
     title: 'The Best Organic Baby Shower Gifts (2026)',
-    metaDescription: 'Our edit of the best organic baby shower gifts for 2026 — GOTS-cotton clothing, botanical care, and gift sets parents actually keep.',
-    excerpt: 'From GOTS-cotton swaddles to botanical care for mom, here is what makes an organic baby shower gift feel truly special this year.',
+    metaDescription: 'Our edit of the best organic baby shower gifts for 2026 — organic cotton clothing from GOTS-certified makers, botanical care, and gift sets parents actually keep.',
+    excerpt: 'From organic cotton swaddles to botanical care for mom, here is what makes an organic baby shower gift feel truly special this year.',
     date: '2026-04-28',
     readMins: 5,
     body: [

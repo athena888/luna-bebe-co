@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { Product } from '@/types'
 import type { CollectionDef } from '@/lib/collections-db'
 
@@ -31,11 +30,13 @@ const TILE_LINKS: Record<string, string> = {
   custom: '/build',                // top of the build page
 }
 
-// ─── Bundle tile — one prebuilt box at a time, arrows both ways ──────────────
+// ─── Bundle tile — the Mère et Bébé box as a static photo card ───────────────
+
+const BUNDLE_SUB = 'For mother & baby — one gift, both of them'
 
 function BundleTile({ boxes, fallback }: { boxes: BoxItem[]; fallback: Category }) {
-  const [idx, setIdx] = useState(0)
-  const box = boxes[idx % Math.max(1, boxes.length)]
+  // The mother-&-baby flagship (slug kept stable through the rename).
+  const box = boxes.find(b => b.name === 'Mère et Bébé') ?? boxes.find(b => b.slug === 'petit-ciel') ?? boxes[0]
 
   // No boxes yet → plain tile linking to the boxes page.
   if (!box) {
@@ -53,43 +54,19 @@ function BundleTile({ boxes, fallback }: { boxes: BoxItem[]; fallback: Category 
   }
 
   return (
-    <div className="group relative overflow-hidden bg-cream-200">
+    <Link href={`/boxes#box-${box.slug}`} className="group relative overflow-hidden bg-cream-200 block">
       <div className="relative w-full aspect-[3/4] lg:aspect-none lg:h-[clamp(300px,58vh,600px)]">
-        {/* Photo links to the exact box on the boxes page */}
-        <Link href={`/boxes#box-${box.slug}`} className="absolute inset-0 block">
-          {box.image
-            ? <Image src={box.image} alt={box.name} fill className="object-cover object-top group-hover:scale-105 transition-transform duration-700" unoptimized />
-            : <div className="absolute inset-0 bg-cream-200" />}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
-          {/* Name baked into the photo */}
-          <div className="absolute bottom-0 inset-x-0 flex justify-center pb-5 px-3">
-            <span className="text-center text-white font-sans text-[10px] tracking-[0.2em] uppercase px-2 py-1 drop-shadow-md">{box.name}</span>
-          </div>
-        </Link>
-
-        {/* Arrows — cycle through the boxes */}
-        {boxes.length > 1 && (
-          <>
-            <button
-              type="button"
-              onClick={() => setIdx(i => (i - 1 + boxes.length) % boxes.length)}
-              className="absolute left-1.5 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full pl-round-full bg-white/85 shadow-sm flex items-center justify-center text-bark-600 hover:bg-white transition-colors"
-              aria-label="Previous box"
-            >
-              <ChevronLeft size={17} strokeWidth={1.5} />
-            </button>
-            <button
-              type="button"
-              onClick={() => setIdx(i => (i + 1) % boxes.length)}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full pl-round-full bg-white/85 shadow-sm flex items-center justify-center text-bark-600 hover:bg-white transition-colors"
-              aria-label="Next box"
-            >
-              <ChevronRight size={17} strokeWidth={1.5} />
-            </button>
-          </>
-        )}
+        {box.image
+          ? <Image src={box.image} alt={box.name} fill className="object-cover object-top group-hover:scale-105 transition-transform duration-700" unoptimized />
+          : <div className="absolute inset-0 bg-cream-200" />}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
+        {/* Name + subtitle baked into the photo */}
+        <div className="absolute bottom-0 inset-x-0 flex flex-col items-center text-center pb-4 px-3">
+          <span className="text-white font-sans text-[10px] tracking-[0.2em] uppercase px-2 py-1 drop-shadow-md">{box.name}</span>
+          <span className="text-white/85 font-serif italic text-[12px] leading-snug drop-shadow-md">{BUNDLE_SUB}</span>
+        </div>
       </div>
-    </div>
+    </Link>
   )
 }
 

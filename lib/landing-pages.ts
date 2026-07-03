@@ -25,7 +25,7 @@ export const LANDING_PAGES: LandingPage[] = [
     slug: 'organic-newborn-gift-box',
     keyword: 'organic newborn gift box',
     title: 'Organic Newborn Gift Box | Petite Lavande',
-    metaDescription: 'A luxury organic newborn gift box — soft GOTS-cotton clothing, gentle botanical care, and a personalized card. Build your own or shop ready-made.',
+    metaDescription: 'A luxury organic newborn gift box — organic cotton clothing from GOTS-certified makers, gentle botanical care, and a personalized card. Build your own or shop ready-made.',
     eyebrow: 'For the Newborn',
     h1: 'The Organic Newborn Gift Box',
     intro: [
@@ -33,7 +33,7 @@ export const LANDING_PAGES: LandingPage[] = [
       'Every box is assembled by hand and finished the way you would for someone you love: a botanical lavender bouquet, a keepsake to remember the first days by, and a personalized card printed just for them. You can build your own box item by item, or choose a ready-made set we have already curated for newborns. Either way it arrives sealed with a wax stamp and tied with a natural linen ribbon — gift-ready the moment it lands on the doorstep.',
     ],
     categories: ['swaddle', 'garment', 'bath', 'keepsake'],
-    highlights: ['GOTS-cotton newborn clothing', 'Gentle botanical skincare', 'Personalized printed card', 'Wax seal & linen ribbon'],
+    highlights: ['Newborn clothing from GOTS-certified makers', 'Gentle botanical skincare', 'Personalized printed card', 'Wax seal & linen ribbon'],
   },
   {
     slug: 'gender-neutral-baby-gift-box',

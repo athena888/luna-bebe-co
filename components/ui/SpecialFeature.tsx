@@ -28,12 +28,21 @@ export function SpecialFeature({ title, intro, perks }: { title: string; intro: 
             <p className={`font-playfair text-[15px] sm:text-[17px] leading-relaxed max-w-2xl mb-6 ${hasImage ? 'text-white/95' : 'text-espresso-light'}`}>
               {intro}
             </p>
-            <Link
-              href="/build"
-              className={`inline-block font-sans text-[12px] tracking-[0.3em] uppercase border-b pb-1 transition-colors ${hasImage ? 'text-white border-white hover:text-cream-100 hover:border-cream-100' : 'text-espresso border-espresso hover:text-gold-500 hover:border-gold-500'}`}
-            >
-              Shop Now
-            </Link>
+            <div className="flex items-center justify-center gap-8 flex-wrap">
+              {/* Primary → curated gift boxes; custom build is the ghost secondary */}
+              <Link
+                href="/boxes"
+                className={`inline-block font-sans text-[12px] tracking-[0.3em] uppercase border-b pb-1 transition-colors ${hasImage ? 'text-white border-white hover:text-cream-100 hover:border-cream-100' : 'text-espresso border-espresso hover:text-gold-500 hover:border-gold-500'}`}
+              >
+                Shop Now
+              </Link>
+              <Link
+                href="/build"
+                className={`inline-block font-sans text-[11px] tracking-[0.25em] uppercase pb-1 border-b border-transparent transition-colors ${hasImage ? 'text-white/70 hover:text-white hover:border-white/60' : 'text-espresso-light hover:text-espresso hover:border-espresso/50'}`}
+              >
+                Build Your Own
+              </Link>
+            </div>
           </div>
         )}
       </SlotBackground>

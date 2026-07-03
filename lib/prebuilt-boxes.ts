@@ -43,8 +43,11 @@ export const PREBUILT_BOXES: PrebuiltBox[] = [
     },
   },
   {
+    // Renamed from "Petit Ciel" (2026-07-03) — slug kept stable for anchors &
+    // uploaded images. Reserve list (names retired, free to reuse on a future
+    // box): Petit Ciel.
     slug: 'petit-ciel',
-    name: 'Petit Ciel',
+    name: 'Mère et Bébé',
     style: 'Summer',
     variant: 'boy',
     tagline: 'Adventure begins with the gentlest sky blue dreams.',

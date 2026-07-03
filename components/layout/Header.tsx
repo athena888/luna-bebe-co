@@ -104,9 +104,9 @@ function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) 
   const cls = `uppercase font-medium ${base} transition-colors whitespace-nowrap`
   return (
     <>
+      {/* Curated first, custom second */}
+      <Link href="/boxes" className={cls} onClick={onClick}>Gift Boxes</Link>
       <Link href="/build" className={cls} onClick={onClick}>Build Your Own Box</Link>
-      {/* Gifting Ideas → the ready-made / pre-made boxes page (no dropdown for now) */}
-      <Link href="/boxes" className={cls} onClick={onClick}>Gifting Ideas</Link>
       <Link href="/gift-cards" className={cls} onClick={onClick}>Gift Cards</Link>
       <Link href="/story" className={cls} onClick={onClick}>Stories</Link>
     </>
