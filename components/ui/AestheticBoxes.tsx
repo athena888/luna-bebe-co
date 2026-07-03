@@ -85,7 +85,7 @@ function BuyBox({ box, size }: { box: ResolvedBox; size: string }) {
   return (
     <button
       onClick={buy}
-      className="w-full bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase py-4 hover:bg-bark-700 transition-colors"
+      className="shrink-0 whitespace-nowrap bg-[#7A8E7C] text-white font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-[#6d8070] transition-colors"
     >
       Buy This Box
     </button>
@@ -448,25 +448,28 @@ function BoxSection({
           )}
         </div>
 
-        {/* Middle: items — the ONLY scroll region on desktop; grows to fill the
-            space between the fixed identity (top) and price/buy (bottom). */}
+        {/* Size + price + buy — right under the identity; price and the buy
+            button sit inline on the same row. */}
+        <FlyIn delay={300} className="px-8 lg:px-12 xl:px-16 mt-5">
+          <div className="border-t border-cream-300 pt-4 space-y-4">
+            {hasGarment && <SizePicker size={size} setSize={setSize} />}
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <PriceBlock box={box} />
+              <BuyBox box={box} size={size} />
+            </div>
+          </div>
+        </FlyIn>
+
+        {/* What's inside — below the buy button; the ONLY scroll region on
+            desktop, filling the remaining panel height. */}
         {box.items.length > 0 && (
-          <div className="px-8 lg:px-12 xl:px-16 mt-6 lg:mt-4 lg:flex-1 lg:min-h-0 flex flex-col">
+          <div className="px-8 lg:px-12 xl:px-16 mt-6 lg:mt-5 pb-8 lg:pb-6 lg:flex-1 lg:min-h-0 flex flex-col">
             <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-3 shrink-0">What&apos;s Inside</p>
             <div className="max-h-[380px] lg:max-h-none lg:flex-1 lg:min-h-0 overflow-y-auto scrollbar-hide pr-1 pb-2">
               <ItemsList box={box} onOpen={onPreview} />
             </div>
           </div>
         )}
-
-        {/* Bottom: price + buy */}
-        <FlyIn delay={450} className="px-8 lg:px-12 xl:px-16 pb-8 lg:pb-6 mt-4">
-          <div className="border-t border-cream-300 pt-4 space-y-4">
-            {hasGarment && <SizePicker size={size} setSize={setSize} />}
-            <PriceBlock box={box} />
-            <BuyBox box={box} size={size} />
-          </div>
-        </FlyIn>
       </div>
     </section>
   )
