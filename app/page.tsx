@@ -10,12 +10,9 @@ import { ParallaxLayer } from '@/components/ui/ParallaxLayer'
 import { getHomeContent } from '@/lib/home-content'
 import { getHomeGalleries } from '@/lib/site-images'
 import { getActiveSocialPosts } from '@/lib/social-posts'
-import { Package, PenLine, Leaf, Heart } from 'lucide-react'
+import { SpecialFeature } from '@/components/ui/SpecialFeature'
 import { TestimonialsCarousel } from '@/components/ui/TestimonialsCarousel'
 import { SlotBackground } from '@/components/ui/SlotBackground'
-
-// Icons for the under-hero perks bar, mapped by index to the default perks.
-const PERK_ICONS = [Package, PenLine, Leaf, Heart]
 
 export const metadata: Metadata = {
   // `absolute` so the "| Petite Lavande" template isn't appended (avoids the
@@ -95,55 +92,10 @@ export default async function HomePage() {
         {/* ── Best Sellers — right below the hero ── */}
         <PrebuiltBoxesSection />
 
-        {/* ── What makes it special — card-artwork sides (carriage / bonnet from
-             our printed cards) flanking a sage panel with the editable intro +
-             promise perks. Mobile: sage panel first, then the two artworks 2-up. ── */}
-        <section className="bg-cream-white">
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_1.6fr_1fr] items-stretch md:h-[83vh]">
-            {/* Left artwork — the lavender carriage */}
-            <div className="hidden md:flex items-center justify-center bg-[#FDFAF5] p-8">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/decor/card-carriage.webp" alt="" aria-hidden="true" className="w-full max-h-full object-contain" />
-            </div>
-
-            {/* Sage centre panel — tone drawn from the card foliage */}
-            <div className="bg-[#B3BBA4] flex flex-col items-center justify-center text-center px-6 sm:px-12 py-14 md:py-8">
-              <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-espresso/70 mb-3">{content.why.eyebrow}</p>
-              <h2 className="font-serif text-[2.1rem] sm:text-[2.75rem] text-espresso leading-tight mb-4">{content.why.title}</h2>
-              <p className="font-cormorant text-lg text-espresso-light leading-relaxed max-w-md mb-10">{content.why.intro}</p>
-
-              {/* The promise perks — 2×2 inside the panel */}
-              <div className="grid grid-cols-2 gap-x-6 gap-y-8 max-w-md">
-                {content.perks.map(({ label, sub }, i) => {
-                  const Icon = PERK_ICONS[i % PERK_ICONS.length]
-                  return (
-                    <div key={label} className="flex flex-col items-center text-center">
-                      <span className="w-11 h-11 rounded-full pl-round-full border border-espresso/25 flex items-center justify-center mb-2.5">
-                        <Icon size={17} className="text-espresso" strokeWidth={1.5} />
-                      </span>
-                      <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-espresso mb-1">{label}</p>
-                      <p className="font-cormorant text-sm text-espresso-light leading-snug">{sub}</p>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Right artwork — the linen bonnet */}
-            <div className="hidden md:flex items-center justify-center bg-[#FDFAF5] p-8">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/decor/card-bonnet.webp" alt="" aria-hidden="true" className="w-full max-h-full object-contain" />
-            </div>
-          </div>
-
-          {/* Mobile: the two artworks side-by-side beneath the panel */}
-          <div className="md:hidden grid grid-cols-2 items-center bg-[#FDFAF5] px-4 py-6 gap-4">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/decor/card-carriage.webp" alt="" aria-hidden="true" className="w-full h-auto" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/decor/card-bonnet.webp" alt="" aria-hidden="true" className="w-full h-auto" />
-          </div>
-        </section>
+        {/* ── What makes it special — full-bleed editorial photo with overlaid
+             heading + looping perks ticker (client component; photo managed via
+             Portal → Site Images → home.special_bg). ── */}
+        <SpecialFeature title={content.why.title} intro={content.why.intro} perks={content.perks} />
 
         {/* ── Shop by Occasion — heading above the image tiles, styled like Best Sellers ── */}
         <div className="pt-14 sm:pt-20">
