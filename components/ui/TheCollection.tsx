@@ -48,7 +48,7 @@ export function TheCollection() {
             src="/decor/lavender-divider.png"
             alt=""
             aria-hidden="true"
-            className="hidden sm:block absolute top-1/2 left-[32%] -translate-x-1/2 -translate-y-1/2 w-[340px] lg:w-[400px] h-auto z-20 pointer-events-none drop-shadow-sm"
+            className="hidden sm:block absolute bottom-5 left-[32%] -translate-x-1/2 w-[340px] lg:w-[400px] h-auto z-20 pointer-events-none drop-shadow-sm"
           />
           {/* Description — olive framed panel (Unforgettable style), left of the
               photo; fades in on swap */}
