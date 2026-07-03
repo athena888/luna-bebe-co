@@ -25,7 +25,7 @@ export function SpecialFeature({ title, intro, perks }: { title: string; intro: 
               <span className="font-serif italic normal-case text-[2rem] sm:text-[3rem] mr-2 sm:mr-3">{first}</span>
               <span className="font-playfair uppercase tracking-[0.01em] font-medium text-[2.4rem] sm:text-[3.6rem]">{rest.join(' ')}</span>
             </h2>
-            <p className={`font-cormorant text-base sm:text-xl leading-relaxed max-w-2xl mb-6 ${hasImage ? 'text-white/95' : 'text-espresso-light'}`}>
+            <p className={`font-playfair text-[15px] sm:text-[17px] leading-relaxed max-w-2xl mb-6 ${hasImage ? 'text-white/95' : 'text-espresso-light'}`}>
               {intro}
             </p>
             <Link
