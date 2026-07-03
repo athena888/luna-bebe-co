@@ -35,7 +35,7 @@ const POINTS = [
   {
     Icon: HandHeart,
     title: 'One less thing for your team',
-    body: 'Tell us the due date and the address; we handle the rest, including a hand-written card from your company.',
+    body: 'Tell us the due date and the address; we handle the rest, including a personalized card from your company.',
   },
   {
     Icon: Leaf,
