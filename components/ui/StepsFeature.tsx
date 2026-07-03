@@ -10,7 +10,7 @@ import { RotatingImage } from './RotatingImage'
 const ITEMS = [
   'Wellness care for mama',
   'Organic cotton, no pesticides',
-  'Botanical lavender bouquet',
+  'Premium baby essentials & heirloom toys',
   'Customized card',
   'Wax seal & linen ribbon',
 ]
