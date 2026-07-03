@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Menu, X, User, ShoppingBag } from 'lucide-react'
 import { cartCount } from '@/lib/cart'
 import { LavenderSprig } from '@/components/ui/LavenderSprig'
@@ -141,6 +141,24 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
   // Reveal the bar whenever the mobile menu is open, so it never hides mid-use.
   useEffect(() => { if (open) setHidden(false) }, [open])
 
+  // The non-hero bar is `fixed` (sticky is broken by the `overflow-x: clip` on
+  // html/body that we use to kill mobile side-scroll). A spacer of the header's
+  // height keeps page content from sliding underneath. No gap ever shows because
+  // the bar is always visible near the top.
+  const headerRef = useRef<HTMLElement>(null)
+  const [spacerH, setSpacerH] = useState(0)
+  useEffect(() => {
+    if (overHero) return
+    const el = headerRef.current
+    if (!el) return
+    const measure = () => setSpacerH(el.offsetHeight)
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    window.addEventListener('resize', measure)
+    return () => { ro.disconnect(); window.removeEventListener('resize', measure) }
+  }, [overHero])
+
   // expanded = big centered logo with nav beneath (hero top). On scroll (or on a
   // page without a hero) it collapses to the compact logo-beside-nav bar.
   const expanded = overHero && !scrolled
@@ -148,9 +166,10 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
   const light = transparent
 
   return (
-    <header className={overHero
+    <>
+    <header ref={headerRef} className={overHero
       ? 'absolute top-0 inset-x-0 z-40'
-      : `sticky top-0 z-40 bg-[#FEF8F4] transition-transform duration-300 ease-out ${hidden ? '-translate-y-full' : 'translate-y-0'}`}>
+      : `fixed top-0 inset-x-0 z-40 bg-[#FEF8F4] transition-transform duration-300 ease-out ${hidden ? '-translate-y-full' : 'translate-y-0'}`}>
 
       {/* Coming-soon announcement strip */}
       <div className="bg-[#4A3B30] text-cream-50 text-center py-2.5 px-4">
@@ -205,5 +224,8 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
 
       {open && <MobileMenu onClose={() => setOpen(false)} />}
     </header>
+    {/* Reserves the fixed bar's height so content doesn't hide beneath it. */}
+    {!overHero && <div aria-hidden style={{ height: spacerH }} />}
+    </>
   )
 }
