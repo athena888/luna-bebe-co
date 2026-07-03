@@ -41,7 +41,7 @@ export default async function StoryPage() {
             <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-4">{content.hero.eyebrow}</p>
             <h1
               className="text-3xl sm:text-4xl lg:text-5xl text-espresso leading-tight"
-              style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 400 }}
+              style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400 }}
             >
               {content.hero.heading}
             </h1>
