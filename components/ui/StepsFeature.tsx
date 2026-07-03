@@ -41,14 +41,14 @@ export function StepsFeature({ images, side = 'left' }: { images: string[]; side
 
       {/* Solid sage panel — white copy inside a double-rule frame, same height
           as the image. Content is vertically centred with breathing room. */}
-      <div className={`relative bg-sage-400 flex flex-col items-center justify-center px-10 sm:px-16 lg:px-20 py-16 md:py-12 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
-        {/* Double-line frame */}
-        <div className="pointer-events-none absolute inset-4 sm:inset-6 border border-white/90">
-          <div className="absolute inset-[5px] border border-white/60" />
+      <div className={`relative bg-[#8A9B63] flex flex-col items-center justify-center px-10 sm:px-16 lg:px-20 py-16 md:py-12 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
+        {/* Double-line frame — heavier outer rule, thin inner rule, solid white */}
+        <div className="pointer-events-none absolute inset-4 sm:inset-6 border-2 border-white">
+          <div className="absolute inset-[6px] border border-white" />
         </div>
 
         <div className="relative max-w-md w-full text-center">
-          <h2 className="font-script text-[2rem] sm:text-[2.6rem] xl:text-[2.9rem] text-white leading-tight whitespace-nowrap mb-7 md:mb-8">
+          <h2 className="font-pinyon text-[clamp(1.5rem,6.2vw,2rem)] md:text-[clamp(1.5rem,2.9vw,2.5rem)] text-white leading-tight whitespace-nowrap mb-7 md:mb-8">
             Create Something Unforgettable
           </h2>
 
@@ -65,7 +65,7 @@ export function StepsFeature({ images, side = 'left' }: { images: string[]; side
                 className={`font-serif text-[15px] sm:text-[16px] text-white leading-relaxed transition-all duration-500 ease-out ${(shown || reduce) ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}
                 style={{ transitionDelay: reduce ? '0ms' : `${150 + i * 140}ms` }}
               >
-                {item}
+                - {item}
               </p>
             ))}
           </div>

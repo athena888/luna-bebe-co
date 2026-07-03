@@ -99,6 +99,7 @@ h1, h2, h3, h4 { font-family: "Cormorant Garamond", Georgia, serif; font-weight:
 p, li, blockquote { font-family: "Cormorant Garamond", Georgia, serif; }
 .font-cormorant { font-family: "Cormorant Garamond", Georgia, serif; }
 .font-script { font-family: "Dancing Script", cursive; }
+.font-pinyon { font-family: "Pinyon Script", cursive; }
 
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: #FAF9F8; }

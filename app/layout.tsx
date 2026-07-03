@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Dancing_Script, Cormorant_Garamond, Jost, Fraunces } from "next/font/google";
+import { Dancing_Script, Cormorant_Garamond, Jost, Fraunces, Pinyon_Script } from "next/font/google";
 import Script from "next/script";
 import { Suspense } from "react";
 import "./globals.css";
@@ -19,6 +19,8 @@ const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["300", "400"
 const jost = Jost({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-jost", display: "swap" });
 // Brand wordmark font (header lockup).
 const fraunces = Fraunces({ subsets: ["latin"], weight: ["400", "500", "600"], style: ["normal", "italic"], variable: "--font-fraunces", display: "swap" });
+// Formal copperplate script (Ginori-style panel headings).
+const pinyon = Pinyon_Script({ subsets: ["latin"], weight: "400", variable: "--font-pinyon", display: "swap" });
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 // Public Crisp Website ID (safe to embed — it's exposed client-side anyway).
@@ -74,7 +76,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const locale = await getLocale();
   const messages = await getMessages();
   return (
-    <html lang={locale} className={`${dancing.variable} ${cormorant.variable} ${jost.variable} ${fraunces.variable} h-full antialiased`}>
+    <html lang={locale} className={`${dancing.variable} ${cormorant.variable} ${jost.variable} ${fraunces.variable} ${pinyon.variable} h-full antialiased`}>
       <head>
         {/* PWA / iOS home screen */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
