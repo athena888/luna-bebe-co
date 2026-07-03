@@ -34,13 +34,13 @@ export function StepsFeature({ images, side = 'left', title, body, items }: {
     <div ref={ref} className="grid grid-cols-1 md:grid-cols-2 items-stretch overflow-hidden">
       {/* Image — 85vh; flies in from its edge. Its height sets the row height,
           so the sage panel never extends past the photo. */}
-      <div className={`relative aspect-[4/3] md:aspect-auto md:h-auto md:min-h-[85vh] md:self-stretch bg-cream-200 ${side === 'right' ? 'md:order-2' : 'md:order-1'} transition-all duration-[800ms] ease-out ${shown ? 'translate-x-0 opacity-100' : imgHidden}`}>
+      <div className={`relative aspect-[4/3] md:aspect-auto md:h-auto md:min-h-[85vh] md:self-stretch bg-cream-200 order-2 ${side === 'right' ? 'md:order-2' : 'md:order-1'} transition-all duration-[800ms] ease-out ${shown ? 'translate-x-0 opacity-100' : imgHidden}`}>
         <RotatingImage urls={images} alt="Create something unforgettable" />
       </div>
 
       {/* Solid sage panel — white copy inside a double-rule frame, same height
           as the image. Content is vertically centred with breathing room. */}
-      <div className={`relative bg-[#8A9B63] flex flex-col items-center justify-center px-10 sm:px-16 lg:px-20 py-16 md:py-12 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
+      <div className={`relative bg-[#8A9B63] flex flex-col items-center justify-center px-10 sm:px-16 lg:px-20 py-16 md:py-12 order-1 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
         {/* Double-line frame — heavier outer rule, thin inner rule, solid white */}
         <div className="pointer-events-none absolute inset-4 sm:inset-6 border-2 border-white">
           <div className="absolute inset-[6px] border border-white" />

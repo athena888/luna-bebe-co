@@ -35,9 +35,6 @@ export default async function StoryPage() {
       <Header />
       <main className="min-h-screen bg-[#FBF7F0]">
 
-        {/* Hero image (optional, managed in Portal → Story; mobile crop supported) */}
-        <SlotImage slotKey="story.hero" className="relative block w-full aspect-[4/3] sm:aspect-[21/9] overflow-hidden" imgClassName="w-full h-full object-cover" />
-
         {/* Hero + Founder letter — one section, separated by a divider only.
             Background uploadable via Portal → Story → Hero. */}
         <SlotBackground slotKey="story.hero_bg" scrim="bg-[#FBF7F0]/92" className="border-b border-cream-300">
