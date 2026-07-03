@@ -111,7 +111,15 @@ export default async function HomePage() {
         <section className="bg-white pt-14 sm:pt-24">
           {(() => {
             const slot = content.why.features[0]?.slot ?? 'brand'
-            return <StepsFeature images={galleries[slot] ?? [homeImg(slot)]} side="left" />
+            return (
+              <StepsFeature
+                images={galleries[slot] ?? [homeImg(slot)]}
+                side="left"
+                title={content.unforgettable.title}
+                body={content.unforgettable.body}
+                items={content.unforgettable.items}
+              />
+            )
           })()}
         </section>
 

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { Loader, Plus, Trash2, Check } from 'lucide-react'
-import type { HomeContent, Perk, FeatureBlock, Review } from '@/lib/home-content'
-import { ImageSlotCard, VideoSlotCard, BestsellerManager, GallerySlot, EditorialMediaGallery } from '@/components/portal/HomeMediaWidgets'
+import type { HomeContent, Perk, Review } from '@/lib/home-content'
+import { ImageSlotCard, GallerySlot } from '@/components/portal/HomeMediaWidgets'
 import { Field, Area } from '@/components/portal/ContentFields'
 import { SiteImageUploader } from '@/components/portal/SiteImageUploader'
 import { ScrimControl } from '@/components/portal/ScrimControl'
@@ -123,9 +123,9 @@ function HomepageEditor() {
 
   const setPerks = (perks: Perk[]) => setC({ ...c, perks })
   const setWhy = (why: Partial<HomeContent['why']>) => setC({ ...c, why: { ...c.why, ...why } })
-  const setFeature = (i: number, patch: Partial<FeatureBlock>) =>
-    setWhy({ features: c.why.features.map((f, j) => j === i ? { ...f, ...patch } : f) })
+  const setUnf = (patch: Partial<HomeContent['unforgettable']>) => setC({ ...c, unforgettable: { ...c.unforgettable, ...patch } })
   const setReviews = (reviews: Partial<HomeContent['reviews']>) => setC({ ...c, reviews: { ...c.reviews, ...reviews } })
+  const panelSlot = c.why.features[0]?.slot ?? 'brand'
 
   return (
     <>
@@ -138,74 +138,67 @@ function HomepageEditor() {
         </div>
       </section>
 
-      {/* 2 · Perks bar */}
+      {/* 2 · Best Sellers */}
       <section className="mb-12">
-        <SectionTitle n="2" title="Perks bar" note="The four short benefits in the strip under the hero." />
+        <SectionTitle n="2" title="Best Sellers" note="The box carousel right below the hero (stacked vertically on phones). Pick which boxes appear." />
+        <BoxPicker />
+      </section>
+
+      {/* 3 · What makes it special */}
+      <section className="mb-12">
+        <SectionTitle n="3" title={'"What makes it special"'} note="Full-bleed lifestyle photo with the heading + Shop Now overlaid at the bottom, then the scrolling promise ticker." />
+        <div className="bg-white border border-cream-200 rounded-lg p-3 mb-5">
+          <p className="font-sans text-[10px] text-bark-400 mb-2">Section photo — the text overlays its lower third</p>
+          <SiteImageUploader slotKey="home.special_bg" context="Full-bleed editorial lifestyle photo behind the What makes it special heading" ratio="21:9" hint="wide editorial lifestyle · ~2200×950" compact />
+          <p className="font-sans text-[10px] text-bark-400 mt-3 mb-2">Optional phone crop — shown on small screens instead</p>
+          <SiteImageUploader slotKey="home.special_bg.mobile" context="Taller phone crop of the What makes it special photo" ratio="4:5" hint="taller phone crop · ~1000×1250" compact />
+        </div>
+        <div className="space-y-3 mb-6">
+          <Field label="Heading (first word renders italic, the rest in big caps)" value={c.why.title} onChange={v => setWhy({ title: v })} ai={{ kind: 'title', context: 'the section heading for why-choose-us' }} />
+          <Area label="Subline under the heading" value={c.why.intro} onChange={v => setWhy({ intro: v })} ai={{ kind: 'body', context: 'the one-sentence subline under the why-choose-us heading' }} />
+        </div>
+        <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500 mb-2">Promise ticker — the line that scrolls right-to-left below the photo</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {c.perks.map((p, i) => (
             <Card key={i} onRemove={() => setPerks(c.perks.filter((_, j) => j !== i))}>
-              <Field label="Headline" value={p.label} onChange={v => setPerks(c.perks.map((x, j) => j === i ? { ...x, label: v } : x))} ai={{ kind: 'text', context: 'a 2–3 word benefit headline in the perks strip' }} />
+              <Field label="Headline" value={p.label} onChange={v => setPerks(c.perks.map((x, j) => j === i ? { ...x, label: v } : x))} ai={{ kind: 'text', context: 'a 2–3 word benefit headline in the promise ticker' }} />
               <Field label="Subtext" value={p.sub} onChange={v => setPerks(c.perks.map((x, j) => j === i ? { ...x, sub: v } : x))} />
             </Card>
           ))}
         </div>
-        <div className="mt-3"><AddButton onClick={() => setPerks([...c.perks, { label: '', sub: '' }])} label="Add perk" /></div>
+        <div className="mt-3"><AddButton onClick={() => setPerks([...c.perks, { label: '', sub: '' }])} label="Add ticker item" /></div>
       </section>
 
-      {/* 3 · Shop by Occasion + Curated Gift Sets */}
+      {/* 4 · Shop by Occasion */}
       <section className="mb-12">
-        <SectionTitle n="3" title="Shop by Occasion & Curated Gift Sets" note="The Shop by Occasion cards and which Curated Gift Sets appear in the carousel." />
-        <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500 mb-2">Shop by Occasion — the four cards</p>
+        <SectionTitle n="4" title="Shop by Occasion" note="The four occasion tiles. Newborn/Mama/Custom link into the build page; the Bundle tile cycles through your boxes." />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <ImageSlotCard slotKey="newborn" label="Newborn Gifts" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
           <ImageSlotCard slotKey="mama" label="For Mama" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
-          <ImageSlotCard slotKey="bundle" label="Mama & Baby Bundle" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
+          <ImageSlotCard slotKey="bundle" label="Mama & Baby Bundle" description="Fallback only — the tile normally cycles through box cover photos." />
           <ImageSlotCard slotKey="custom" label="Custom Box" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
         </div>
-
-        <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500 mb-2">Curated Gift Sets — which boxes appear in the carousel</p>
-        <BoxPicker />
+        <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500 mb-2">Collections — name, subtitle and products behind each tile</p>
+        <CollectionsEditor />
       </section>
 
-      {/* 5 · What makes it special */}
+      {/* 5 · Create Something Unforgettable */}
       <section className="mb-12">
-        <SectionTitle n="4" title={'"What makes it special" section'} note="The intro and the two editorial image features. Each photo and its words are edited together." />
-        <div className="space-y-3 mb-6">
-          <Field label="Eyebrow (small caps)" value={c.why.eyebrow} onChange={v => setWhy({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'the small eyebrow above the section heading' }} />
-          <Field label="Heading" value={c.why.title} onChange={v => setWhy({ title: v })} ai={{ kind: 'title', context: 'the section heading for why-choose-us' }} />
-          <Area label="Intro paragraph" value={c.why.intro} onChange={v => setWhy({ intro: v })} ai={{ kind: 'body', context: 'the intro paragraph under the why-choose-us heading' }} />
-        </div>
-        <div className="space-y-4">
-          {c.why.features.map((f, i) => (
-            <div key={i} className="bg-white border border-cream-200 rounded-lg p-4 space-y-4">
-              <GallerySlot slot={f.slot} label={`Photo${' '}${i + 1} · shown ${i === 0 ? 'left' : 'right'}`} description="Add one or more — they cross-fade on the homepage." />
-              <div className="space-y-3">
-                <Field label="Eyebrow (small caps)" value={f.eyebrow} onChange={v => setFeature(i, { eyebrow: v })} ai={{ kind: 'eyebrow', context: 'the eyebrow label for an editorial feature block' }} />
-                <Area label="Title (press Enter for a line break)" value={f.title} onChange={v => setFeature(i, { title: v })} rows={2} ai={{ kind: 'title', context: 'the headline for an editorial feature block about the brand' }} />
-                <Area label="Body paragraph" value={f.body} onChange={v => setFeature(i, { body: v })} rows={5} ai={{ kind: 'body', context: 'the body copy for an editorial feature block about the brand' }} />
-                <Area label="Bullet list — one per line (optional)" value={f.bullets.join('\n')} onChange={v => setFeature(i, { bullets: v.split('\n') })} rows={4} />
-              </div>
-            </div>
-          ))}
+        <SectionTitle n="5" title={'"Create Something Unforgettable" panel'} note="The framed olive panel beside a photo. Script heading, paragraph, and the hyphenated list. Shop Now links to the boxes page." />
+        <div className="bg-white border border-cream-200 rounded-lg p-4 space-y-4">
+          <GallerySlot slot={panelSlot} label="Panel photo(s) · shown left" description="Add one or more — they cross-fade on the homepage." />
+          <div className="space-y-3">
+            <Field label="Script heading (keeps to one line — keep it short)" value={c.unforgettable.title} onChange={v => setUnf({ title: v })} ai={{ kind: 'title', context: 'a short elegant script heading for the gift-box feature panel' }} />
+            <Area label="Paragraph" value={c.unforgettable.body} onChange={v => setUnf({ body: v })} rows={3} ai={{ kind: 'body', context: 'the intro paragraph inside the framed feature panel about the mama gift box' }} />
+            <Area label="List — one per line (each shown with a hyphen)" value={c.unforgettable.items.join('\n')} onChange={v => setUnf({ items: v.split('\n') })} rows={5} />
+          </div>
         </div>
         <p className="font-sans text-[10px] text-bark-400/80 mt-3">Photos upload immediately; text changes go live when you press "Save changes" below.</p>
       </section>
 
-      {/* 6 · Bestsellers */}
+      {/* 6 · Reviews */}
       <section className="mb-12">
-        <SectionTitle n="5" title="Bestsellers carousel" note="The looping product carousel. Curate the exact products and override photos." />
-        <BestsellerManager />
-      </section>
-
-      {/* 7 · Editorial Strip */}
-      <section className="mb-12">
-        <SectionTitle n="6" title={'Editorial Strip — "Every detail, intentional."'} note="Photos & videos rotate every 5s. Add as many as you like — delete any you don't want." />
-        <div className="max-w-2xl"><EditorialMediaGallery /></div>
-      </section>
-
-      {/* 8 · Reviews */}
-      <section className="mb-12">
-        <SectionTitle n="7" title="Reviews" note="The testimonials block near the bottom of the homepage." />
+        <SectionTitle n="6" title="Reviews" note="The testimonials block near the bottom of the homepage. Only shows when reviews are enabled and at least one review exists." />
         <div className="bg-white border border-cream-200 rounded-lg p-3 mb-5">
           <p className="font-sans text-[10px] text-bark-400 mb-2">Section background (optional)</p>
           <SiteImageUploader slotKey="home.testimonials_bg" context="Background behind the homepage reviews/testimonials section" ratio="21:9" hint="soft, light lifestyle · ~2000×860" compact />
@@ -225,18 +218,6 @@ function HomepageEditor() {
           ))}
         </div>
         <div className="mt-3"><AddButton onClick={() => setReviews({ items: [...c.reviews.items, { quote: '', name: '', context: '' } as Review] })} label="Add review" /></div>
-      </section>
-
-      {/* 9 · Final CTA */}
-      <section className="mb-12">
-        <SectionTitle n="8" title="Final CTA background" note="Dark full-width section near the bottom — image shows at ~40% opacity. Add several to cross-fade." />
-        <div className="max-w-md"><GallerySlot wide slot="box" label="CTA Background(s)" description="Cream box with ribbon — dark/moody works best. ~1600×900 (16:9)." /></div>
-      </section>
-
-      {/* 10 · Collections */}
-      <section className="mb-12">
-        <SectionTitle n="9" title="Shop by Occasion — Collections" note="The occasion cards link to collections. Edit each collection's name, subtitle, and which products it includes." />
-        <CollectionsEditor />
       </section>
 
       {/* Save bar (text only — photos & box picker save on their own) */}

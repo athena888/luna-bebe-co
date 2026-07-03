@@ -31,9 +31,19 @@ export interface ReviewsBlock {
   items: Review[]
 }
 
+// The "Create Something Unforgettable" framed olive panel: script heading,
+// intro paragraph and the hyphenated contents list. Its photos come from the
+// first why-feature's gallery slot ('brand').
+export interface UnforgettableBlock {
+  title: string
+  body: string
+  items: string[]
+}
+
 export interface HomeContent {
   perks: Perk[]
   why: WhyBlock
+  unforgettable: UnforgettableBlock
   reviews: ReviewsBlock
 }
 
@@ -65,6 +75,17 @@ export const DEFAULT_HOME_CONTENT: HomeContent = {
       },
     ],
   },
+  unforgettable: {
+    title: 'Create Something Unforgettable',
+    body: 'A botanical lavender bouquet and wellness rituals to soften the long days, each chosen the way a daughter would choose for her own mother.',
+    items: [
+      'Wellness care for mama',
+      'Organic cotton, no pesticides',
+      'Premium baby essentials & heirloom toys',
+      'Customized card',
+      'Wax seal & linen ribbon',
+    ],
+  },
   reviews: {
     eyebrow: 'Stories',
     title: 'Loved by Gift-Givers',
@@ -73,7 +94,7 @@ export const DEFAULT_HOME_CONTENT: HomeContent = {
   },
 }
 
-const KEYS = { perks: 'home.perks', why: 'home.why', reviews: 'home.reviews' } as const
+const KEYS = { perks: 'home.perks', why: 'home.why', unforgettable: 'home.unforgettable', reviews: 'home.reviews' } as const
 
 /** Read the editable homepage copy, merged over the in-code defaults. */
 export async function getHomeContent(): Promise<HomeContent> {
@@ -86,6 +107,7 @@ export async function getHomeContent(): Promise<HomeContent> {
       // Merge over defaults so blocks added later (e.g. features) are always
       // present even if an older saved row predates them.
       why: { ...DEFAULT_HOME_CONTENT.why, ...((map.get(KEYS.why) as Partial<WhyBlock> | undefined) ?? {}) },
+      unforgettable: { ...DEFAULT_HOME_CONTENT.unforgettable, ...((map.get(KEYS.unforgettable) as Partial<UnforgettableBlock> | undefined) ?? {}) },
       reviews: (map.get(KEYS.reviews) as ReviewsBlock | undefined) ?? DEFAULT_HOME_CONTENT.reviews,
     }
   } catch {
@@ -99,6 +121,7 @@ export async function saveHomeContent(input: Partial<HomeContent>): Promise<void
   const now = new Date().toISOString()
   if (input.perks !== undefined) rows.push({ key: KEYS.perks, value: input.perks, updated_at: now })
   if (input.why !== undefined) rows.push({ key: KEYS.why, value: input.why, updated_at: now })
+  if (input.unforgettable !== undefined) rows.push({ key: KEYS.unforgettable, value: input.unforgettable, updated_at: now })
   if (input.reviews !== undefined) rows.push({ key: KEYS.reviews, value: input.reviews, updated_at: now })
   if (rows.length === 0) return
   const { error } = await supabaseAdmin.from('site_content').upsert(rows, { onConflict: 'key' })

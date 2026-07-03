@@ -4,18 +4,17 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { RotatingImage } from './RotatingImage'
 
-// The first "What makes it special" beat: an editorial image beside a framed
-// sage panel — script heading, intro line, and the box's contents listed,
-// dropping in one-by-one when the block scrolls into view.
-const ITEMS = [
-  'Wellness care for mama',
-  'Organic cotton, no pesticides',
-  'Premium baby essentials & heirloom toys',
-  'Customized card',
-  'Wax seal & linen ribbon',
-]
-
-export function StepsFeature({ images, side = 'left' }: { images: string[]; side?: 'left' | 'right' }) {
+// An editorial image beside a framed olive panel — script heading, intro line,
+// and the box's contents listed, dropping in one-by-one when the block scrolls
+// into view. Copy is editable in Portal → Homepage ("Create Something
+// Unforgettable" section); defaults live in lib/home-content.ts.
+export function StepsFeature({ images, side = 'left', title, body, items }: {
+  images: string[]
+  side?: 'left' | 'right'
+  title: string
+  body: string
+  items: string[]
+}) {
   const ref = useRef<HTMLDivElement>(null)
   const [shown, setShown] = useState(false)
   const [reduce, setReduce] = useState(false)
@@ -49,17 +48,16 @@ export function StepsFeature({ images, side = 'left' }: { images: string[]; side
 
         <div className="relative max-w-md w-full text-center">
           <h2 className="font-pinyon text-[clamp(1.5rem,6.2vw,2rem)] md:text-[clamp(1.5rem,2.9vw,2.5rem)] text-white leading-tight whitespace-nowrap mb-7 md:mb-8">
-            Create Something Unforgettable
+            {title}
           </h2>
 
           <p className="font-playfair text-[15px] sm:text-[16px] text-white/95 leading-relaxed mb-8 md:mb-9">
-            A botanical lavender bouquet and wellness rituals to soften the long days,
-            each chosen the way a daughter would choose for her own mother.
+            {body}
           </p>
 
           {/* Contents — centred lines, dropping in one-by-one */}
           <div className="space-y-2.5">
-            {ITEMS.map((item, i) => (
+            {items.filter(it => it.trim()).map((item, i) => (
               <p
                 key={item}
                 className={`font-playfair text-[14px] sm:text-[15px] text-white leading-relaxed transition-all duration-500 ease-out ${(shown || reduce) ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}
