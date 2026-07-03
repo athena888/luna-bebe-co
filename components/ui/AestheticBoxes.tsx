@@ -56,13 +56,11 @@ function prices(box: ResolvedBox) {
 function PriceBlock({ box }: { box: ResolvedBox }) {
   const { regular, price, saving } = prices(box)
   return (
-    <div>
-      <div className="flex items-baseline gap-3 flex-wrap">
-        {saving && <span className="font-serif text-xl text-bark-400 line-through">{fmt(regular)}</span>}
-        <span className="font-serif text-3xl text-espresso">{fmt(price)}</span>
-        {saving && <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-sage-600">Save {fmt(regular - price)}</span>}
-      </div>
-      <p className="font-sans text-[11px] text-bark-400 mt-1">Card at checkout</p>
+    <div className="flex items-baseline gap-2.5 flex-wrap">
+      {saving && <span className="font-serif text-lg text-bark-400 line-through">{fmt(regular)}</span>}
+      <span className="font-serif text-2xl text-espresso">{fmt(price)}</span>
+      {saving && <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-sage-600">Save {fmt(regular - price)}</span>}
+      <span className="font-sans text-[11px] text-bark-400">· Card at checkout</span>
     </div>
   )
 }
@@ -85,7 +83,7 @@ function BuyBox({ box, size }: { box: ResolvedBox; size: string }) {
   return (
     <button
       onClick={buy}
-      className="shrink-0 whitespace-nowrap bg-[#7A8E7C] text-white font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-[#6d8070] transition-colors"
+      className="shrink-0 whitespace-nowrap bg-[#7A8E7C] text-white font-sans text-[10px] tracking-[0.25em] uppercase px-7 py-3 hover:bg-[#6d8070] transition-colors"
     >
       Buy This Box
     </button>
@@ -95,14 +93,14 @@ function BuyBox({ box, size }: { box: ResolvedBox; size: string }) {
 // Box-level size selector (0–3 / 3–6 mo), applied to the garments at checkout.
 function SizePicker({ size, setSize }: { size: string; setSize: (s: string) => void }) {
   return (
-    <div>
-      <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-2">Size</p>
+    <div className="flex items-center gap-3">
+      <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400">Size</p>
       <div className="flex gap-2">
         {BOX_SIZES.map(s => (
           <button
             key={s}
             onClick={() => setSize(s)}
-            className={`flex-1 border px-3 py-2.5 font-sans text-xs transition-colors ${size === s ? 'border-bark-600 bg-bark-600 text-cream-50' : 'border-cream-300 text-bark-600 hover:border-bark-400'}`}
+            className={`border px-4 py-1.5 font-sans text-[11px] transition-colors ${size === s ? 'border-bark-600 bg-bark-600 text-cream-50' : 'border-cream-300 text-bark-600 hover:border-bark-400'}`}
           >
             {s}
           </button>
@@ -450,8 +448,8 @@ function BoxSection({
 
         {/* Size + price + buy — right under the identity; price and the buy
             button sit inline on the same row. */}
-        <FlyIn delay={300} className="px-8 lg:px-12 xl:px-16 mt-5">
-          <div className="border-t border-cream-300 pt-4 space-y-4">
+        <FlyIn delay={300} className="px-8 lg:px-12 xl:px-16 mt-4">
+          <div className="border-t border-cream-300 pt-3.5 space-y-3">
             {hasGarment && <SizePicker size={size} setSize={setSize} />}
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <PriceBlock box={box} />
@@ -463,7 +461,7 @@ function BoxSection({
         {/* What's inside — below the buy button; the ONLY scroll region on
             desktop, filling the remaining panel height. */}
         {box.items.length > 0 && (
-          <div className="px-8 lg:px-12 xl:px-16 mt-6 lg:mt-5 pb-8 lg:pb-6 lg:flex-1 lg:min-h-0 flex flex-col">
+          <div className="px-8 lg:px-12 xl:px-16 mt-5 lg:mt-4 pb-8 lg:pb-6 lg:flex-1 lg:min-h-0 flex flex-col">
             <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-3 shrink-0">What&apos;s Inside</p>
             <div className="max-h-[380px] lg:max-h-none lg:flex-1 lg:min-h-0 overflow-y-auto scrollbar-hide pr-1 pb-2">
               <ItemsList box={box} onOpen={onPreview} />
