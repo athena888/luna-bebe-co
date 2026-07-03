@@ -52,42 +52,33 @@ export default function StoryPortal() {
         <p className="font-sans text-sm text-bark-400 mt-1">Edit the Story page — each block of text sits beside the image that goes with it. ✨ buttons suggest on-brand copy.</p>
       </div>
 
-      {/* 1 · Hero */}
+      {/* 1 · Founder's letter — headline + letter edited together (one section on the page) */}
       <section className="mb-12">
-        <SectionTitle n="1" title="Hero & Founder’s letter" note="The wide banner photo, the headline, and the founder letter — one section, divided." />
+        <SectionTitle n="1" title="Founder’s letter" note="The headline at the top of the page and the letter beneath it — one section. The portrait floats beside the letter." />
         <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
           <div className="space-y-3">
-            <BackgroundBox appliesTo="BOTH the hero headline and the founder letter (one shared section)">
+            <div>
+              <p className="font-sans text-[10px] text-bark-400 mb-1">Founder portrait</p>
+              <SiteImageUploader slotKey="story.founder" context="Founder portrait on the Story page" ratio="3:4" hint="portrait, ~900×1200" />
+            </div>
+            <BackgroundBox appliesTo="BOTH the headline and the founder letter (one shared section)">
               <SiteImageUploader slotKey="story.hero_bg" context="Background behind the story hero heading and logo" ratio="16:9" hint="soft, light lifestyle" compact />
               <ScrimControl scrimKey="story.hero_bg" defaultScrim={{ hex: '#FBF7F0', opacity: 0.92 }} />
             </BackgroundBox>
           </div>
           <div className="space-y-3">
-            <Field label="Eyebrow" value={c.hero.eyebrow} onChange={v => setHero({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'small eyebrow above the Story page hero heading' }} />
-            <Area label="Heading" value={c.hero.heading} onChange={v => setHero({ heading: v })} rows={2} ai={{ kind: 'title', context: 'the main hero heading for the brand Story page' }} />
-          </div>
-        </div>
-      </section>
-
-      {/* 2 · Founder letter */}
-      <section className="mb-12">
-        <SectionTitle n="2" title="Founder’s letter" note="The portrait that floats beside the letter, and the letter itself. (Its background is the shared one set in section 1.)" />
-        <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
-          <div className="space-y-3">
-            <p className="font-sans text-[10px] text-bark-400 mb-1">Founder portrait</p>
-            <SiteImageUploader slotKey="story.founder" context="Founder portrait on the Story page" ratio="3:4" hint="portrait, ~900×1200" />
-          </div>
-          <div className="space-y-3">
-            <Field label="Eyebrow" value={c.founder.eyebrow} onChange={v => setFounder({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'eyebrow above the founder letter' }} />
+            <Field label="Page eyebrow (above the headline)" value={c.hero.eyebrow} onChange={v => setHero({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'small eyebrow above the Story page hero heading' }} />
+            <Area label="Headline" value={c.hero.heading} onChange={v => setHero({ heading: v })} rows={2} ai={{ kind: 'title', context: 'the main hero heading for the brand Story page' }} />
+            <Field label="Letter eyebrow" value={c.founder.eyebrow} onChange={v => setFounder({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'eyebrow above the founder letter' }} />
             <Area label="Letter (blank line between paragraphs)" value={toText(c.founder.paragraphs)} onChange={v => setFounder({ paragraphs: toParas(v) })} rows={10} ai={{ kind: 'body', context: 'a warm first-person founder letter for an organic baby gift brand' }} />
             <Field label="Signature" value={c.founder.signature} onChange={v => setFounder({ signature: v })} />
           </div>
         </div>
       </section>
 
-      {/* 3 · Values */}
+      {/* 2 · Values */}
       <section className="mb-12">
-        <SectionTitle n="3" title="What we stand for" note="Photo on the left, the three values listed on a green panel to the right." />
+        <SectionTitle n="2" title="What we stand for" note="Photo on the left, the three values listed on a green panel to the right." />
         <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
           <div>
             <p className="font-sans text-[10px] text-bark-400 mb-1">Left photo</p>
@@ -104,9 +95,9 @@ export default function StoryPortal() {
         </div>
       </section>
 
-      {/* 4 · French apothecary — closing section, split layout */}
+      {/* 3 · French apothecary — closing section, split layout */}
       <section className="mb-12">
-        <SectionTitle n="4" title="French apothecary soul" note="The closing section. The photo fills the band; text sits on a cream panel over the left half, the right half shows the photo clean." />
+        <SectionTitle n="3" title="French apothecary soul" note="The closing section. The photo fills the band; text sits on a cream panel over the left half, the right half shows the photo clean." />
         <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
           <BackgroundBox appliesTo="the right half of the closing band (the left half is a cream text panel)">
             <SiteImageUploader slotKey="story.french_bg" context="Photo for the French apothecary closing section" ratio="16:9" hint="landscape lifestyle — keep the subject toward the right" compact />
