@@ -72,7 +72,7 @@ export function Footer() {
             </div>
 
             {/* Link columns */}
-            <div className="grid grid-cols-3 gap-5 sm:gap-10">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-8 gap-x-5 sm:gap-x-8">
               <div>
                 <p className="font-serif text-[15px] tracking-[0.1em] uppercase text-espresso font-semibold mb-3">Shop &amp; Gift</p>
                 <ul className="space-y-2 text-[13px] font-sans font-medium">
@@ -98,24 +98,20 @@ export function Footer() {
                   <li><a href={`mailto:${CONTACT_EMAIL}`} className="text-espresso hover:text-gold-500 transition-colors break-all">{CONTACT_EMAIL}</a></li>
                 </ul>
               </div>
+              <div>
+                <p className="font-serif text-[15px] tracking-[0.1em] uppercase text-espresso font-semibold mb-3">Currency</p>
+                <div className="text-[13px] font-sans font-medium text-espresso"><RegionSwitcher /></div>
+              </div>
             </div>
 
           </div>
 
-          {/* Legal bar */}
-          <div className="mt-8 pt-5 border-t border-cream-300 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="font-sans text-[11px] text-espresso">© {new Date().getFullYear()} Petite Lavande. Sent with love.</p>
-            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 font-sans text-[11px] text-espresso">
-              <RegionSwitcher />
-              <span className="text-espresso/40 hidden sm:inline">·</span>
-              <div className="flex items-center gap-2.5 whitespace-nowrap">
-                <Link href="/legal/privacy" className="hover:text-espresso transition-colors">Privacy</Link>
-                <span className="text-espresso/40">·</span>
-                <Link href="/legal/terms" className="hover:text-espresso transition-colors">Terms</Link>
-                <span className="text-espresso/40">·</span>
-                <Link href="/legal/returns" className="hover:text-espresso transition-colors">Returns</Link>
-              </div>
-            </div>
+          {/* Legal bar — one centred line */}
+          <div className="mt-8 pt-6 border-t border-cream-300 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 font-sans text-[13px] font-medium text-espresso">
+            <p>© {new Date().getFullYear()} Petite Lavande. Sent with love.</p>
+            <Link href="/legal/privacy" className="hover:text-gold-500 transition-colors">Privacy Policy</Link>
+            <Link href="/legal/terms" className="hover:text-gold-500 transition-colors">Terms of Service</Link>
+            <Link href="/legal/returns" className="hover:text-gold-500 transition-colors">Returns</Link>
           </div>
 
         </div>
