@@ -427,7 +427,7 @@ export default function BuildPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-cream-50">
+      <main className="min-h-screen bg-white">
 
         {/* Hero — full-viewport, parallax bg, Why Simple text, fade-in */}
         <section className="relative w-full min-h-screen bg-bark-700 flex items-end overflow-hidden border-b border-cream-300">

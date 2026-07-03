@@ -30,7 +30,7 @@ export default async function StoryPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-[#FBF7F0]">
+      <main className="min-h-screen bg-white">
 
         {/* Hero + Founder letter — one section, separated by a divider only.
             Background uploadable via Portal → Story → Hero. */}
