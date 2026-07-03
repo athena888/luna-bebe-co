@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { StepsFeature } from '@/components/ui/StepsFeature'
@@ -81,11 +82,19 @@ export default async function HomePage() {
           <ScrimOverlay scrimKey="home.hero" defaultHex="#181716" defaultOpacity={0.4} variant="gradient-top" />
           {/* pt reserves a safe zone for the fixed header so the copy never rides under it */}
           <div className="relative z-10 w-full min-h-[85vh] sm:min-h-[92vh] px-6 sm:px-12 pt-36 sm:pt-44 pb-10 sm:pb-14 flex flex-col justify-end items-end">
-            <div className="hero-rise w-full max-w-[300px] sm:max-w-sm text-right" style={{ animationDelay: '0.35s' }}>
-              <h1 className="font-serif text-[2.25rem] sm:text-[3.25rem] text-cream-50 leading-[1.05] mb-3">
-                A New Chapter,<br />Wrapped in Care.
+            <div className="hero-rise w-full max-w-[320px] sm:max-w-md text-right" style={{ animationDelay: '0.35s' }}>
+              <h1 className="font-serif text-[2.1rem] sm:text-[3rem] text-cream-50 leading-[1.08] mb-3">
+                We see the mother,<br />not just the baby.
               </h1>
-              <p className="font-serif italic text-cream-200/90 text-lg sm:text-2xl leading-relaxed">Fait avec amour, pour vous.</p>
+              <p className="font-serif text-cream-200/90 text-base sm:text-xl leading-relaxed mb-6">
+                Luxury organic gift boxes — hand-packed, wax-sealed, delivered with love.
+              </p>
+              <Link
+                href="/boxes"
+                className="inline-block bg-white/95 text-espresso font-sans text-[11px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-white transition-colors"
+              >
+                Shop Gift Boxes
+              </Link>
             </div>
           </div>
         </section>
