@@ -115,7 +115,7 @@ function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) 
 
 function MobileMenu({ onClose }: { onClose: () => void }) {
   return (
-    <div className="md:hidden bg-[#FEF8F4] border-b border-cream-300 px-6 py-8 flex flex-col gap-6 font-serif text-base tracking-[0.14em]">
+    <div className="md:hidden bg-[#FEF8F4] border-b border-cream-300 px-6 py-8 flex flex-col gap-6 font-serif text-base tracking-[0.05em]">
       <NavLinks light={false} onClick={onClose} />
       <Link href="/account" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors" onClick={onClose}>My Account</Link>
     </div>
@@ -211,7 +211,7 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
               pinned right. Expanded (hero top) is just bigger and roomier. */}
           <div className={`flex flex-col items-center justify-center transition-all duration-500 ${expanded ? 'gap-3' : 'gap-1.5'}`}>
             <Wordmark light={light} expanded={expanded} />
-            <nav className="flex items-center gap-6 lg:gap-9 font-serif text-[15px] tracking-[0.14em]">
+            <nav className="flex items-center gap-6 lg:gap-9 font-serif text-[15px] tracking-[0.05em]">
               <NavLinks light={light} />
             </nav>
           </div>

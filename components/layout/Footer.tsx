@@ -82,7 +82,7 @@ export function Footer() {
             {/* Link columns — kept off the right border and pulled toward centre */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-8 gap-x-5 sm:gap-x-8 lg:pr-14 xl:pr-24">
               <div>
-                <p className="font-serif text-[15px] tracking-[0.1em] uppercase text-espresso font-semibold mb-3">Shop &amp; Gift</p>
+                <p className="font-serif text-[15px] tracking-[0.03em] uppercase text-espresso font-semibold mb-3">Shop &amp; Gift</p>
                 <ul className="space-y-2 text-[13px] font-sans font-medium">
                   <li><Link href="/gift-guides" className="text-espresso hover:text-gold-500 transition-colors">Gifting Ideas</Link></li>
                   <li><Link href="/boxes" className="text-espresso hover:text-gold-500 transition-colors">Ready-Made Boxes</Link></li>
@@ -91,7 +91,7 @@ export function Footer() {
                 </ul>
               </div>
               <div>
-                <p className="font-serif text-[15px] tracking-[0.1em] uppercase text-espresso font-semibold mb-3">About</p>
+                <p className="font-serif text-[15px] tracking-[0.03em] uppercase text-espresso font-semibold mb-3">About</p>
                 <ul className="space-y-2 text-[13px] font-sans font-medium">
                   <li><Link href="/story" className="text-espresso hover:text-gold-500 transition-colors">Our Story</Link></li>
                   <li><Link href="/journal" className="text-espresso hover:text-gold-500 transition-colors">The Journal</Link></li>
@@ -100,14 +100,14 @@ export function Footer() {
                 </ul>
               </div>
               <div>
-                <p className="font-serif text-[15px] tracking-[0.1em] uppercase text-espresso font-semibold mb-3">Corporate</p>
+                <p className="font-serif text-[15px] tracking-[0.03em] uppercase text-espresso font-semibold mb-3">Corporate</p>
                 <ul className="space-y-2 text-[13px] font-sans font-medium">
                   <li><Link href="/corporate" className="text-espresso hover:text-gold-500 transition-colors">Team Gifting</Link></li>
                   <li><a href={`mailto:${CONTACT_EMAIL}`} className="text-espresso hover:text-gold-500 transition-colors break-all">{CONTACT_EMAIL}</a></li>
                 </ul>
               </div>
               <div>
-                <p className="font-serif text-[15px] tracking-[0.1em] uppercase text-espresso font-semibold mb-3">Currency</p>
+                <p className="font-serif text-[15px] tracking-[0.03em] uppercase text-espresso font-semibold mb-3">Currency</p>
                 <div className="text-[13px] font-sans font-medium text-espresso"><RegionSwitcher /></div>
               </div>
             </div>
