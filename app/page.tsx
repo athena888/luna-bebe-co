@@ -83,7 +83,7 @@ export default async function HomePage() {
           {/* pt reserves a safe zone for the fixed header so the copy never rides under it */}
           <div className="relative z-10 w-full min-h-[85vh] sm:min-h-[92vh] px-6 sm:px-12 pt-36 sm:pt-44 pb-10 sm:pb-14 flex flex-col justify-end items-end">
             <div className="hero-rise w-full max-w-[320px] sm:max-w-md text-right" style={{ animationDelay: '0.35s' }}>
-              <h1 className="font-serif text-[2.1rem] sm:text-[3rem] text-cream-50 leading-[1.08] mb-3">
+              <h1 className="font-serif text-[1.75rem] sm:text-[2.4rem] text-cream-50 leading-[1.1] mb-3">
                 We see the mother,<br />not just the baby.
               </h1>
               <p className="font-serif text-cream-200/90 text-base sm:text-xl leading-relaxed mb-6">
@@ -91,7 +91,7 @@ export default async function HomePage() {
               </p>
               <Link
                 href="/boxes"
-                className="inline-block bg-white/95 text-espresso font-sans text-[11px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-white transition-colors"
+                className="inline-block bg-[#7A8E7C] text-white font-serif text-base sm:text-lg tracking-[0.06em] uppercase px-9 py-3 hover:bg-[#6d8070] transition-colors"
               >
                 Shop Gift Boxes
               </Link>
