@@ -13,7 +13,7 @@ import BoxesPortal from '@/app/portal/boxes/page'
 import CardStylesPortal from '@/app/portal/card-styles/page'
 import { GiftGuidesEditor } from '@/components/portal/GiftGuidesEditor'
 
-type PageId = 'home' | 'story' | 'build' | 'boxes' | 'guides' | 'giftcards' | 'global' | 'social' | 'journal' | 'signin' | 'products' | 'prebuilt' | 'cardstyles'
+type PageId = 'home' | 'story' | 'build' | 'boxes' | 'guides' | 'giftcards' | 'corporate' | 'global' | 'social' | 'journal' | 'signin' | 'products' | 'prebuilt' | 'cardstyles'
 
 const TABS: { id: PageId; label: string }[] = [
   { id: 'home',       label: 'Homepage' },
@@ -25,6 +25,7 @@ const TABS: { id: PageId; label: string }[] = [
   { id: 'boxes',      label: 'Boxes Page' },
   { id: 'guides',     label: 'Gift Guides' },
   { id: 'giftcards',  label: 'Gift Cards' },
+  { id: 'corporate',  label: 'Corporate' },
   { id: 'global',     label: 'Global' },
   { id: 'social',     label: 'Social Feed' },
   { id: 'journal',    label: 'Journal' },
@@ -186,6 +187,48 @@ export default function ContentPage() {
                 ratio="3:2"
                 hint="Gift card art · ~1200×800"
                 where="The card image in the live gift-card preview"
+              />
+            </div>
+          </div>
+        )}
+
+        {active === 'corporate' && (
+          <div className="p-8 max-w-3xl">
+            <SectionHeading title="Corporate" note="The /corporate team-gifting page. Text on this page is edited in code for now — these control the three background photos." />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <SlotRow
+                slotKey="corporate.hero_bg"
+                label="Hero background"
+                context="Background behind the When your people become parents hero on the corporate page"
+                ratio="21:9"
+                hint="Wide & soft · ~2000×860 (21:9)"
+                where="Behind the &ldquo;When your people become parents&rdquo; hero at the top of /corporate"
+                scrim={{ hex: '#FAF9F8', opacity: 0.40, label: 'Colour overlay', note: 'light wash over the photo so the hero text stays readable' }}
+              />
+              <SlotRow
+                slotKey="corporate.hero_bg.mobile"
+                label="Hero background — Mobile"
+                context="Background behind the corporate hero on mobile"
+                ratio="4:5"
+                hint="Taller phone crop · ~1000×1250"
+                where="Behind the corporate hero on phones"
+              />
+              <SlotRow
+                slotKey="corporate.points_bg"
+                label="Three-points background"
+                context="Background behind the dark three-points band on the corporate page"
+                ratio="21:9"
+                hint="Shown full width, uncropped — the band height follows the image. Use a wide image with room for text · ~2000×860"
+                where="Behind the dark &ldquo;One less thing / Traceable / Simple to run&rdquo; band (white text)"
+              />
+              <SlotRow
+                slotKey="corporate.form_bg"
+                label="Lead form background"
+                context="Background behind the corporate lead form"
+                ratio="16:9"
+                hint="Soft, light — the form sits on top · ~2000×1130"
+                where="Behind the &ldquo;Tell us about your team&rdquo; contact form"
+                scrim={{ hex: '#FAF9F8', opacity: 0.85, label: 'Colour overlay', note: 'cream wash over the photo so the form stays readable' }}
               />
             </div>
           </div>
