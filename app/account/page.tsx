@@ -87,7 +87,6 @@ export default function AccountPage() {
         <div className="text-center mb-10">
           <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">My Account</p>
           <h1 className="font-serif text-4xl text-espresso">Sign In</h1>
-          <p className="font-sans text-sm text-bark-400 mt-2">View your orders and saved items.</p>
         </div>
 
         {magicSent ? (

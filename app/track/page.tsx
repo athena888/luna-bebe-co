@@ -75,6 +75,10 @@ export default function TrackPage() {
         {/* Optional background photo — Portal → Pages & Content → Track Order */}
         <SlotBackground slotKey="track.bg" scrim="bg-cream-50/85" className="min-h-screen">
         <div className="max-w-xl mx-auto px-6 py-14">
+          <div className="text-center mb-10">
+            <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">Order Status</p>
+            <h1 className="font-serif text-4xl text-espresso">Track an Order</h1>
+          </div>
           <form onSubmit={handleLookup} className="space-y-4 mb-10">
             <div>
               <label className={labelClass}>Email Address</label>
