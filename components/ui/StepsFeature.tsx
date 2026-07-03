@@ -52,7 +52,7 @@ export function StepsFeature({ images, side = 'left' }: { images: string[]; side
             Create Something Unforgettable
           </h2>
 
-          <p className="font-serif text-[16px] sm:text-[17px] text-white/90 leading-relaxed mb-8 md:mb-9">
+          <p className="font-playfair text-[15px] sm:text-[16px] text-white/95 leading-relaxed mb-8 md:mb-9">
             A botanical lavender bouquet and wellness rituals to soften the long days,
             each chosen the way a daughter would choose for her own mother.
           </p>
@@ -62,7 +62,7 @@ export function StepsFeature({ images, side = 'left' }: { images: string[]; side
             {ITEMS.map((item, i) => (
               <p
                 key={item}
-                className={`font-serif text-[15px] sm:text-[16px] text-white leading-relaxed transition-all duration-500 ease-out ${(shown || reduce) ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}
+                className={`font-playfair text-[14px] sm:text-[15px] text-white leading-relaxed transition-all duration-500 ease-out ${(shown || reduce) ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}
                 style={{ transitionDelay: reduce ? '0ms' : `${150 + i * 140}ms` }}
               >
                 - {item}

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { EditorialFeature } from '@/components/ui/EditorialFeature'
 import { StepsFeature } from '@/components/ui/StepsFeature'
 import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
@@ -155,38 +154,13 @@ export default async function HomePage() {
           <CollectionsSection initial={collectionsData ?? undefined} />
         </div>
 
-        {/* ── Editorial features — image + copy edited together in Portal → Home Content.
-             (The "What makes it special" intro now lives up under Best Sellers.) ── */}
+        {/* ── "Create Something Unforgettable" framed panel — the only editorial
+             feature beat (the "For the mother…" feature was removed). ── */}
         <section className="bg-white pt-14 sm:pt-24">
-
-          {/* Editable image features — image + copy edited together in the portal.
-              Images alternate flush-left / flush-right as they fly in. */}
-          {content.why.features.map((f, i) => {
-            const imgs = galleries[f.slot] ?? [homeImg(f.slot)]
-            // First beat = the "Create Something Unforgettable" 3-step how-it-works.
-            if (i === 0) return <StepsFeature key={i} images={imgs} side="left" />
-            const bullets = f.bullets.filter(b => b.trim())
-            return (
-              <EditorialFeature key={i} images={imgs} alt={f.eyebrow || 'Petite Lavande'} side={i % 2 === 0 ? 'left' : 'right'}>
-                {/* Warm-brown palette: gold eyebrow, espresso heading, light warm
-                    brown body, espresso bullets with gold dashes. */}
-                {f.eyebrow && <p className="font-sans text-[10px] tracking-[0.45em] uppercase font-semibold text-gold-500 mb-5">{f.eyebrow}</p>}
-                <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-espresso leading-[1.05] mb-5 whitespace-pre-line">{f.title}</h2>
-                <p className="font-cormorant text-lg text-[#9A7E68] leading-loose whitespace-pre-line">{f.body}</p>
-                {bullets.length > 0 && (
-                  <ul className="space-y-2.5 mt-6">
-                    {bullets.map((b, j) => (
-                      <li key={j} className="font-sans text-[10px] tracking-[0.15em] uppercase font-medium text-espresso-light flex items-center gap-3">
-                        <span className="w-4 h-px bg-gold-400 shrink-0" />
-                        {b}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </EditorialFeature>
-            )
-          })}
-
+          {(() => {
+            const slot = content.why.features[0]?.slot ?? 'brand'
+            return <StepsFeature images={galleries[slot] ?? [homeImg(slot)]} side="left" />
+          })()}
         </section>
 
         {/* ── 8. Testimonials — shown only when NEXT_PUBLIC_SHOW_REVIEWS=true and there are real reviews ── */}
