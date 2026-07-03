@@ -435,24 +435,15 @@ function BoxSection({
           <div className="box-botanical-panel absolute inset-0 pointer-events-none" style={{ zIndex: -1 }} aria-hidden="true" />
         )}
 
-        {/* Top: identity */}
+        {/* Top: identity — no style/season tag or description blurb; the saved
+            height goes to the What's-inside scroll region below. */}
         <div className="px-8 lg:px-12 xl:px-16 pt-8 lg:pt-8">
-          <FlyIn delay={80}>
-            <div className="flex items-center gap-2 mb-3">
-              {box.style && <span className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400">{box.style}</span>}
-            </div>
-          </FlyIn>
           <FlyIn delay={100}>
             <h2 className="font-serif text-4xl lg:text-5xl text-espresso leading-[1.02] mb-3">{box.name}</h2>
           </FlyIn>
           {box.tagline && (
             <FlyIn delay={200}>
-              <p className="font-cormorant text-lg italic text-espresso-light leading-snug mb-2.5">{box.tagline}</p>
-            </FlyIn>
-          )}
-          {box.description && (
-            <FlyIn delay={280}>
-              <p className="font-sans text-[13px] text-espresso-light leading-relaxed">{box.description}</p>
+              <p className="font-cormorant text-lg italic text-espresso-light leading-snug">{box.tagline}</p>
             </FlyIn>
           )}
         </div>
@@ -462,7 +453,7 @@ function BoxSection({
         {box.items.length > 0 && (
           <div className="px-8 lg:px-12 xl:px-16 mt-6 lg:mt-4 lg:flex-1 lg:min-h-0 flex flex-col">
             <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-3 shrink-0">What&apos;s Inside</p>
-            <div className="max-h-[320px] lg:max-h-none lg:flex-1 lg:min-h-0 overflow-y-auto scrollbar-hide pr-1 pb-2">
+            <div className="max-h-[380px] lg:max-h-none lg:flex-1 lg:min-h-0 overflow-y-auto scrollbar-hide pr-1 pb-2">
               <ItemsList box={box} onOpen={onPreview} />
             </div>
           </div>
