@@ -32,26 +32,10 @@ export default async function StoryPage() {
       <Header />
       <main className="min-h-screen bg-white">
 
-        {/* Hero + Founder letter — one section, separated by a divider only.
-            Background uploadable via Portal → Story → Hero. */}
+        {/* Founder letter — opens the page (the logo + headline moved down to
+            the full-bleed section between the values and the closing). */}
         <SlotBackground slotKey="story.hero_bg" scrim="bg-[#FBF7F0]/92" className="border-b border-cream-300">
-          {/* Hero heading */}
-          <div className="max-w-3xl mx-auto px-6 pt-10 sm:pt-20 pb-8 text-center">
-            <LogoMark className="h-20 sm:h-32 w-auto mx-auto mb-4 sm:mb-6" style={{ color: '#574540' }} alt="Petite Lavande" />
-            <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-4">{content.hero.eyebrow}</p>
-            <h1
-              className="text-3xl sm:text-4xl lg:text-5xl text-espresso leading-tight"
-              style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400 }}
-            >
-              {content.hero.heading}
-            </h1>
-          </div>
-
-          {/* Divider */}
-          <div className="w-12 h-px bg-gold-400 mx-auto" />
-
-          {/* Founder letter */}
-          <div className="max-w-2xl mx-auto px-6 pt-12 pb-20">
+          <div className="max-w-2xl mx-auto px-6 pt-14 sm:pt-20 pb-20">
             {founder && (
               <div className="float-none sm:float-right sm:ml-8 mb-6 w-full sm:w-56 shrink-0">
                 <div className="aspect-[3/4] overflow-hidden border border-cream-300">
@@ -59,12 +43,12 @@ export default async function StoryPage() {
                 </div>
               </div>
             )}
-            <div className="space-y-6">
+            <div className="space-y-4">
               <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400">{content.founder.eyebrow}</p>
               {content.founder.paragraphs.map((para, i) => (
                 i === 0
-                  ? <p key={i} className="text-xl text-espresso leading-loose" style={{ fontFamily: 'var(--font-cormorant)' }}>{para}</p>
-                  : <p key={i} className="font-sans text-sm text-espresso-light leading-relaxed">{para}</p>
+                  ? <p key={i} className="text-xl text-espresso leading-relaxed" style={{ fontFamily: 'var(--font-cormorant)' }}>{para}</p>
+                  : <p key={i} className="font-sans text-sm text-espresso-light leading-normal">{para}</p>
               ))}
               <p className="text-2xl text-espresso" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>
                 {content.founder.signature}
@@ -96,24 +80,32 @@ export default async function StoryPage() {
           </div>
         </section>
 
-        {/* French apothecary soul — text column (left 35%) and photo column
-            (right 65%) side by side, no overlap. Photo managed in Portal → Story. */}
-        <section className="border-t border-cream-300">
-          <div className="grid grid-cols-1 md:grid-cols-[35%_65%] items-stretch">
-            {/* Left: text on cream — flies in/out on scroll */}
-            <ScrollFlyIn from="left" className="bg-[#FBF7F0] px-6 sm:px-10 lg:px-14 py-16 sm:py-20 flex flex-col justify-center">
-              <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-4">{content.french.eyebrow}</p>
-              {content.french.paragraphs.map((para, i) => (
-                i === 0
-                  ? <p key={i} className="font-sans text-sm text-espresso-light leading-relaxed mb-4">{para}</p>
-                  : <p key={i} className="font-sans text-sm text-bark-400 leading-relaxed mb-4">{para}</p>
-              ))}
-              <p className="text-2xl text-espresso" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.french.tagline}</p>
+        {/* Headline + French apothecary soul — one full-bleed photo band with
+            all the text baked over it, dropping in on scroll. Photo managed in
+            Portal → Story. */}
+        <section className="relative border-t border-cream-300 bg-bark-800 overflow-hidden">
+          <SlotImage slotKey="story.french_bg" className="absolute inset-0 w-full h-full" imgClassName="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-bark-900/50" aria-hidden="true" />
+          <div className="relative z-10 max-w-3xl mx-auto px-6 py-24 sm:py-32 text-center">
+            <ScrollFlyIn from="down">
+              <LogoMark className="h-20 sm:h-28 w-auto mx-auto mb-5" style={{ color: '#FBF4EA' }} alt="Petite Lavande" />
+              <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-cream-100/80 mb-4">{content.hero.eyebrow}</p>
+              <h2
+                className="text-3xl sm:text-4xl lg:text-5xl text-white leading-tight mb-14"
+                style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400 }}
+              >
+                {content.hero.heading}
+              </h2>
             </ScrollFlyIn>
-            {/* Right: the photo as its own block — sits beside the text, no overlap */}
-            <div className="relative min-h-[22rem] md:min-h-[32rem] bg-cream-100">
-              <SlotImage slotKey="story.french_bg" className="absolute inset-0 w-full h-full" imgClassName="w-full h-full object-cover" />
-            </div>
+            <ScrollFlyIn from="down">
+              <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-300 mb-4">{content.french.eyebrow}</p>
+              <div className="max-w-xl mx-auto">
+                {content.french.paragraphs.map((para, i) => (
+                  <p key={i} className="font-sans text-sm text-cream-50/85 leading-relaxed mb-4">{para}</p>
+                ))}
+              </div>
+              <p className="text-2xl text-white mt-2" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.french.tagline}</p>
+            </ScrollFlyIn>
           </div>
         </section>
 

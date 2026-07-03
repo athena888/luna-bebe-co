@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 // panel's own classes via `className`; this element IS the panel.
 export function ScrollFlyIn({ children, from = 'left', className = '' }: {
   children: React.ReactNode
-  from?: 'left' | 'right' | 'up'
+  from?: 'left' | 'right' | 'up' | 'down'
   className?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -24,6 +24,7 @@ export function ScrollFlyIn({ children, from = 'left', className = '' }: {
   const hidden =
     from === 'left' ? '-translate-x-16 opacity-0'
     : from === 'right' ? 'translate-x-16 opacity-0'
+    : from === 'down' ? '-translate-y-12 opacity-0'
     : 'translate-y-12 opacity-0'
 
   return (
