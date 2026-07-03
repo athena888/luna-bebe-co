@@ -5,7 +5,6 @@ import type { Metadata } from 'next'
 import { getSiteImages } from '@/lib/site-images'
 import { getStoryContent } from '@/lib/story-content'
 import { getActiveSocialPosts } from '@/lib/social-posts'
-import { LogoMark } from '@/components/ui/LogoMark'
 import { SlotImage } from '@/components/ui/SlotImage'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { ScrollFlyIn } from '@/components/ui/ScrollFlyIn'
@@ -35,15 +34,15 @@ export default async function StoryPage() {
         {/* Founder letter — opens the page (the logo + headline moved down to
             the full-bleed section between the values and the closing). */}
         <SlotBackground slotKey="story.hero_bg" scrim="bg-[#FBF7F0]/92" className="border-b border-cream-300">
-          <div className="max-w-2xl mx-auto px-6 pt-14 sm:pt-20 pb-20">
+          <div className="max-w-4xl mx-auto px-6 pt-14 sm:pt-20 pb-20 sm:flex sm:items-start sm:gap-10">
             {founder && (
-              <div className="float-none sm:float-right sm:ml-8 mb-6 w-full sm:w-56 shrink-0">
+              <div className="mb-6 sm:mb-0 sm:order-2 sm:w-64 shrink-0">
                 <div className="aspect-[3/4] overflow-hidden border border-cream-300">
                   <img src={founder.public_url} alt={founder.alt_text} className="w-full h-full object-cover" />
                 </div>
               </div>
             )}
-            <div className="space-y-4">
+            <div className="space-y-4 sm:order-1 sm:flex-1 min-w-0">
               <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400">{content.founder.eyebrow}</p>
               {content.founder.paragraphs.map((para, i) => (
                 i === 0
@@ -88,7 +87,6 @@ export default async function StoryPage() {
           <div className="absolute inset-0 bg-bark-900/50" aria-hidden="true" />
           <div className="relative z-10 max-w-3xl mx-auto px-6 py-24 sm:py-32 text-center">
             <ScrollFlyIn from="down">
-              <LogoMark className="h-20 sm:h-28 w-auto mx-auto mb-5" style={{ color: '#FBF4EA' }} alt="Petite Lavande" />
               <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-cream-100/80 mb-4">{content.hero.eyebrow}</p>
               <h2
                 className="text-3xl sm:text-4xl lg:text-5xl text-white leading-tight mb-14"
