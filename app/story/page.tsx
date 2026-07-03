@@ -46,10 +46,10 @@ export default async function StoryPage() {
               <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400">{content.founder.eyebrow}</p>
               {content.founder.paragraphs.map((para, i) => (
                 i === 0
-                  ? <p key={i} className="text-xl text-espresso leading-relaxed" style={{ fontFamily: 'var(--font-cormorant)' }}>{para}</p>
-                  : <p key={i} className="font-sans text-sm text-espresso-light leading-normal">{para}</p>
+                  ? <p key={i} className="font-playfair text-lg text-espresso leading-snug">{para}</p>
+                  : <p key={i} className="font-playfair text-[15px] text-espresso-light leading-snug">{para}</p>
               ))}
-              <p className="text-2xl text-espresso" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>
+              <p className="font-playfair italic text-xl text-espresso">
                 {content.founder.signature}
               </p>
             </div>
