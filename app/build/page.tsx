@@ -479,7 +479,7 @@ export default function BuildPage() {
           {activeCategories.map((cat) => (
             <section key={cat} id={`cat-${cat}`}>
               <div className="pl-6 sm:pl-9 pr-6 sm:pr-8 mb-8">
-                <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-1">{CATEGORY_LABELS[cat]}</p>
+                <p className="font-sans text-[11px] tracking-[0.35em] uppercase font-bold text-gold-500 mb-1">{CATEGORY_LABELS[cat]}</p>
                 <h2 className="font-serif text-lg sm:text-xl text-terra-500">{CATEGORY_SUBTITLES[cat]}</h2>
               </div>
               <div className="relative">
