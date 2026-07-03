@@ -460,7 +460,7 @@ export default function BuildPage() {
               We don&apos;t add what doesn&apos;t belong.
             </h1>
             <p className="font-serif italic text-lg sm:text-xl text-cream-200/80 leading-relaxed max-w-lg mb-3">
-              We don&apos;t pad the box with filler. Every item here exists because a new mother will actually use it, hold it, drink it, or dress her baby in it.
+              We don&apos;t pad the box with filler. Every item here exists because a new mother and a newborn baby will actually use it and love it.
             </p>
             <p className="font-sans text-sm text-cream-100/50 tracking-wide">
               Simplicity isn&apos;t a shortcut. It&apos;s the harder choice.

@@ -44,7 +44,7 @@ export const DEFAULT_STORY_CONTENT: StoryContent = {
   },
   whySimple: {
     eyebrow: 'Why Simple',
-    body: "We don't add what doesn't belong. We don't pad the box with filler. Every item here exists because a new mother will actually use it, hold it, drink it, or dress her baby in it.",
+    body: "We don't add what doesn't belong. We don't pad the box with filler. Every item here exists because a new mother and a newborn baby will actually use it and love it.",
     tagline: "Simplicity isn't a shortcut. It's the harder choice.",
   },
   french: {
