@@ -68,7 +68,7 @@ export default function CorporatePage() {
             <h1 className="font-serif text-4xl sm:text-6xl text-espresso leading-tight max-w-3xl mx-auto" style={{ animation: 'slideUp 0.9s ease-out 0.12s both' }}>
               When your people become parents
             </h1>
-            <p className="font-cormorant text-lg sm:text-xl text-espresso-light leading-loose max-w-2xl mx-auto mt-6" style={{ animation: 'slideUp 0.9s ease-out 0.26s both' }}>
+            <p className="font-playfair text-base sm:text-lg text-espresso-light leading-loose max-w-2xl mx-auto mt-6" style={{ animation: 'slideUp 0.9s ease-out 0.26s both' }}>
               A birth is the biggest week in an employee&rsquo;s life. Most companies send a logo mug. Send something
               that sees the moment — an organic newborn gift box that cares for the new parent as much as the baby,
               hand-packed and delivered to their door.
