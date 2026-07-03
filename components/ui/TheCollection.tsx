@@ -32,10 +32,18 @@ export function TheCollection() {
         <h2 className="font-playfair text-[2rem] sm:text-[2.6rem] uppercase tracking-[0.01em] font-medium text-espresso leading-none">The Collection</h2>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-16">
         {/* Card — description panel on the left, carousel on the right (stacked
-            description-first on phones). Whole card ≈ 80–90% viewport height. */}
-        <div className="bg-white border border-cream-200 shadow-sm overflow-hidden sm:flex sm:items-stretch">
+            description-first with a little padding on phones). ≈ 80–90vh. */}
+        <div className="relative bg-white border border-cream-200 shadow-sm sm:overflow-hidden sm:flex sm:items-stretch p-3 sm:p-0">
+          {/* Web only: lavender artwork straddling the panel/photo seam, top layer */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/decor/lavender-divider.png"
+            alt=""
+            aria-hidden="true"
+            className="hidden sm:block absolute top-1/2 left-[32%] -translate-x-1/2 -translate-y-1/2 w-[340px] lg:w-[400px] h-auto z-20 pointer-events-none drop-shadow-sm"
+          />
           {/* Description — olive framed panel (Unforgettable style), left of the
               photo; fades in on swap */}
           <div key={`desc-${idx}`} className="relative bg-[#8A9B63] px-8 py-12 sm:py-8 sm:w-[32%] sm:shrink-0 flex flex-col justify-center text-center" style={{ animation: 'fadeIn 0.8s ease-out both' }}>
@@ -83,13 +91,13 @@ export function TheCollection() {
               <p className="font-playfair text-white text-2xl sm:text-4xl drop-shadow-md">{box.name}</p>
             </div>
 
-            {/* Arrows — desktop & mobile */}
+            {/* Arrows on the photo — mobile only; web arrows sit outside the card */}
             {boxes.length > 1 && (
-              <>
+              <div className="sm:hidden">
                 <button
                   type="button"
                   onClick={prev}
-                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full pl-round-full bg-white/90 shadow-md flex items-center justify-center text-bark-600 hover:bg-white hover:text-espresso transition-colors"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full pl-round-full bg-white/90 shadow-md flex items-center justify-center text-bark-600 hover:bg-white hover:text-espresso transition-colors"
                   aria-label="Previous box"
                 >
                   <ChevronLeft size={18} strokeWidth={1.5} />
@@ -97,15 +105,37 @@ export function TheCollection() {
                 <button
                   type="button"
                   onClick={next}
-                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full pl-round-full bg-white/90 shadow-md flex items-center justify-center text-bark-600 hover:bg-white hover:text-espresso transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full pl-round-full bg-white/90 shadow-md flex items-center justify-center text-bark-600 hover:bg-white hover:text-espresso transition-colors"
                   aria-label="Next box"
                 >
                   <ChevronRight size={18} strokeWidth={1.5} />
                 </button>
-              </>
+              </div>
             )}
           </div>
         </div>
+
+        {/* Web arrows — outside the card, in the side gutters */}
+        {boxes.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={prev}
+              className="hidden sm:flex absolute left-1 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full pl-round-full bg-white border border-bark-600 shadow-sm items-center justify-center text-bark-600 hover:bg-cream-100 transition-colors"
+              aria-label="Previous box"
+            >
+              <ChevronLeft size={18} strokeWidth={1.5} />
+            </button>
+            <button
+              type="button"
+              onClick={next}
+              className="hidden sm:flex absolute right-1 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full pl-round-full bg-white border border-bark-600 shadow-sm items-center justify-center text-bark-600 hover:bg-cream-100 transition-colors"
+              aria-label="Next box"
+            >
+              <ChevronRight size={18} strokeWidth={1.5} />
+            </button>
+          </>
+        )}
 
         {/* Dots */}
         {boxes.length > 1 && (
