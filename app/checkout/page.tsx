@@ -7,8 +7,8 @@ import { Footer } from '@/components/layout/Footer'
 import { VatNotice } from '@/components/ui/VatNotice'
 import { SHIPPING, BOX_BASE_PRICE } from '@/lib/products'
 import type { BoxSelection, ShippingType } from '@/types'
-import { Lock } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { storeCheckoutEnabled } from '@/lib/store-flags'
 
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
@@ -95,6 +95,24 @@ export default function CheckoutPage() {
   const shippingCost = SHIPPING[shippingType].price
   const total = itemTotal + BOX_BASE_PRICE + shippingCost
 
+  // Bag editing — quantity steppers + remove, persisted back to the session
+  // so the build page and a refresh both see the same bag.
+  type CartItem = NonNullable<BoxSelection['swaddle']> & { qty?: number; selectedColor?: string; selectedSize?: string }
+  const entries = Object.entries(selection).filter(([, v]) => v) as Array<[string, CartItem]>
+
+  function updateSelection(next: BoxSelection) {
+    setSelection(next)
+    sessionStorage.setItem('pl_box_selection', JSON.stringify(next))
+  }
+  function setQty(key: string, qty: number) {
+    const item = (selection as unknown as Record<string, CartItem | null>)[key]
+    if (!item || qty < 1) return
+    updateSelection({ ...(selection as object), [key]: { ...item, qty } } as unknown as BoxSelection)
+  }
+  function removeItem(key: string) {
+    updateSelection({ ...(selection as object), [key]: null } as unknown as BoxSelection)
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
@@ -159,23 +177,65 @@ export default function CheckoutPage() {
       <Header />
       <main className="min-h-screen bg-cream-50">
 
-        {/* Header */}
-        <div className="border-b border-cream-300 px-6 py-12 text-center bg-cream-50">
-          <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">Almost There</p>
-          <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-2">Checkout</h1>
-          <p className="font-sans text-xs text-bark-400 tracking-wide">Secure checkout powered by Stripe.</p>
-        </div>
-
-        <div className="max-w-5xl mx-auto px-6 py-14">
+        <div className="max-w-6xl mx-auto px-6 py-12 sm:py-16">
           <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-14">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-14">
 
-              {/* Left — form */}
+              {/* Left — shopping bag + details */}
               <div className="lg:col-span-3 space-y-10">
 
-                {/* Contact */}
+                {/* Shopping bag — one white card per item, qty stepper + remove */}
                 <div>
-                  <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-6 pb-3 border-b border-cream-300">Contact Information</p>
+                  <h1 className="font-playfair text-3xl sm:text-4xl text-espresso mb-6">Shopping Bag</h1>
+                  <div className="space-y-4">
+                    {entries.map(([key, item]) => {
+                      const src = productImage(item)
+                      const qty = item.qty ?? 1
+                      return (
+                        <div key={key} className="bg-white p-5 sm:p-6 flex gap-5">
+                          <div className="relative w-20 sm:w-24 aspect-[3/4] shrink-0 bg-cream-100 overflow-hidden">
+                            {src
+                              ? <Image src={src} alt={item.name} fill className="object-cover" unoptimized sizes="96px" />
+                              : <span className="absolute inset-0 flex items-center justify-center text-2xl">{item.imageEmoji}</span>}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-1.5">Petite Lavande</p>
+                            <p className="font-sans text-[15px] text-espresso leading-snug">{item.name}</p>
+                            <p className="font-sans text-sm text-bark-500 mt-1.5">{formatPrice(item.price)}</p>
+                            {(item.selectedColor || item.selectedSize) && (
+                              <p className="font-sans text-[12px] text-bark-400 mt-1 capitalize">
+                                {[item.selectedColor, item.selectedSize].filter(Boolean).join(' · ')}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex flex-col items-end justify-between shrink-0">
+                            <div className="flex items-center border border-cream-300">
+                              <button type="button" onClick={() => setQty(key, qty - 1)} disabled={qty <= 1} aria-label="Decrease quantity"
+                                className="w-9 h-9 flex items-center justify-center text-bark-500 hover:text-espresso disabled:opacity-30 transition-colors">−</button>
+                              <span className="w-8 text-center font-sans text-sm text-espresso">{qty}</span>
+                              <button type="button" onClick={() => setQty(key, qty + 1)} aria-label="Increase quantity"
+                                className="w-9 h-9 flex items-center justify-center text-bark-500 hover:text-espresso transition-colors">+</button>
+                            </div>
+                            <button type="button" onClick={() => removeItem(key)}
+                              className="font-sans text-[12px] tracking-[0.06em] text-bark-500 hover:text-espresso underline underline-offset-4 transition-colors">
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    })}
+                    {entries.length === 0 && (
+                      <div className="bg-white p-8 text-center">
+                        <p className="font-sans text-sm text-bark-400 mb-3">Your bag is empty.</p>
+                        <Link href="/build" className="font-sans text-[11px] tracking-[0.2em] uppercase text-espresso underline underline-offset-4">Build your box</Link>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Contact */}
+                <div className="bg-white p-6 sm:p-7">
+                  <h2 className="font-playfair text-xl text-espresso mb-6 pb-3 border-b border-cream-200">Contact Information</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="sm:col-span-2">
                       <label className={labelClass}>Full Name</label>
@@ -201,8 +261,8 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Shipping address */}
-                <div>
-                  <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-6 pb-3 border-b border-cream-300">Shipping Address</p>
+                <div className="bg-white p-6 sm:p-7">
+                  <h2 className="font-playfair text-xl text-espresso mb-6 pb-3 border-b border-cream-200">Shipping Address</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="sm:col-span-2">
                       <label className={labelClass}>Street Address</label>
@@ -230,8 +290,8 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Shipping method */}
-                <div>
-                  <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-6 pb-3 border-b border-cream-300">Shipping Method</p>
+                <div className="bg-white p-6 sm:p-7">
+                  <h2 className="font-playfair text-xl text-espresso mb-6 pb-3 border-b border-cream-200">Shipping Method</h2>
                   <div className="space-y-3">
                     {(Object.entries(SHIPPING) as [ShippingType, typeof SHIPPING[ShippingType]][]).map(([key, option]) => (
                       <button
@@ -258,97 +318,57 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Right — order summary */}
+              {/* Right — order summary card */}
               <div className="lg:col-span-2">
-                <div className="sticky top-24 border border-cream-300">
+                <div className="sticky top-24 bg-white rounded-xl shadow-sm p-6 sm:p-7">
+                  <h2 className="font-playfair text-2xl text-espresso mb-6">Order Summary</h2>
 
-                  {/* Box contents preview — real product photos */}
-                  <div className="border-b border-cream-300 p-4">
-                    {(() => {
-                      const items = Object.values(selection).filter(Boolean) as Array<NonNullable<typeof selection.swaddle>>
-                      if (items.length === 0) {
-                        return (
-                          <div className="aspect-square w-full bg-cream-100 relative flex flex-col items-center justify-center gap-3">
-                            <div className="w-8 h-px bg-gold-400" />
-                            <p className="font-script text-2xl text-bark-400">Petite Lavande</p>
-                            <div className="w-8 h-px bg-gold-400" />
-                          </div>
-                        )
-                      }
-                      return (
-                        <>
-                          <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-bark-400 mb-3 text-center">Inside your box</p>
-                          <div className="grid grid-cols-3 gap-2">
-                            {items.map((item, idx) => {
-                              const src = productImage(item)
-                              return (
-                                <div key={`${item.id}-${idx}`} className="relative aspect-square overflow-hidden bg-cream-100 border border-cream-200">
-                                  {src
-                                    ? <Image src={src} alt={item.name} fill className="object-cover" unoptimized sizes="120px" />
-                                    : <span className="absolute inset-0 flex items-center justify-center text-2xl">{item.imageEmoji}</span>}
-                                </div>
-                              )
-                            })}
-                          </div>
-                          <p className="font-sans text-[9px] text-bark-400/60 text-center mt-2">Hand-assembled, wrapped &amp; wax-sealed before it ships</p>
-                        </>
-                      )
-                    })()}
-                  </div>
-
-                  {/* Items */}
-                  <div className="px-6 py-5 border-b border-cream-300">
-                    <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-4">Your Selection</p>
-                    <div className="space-y-3">
-                      {(Object.values(selection).filter(Boolean) as Array<NonNullable<typeof selection.swaddle> & { selectedColor?: string; selectedSize?: string; qty?: number }>).map((item, idx) => item && (
-                        <div key={`${item.id}-${idx}`} className="flex justify-between items-start">
-                          <p className="font-sans text-xs text-bark-600 leading-snug pr-3">
-                            {item.name}{(item.qty ?? 1) > 1 && <span className="text-bark-400"> × {item.qty}</span>}
-                            {item.selectedColor && item.selectedSize && (
-                              <span className="block text-[10px] text-bark-400 capitalize">{item.selectedColor} · {item.selectedSize}</span>
-                            )}
-                          </p>
-                          <span className="font-sans text-xs text-bark-400 shrink-0">{formatPrice(item.price * (item.qty ?? 1))}</span>
-                        </div>
-                      ))}
+                  <div className="space-y-3 font-sans text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-bark-600">Subtotal</span>
+                      <span className="text-espresso">{formatPrice(itemTotal)}</span>
                     </div>
-                  </div>
-
-                  {/* Totals */}
-                  <div className="px-6 py-5 border-b border-cream-300 space-y-2">
-                    <div className="flex justify-between font-sans text-xs text-bark-400">
-                      <span>Box & Experience</span><span>{formatPrice(BOX_BASE_PRICE)}</span>
+                    <div className="flex justify-between">
+                      <span className="text-bark-600">Box &amp; Experience</span>
+                      <span className="text-espresso">{formatPrice(BOX_BASE_PRICE)}</span>
                     </div>
-                    <div className="flex justify-between font-sans text-xs text-bark-400">
-                      <span>{SHIPPING[shippingType].label}</span><span>{formatPrice(shippingCost)}</span>
+                    <div className="flex justify-between">
+                      <span className="text-bark-600">Shipping · {SHIPPING[shippingType].label}</span>
+                      <span className="text-espresso">{formatPrice(shippingCost)}</span>
                     </div>
                     {letter && (
-                      <div className="flex justify-between font-sans text-xs text-bark-400">
-                        <span>{cardStyle ? `Card — ${cardStyle}` : 'Personalized Card'}</span><span>Included</span>
+                      <div className="flex justify-between">
+                        <span className="text-bark-600">{cardStyle ? `Card — ${cardStyle}` : 'Personalized Card'}</span>
+                        <span className="text-bark-400">Included</span>
                       </div>
                     )}
-                    <div className="flex justify-between font-sans text-sm text-bark-600 pt-2 border-t border-cream-200">
-                      <span>Total</span><span>{formatPrice(total)}</span>
+                    <div className="flex justify-between">
+                      <span className="text-bark-600">Taxes (estimated)</span>
+                      <span className="text-bark-400">Calculated at payment</span>
                     </div>
-                    <VatNotice className="mt-3" />
                   </div>
 
+                  <div className="flex justify-between items-baseline border-t border-cream-300 mt-5 pt-5">
+                    <span className="font-playfair text-lg text-espresso">Order Total</span>
+                    <span className="font-playfair text-lg text-espresso">{formatPrice(total)}</span>
+                  </div>
+                  <VatNotice className="mt-3" />
+
                   {/* Promo code */}
-                  <div className="px-6 py-4 border-b border-cream-300">
-                    <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">Promo Code</p>
+                  <div className="mt-6">
                     <div className="flex gap-2">
                       <input
                         type="text"
                         value={promoCode}
                         onChange={e => { setPromoCode(e.target.value); setPromoState('idle') }}
-                        placeholder="WELCOME10"
-                        className={`flex-1 px-3 py-2 border font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none transition-colors ${promoState === 'valid' ? 'border-sage-400 bg-sage-50' : promoState === 'invalid' ? 'border-red-300' : 'border-cream-300 bg-cream-50'}`}
+                        placeholder="Discount code"
+                        className={`flex-1 min-w-0 px-3 py-2.5 border font-sans text-sm text-bark-600 placeholder:text-bark-400/50 focus:outline-none transition-colors ${promoState === 'valid' ? 'border-sage-400 bg-sage-50' : promoState === 'invalid' ? 'border-red-300' : 'border-cream-300 bg-cream-50'}`}
                       />
                       <button
                         type="button"
                         onClick={applyPromo}
                         disabled={!promoCode.trim() || promoState === 'checking'}
-                        className="px-4 py-2 bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.15em] uppercase hover:bg-bark-700 transition-colors disabled:opacity-40"
+                        className="px-4 py-2.5 bg-cream-200 text-bark-600 font-sans text-[11px] tracking-[0.12em] uppercase hover:bg-cream-300 transition-colors disabled:opacity-40"
                       >
                         {promoState === 'checking' ? '…' : 'Apply'}
                       </button>
@@ -361,20 +381,22 @@ export default function CheckoutPage() {
                     )}
                   </div>
 
-                  {/* Pay button — hidden while the shop is paused (page stays viewable) */}
-                  <div className="px-6 py-6">
+                  {/* Checkout button — hidden while the shop is paused (page stays viewable) */}
+                  <div className="mt-6">
                     {error && <p className="font-sans text-xs text-red-500 mb-4">{error}</p>}
                     {storeCheckoutEnabled() ? (
                       <>
                         <button
                           type="submit"
-                          disabled={isSubmitting}
-                          className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-bark-700 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+                          disabled={isSubmitting || entries.length === 0}
+                          className="w-full bg-sage-400 text-white font-sans text-[13px] tracking-[0.2em] uppercase py-4 hover:bg-sage-500 transition-colors disabled:opacity-40"
                         >
-                          <Lock size={12} />
-                          {isSubmitting ? 'Processing...' : 'Pay Securely'}
+                          {isSubmitting ? 'Processing…' : 'Checkout'}
                         </button>
-                        <p className="text-center font-sans text-[10px] text-bark-400/50 mt-3">Powered by Stripe · 256-bit SSL</p>
+                        <p className="text-center font-sans text-[11px] text-bark-500 mt-3">
+                          By placing this order, you agree to our <Link href="/legal/terms" className="underline underline-offset-2 hover:text-espresso">Terms &amp; Conditions</Link>.
+                        </p>
+                        <p className="text-center font-sans text-[10px] text-bark-400/60 mt-1.5">Secure payment powered by Stripe</p>
                       </>
                     ) : (
                       <div className="text-center border border-cream-300 bg-cream-50 py-4 px-4">
