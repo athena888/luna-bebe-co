@@ -137,23 +137,6 @@ export default function ContentPage() {
                 hint="Portrait, soft & light · ~1000×1800. Shared across all box cards."
                 where="Behind the text panel on every box card on /boxes"
               />
-              <SlotRow
-                slotKey="boxes.custom_cta_bg"
-                label="Build-your-own CTA — Desktop"
-                context="Background behind the Prefer to choose yourself CTA on desktop"
-                ratio="21:9"
-                hint="Desktop crop · ~2000×860 (21:9). Keep subject centered."
-                where="Behind the &ldquo;Prefer to choose yourself?&rdquo; CTA at the bottom of /boxes on desktop"
-                scrim={{ hex: '#FAF9F8', opacity: 0.70, label: 'Colour overlay', note: 'tint over the photo so the CTA text stays readable' }}
-              />
-              <SlotRow
-                slotKey="boxes.custom_cta_bg.mobile"
-                label="Build-your-own CTA — Mobile"
-                context="Background behind the Prefer to choose yourself CTA on mobile"
-                ratio="9:16"
-                hint="Mobile crop · ~1080×1920. Portrait — shown on phones instead of the desktop image."
-                where="Behind the &ldquo;Prefer to choose yourself?&rdquo; CTA at the bottom of /boxes on phones"
-              />
             </div>
           </div>
         )}
