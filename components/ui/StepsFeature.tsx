@@ -34,7 +34,7 @@ export function StepsFeature({ images, side = 'left' }: { images: string[]; side
     <div ref={ref} className="grid grid-cols-1 md:grid-cols-2 items-stretch overflow-hidden">
       {/* Image — 85vh; flies in from its edge. Its height sets the row height,
           so the sage panel never extends past the photo. */}
-      <div className={`relative aspect-[4/3] md:aspect-auto md:h-[85vh] bg-cream-200 ${side === 'right' ? 'md:order-2' : 'md:order-1'} transition-all duration-[800ms] ease-out ${shown ? 'translate-x-0 opacity-100' : imgHidden}`}>
+      <div className={`relative aspect-[4/3] md:aspect-auto md:h-auto md:min-h-[85vh] md:self-stretch bg-cream-200 ${side === 'right' ? 'md:order-2' : 'md:order-1'} transition-all duration-[800ms] ease-out ${shown ? 'translate-x-0 opacity-100' : imgHidden}`}>
         <RotatingImage urls={images} alt="Create something unforgettable" />
       </div>
 
@@ -42,7 +42,7 @@ export function StepsFeature({ images, side = 'left' }: { images: string[]; side
           vertically centred with breathing room and sized to always fit. */}
       <div className={`bg-sage-400 flex flex-col items-center justify-center px-8 sm:px-12 lg:px-16 py-14 md:py-10 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
         <div className="max-w-md w-full">
-          <h2 className="font-serif text-[1.9rem] sm:text-[2.4rem] text-white leading-[1.15] text-center mb-10 md:mb-12">
+          <h2 className="font-serif text-[1.35rem] sm:text-[1.9rem] xl:text-[2.05rem] text-white leading-tight text-center whitespace-nowrap mb-10 md:mb-12">
             Create Something Unforgettable
           </h2>
 

@@ -148,8 +148,15 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── Shop by Occasion — images only (separated by whitespace, no divider line) ── */}
+        {/* ── Shop by Occasion — heading above the image tiles ── */}
         <div className="pt-8 sm:pt-12">
+          <div className="px-6 mb-8 text-center">
+            <h2 className="font-serif text-[2.5rem] sm:text-[3.25rem] uppercase tracking-normal font-medium text-espresso leading-none">Shop by Occasion</h2>
+            <p className="font-sans text-xs text-bark-400 mt-3 tracking-wide">Curated sets for every new chapter — or start from scratch.</p>
+            <Link href="/build" className="inline-block mt-3 font-sans text-[10px] tracking-[0.2em] uppercase font-medium text-bark-400 hover:text-bark-700 transition-colors border-b border-bark-400 pb-0.5">
+              Build Your Own Box →
+            </Link>
+          </div>
           <CollectionsSection initial={collectionsData ?? undefined} />
         </div>
 
@@ -166,13 +173,15 @@ export default async function HomePage() {
             const bullets = f.bullets.filter(b => b.trim())
             return (
               <EditorialFeature key={i} images={imgs} alt={f.eyebrow || 'Petite Lavande'} side={i % 2 === 0 ? 'left' : 'right'}>
-                {f.eyebrow && <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-5">{f.eyebrow}</p>}
+                {/* Palette echoes the sage panel above: gold eyebrow, espresso
+                    heading, olive-sage body, espresso bullets with gold dashes. */}
+                {f.eyebrow && <p className="font-sans text-[10px] tracking-[0.45em] uppercase font-semibold text-gold-500 mb-5">{f.eyebrow}</p>}
                 <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-espresso leading-[1.05] mb-5 whitespace-pre-line">{f.title}</h2>
-                <p className="font-cormorant text-lg text-bark-400 leading-loose whitespace-pre-line">{f.body}</p>
+                <p className="font-cormorant text-lg text-sage-500 leading-loose whitespace-pre-line">{f.body}</p>
                 {bullets.length > 0 && (
                   <ul className="space-y-2.5 mt-6">
                     {bullets.map((b, j) => (
-                      <li key={j} className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 flex items-center gap-3">
+                      <li key={j} className="font-sans text-[10px] tracking-[0.15em] uppercase font-medium text-espresso-light flex items-center gap-3">
                         <span className="w-4 h-px bg-gold-400 shrink-0" />
                         {b}
                       </li>

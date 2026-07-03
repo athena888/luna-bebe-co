@@ -30,12 +30,12 @@ export function EditorialFeature({
   return (
     <div ref={ref} className="grid grid-cols-1 md:grid-cols-2 items-stretch overflow-hidden">
       {/* Image — flush to its edge, sharp corners, large */}
-      <div className={`relative aspect-[4/3] md:aspect-auto md:h-[70vh] bg-cream-200 ${side === 'right' ? 'md:order-2' : 'md:order-1'} transition-all duration-[800ms] ease-out ${shown ? 'translate-x-0 opacity-100' : hidden}`}>
+      <div className={`relative aspect-[4/3] md:aspect-auto md:h-auto md:min-h-[70vh] md:self-stretch bg-cream-200 ${side === 'right' ? 'md:order-2' : 'md:order-1'} transition-all duration-[800ms] ease-out ${shown ? 'translate-x-0 opacity-100' : hidden}`}>
         <RotatingImage urls={images} alt={alt} />
       </div>
 
-      {/* Text — top-aligned with the image */}
-      <div className={`flex items-start px-6 sm:px-12 lg:px-20 pt-8 sm:pt-10 pb-12 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
+      {/* Text — vertically centred beside the image; column heights always match */}
+      <div className={`flex items-center px-6 sm:px-12 lg:px-20 py-10 sm:py-12 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
         <div className="max-w-md">{children}</div>
       </div>
     </div>

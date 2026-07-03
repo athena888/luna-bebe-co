@@ -19,13 +19,6 @@ function label(c: ResolvedCert): string {
   return (c.name ?? c.key).replace(/\s+100\b/, '') // "OEKO-TEX 100" → "OEKO-TEX"
 }
 
-// Give each cert badge its own muted tone (Organic stays sage); the rest cycle
-// through gold / rose / terra so the row isn't one flat colour.
-// Every cert badge shares one calm, uniform tone (no per-cert colour-coding).
-function certTone(_c: ResolvedCert, _idx: number): { wrap: string; text: string } {
-  return { wrap: 'border-cream-300 bg-cream-100 hover:border-bark-300', text: 'text-bark-600' }
-}
-
 function CertIcon({ c, size }: { c: ResolvedCert; size: number }) {
   if (isGots(c)) {
     return (
@@ -60,27 +53,24 @@ export function CertBadges({ certs, organic }: { certs: ResolvedCert[]; organic?
 
   return (
     <>
-      {/* Badge row — compact, single line (scrolls on very narrow screens) */}
-      <div className="flex items-center gap-1.5 flex-nowrap overflow-x-auto scrollbar-hide">
+      {/* Badge row — plain icon + text links, no frames or backgrounds */}
+      <div className="flex items-center gap-4 flex-nowrap overflow-x-auto scrollbar-hide">
         {organicOnly && (
-          <span className="shrink-0 flex items-center gap-1.5 border border-sage-200 bg-sage-50 px-2 py-1 rounded pl-round" title="Made with organic cotton">
+          <span className="shrink-0 flex items-center gap-1.5" title="Made with organic cotton">
             <span className="w-4 h-4 rounded-full pl-round-full bg-sage-500 flex items-center justify-center shrink-0"><Leaf size={10} className="text-white" /></span>
             <span className="font-sans text-[9px] tracking-[0.06em] uppercase text-sage-700 whitespace-nowrap">Organic</span>
           </span>
         )}
-        {active.map((cert, idx) => {
-          const tone = certTone(cert, idx)
-          return (
-            <button
-              key={cert.key}
-              onClick={() => openModal(idx)}
-              className={`shrink-0 flex items-center gap-1.5 border transition-colors px-2 py-1 rounded pl-round group ${tone.wrap}`}
-            >
-              <CertIcon c={cert} size={10} />
-              <span className={`font-sans text-[9px] tracking-[0.06em] uppercase whitespace-nowrap transition-colors ${tone.text}`}>{label(cert)}</span>
-            </button>
-          )
-        })}
+        {active.map((cert, idx) => (
+          <button
+            key={cert.key}
+            onClick={() => openModal(idx)}
+            className="shrink-0 flex items-center gap-1.5 group"
+          >
+            <CertIcon c={cert} size={10} />
+            <span className="font-sans text-[9px] tracking-[0.06em] uppercase whitespace-nowrap text-bark-600 group-hover:text-gold-500 underline-offset-2 group-hover:underline transition-colors">{label(cert)}</span>
+          </button>
+        ))}
       </div>
       {active.length > 0 && (
         <button

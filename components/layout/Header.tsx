@@ -30,7 +30,7 @@ function CartButton({ light }: { light: boolean }) {
     <Link
       href="/build"
       onClick={e => { if (pathname?.startsWith('/build')) { e.preventDefault(); window.dispatchEvent(new Event('pl:open-bag')) } }}
-      className={`relative w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50 hover:text-white' : 'text-bark-500 hover:text-bark-700'}`}
+      className={`relative w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50 hover:text-white' : 'text-gold-500 hover:text-espresso'}`}
       title="Your box"
       aria-label="Your box"
     >
@@ -81,7 +81,7 @@ function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
   const [err, setErr] = useState(false)
   useEffect(() => { setErr(false) }, [src])
   // Bigger at the hero top; shrinks to normal on scroll. transition-all animates height.
-  const sizeCls = expanded ? 'h-16 sm:h-24' : 'h-10 sm:h-[3.25rem]'
+  const sizeCls = expanded ? 'h-20 sm:h-28' : 'h-12 sm:h-16'
   return (
     <Link href="/" className="flex items-center shrink-0 min-w-0" aria-label="Petite Lavande — home">
       {err ? (
@@ -115,7 +115,7 @@ function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) 
 
 function MobileMenu({ onClose }: { onClose: () => void }) {
   return (
-    <div className="md:hidden bg-[#FEF8F4] border-b border-cream-300 px-6 py-8 flex flex-col gap-6 font-sans text-xs tracking-[0.2em]">
+    <div className="md:hidden bg-[#FEF8F4] border-b border-cream-300 px-6 py-8 flex flex-col gap-6 font-serif text-base tracking-[0.14em]">
       <NavLinks light={false} onClick={onClose} />
       <Link href="/account" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors" onClick={onClose}>My Account</Link>
     </div>
@@ -211,27 +211,27 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
               pinned right. Expanded (hero top) is just bigger and roomier. */}
           <div className={`flex flex-col items-center justify-center transition-all duration-500 ${expanded ? 'gap-3' : 'gap-1.5'}`}>
             <Wordmark light={light} expanded={expanded} />
-            <nav className="flex items-center gap-6 lg:gap-9 font-sans text-xs tracking-[0.2em]">
+            <nav className="flex items-center gap-6 lg:gap-9 font-serif text-[15px] tracking-[0.14em]">
               <NavLinks light={light} />
             </nav>
           </div>
           {/* Socials left — balances the account/cart icons on the right */}
           <div className="absolute left-9 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
             <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" title="Instagram · @petitelavandeco" aria-label="Instagram"
-              className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`}>
+              className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-gold-500 hover:text-espresso'}`}>
               <IgIcon />
             </a>
             <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" title="Facebook" aria-label="Facebook"
-              className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`}>
+              className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-gold-500 hover:text-espresso'}`}>
               <FbIcon />
             </a>
             <a href={`mailto:${CONTACT_EMAIL}`} title={CONTACT_EMAIL} aria-label="Email"
-              className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`}>
+              className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-gold-500 hover:text-espresso'}`}>
               <Mail size={20} strokeWidth={1.6} />
             </a>
           </div>
           <div className="absolute right-9 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
-            <Link href="/account" className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`} title="My Account">
+            <Link href="/account" className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-gold-500 hover:text-espresso'}`} title="My Account">
               <User size={20} />
             </Link>
             <CartButton light={light} />

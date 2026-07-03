@@ -6,7 +6,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { PRODUCTS, CATEGORY_LABELS, CATEGORY_ORDER, getAllProducts, BOX_BASE_PRICE } from '@/lib/products'
 import type { Product, ProductCategory } from '@/types'
-import { Check, X, Plus, Minus, Leaf, ZoomIn } from 'lucide-react'
+import { Check, X, Plus, Minus, Leaf, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import { memo, useCallback, useMemo, useState as useLocalState } from 'react'
 import { CertBadges } from '@/components/ui/CertBadges'
@@ -133,13 +133,13 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
         )}
       </button>
 
-      <div className={`pt-3.5 pb-1 ${soldOut ? 'opacity-40' : ''}`}>
-        <h3 className="font-sans text-sm text-espresso leading-snug mb-1">{product.name}</h3>
+      <div className={`pt-3.5 pb-1 text-left ${soldOut ? 'opacity-40' : ''}`}>
+        <h3 className="font-serif text-[17px] font-semibold text-espresso leading-snug mb-1 transition-colors group-hover:text-gold-500">{product.name}</h3>
         {!soldOut && lowStock && (
           <p className="font-sans text-[10px] tracking-[0.08em] text-red-600 mb-1">{stock} left</p>
         )}
         <div className="flex items-center justify-between gap-1">
-          <span className={`font-sans text-xs text-espresso-light ${soldOut ? 'line-through' : ''}`}>{formatPrice(product.price)}</span>
+          <span className={`font-serif text-[15px] font-semibold text-espresso-light ${soldOut ? 'line-through' : ''}`}>{formatPrice(product.price)}</span>
           {!soldOut && (
             <button onClick={onToggle}
               className={`w-5 h-5 flex items-center justify-center shrink-0 transition-colors ${
@@ -195,6 +195,7 @@ export default function BuildPage() {
   // Modal
   const [modalProduct, setModalProduct] = useState<BuildProduct | null>(null)
   const [modalGallery, setModalGallery] = useState<GalleryImage[]>([])
+  const [modalImgIdx, setModalImgIdx] = useState(0)   // selected photo in the modal gallery
   const [modalVariants, setModalVariants] = useState<VariantOpt[]>([])
   const [modalCerts, setModalCerts] = useState<ProductCert[]>([])
   const [pickColor, setPickColor] = useState<string | null>(null)
@@ -366,6 +367,7 @@ export default function BuildPage() {
     setPickColor(null)
     setPickSize(null)
     setPickStyle(null)
+    setModalImgIdx(0)
     setModalLoading(true)
     setModalGallery(galleryCache.current[product.id] ?? [])
     try {
@@ -480,37 +482,46 @@ export default function BuildPage() {
                 <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-1">{CATEGORY_LABELS[cat]}</p>
                 <h2 className="font-serif text-lg sm:text-xl text-terra-500">{CATEGORY_SUBTITLES[cat]}</h2>
               </div>
-              <div
-                ref={el => { if (el) scrollRefs.current.set(cat, el); else scrollRefs.current.delete(cat) }}
-                onScroll={() => handleCategoryScroll(cat)}
-                className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-pl-6 sm:scroll-pl-9 gap-2.5 sm:gap-5 px-6 sm:px-9 pb-2"
-              >
-                {(catalog[cat] ?? []).map(product => (
-                  <div key={product.id} className="snap-start shrink-0 w-[66%] sm:w-[calc((100%-3.75rem)/4)] lg:w-[calc((100%-5rem)/5)]">
-                    <ProductCard
-                      product={product}
-                      selected={isProductSelected(product.id)}
-                      onToggle={() => product.has_variants ? openModal(product) : toggle(product)}
-                      onOpen={() => openModal(product)}
-                      soldOut={isSoldOut(product.id)}
-                      stock={inventory[product.id]}
-                      hoverImage={hoverMedia[product.id]?.image}
-                      hoverVideo={hoverMedia[product.id]?.video}
-                      certs={productCerts[product.id]}
-                    />
-                  </div>
-                ))}
-                <div className="shrink-0 w-6 sm:w-8" />
-              </div>
-              {/* Scroll dots */}
-              <div className="flex items-center justify-end gap-1.5 mt-4 pr-6 sm:pr-9">
-                {(catalog[cat] ?? []).map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => scrollCategoryTo(cat, i)}
-                    className={`w-1 h-1 rounded-full transition-colors duration-200 ${(activeIdxMap[cat] ?? 0) === i ? 'bg-bark-700' : 'bg-terra-300 hover:bg-terra-400'}`}
-                  />
-                ))}
+              <div className="relative">
+                <div
+                  ref={el => { if (el) scrollRefs.current.set(cat, el); else scrollRefs.current.delete(cat) }}
+                  onScroll={() => handleCategoryScroll(cat)}
+                  className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-pl-6 sm:scroll-pl-9 gap-2.5 sm:gap-3 px-6 sm:px-9 pb-2"
+                >
+                  {(catalog[cat] ?? []).map(product => (
+                    <div key={product.id} className="snap-start shrink-0 w-[66%] sm:w-[calc((100%-2.25rem)/4)] lg:w-[calc((100%-3rem)/5)]">
+                      <ProductCard
+                        product={product}
+                        selected={isProductSelected(product.id)}
+                        onToggle={() => product.has_variants ? openModal(product) : toggle(product)}
+                        onOpen={() => openModal(product)}
+                        soldOut={isSoldOut(product.id)}
+                        stock={inventory[product.id]}
+                        hoverImage={hoverMedia[product.id]?.image}
+                        hoverVideo={hoverMedia[product.id]?.video}
+                        certs={productCerts[product.id]}
+                      />
+                    </div>
+                  ))}
+                  <div className="shrink-0 w-6 sm:w-8" />
+                </div>
+                {/* Prev / next arrows — float over the row edges */}
+                <button
+                  type="button"
+                  onClick={() => scrollCategoryTo(cat, Math.max(0, (activeIdxMap[cat] ?? 0) - 1))}
+                  className="hidden sm:flex absolute left-3 top-[38%] -translate-y-1/2 z-10 w-11 h-11 rounded-full pl-round-full bg-white/95 shadow-md items-center justify-center text-bark-600 hover:bg-white hover:text-espresso transition-colors"
+                  aria-label={`Previous ${CATEGORY_LABELS[cat]} products`}
+                >
+                  <ChevronLeft size={20} strokeWidth={1.5} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollCategoryTo(cat, Math.min((catalog[cat]?.length ?? 1) - 1, (activeIdxMap[cat] ?? 0) + 1))}
+                  className="hidden sm:flex absolute right-3 top-[38%] -translate-y-1/2 z-10 w-11 h-11 rounded-full pl-round-full bg-white/95 shadow-md items-center justify-center text-bark-600 hover:bg-white hover:text-espresso transition-colors"
+                  aria-label={`Next ${CATEGORY_LABELS[cat]} products`}
+                >
+                  <ChevronRight size={20} strokeWidth={1.5} />
+                </button>
               </div>
             </section>
           ))}
@@ -646,7 +657,7 @@ export default function BuildPage() {
           onClick={() => setModalProduct(null)}
         >
           <div
-            className="bg-white w-full max-w-4xl max-h-[92vh] flex flex-col lg:flex-row lg:overflow-hidden overflow-y-auto relative rounded"
+            className="bg-white w-full max-w-6xl max-h-[92vh] flex flex-col lg:flex-row lg:overflow-hidden overflow-y-auto relative rounded"
             onClick={e => e.stopPropagation()}
           >
             <button
@@ -656,43 +667,77 @@ export default function BuildPage() {
               <X size={16} />
             </button>
 
-            {/* Image panel — 2-column photo grid, like the product detail page */}
-            <div className="lg:w-[55%] shrink-0 bg-cream-50 p-4 lg:p-5 lg:overflow-y-auto">
+            {/* Image panel — thumbnail rail + one large photo with prev/next arrows */}
+            <div className="lg:w-[58%] shrink-0 bg-white p-4 lg:p-5">
               {modalLoading ? (
                 <div className="aspect-[3/4] flex items-center justify-center bg-cream-100">
                   <div className="w-6 h-6 border-2 border-cream-300 border-t-bark-600 rounded-full animate-spin" />
                 </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-3">
-                  {(modalGallery.length > 0 ? modalGallery : [null]).map((img, idx) => {
-                    const cellSrc = img ? img.image_url : modalMainSrc
-                    return (
-                      <button
-                        key={img?.id ?? idx}
-                        type="button"
-                        onClick={() => cellSrc && setLightbox(cellSrc)}
-                        disabled={!cellSrc}
-                        className="group relative w-full overflow-hidden bg-cream-200 cursor-zoom-in disabled:cursor-default"
-                        style={{ aspectRatio: '3/4' }}
-                      >
-                        {cellSrc
-                          ? <Image src={cellSrc} alt={img?.label ?? modalProduct.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width:1023px) 50vw, 28vw" />
-                          : <div className="absolute inset-0 flex items-center justify-center text-7xl"><span className="select-none">{modalProduct.imageEmoji}</span></div>}
-                        {cellSrc && (
+              ) : (() => {
+                const photos = modalGallery.length > 0 ? modalGallery.map(g => g.image_url) : (modalMainSrc ? [modalMainSrc] : [])
+                const idx = Math.min(modalImgIdx, Math.max(0, photos.length - 1))
+                const mainSrc = photos[idx] ?? null
+                return (
+                  <div className="flex gap-3 h-full">
+                    {/* Thumbnail rail */}
+                    {photos.length > 1 && (
+                      <div className="w-16 sm:w-20 shrink-0 flex flex-col gap-2 overflow-y-auto scrollbar-hide">
+                        {photos.map((src, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => setModalImgIdx(i)}
+                            className={`relative w-full shrink-0 overflow-hidden bg-cream-100 border transition-colors ${i === idx ? 'border-bark-600' : 'border-transparent hover:border-cream-300'}`}
+                            style={{ aspectRatio: '3/4' }}
+                            aria-label={`Photo ${i + 1}`}
+                          >
+                            <Image src={src} alt="" fill className="object-cover" sizes="80px" />
+                          </button>
+                        ))}
+                        {modalVideo && (
+                          <div className="relative w-full shrink-0 overflow-hidden bg-cream-100" style={{ aspectRatio: '3/4' }}>
+                            <video src={modalVideo} muted loop playsInline autoPlay className="absolute inset-0 w-full h-full object-cover" />
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Main photo with arrows */}
+                    <div className="relative flex-1 bg-cream-50 overflow-hidden" style={{ aspectRatio: '3/4' }}>
+                      {mainSrc ? (
+                        <button type="button" onClick={() => setLightbox(mainSrc)} className="absolute inset-0 cursor-zoom-in group">
+                          <Image src={mainSrc} alt={modalProduct.name} fill className="object-cover" sizes="(max-width:1023px) 90vw, 560px" />
                           <span className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-cream-50/85 text-bark-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                             <ZoomIn size={13} />
                           </span>
-                        )}
-                      </button>
-                    )
-                  })}
-                  {modalVideo && (
-                    <div className="relative w-full overflow-hidden bg-cream-200" style={{ aspectRatio: '3/4' }}>
-                      <video src={modalVideo} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover" />
+                        </button>
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center text-7xl"><span className="select-none">{modalProduct.imageEmoji}</span></div>
+                      )}
+                      {photos.length > 1 && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setModalImgIdx((idx - 1 + photos.length) % photos.length)}
+                            className="absolute left-1 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center text-gold-500 hover:text-gold-600 transition-colors"
+                            aria-label="Previous photo"
+                          >
+                            <ChevronLeft size={26} strokeWidth={1.2} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setModalImgIdx((idx + 1) % photos.length)}
+                            className="absolute right-1 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center text-gold-500 hover:text-gold-600 transition-colors"
+                            aria-label="Next photo"
+                          >
+                            <ChevronRight size={26} strokeWidth={1.2} />
+                          </button>
+                        </>
+                      )}
                     </div>
-                  )}
-                </div>
-              )}
+                  </div>
+                )
+              })()}
             </div>
 
             {/* Product info — scrolls on desktop, flows naturally on mobile */}
@@ -700,48 +745,8 @@ export default function BuildPage() {
               <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-2">{CATEGORY_LABELS[modalProduct.category]}</p>
               <h2 className="font-sans text-2xl lg:text-3xl text-espresso leading-tight mb-2">{modalProduct.name}</h2>
               <p className="font-sans text-base text-bark-400 mb-4">{formatPrice(modalProduct.price)}</p>
-              {modalProduct.tag && (
-                <span className="inline-block bg-terra-100 text-terra-500 font-sans text-[9px] tracking-[0.2em] uppercase px-3 py-1 mb-4 self-start">
-                  {modalProduct.tag}
-                </span>
-              )}
 
-              {/* Description */}
-              <div className="border-t border-cream-300 py-3.5">
-                <p className="text-base text-bark-600 leading-relaxed" style={{ fontFamily: 'var(--font-cormorant)' }}>
-                  {cleanGots(modalProduct.description)}
-                </p>
-              </div>
-
-              {/* Certifications — below the description. Falls back to the
-                  shipping/handcrafted/gift-ready badges when there are none. */}
-              <div className="border-t border-cream-300 py-4">
-                {(modalCerts.length > 0 || modalProduct.organic) ? (
-                  <CertBadges certs={modalCerts} organic={modalProduct.organic} />
-                ) : (
-                  <div className="flex items-start justify-between">
-                    {[{ label: 'Free Shipping', sub: '$150+' }, { label: 'Handcrafted', sub: 'with care' }, { label: 'Gift Ready', sub: 'wax seal' }].map(({ label, sub }) => (
-                      <div key={label} className="flex-1 text-center">
-                        <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
-                        <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              {modalProduct.ingredients && (
-                <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
-                  <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
-                  <span className="font-sans text-xs text-bark-400">{cleanGots(modalProduct.ingredients)}</span>
-                </div>
-              )}
-              {modalCerts.some(isGots) && (
-                <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
-                  <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
-                  <span className="font-sans text-xs text-bark-400">Made with <span className="text-bark-600">GOTS-certified organic cotton</span> from a GOTS-certified manufacturer.</span>
-                </div>
-              )}
-              {/* Variant pickers (color + size) */}
+              {/* Variant pickers (color + size) — right below the price */}
               {modalHasVariants && !allVariantsOut && (
                 <div className="border-t border-cream-300 pt-4 space-y-4 mb-4">
                   <div>
@@ -827,7 +832,7 @@ export default function BuildPage() {
                 <p className="font-sans text-[11px] tracking-[0.08em] text-red-600 mb-1">{pickedVariant.quantity} left</p>
               )}
 
-              <div className="mt-auto pt-4">
+              <div className="pt-2 pb-4">
                 {modalHasVariants ? (
                   allVariantsOut ? (
                     <div className="w-full border border-bark-300 text-bark-400 font-sans text-[11px] tracking-[0.2em] uppercase py-4 text-center">Sold Out</div>
@@ -863,6 +868,43 @@ export default function BuildPage() {
                   </button>
                 )}
               </div>
+
+              {/* Description */}
+              <div className="border-t border-cream-300 py-3.5">
+                <p className="text-base text-bark-600 leading-relaxed" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                  {cleanGots(modalProduct.description)}
+                </p>
+              </div>
+
+              {/* Certifications — below the description. Falls back to the
+                  shipping/handcrafted/gift-ready badges when there are none. */}
+              <div className="border-t border-cream-300 py-4">
+                {(modalCerts.length > 0 || modalProduct.organic) ? (
+                  <CertBadges certs={modalCerts} organic={modalProduct.organic} />
+                ) : (
+                  <div className="flex items-start justify-between">
+                    {[{ label: 'Free Shipping', sub: '$150+' }, { label: 'Handcrafted', sub: 'with care' }, { label: 'Gift Ready', sub: 'wax seal' }].map(({ label, sub }) => (
+                      <div key={label} className="flex-1 text-center">
+                        <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
+                        <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Materials — covers the cotton story; tag sits beneath it */}
+              {modalProduct.ingredients && (
+                <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
+                  <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
+                  <span className="font-sans text-xs text-bark-400">{cleanGots(modalProduct.ingredients)}</span>
+                </div>
+              )}
+              {modalProduct.tag && (
+                <span className="inline-block bg-terra-100 text-terra-500 font-sans text-[9px] tracking-[0.2em] uppercase px-3 py-1 mb-2 self-start">
+                  {modalProduct.tag}
+                </span>
+              )}
             </div>
           </div>
         </div>

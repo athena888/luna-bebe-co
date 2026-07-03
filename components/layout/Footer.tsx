@@ -71,8 +71,8 @@ export function Footer() {
               <div className="max-w-sm"><EmailSignup /></div>
             </div>
 
-            {/* Link columns */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-8 gap-x-5 sm:gap-x-8">
+            {/* Link columns — kept off the right border and pulled toward centre */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-8 gap-x-5 sm:gap-x-8 lg:pr-14 xl:pr-24">
               <div>
                 <p className="font-serif text-[15px] tracking-[0.1em] uppercase text-espresso font-semibold mb-3">Shop &amp; Gift</p>
                 <ul className="space-y-2 text-[13px] font-sans font-medium">

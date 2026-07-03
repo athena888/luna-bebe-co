@@ -26,11 +26,8 @@ export function PrebuiltBoxesSection() {
   return (
     <section className="pt-10 pb-12 sm:pt-12">
       <div className="px-6 mb-8 text-center">
-        <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Ready-Made</p>
-        <h2 className="font-serif text-[2.5rem] sm:text-[3.25rem] uppercase tracking-[0.06em] text-espresso">Best Sellers</h2>
-        <Link href="/boxes" className="inline-block mt-4 font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 hover:text-bark-700 transition-colors border-b border-bark-400 pb-0.5">
-          View All →
-        </Link>
+        <p className="font-sans text-[11px] tracking-[0.22em] uppercase font-semibold text-gold-500 mb-1.5">Ready-Made</p>
+        <h2 className="font-serif text-[2.5rem] sm:text-[3.25rem] uppercase tracking-normal font-medium text-espresso leading-none">Best Sellers</h2>
       </div>
 
       {/* Carousel of cover photos — click to open the set */}
