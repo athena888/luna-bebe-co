@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
     }
 
-    const { email } = await req.json()
+    const { email, phone } = await req.json()
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
     }
@@ -19,6 +19,17 @@ export async function POST(req: NextRequest) {
     } else {
       // Fallback: just log — still returns success to the user
       console.log('Newsletter signup (no RESEND_AUDIENCE_ID set):', email)
+    }
+
+    // Optional phone — Resend contacts have no phone field, so keep it in our
+    // own table. Best-effort: signup still succeeds if the table isn't there.
+    if (phone && typeof phone === 'string' && phone.trim()) {
+      try {
+        const { supabaseAdmin } = await import('@/lib/supabase')
+        await supabaseAdmin.from('newsletter_phones').upsert({ email, phone: phone.trim() }, { onConflict: 'email' })
+      } catch (e) {
+        console.log('Newsletter phone (table missing or insert failed):', email, phone, e instanceof Error ? e.message : '')
+      }
     }
 
     // Fresh subscribe — send the welcome email with the WELCOME10 code.

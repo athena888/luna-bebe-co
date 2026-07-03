@@ -496,6 +496,17 @@ create policy scheduled_campaigns_service on public.scheduled_campaigns for all 
 --     templates themselves live in site_content under key 'outreach.templates'.
 alter table public.contacts add column if not exists email_override jsonb;
 
+
+-- 26) Footer newsletter phone capture (optional field beside the email input).
+create table if not exists public.newsletter_phones (
+  email      text primary key,
+  phone      text not null,
+  created_at timestamptz not null default now()
+);
+alter table public.newsletter_phones enable row level security;
+drop policy if exists newsletter_phones_service on public.newsletter_phones;
+create policy newsletter_phones_service on public.newsletter_phones for all to service_role using (true) with check (true);
+
 -- (The First Year sub-line was removed. To drop its tables, run drop_first_year.sql.)
 
 -- Done.

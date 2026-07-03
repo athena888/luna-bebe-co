@@ -9,6 +9,7 @@ import { RegionSwitcher } from '@/components/ui/RegionSwitcher'
 
 function EmailSignup() {
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [done, setDone] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -20,7 +21,7 @@ function EmailSignup() {
       await fetch('/api/newsletter/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, phone: phone.trim() || undefined }),
       })
     } finally {
       setLoading(false)
@@ -29,21 +30,28 @@ function EmailSignup() {
   }
 
   if (done) {
-    return <p className="font-sans text-xs text-espresso leading-loose">Thank you — you&rsquo;re on the list.</p>
+    return <p className="font-sans text-sm text-espresso leading-loose text-center">Thank you — you&rsquo;re on the list.</p>
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex border border-cream-300 bg-cream-50">
+    <form onSubmit={handleSubmit} className="flex bg-white shadow-sm">
       <input
         type="email"
         required
         value={email}
         onChange={e => setEmail(e.target.value)}
-        placeholder="Your email address"
-        className="flex-1 px-4 py-3 font-sans text-xs text-espresso placeholder:text-espresso/40 bg-transparent focus:outline-none"
+        placeholder="Email Address*"
+        className="w-[45%] min-w-0 px-4 py-4 font-sans text-sm text-espresso placeholder:text-bark-400 bg-transparent focus:outline-none"
       />
-      <button type="submit" className="px-4 text-espresso hover:text-espresso transition-colors border-l border-cream-300">
-        <ArrowRight size={14} />
+      <input
+        type="tel"
+        value={phone}
+        onChange={e => setPhone(e.target.value)}
+        placeholder="Phone Number"
+        className="flex-1 min-w-0 px-4 py-4 font-sans text-sm text-espresso placeholder:text-bark-400 bg-transparent focus:outline-none border-l border-cream-300"
+      />
+      <button type="submit" aria-label="Subscribe" className="px-5 text-gold-500 hover:text-gold-600 transition-colors">
+        <ArrowRight size={22} strokeWidth={1.3} />
       </button>
     </form>
   )
@@ -66,9 +74,9 @@ export function Footer() {
               <img src="/logo-color.png" alt="Petite Lavande" className="h-14 sm:h-[4.25rem] w-auto mb-2.5 mx-auto" />
               <p className="font-serif italic text-espresso text-[15px] font-medium mb-5 text-center">Fait avec amour, pour vous.</p>
 
-              <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-espresso font-semibold mb-1.5">Join our list — 10% off your first box</p>
-              <p className="font-sans text-[13px] text-espresso font-medium mb-3 leading-relaxed max-w-sm">New-parent gift guides, quiet launches, and a welcome code for your first order.</p>
-              <div className="max-w-sm"><EmailSignup /></div>
+              <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-espresso font-semibold mb-1.5 text-center">Join our list — 10% off your first box</p>
+              <p className="font-sans text-[13px] text-espresso font-medium mb-3 leading-relaxed max-w-md mx-auto text-center">New-parent gift guides, quiet launches, and a welcome code for your first order.</p>
+              <div className="max-w-md mx-auto"><EmailSignup /></div>
             </div>
 
             {/* Link columns — kept off the right border and pulled toward centre */}

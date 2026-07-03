@@ -3,7 +3,6 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { EditorialFeature } from '@/components/ui/EditorialFeature'
 import { StepsFeature } from '@/components/ui/StepsFeature'
-import { EditorialStrip } from '@/components/ui/EditorialStrip'
 import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
 import { RotatingImage } from '@/components/ui/RotatingImage'
@@ -148,7 +147,7 @@ export default async function HomePage() {
         </section>
 
         {/* ── Shop by Occasion — heading above the image tiles, styled like Best Sellers ── */}
-        <div className="pt-10 sm:pt-14">
+        <div className="pt-14 sm:pt-20">
           <div className="px-6 mb-8 text-center">
             <p className="font-sans text-[11px] tracking-[0.22em] uppercase font-semibold text-gold-500 mb-1.5">Curated sets for every new chapter — or start from scratch.</p>
             <h2 className="font-serif text-[2.5rem] sm:text-[3.25rem] uppercase tracking-normal font-medium text-espresso leading-none">Shop by Occasion</h2>
@@ -189,9 +188,6 @@ export default async function HomePage() {
           })}
 
         </section>
-
-        {/* ── Editorial strip — video or image ── */}
-        <EditorialStrip />
 
         {/* ── 8. Testimonials — shown only when NEXT_PUBLIC_SHOW_REVIEWS=true and there are real reviews ── */}
         {process.env.NEXT_PUBLIC_SHOW_REVIEWS === 'true' && content.reviews.items.length > 0 && (
