@@ -28,7 +28,6 @@ export function PrebuiltBoxesSection() {
       <div className="px-6 mb-8 text-center">
         <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Ready-Made</p>
         <h2 className="font-serif text-[2.5rem] sm:text-[3.25rem] uppercase tracking-[0.06em] text-espresso">Best Sellers</h2>
-        <p className="font-sans text-xs text-bark-400 mt-3 tracking-wide">Tap any set to see the full box.</p>
         <Link href="/boxes" className="inline-block mt-4 font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 hover:text-bark-700 transition-colors border-b border-bark-400 pb-0.5">
           View All →
         </Link>
@@ -43,11 +42,11 @@ export function PrebuiltBoxesSection() {
                 ? <Image src={box.image} alt={box.name} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" unoptimized sizes="(max-width:640px) 78vw, 380px" />
                 : <div className="absolute inset-0 flex items-center justify-center text-bark-300"><Package size={32} /></div>}
             </div>
-            {/* Caption below the image — espresso, warms to caramel on hover */}
-            <div className="pt-4 text-espresso transition-colors duration-300 group-hover:text-[#B67B47]">
-              <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-1.5 transition-colors duration-300 group-hover:text-[#B67B47]">{box.style}</p>
-              <h3 className="font-serif text-xl leading-tight">{box.name}</h3>
-              <p className="font-serif text-lg mt-1">{fmt(boxTotal(box))}</p>
+            {/* Caption below the image — espresso, turns gold on hover */}
+            <div className="pt-4 text-espresso transition-colors duration-300 group-hover:text-gold-500">
+              <p className="font-sans text-[9px] tracking-[0.3em] uppercase font-semibold text-gold-400 mb-1.5 transition-colors duration-300 group-hover:text-gold-500">{box.style}</p>
+              <h3 className="font-serif text-xl font-semibold leading-tight">{box.name}</h3>
+              <p className="font-serif text-lg font-semibold mt-1">{fmt(boxTotal(box))}</p>
             </div>
           </Link>
         ))}

@@ -38,30 +38,34 @@ export function StepsFeature({ images, side = 'left' }: { images: string[]; side
         <RotatingImage urls={images} alt="Create something unforgettable" />
       </div>
 
-      {/* Solid sage panel — white centred copy (registry-style), same height as the image */}
-      <div className={`bg-sage-400 flex flex-col items-center justify-center text-center px-8 sm:px-14 lg:px-20 py-12 md:py-0 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
+      {/* Solid sage panel — white copy, same height as the image. Content is
+          vertically centred with breathing room and sized to always fit. */}
+      <div className={`bg-sage-400 flex flex-col items-center justify-center px-8 sm:px-12 lg:px-16 py-14 md:py-10 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
         <div className="max-w-md w-full">
-          <h2 className="font-serif text-[1.9rem] sm:text-[2.5rem] text-white leading-[1.15] mb-8 sm:mb-10">
+          <h2 className="font-serif text-[1.9rem] sm:text-[2.4rem] text-white leading-[1.15] text-center mb-10 md:mb-12">
             Create Something Unforgettable
           </h2>
 
-          <div className="space-y-6 sm:space-y-7">
+          {/* Steps — inline rows: icon left, left-aligned text */}
+          <div className="space-y-6 md:space-y-7">
             {STEPS.map((s, i) => (
               <div
                 key={s.title}
-                className={`transition-all duration-500 ease-out ${(shown || reduce) ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}
+                className={`flex items-start gap-4 text-left transition-all duration-500 ease-out ${(shown || reduce) ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}
                 style={{ transitionDelay: reduce ? '0ms' : `${150 + i * 180}ms` }}
               >
-                <span className="w-10 h-10 mx-auto rounded-full pl-round-full border border-white/50 flex items-center justify-center mb-2.5">
+                <span className="shrink-0 w-10 h-10 rounded-full pl-round-full border border-white/50 flex items-center justify-center mt-0.5">
                   <s.Icon size={15} strokeWidth={1.5} className="text-white" />
                 </span>
-                <h3 className="font-sans text-[11px] tracking-[0.22em] uppercase text-white mb-1">{s.title}</h3>
-                <p className="font-serif text-[15px] text-white/85 leading-relaxed">{s.body}</p>
+                <div>
+                  <h3 className="font-sans text-[11px] tracking-[0.22em] uppercase text-white mb-1">{s.title}</h3>
+                  <p className="font-serif text-[15px] text-white/85 leading-relaxed">{s.body}</p>
+                </div>
               </div>
             ))}
           </div>
 
-          <div className="flex flex-wrap gap-3 justify-center mt-9 sm:mt-11">
+          <div className="flex flex-wrap gap-3 justify-center mt-10 md:mt-12">
             <Link href="/build" className="bg-white text-sage-500 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-cream-100 transition-colors">Build Your Own Box</Link>
             <Link href="/boxes" className="border border-white/60 text-white font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-white/10 transition-colors">Shop Ready-Made</Link>
           </div>

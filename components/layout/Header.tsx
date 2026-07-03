@@ -2,8 +2,9 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
-import { Menu, X, User, ShoppingBag } from 'lucide-react'
+import { Menu, X, User, ShoppingBag, Mail } from 'lucide-react'
 import { cartCount } from '@/lib/cart'
+import { CONTACT_EMAIL } from '@/lib/site-config'
 import { LavenderSprig } from '@/components/ui/LavenderSprig'
 
 // Cart lives in the nav row so it scrolls with the header. On the build page it
@@ -33,7 +34,7 @@ function CartButton({ light }: { light: boolean }) {
       title="Your box"
       aria-label="Your box"
     >
-      <ShoppingBag size={18} strokeWidth={1.5} />
+      <ShoppingBag size={20} strokeWidth={1.5} />
       {count > 0 && (
         <span className="absolute top-1 right-1 min-w-[15px] h-[15px] px-1 bg-bark-600 text-cream-50 rounded-full text-[9px] font-sans flex items-center justify-center leading-none">{count}</span>
       )}
@@ -43,14 +44,14 @@ function CartButton({ light }: { light: boolean }) {
 
 // lucide no longer ships brand marks, so inline the two socials we show on the
 // left of the bar (balancing the account/cart icons on the right).
-function IgIcon({ size = 17 }: { size?: number }) {
+function IgIcon({ size = 20 }: { size?: number }) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.9" fill="currentColor" stroke="none" />
     </svg>
   )
 }
-function FbIcon({ size = 17 }: { size?: number }) {
+function FbIcon({ size = 20 }: { size?: number }) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true">
       <path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z" />
@@ -99,8 +100,8 @@ function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
 }
 
 function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) {
-  const base = light ? 'text-cream-50/90 hover:text-white' : 'text-[#7A6B60] hover:text-espresso'
-  const cls = `uppercase ${base} transition-colors whitespace-nowrap`
+  const base = light ? 'text-cream-50/90 hover:text-white' : 'text-[#6F5B4D] hover:text-espresso'
+  const cls = `uppercase font-medium ${base} transition-colors whitespace-nowrap`
   return (
     <>
       <Link href="/build" className={cls} onClick={onClick}>Build Your Own Box</Link>
@@ -114,7 +115,7 @@ function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) 
 
 function MobileMenu({ onClose }: { onClose: () => void }) {
   return (
-    <div className="md:hidden bg-[#FEF8F4] border-b border-cream-300 px-6 py-8 flex flex-col gap-6 font-sans text-[11px] tracking-[0.2em]">
+    <div className="md:hidden bg-[#FEF8F4] border-b border-cream-300 px-6 py-8 flex flex-col gap-6 font-sans text-xs tracking-[0.2em]">
       <NavLinks light={false} onClick={onClose} />
       <Link href="/account" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors" onClick={onClose}>My Account</Link>
     </div>
@@ -210,7 +211,7 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
               pinned right. Expanded (hero top) is just bigger and roomier. */}
           <div className={`flex flex-col items-center justify-center transition-all duration-500 ${expanded ? 'gap-3' : 'gap-1.5'}`}>
             <Wordmark light={light} expanded={expanded} />
-            <nav className="flex items-center gap-6 lg:gap-9 font-sans text-[11px] tracking-[0.2em]">
+            <nav className="flex items-center gap-6 lg:gap-9 font-sans text-xs tracking-[0.2em]">
               <NavLinks light={light} />
             </nav>
           </div>
@@ -224,10 +225,14 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
               className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`}>
               <FbIcon />
             </a>
+            <a href={`mailto:${CONTACT_EMAIL}`} title={CONTACT_EMAIL} aria-label="Email"
+              className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`}>
+              <Mail size={20} strokeWidth={1.6} />
+            </a>
           </div>
           <div className="absolute right-9 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
             <Link href="/account" className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`} title="My Account">
-              <User size={16} />
+              <User size={20} />
             </Link>
             <CartButton light={light} />
           </div>

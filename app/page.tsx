@@ -102,7 +102,7 @@ export default async function HomePage() {
              our printed cards) flanking a sage panel with the editable intro +
              promise perks. Mobile: sage panel first, then the two artworks 2-up. ── */}
         <section className="bg-cream-white">
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_1.6fr_1fr] items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_1.6fr_1fr] items-stretch md:h-[83vh]">
             {/* Left artwork — the lavender carriage */}
             <div className="hidden md:flex items-center justify-center bg-[#FDFAF5] p-8">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -110,7 +110,7 @@ export default async function HomePage() {
             </div>
 
             {/* Sage centre panel — tone drawn from the card foliage */}
-            <div className="bg-[#B3BBA4] flex flex-col items-center justify-center text-center px-6 sm:px-12 py-14 sm:py-16">
+            <div className="bg-[#B3BBA4] flex flex-col items-center justify-center text-center px-6 sm:px-12 py-14 md:py-8">
               <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-espresso/70 mb-3">{content.why.eyebrow}</p>
               <h2 className="font-serif text-[2.1rem] sm:text-[2.75rem] text-espresso leading-tight mb-4">{content.why.title}</h2>
               <p className="font-cormorant text-lg text-espresso-light leading-relaxed max-w-md mb-10">{content.why.intro}</p>
@@ -155,7 +155,7 @@ export default async function HomePage() {
 
         {/* ── Editorial features — image + copy edited together in Portal → Home Content.
              (The "What makes it special" intro now lives up under Best Sellers.) ── */}
-        <section className="bg-cream-white pt-14 sm:pt-24">
+        <section className="bg-white pt-14 sm:pt-24">
 
           {/* Editable image features — image + copy edited together in the portal.
               Images alternate flush-left / flush-right as they fly in. */}
