@@ -99,10 +99,10 @@ export default async function StoryPage() {
               <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-300 mb-4">{content.french.eyebrow}</p>
               <div className="max-w-xl mx-auto">
                 {content.french.paragraphs.map((para, i) => (
-                  <p key={i} className="font-sans text-sm text-gold-300 leading-relaxed mb-4">{para}</p>
+                  <p key={i} className="font-sans text-sm text-cream-white leading-relaxed mb-4">{para}</p>
                 ))}
               </div>
-              <p className="text-2xl text-gold-300 mt-2" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.french.tagline}</p>
+              <p className="text-2xl text-cream-white mt-2" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.french.tagline}</p>
             </ScrollFlyIn>
           </div>
         </section>
