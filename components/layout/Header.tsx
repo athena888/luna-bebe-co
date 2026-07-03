@@ -189,15 +189,23 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
       ? 'absolute top-0 inset-x-0 z-40'
       : `fixed top-0 inset-x-0 z-40 bg-[#FEF8F4] transition-transform duration-300 ease-out ${hidden ? '-translate-y-full' : 'translate-y-0'}`}>
 
-      {/* Coming-soon announcement strip */}
-      <div className="bg-[#4A3B30] text-cream-50 text-center py-2.5 px-4">
-        <p className="font-sans text-[10px] tracking-[0.25em] uppercase leading-relaxed">
-          Petite Lavande is launching soon &mdash;&nbsp;
-          <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gold-300 transition-colors">Instagram</a>
-          &nbsp;&amp;&nbsp;
-          <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gold-300 transition-colors">Facebook</a>
-          &nbsp;for updates
-        </p>
+      {/* Coming-soon announcement strip — right-to-left looping marquee */}
+      <div className="bg-[#4A3B30] text-cream-50 py-2.5 overflow-hidden">
+        <div className="flex w-max animate-[pl-marquee_36s_linear_infinite]">
+          {[0, 1].map(copy => (
+            <div key={copy} className="flex shrink-0" aria-hidden={copy === 1}>
+              {[0, 1, 2].map(i => (
+                <p key={i} className="font-sans text-[10px] tracking-[0.25em] uppercase leading-relaxed whitespace-nowrap px-12">
+                  Fait avec amour, pour vous. &nbsp;·&nbsp; Petite Lavande is launching soon &mdash;&nbsp;
+                  <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" tabIndex={copy === 1 ? -1 : undefined} className="underline underline-offset-2 hover:text-gold-300 transition-colors">Instagram</a>
+                  &nbsp;&amp;&nbsp;
+                  <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" tabIndex={copy === 1 ? -1 : undefined} className="underline underline-offset-2 hover:text-gold-300 transition-colors">Facebook</a>
+                  &nbsp;for updates
+                </p>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Nav bar — Organic-Zoo style: at the hero top, a big centered logo with the

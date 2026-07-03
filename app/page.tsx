@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/Footer'
 import { StepsFeature } from '@/components/ui/StepsFeature'
 import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
+import { TheCollection } from '@/components/ui/TheCollection'
 import { RotatingImage } from '@/components/ui/RotatingImage'
 import { ScrimOverlay } from '@/components/ui/ScrimOverlay'
 import { ParallaxLayer } from '@/components/ui/ParallaxLayer'
@@ -91,6 +92,9 @@ export default async function HomePage() {
 
         {/* ── Best Sellers — right below the hero ── */}
         <PrebuiltBoxesSection />
+
+        {/* ── The Collection — every active box; lavender divider beneath ── */}
+        <TheCollection />
 
         {/* ── What makes it special — full-bleed editorial photo with overlaid
              heading + looping perks ticker (client component; photo managed via
