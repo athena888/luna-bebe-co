@@ -38,35 +38,36 @@ export function TheCollection() {
         <h2 className="font-playfair text-[2rem] sm:text-[2.6rem] uppercase tracking-[0.01em] font-medium text-espresso leading-none">The Collection</h2>
       </div>
 
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-16">
-        {/* Card — description panel on the left, carousel on the right (stacked
-            description-first with a little padding on phones). ≈ 80–90vh. */}
-        <div className="relative bg-white border border-cream-200 shadow-sm sm:overflow-hidden sm:flex sm:items-stretch p-3 sm:p-0">
+      <div className="relative">
+        {/* Full-bleed split — olive panel left, carousel right (stacked
+            description-first with a little padding on phones), ~85vh like the
+            Unforgettable section. No card border. */}
+        <div className="relative sm:flex sm:items-stretch p-3 sm:p-0">
           {/* Web only: lavender artwork straddling the panel/photo seam, top layer */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/decor/lavender-divider.png"
             alt=""
             aria-hidden="true"
-            className="hidden sm:block absolute bottom-5 left-[32%] -translate-x-1/2 w-[340px] lg:w-[400px] h-auto z-20 pointer-events-none drop-shadow-sm"
+            className="hidden sm:block absolute bottom-5 left-1/2 -translate-x-1/2 w-[360px] lg:w-[440px] h-auto z-20 pointer-events-none drop-shadow-sm"
           />
           {/* Description — olive framed panel (Unforgettable style), left of the
               photo; fades in on swap */}
-          <div key={`desc-${idx}`} className="relative bg-[#8A9B63] px-8 py-12 sm:py-10 sm:w-[32%] sm:shrink-0 flex flex-col justify-center text-center" style={{ animation: 'fadeIn 0.8s ease-out both' }}>
+          <div key={`desc-${idx}`} className="relative bg-[#8A9B63] px-8 sm:px-14 lg:px-20 py-12 sm:py-10 sm:w-1/2 sm:shrink-0 flex flex-col justify-center text-center" style={{ animation: 'fadeIn 0.8s ease-out both' }}>
             {/* Double-line frame */}
             <div className="pointer-events-none absolute inset-3 border-2 border-white">
               <div className="absolute inset-[5px] border border-white" />
             </div>
             <div className="relative px-2 overflow-y-auto scrollbar-hide">
               {/* Name — same script as "Create Something Unforgettable" */}
-              <p className="font-pinyon text-white text-[1.8rem] sm:text-[2rem] leading-tight mb-3">{box.name}</p>
+              <p className="font-pinyon text-white text-[1.8rem] sm:text-[2.3rem] leading-tight mb-4">{box.name}</p>
               {(box.tagline || box.description) && (
-                <p className="font-playfair italic text-white/90 text-[13px] sm:text-[14px] leading-relaxed mb-5">{box.tagline || box.description}</p>
+                <p className="font-playfair italic text-white/90 text-[13px] sm:text-[15px] leading-relaxed mb-6">{box.tagline || box.description}</p>
               )}
               {/* Everything inside */}
-              <div className="space-y-1.5 mb-5">
+              <div className="space-y-2 mb-6">
                 {box.items.filter(Boolean).map((it, i) => (
-                  <p key={i} className="font-playfair text-white text-[13px] sm:text-[14px] leading-snug">{it!.name}</p>
+                  <p key={i} className="font-playfair text-white text-[13px] sm:text-[15px] leading-snug">{it!.name}</p>
                 ))}
               </div>
               {/* Price */}
@@ -79,7 +80,7 @@ export function TheCollection() {
           </div>
 
           <div
-            className="relative overflow-hidden bg-cream-100 h-[52vh] sm:h-[72vh] sm:flex-1"
+            className="relative overflow-hidden bg-cream-100 h-[52vh] sm:h-auto sm:min-h-[85vh] sm:flex-1"
             onTouchStart={e => { touchX.current = e.touches[0].clientX }}
             onTouchEnd={e => {
               if (touchX.current == null) return
@@ -145,7 +146,7 @@ export function TheCollection() {
             <button
               type="button"
               onClick={prev}
-              className="hidden sm:flex absolute left-1 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full pl-round-full bg-white border border-bark-600 shadow-sm items-center justify-center text-bark-600 hover:bg-cream-100 transition-colors"
+              className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full pl-round-full bg-white border border-bark-600 shadow-sm items-center justify-center text-bark-600 hover:bg-cream-100 transition-colors"
               aria-label="Previous box"
             >
               <ChevronLeft size={18} strokeWidth={1.5} />
@@ -153,7 +154,7 @@ export function TheCollection() {
             <button
               type="button"
               onClick={next}
-              className="hidden sm:flex absolute right-1 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full pl-round-full bg-white border border-bark-600 shadow-sm items-center justify-center text-bark-600 hover:bg-cream-100 transition-colors"
+              className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full pl-round-full bg-white border border-bark-600 shadow-sm items-center justify-center text-bark-600 hover:bg-cream-100 transition-colors"
               aria-label="Next box"
             >
               <ChevronRight size={18} strokeWidth={1.5} />
