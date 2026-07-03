@@ -148,8 +148,8 @@ export default async function HomePage() {
         {/* ── Shop by Occasion — heading above the image tiles, styled like Best Sellers ── */}
         <div className="pt-14 sm:pt-20">
           <div className="px-6 mb-8 text-center">
-            <p className="font-sans text-[11px] tracking-[0.22em] uppercase font-semibold text-gold-500 mb-1.5">Curated sets for every new chapter — or start from scratch.</p>
-            <h2 className="font-serif text-[2.5rem] sm:text-[3.25rem] uppercase tracking-normal font-medium text-espresso leading-none inline-block scale-y-[1.25] origin-bottom">Shop by Occasion</h2>
+            <p className="font-sans text-[13px] tracking-[0.18em] uppercase font-medium text-gold-500 mb-2">Curated sets for every new chapter — or start from scratch.</p>
+            <h2 className="font-playfair text-[2.6rem] sm:text-[3.5rem] uppercase tracking-[0.01em] font-medium text-espresso leading-none">Shop by Occasion</h2>
           </div>
           <CollectionsSection initial={collectionsData ?? undefined} />
         </div>
