@@ -109,7 +109,7 @@ export default async function HomePage() {
           </div>
           {/* The promise perks */}
           <div className="max-w-6xl mx-auto px-6 sm:px-10 pb-12 sm:pb-16">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-4 md:divide-x md:divide-cream-300/80 border-t border-cream-300 pt-12 sm:pt-14">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-4 md:divide-x md:divide-cream-300/80 pt-2 sm:pt-4">
               {content.perks.map(({ label, sub }, i) => {
                 const Icon = PERK_ICONS[i % PERK_ICONS.length]
                 return (
@@ -126,14 +126,14 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── Shop by Occasion — images only ── */}
-        <div className="border-t border-cream-300">
+        {/* ── Shop by Occasion — images only (separated by whitespace, no divider line) ── */}
+        <div className="pt-8 sm:pt-12">
           <CollectionsSection initial={collectionsData ?? undefined} />
         </div>
 
         {/* ── Editorial features — image + copy edited together in Portal → Home Content.
              (The "What makes it special" intro now lives up under Best Sellers.) ── */}
-        <section className="border-t border-cream-300 bg-cream-white">
+        <section className="bg-cream-white pt-14 sm:pt-24">
 
           {/* Editable image features — image + copy edited together in the portal.
               Images alternate flush-left / flush-right as they fly in. */}

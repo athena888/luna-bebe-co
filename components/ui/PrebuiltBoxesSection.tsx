@@ -24,7 +24,7 @@ export function PrebuiltBoxesSection() {
   if (boxes.length === 0) return null
 
   return (
-    <section className="border-t border-cream-300 pt-10 pb-12 sm:pt-12">
+    <section className="pt-10 pb-12 sm:pt-12">
       <div className="pl-6 sm:pl-9 pr-6 mb-6 flex items-end justify-between">
         <div>
           <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Ready-Made</p>

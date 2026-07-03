@@ -409,7 +409,7 @@ function BoxSection({
   return (
     <section
       id={`box-${box.slug}`}
-      className="scroll-mt-20 flex flex-col lg:flex-row border-b border-cream-300 min-h-[80svh] lg:min-h-0 lg:h-screen"
+      className="scroll-mt-20 flex flex-col lg:flex-row border-b border-cream-300 min-h-[80svh] lg:min-h-0 lg:h-[110vh]"
     >
       {/* Image — 60% width on desktop, full height, flies in from the image side */}
       {/* Mobile: image flows at its natural height (shown in full). Desktop: fills
@@ -443,16 +443,16 @@ function BoxSection({
             </div>
           </FlyIn>
           <FlyIn delay={100}>
-            <h2 className="font-serif text-5xl lg:text-6xl text-espresso leading-[1.02] mb-5">{box.name}</h2>
+            <h2 className="font-serif text-4xl lg:text-5xl text-espresso leading-[1.02] mb-3">{box.name}</h2>
           </FlyIn>
           {box.tagline && (
             <FlyIn delay={200}>
-              <p className="font-cormorant text-xl italic text-espresso-light leading-relaxed mb-6">{box.tagline}</p>
+              <p className="font-cormorant text-lg italic text-espresso-light leading-snug mb-2.5">{box.tagline}</p>
             </FlyIn>
           )}
           {box.description && (
             <FlyIn delay={280}>
-              <p className="font-sans text-sm text-espresso-light leading-relaxed">{box.description}</p>
+              <p className="font-sans text-[13px] text-espresso-light leading-relaxed">{box.description}</p>
             </FlyIn>
           )}
         </div>
@@ -460,8 +460,8 @@ function BoxSection({
         {/* Middle: items — the ONLY scroll region on desktop; grows to fill the
             space between the fixed identity (top) and price/buy (bottom). */}
         {box.items.length > 0 && (
-          <div className="px-8 lg:px-12 xl:px-16 mt-8 lg:mt-6 lg:flex-1 lg:min-h-0 flex flex-col">
-            <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-4 shrink-0">What&apos;s Inside</p>
+          <div className="px-8 lg:px-12 xl:px-16 mt-6 lg:mt-4 lg:flex-1 lg:min-h-0 flex flex-col">
+            <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-3 shrink-0">What&apos;s Inside</p>
             <div className="max-h-[320px] lg:max-h-none lg:flex-1 lg:min-h-0 overflow-y-auto scrollbar-hide pr-1 pb-2">
               <ItemsList box={box} onOpen={onPreview} />
             </div>
@@ -469,8 +469,8 @@ function BoxSection({
         )}
 
         {/* Bottom: price + buy */}
-        <FlyIn delay={450} className="px-8 lg:px-12 xl:px-16 pb-12 lg:pb-10 mt-6">
-          <div className="border-t border-cream-300 pt-6 space-y-5">
+        <FlyIn delay={450} className="px-8 lg:px-12 xl:px-16 pb-8 lg:pb-6 mt-4">
+          <div className="border-t border-cream-300 pt-4 space-y-4">
             {hasGarment && <SizePicker size={size} setSize={setSize} />}
             <PriceBlock box={box} />
             <BuyBox box={box} size={size} />
