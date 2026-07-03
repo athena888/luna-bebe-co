@@ -6,7 +6,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { PRODUCTS, CATEGORY_LABELS, CATEGORY_ORDER, getAllProducts, BOX_BASE_PRICE } from '@/lib/products'
 import type { Product, ProductCategory } from '@/types'
-import { Check, X, Plus, Minus, Leaf, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Check, X, Plus, Minus, Leaf, ZoomIn, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react'
 import Image from 'next/image'
 import { memo, useCallback, useMemo, useState as useLocalState } from 'react'
 import { CertBadges } from '@/components/ui/CertBadges'
@@ -196,6 +196,7 @@ export default function BuildPage() {
   const [modalProduct, setModalProduct] = useState<BuildProduct | null>(null)
   const [modalGallery, setModalGallery] = useState<GalleryImage[]>([])
   const [modalImgIdx, setModalImgIdx] = useState(0)   // selected photo in the modal gallery
+  const [descOpen, setDescOpen] = useState(false)     // description folded by default
   const [modalVariants, setModalVariants] = useState<VariantOpt[]>([])
   const [modalCerts, setModalCerts] = useState<ProductCert[]>([])
   const [pickColor, setPickColor] = useState<string | null>(null)
@@ -368,6 +369,7 @@ export default function BuildPage() {
     setPickSize(null)
     setPickStyle(null)
     setModalImgIdx(0)
+    setDescOpen(false)
     setModalLoading(true)
     setModalGallery(galleryCache.current[product.id] ?? [])
     try {
@@ -746,7 +748,32 @@ export default function BuildPage() {
               <h2 className="font-sans text-2xl lg:text-3xl text-espresso leading-tight mb-2">{modalProduct.name}</h2>
               <p className="font-sans text-base text-bark-400 mb-4">{formatPrice(modalProduct.price)}</p>
 
-              {/* Variant pickers (color + size) — right below the price */}
+              {/* Certifications — right below the price. Falls back to the
+                  shipping/handcrafted/gift-ready badges when there are none. */}
+              <div className="border-t border-cream-300 py-4">
+                {(modalCerts.length > 0 || modalProduct.organic) ? (
+                  <CertBadges certs={modalCerts} organic={modalProduct.organic} />
+                ) : (
+                  <div className="flex items-start justify-between">
+                    {[{ label: 'Free Shipping', sub: '$150+' }, { label: 'Handcrafted', sub: 'with care' }, { label: 'Gift Ready', sub: 'wax seal' }].map(({ label, sub }) => (
+                      <div key={label} className="flex-1 text-center">
+                        <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
+                        <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Materials — covers the cotton story */}
+              {modalProduct.ingredients && (
+                <div className="border-t border-cream-300 py-3.5 mb-0.5 flex items-start gap-2">
+                  <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
+                  <span className="font-sans text-xs text-bark-400">{cleanGots(modalProduct.ingredients)}</span>
+                </div>
+              )}
+
+              {/* Variant pickers (color + size) — below certs & materials */}
               {modalHasVariants && !allVariantsOut && (
                 <div className="border-t border-cream-300 pt-4 space-y-4 mb-4">
                   <div>
@@ -869,37 +896,23 @@ export default function BuildPage() {
                 )}
               </div>
 
-              {/* Description */}
+              {/* Description — below the add-to-box CTA; folded by default */}
               <div className="border-t border-cream-300 py-3.5">
-                <p className="text-base text-bark-600 leading-relaxed" style={{ fontFamily: 'var(--font-cormorant)' }}>
-                  {cleanGots(modalProduct.description)}
-                </p>
-              </div>
-
-              {/* Certifications — below the description. Falls back to the
-                  shipping/handcrafted/gift-ready badges when there are none. */}
-              <div className="border-t border-cream-300 py-4">
-                {(modalCerts.length > 0 || modalProduct.organic) ? (
-                  <CertBadges certs={modalCerts} organic={modalProduct.organic} />
-                ) : (
-                  <div className="flex items-start justify-between">
-                    {[{ label: 'Free Shipping', sub: '$150+' }, { label: 'Handcrafted', sub: 'with care' }, { label: 'Gift Ready', sub: 'wax seal' }].map(({ label, sub }) => (
-                      <div key={label} className="flex-1 text-center">
-                        <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
-                        <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>
-                      </div>
-                    ))}
-                  </div>
+                <button
+                  type="button"
+                  onClick={() => setDescOpen(o => !o)}
+                  className="w-full flex items-center justify-between text-left"
+                  aria-expanded={descOpen}
+                >
+                  <span className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-600">Description</span>
+                  <ChevronDown size={15} strokeWidth={1.5} className={`text-bark-400 transition-transform duration-300 ${descOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {descOpen && (
+                  <p className="text-base text-bark-600 leading-relaxed pt-3" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                    {cleanGots(modalProduct.description)}
+                  </p>
                 )}
               </div>
-
-              {/* Materials — covers the cotton story; tag sits beneath it */}
-              {modalProduct.ingredients && (
-                <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
-                  <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
-                  <span className="font-sans text-xs text-bark-400">{cleanGots(modalProduct.ingredients)}</span>
-                </div>
-              )}
               {modalProduct.tag && (
                 <span className="inline-block bg-terra-100 text-terra-500 font-sans text-[9px] tracking-[0.2em] uppercase px-3 py-1 mb-2 self-start">
                   {modalProduct.tag}
