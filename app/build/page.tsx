@@ -755,7 +755,7 @@ export default function BuildPage() {
                   <CertBadges certs={modalCerts} organic={modalProduct.organic} />
                 ) : (
                   <div className="flex items-start justify-between">
-                    {[{ label: 'Free Shipping', sub: '$150+' }, { label: 'Handcrafted', sub: 'with care' }, { label: 'Gift Ready', sub: 'wax seal' }].map(({ label, sub }) => (
+                    {[{ label: 'Free Shipping', sub: '$150+' }, { label: 'Handcrafted', sub: 'with care' }, { label: 'Gift Ready', sub: 'carefully packed' }].map(({ label, sub }) => (
                       <div key={label} className="flex-1 text-center">
                         <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
                         <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>

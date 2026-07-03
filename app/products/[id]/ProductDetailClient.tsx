@@ -249,7 +249,7 @@ export default function ProductDetailClient() {
                   {[
                     { label: 'Free Shipping', sub: '$150+' },
                     { label: 'Handcrafted', sub: 'with care' },
-                    { label: 'Gift Ready', sub: 'wax seal' },
+                    { label: 'Gift Ready', sub: 'carefully packed' },
                   ].map(({ label, sub }) => (
                     <div key={label} className="flex-1 text-center">
                       <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
