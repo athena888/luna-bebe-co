@@ -9,8 +9,6 @@ import { LogoMark } from '@/components/ui/LogoMark'
 import { SlotImage } from '@/components/ui/SlotImage'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { ScrollFlyIn } from '@/components/ui/ScrollFlyIn'
-import { SocialFeed } from '@/components/ui/SocialFeed'
-import { Leaf, Heart, Mail } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Our Story',
@@ -19,16 +17,15 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-const VALUE_ICONS = [Leaf, Heart, Mail]
-
 export default async function StoryPage() {
   const [imgs, content, igPosts] = await Promise.all([
-    getSiteImages(['story.founder', 'story.value.1', 'story.value.2', 'story.value.3']),
+    getSiteImages(['story.founder', 'story.values', 'story.value.2']),
     getStoryContent(),
     getActiveSocialPosts(6),
   ])
   const founder = imgs['story.founder']
-  const valueImgs = [imgs['story.value.1'], imgs['story.value.2'], imgs['story.value.3']]
+  // Values photo — dedicated slot, falling back to the old lavender value icon
+  const valuesPhoto = imgs['story.values'] ?? imgs['story.value.2']
 
   return (
     <>
@@ -76,32 +73,28 @@ export default async function StoryPage() {
           </div>
         </SlotBackground>
 
-        {/* Brand values — dark by default; upload story.values_bg for a photo
-            background (the dark tint is then laid over it, tunable in admin). */}
-        <SlotBackground slotKey="story.values_bg" scrim="bg-[#3D2F28]/85" className="bg-[#3D2F28] border-t border-[#2e231d]">
-          <div className="max-w-4xl mx-auto px-6 py-20">
-            <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-cream-50/50 text-center mb-12">What We Stand For</p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
-              {content.values.map(({ title, body }, i) => {
-                const vi = valueImgs[i]
-                const Icon = VALUE_ICONS[i] ?? Leaf
-                return (
-                  <div key={i} className="text-center">
-                    {vi ? (
-                      <div className="w-24 h-24 mx-auto mb-4 pl-round-full overflow-hidden border border-cream-50/20 aspect-square">
-                        <img src={vi.public_url} alt={vi.alt_text} className="w-full h-full object-cover pl-round-full" />
-                      </div>
-                    ) : (
-                      <Icon size={26} strokeWidth={1.5} className="text-cream-50/50 mb-4 mx-auto" />
-                    )}
-                    <h3 className="font-sans text-xs tracking-[0.2em] uppercase text-cream-50 mb-3">{title}</h3>
-                    <p className="font-sans text-sm text-cream-50/70 leading-relaxed">{body}</p>
+        {/* Brand values — editorial split: lavender photo left, muted-green
+            panel right with the three values listed (High-Summer-Edit style). */}
+        <section className="border-t border-cream-300">
+          <div className="grid grid-cols-1 md:grid-cols-2 items-stretch">
+            <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[70vh] bg-cream-100">
+              {valuesPhoto
+                ? <img src={valuesPhoto.public_url} alt={valuesPhoto.alt_text} className="absolute inset-0 w-full h-full object-cover" />
+                : <div className="absolute inset-0 bg-cream-200" />}
+            </div>
+            <div className="bg-[#7A8E7C] flex flex-col items-center justify-center text-center px-8 sm:px-14 lg:px-20 py-16 md:py-12">
+              <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-white/60 mb-10">What We Stand For</p>
+              <div className="space-y-9 max-w-md">
+                {content.values.map(({ title, body }, i) => (
+                  <div key={i}>
+                    <h3 className="font-sans text-xs tracking-[0.25em] uppercase text-white mb-2.5">{title}</h3>
+                    <p className="font-playfair text-[15px] text-white/90 leading-relaxed">{body}</p>
                   </div>
-                )
-              })}
+                ))}
+              </div>
             </div>
           </div>
-        </SlotBackground>
+        </section>
 
         {/* French apothecary soul — text column (left 35%) and photo column
             (right 65%) side by side, no overlap. Photo managed in Portal → Story. */}

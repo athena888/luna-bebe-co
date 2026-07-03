@@ -57,10 +57,6 @@ export default function StoryPortal() {
         <SectionTitle n="1" title="Hero & Founder’s letter" note="The wide banner photo, the headline, and the founder letter — one section, divided." />
         <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
           <div className="space-y-3">
-            <div>
-              <p className="font-sans text-[10px] text-bark-400 mb-1">Top banner photo</p>
-              <SiteImageUploader slotKey="story.hero" context="Story hero banner" ratio="21:9" hint="wide banner above fold" compact />
-            </div>
             <BackgroundBox appliesTo="BOTH the hero headline and the founder letter (one shared section)">
               <SiteImageUploader slotKey="story.hero_bg" context="Background behind the story hero heading and logo" ratio="16:9" hint="soft, light lifestyle" compact />
               <ScrimControl scrimKey="story.hero_bg" defaultScrim={{ hex: '#FBF7F0', opacity: 0.92 }} />
@@ -91,20 +87,21 @@ export default function StoryPortal() {
 
       {/* 3 · Values */}
       <section className="mb-12">
-        <SectionTitle n="3" title="What we stand for" note="Three values — each with its round icon image." />
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-          {c.values.map((v, i) => (
-            <div key={i} className="bg-white border border-cream-200 rounded-lg p-3 space-y-3">
-              <SiteImageUploader slotKey={`story.value.${i + 1}`} context={`Story value icon: ${v.title}`} ratio="1:1" hint="square, ~800×800" compact />
-              <Field label="Title" value={v.title} onChange={val => setValue(i, { title: val })} ai={{ kind: 'title', context: 'a short brand-value title (2–3 words)' }} />
-              <Area label="Body" value={v.body} onChange={val => setValue(i, { body: val })} rows={4} ai={{ kind: 'body', context: `body copy for the brand value "${v.title}"` }} />
-            </div>
-          ))}
+        <SectionTitle n="3" title="What we stand for" note="Photo on the left, the three values listed on a green panel to the right." />
+        <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
+          <div>
+            <p className="font-sans text-[10px] text-bark-400 mb-1">Left photo</p>
+            <SiteImageUploader slotKey="story.values" context="Photo beside the What We Stand For values panel (lavender lifestyle)" ratio="3:4" hint="portrait or square · ~1200×1500. Until one is uploaded, the old lavender value photo is shown." compact />
+          </div>
+          <div className="space-y-4">
+            {c.values.map((v, i) => (
+              <div key={i} className="bg-white border border-cream-200 rounded-lg p-3 space-y-3">
+                <Field label={`Value ${i + 1} — title`} value={v.title} onChange={val => setValue(i, { title: val })} ai={{ kind: 'title', context: 'a short brand-value title (2–3 words)' }} />
+                <Area label="Body" value={v.body} onChange={val => setValue(i, { body: val })} rows={3} ai={{ kind: 'body', context: `body copy for the brand value "${v.title}"` }} />
+              </div>
+            ))}
+          </div>
         </div>
-        <BackgroundBox appliesTo="the three value cards above (Purely Organic / Artisan-Made / Every Detail)">
-          <SiteImageUploader slotKey="story.values_bg" context="Background behind the What We Stand For section" ratio="16:9" hint="soft, airy background · ~2000×1130" compact />
-          <ScrimControl scrimKey="story.values_bg" defaultScrim={{ hex: '#3D2F28', opacity: 0.85 }} label="Background colour overlay" note="dark tint kept over any photo so the white text stays readable" />
-        </BackgroundBox>
       </section>
 
       {/* 4 · French apothecary — closing section, split layout */}
