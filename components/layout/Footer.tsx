@@ -34,24 +34,24 @@ function EmailSignup() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex bg-white shadow-sm">
+    <form onSubmit={handleSubmit} className="flex bg-white">
       <input
         type="email"
         required
         value={email}
         onChange={e => setEmail(e.target.value)}
         placeholder="Email Address*"
-        className="w-[45%] min-w-0 px-4 py-4 font-sans text-sm text-espresso placeholder:text-bark-400 bg-transparent focus:outline-none"
+        className="w-[45%] min-w-0 px-4 py-2.5 font-sans text-sm text-espresso placeholder:font-light placeholder:text-[#B8B0A6] bg-transparent focus:outline-none"
       />
       <input
         type="tel"
         value={phone}
         onChange={e => setPhone(e.target.value)}
         placeholder="Phone Number"
-        className="flex-1 min-w-0 px-4 py-4 font-sans text-sm text-espresso placeholder:text-bark-400 bg-transparent focus:outline-none border-l border-cream-300"
+        className="flex-1 min-w-0 px-4 py-2.5 font-sans text-sm text-espresso placeholder:font-light placeholder:text-[#B8B0A6] bg-transparent focus:outline-none border-l border-cream-300"
       />
-      <button type="submit" aria-label="Subscribe" className="px-5 text-gold-500 hover:text-gold-600 transition-colors">
-        <ArrowRight size={22} strokeWidth={1.3} />
+      <button type="submit" aria-label="Subscribe" className="px-4 text-gold-500 hover:text-gold-600 transition-colors">
+        <ArrowRight size={20} strokeWidth={1.3} />
       </button>
     </form>
   )

@@ -2,16 +2,17 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { Package, PenLine, Truck } from 'lucide-react'
 import { RotatingImage } from './RotatingImage'
 
-// The first "What makes it special" beat: an editorial image beside the
-// "Create Something Unforgettable" three-step how-it-works, whose steps drop in
-// one-by-one when the block scrolls into view.
-const STEPS = [
-  { Icon: Package, title: 'Build Your Box', body: 'Choose from curated organic items across thoughtful categories — or start from a ready-made set.' },
-  { Icon: PenLine, title: 'Customize Your Card', body: 'Pick a card design and your message — we print it on premium card stock.' },
-  { Icon: Truck, title: 'We Ship With Care', body: 'A beautiful natural sea grass box, kraft outside.' },
+// The first "What makes it special" beat: an editorial image beside a framed
+// sage panel — script heading, intro line, and the box's contents listed,
+// dropping in one-by-one when the block scrolls into view.
+const ITEMS = [
+  'Wellness care for mama',
+  'Organic cotton, no pesticides',
+  'Botanical lavender bouquet',
+  'Customized card',
+  'Wax seal & linen ribbon',
 ]
 
 export function StepsFeature({ images, side = 'left' }: { images: string[]; side?: 'left' | 'right' }) {
@@ -38,36 +39,44 @@ export function StepsFeature({ images, side = 'left' }: { images: string[]; side
         <RotatingImage urls={images} alt="Create something unforgettable" />
       </div>
 
-      {/* Solid sage panel — white copy, same height as the image. Content is
-          vertically centred with breathing room and sized to always fit. */}
-      <div className={`bg-sage-400 flex flex-col items-center justify-center px-8 sm:px-12 lg:px-16 py-14 md:py-10 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
-        <div className="max-w-md w-full">
-          <h2 className="font-serif text-[1.35rem] sm:text-[1.9rem] xl:text-[2.05rem] text-white leading-tight text-center whitespace-nowrap mb-10 md:mb-12">
+      {/* Solid sage panel — white copy inside a double-rule frame, same height
+          as the image. Content is vertically centred with breathing room. */}
+      <div className={`relative bg-sage-400 flex flex-col items-center justify-center px-10 sm:px-16 lg:px-20 py-16 md:py-12 ${side === 'right' ? 'md:order-1' : 'md:order-2'}`}>
+        {/* Double-line frame */}
+        <div className="pointer-events-none absolute inset-4 sm:inset-6 border border-white/90">
+          <div className="absolute inset-[5px] border border-white/60" />
+        </div>
+
+        <div className="relative max-w-md w-full text-center">
+          <h2 className="font-script text-[2rem] sm:text-[2.6rem] xl:text-[2.9rem] text-white leading-tight whitespace-nowrap mb-7 md:mb-8">
             Create Something Unforgettable
           </h2>
 
-          {/* Steps — inline rows: icon left, left-aligned text */}
-          <div className="space-y-6 md:space-y-7">
-            {STEPS.map((s, i) => (
-              <div
-                key={s.title}
-                className={`flex items-start gap-4 text-left transition-all duration-500 ease-out ${(shown || reduce) ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}
-                style={{ transitionDelay: reduce ? '0ms' : `${150 + i * 180}ms` }}
+          <p className="font-serif text-[16px] sm:text-[17px] text-white/90 leading-relaxed mb-8 md:mb-9">
+            A botanical lavender bouquet and wellness rituals to soften the long days,
+            each chosen the way a daughter would choose for her own mother.
+          </p>
+
+          {/* Contents — centred lines, dropping in one-by-one */}
+          <div className="space-y-2.5">
+            {ITEMS.map((item, i) => (
+              <p
+                key={item}
+                className={`font-serif text-[15px] sm:text-[16px] text-white leading-relaxed transition-all duration-500 ease-out ${(shown || reduce) ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}
+                style={{ transitionDelay: reduce ? '0ms' : `${150 + i * 140}ms` }}
               >
-                <span className="shrink-0 w-10 h-10 rounded-full pl-round-full border border-white/50 flex items-center justify-center mt-0.5">
-                  <s.Icon size={15} strokeWidth={1.5} className="text-white" />
-                </span>
-                <div>
-                  <h3 className="font-sans text-[11px] tracking-[0.22em] uppercase text-white mb-1">{s.title}</h3>
-                  <p className="font-serif text-[15px] text-white/85 leading-relaxed">{s.body}</p>
-                </div>
-              </div>
+                {item}
+              </p>
             ))}
           </div>
 
-          <div className="flex flex-wrap gap-3 justify-center mt-10 md:mt-12">
-            <Link href="/build" className="bg-white text-sage-500 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-cream-100 transition-colors">Build Your Own Box</Link>
-            <Link href="/boxes" className="border border-white/60 text-white font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-3.5 hover:bg-white/10 transition-colors">Shop Ready-Made</Link>
+          <div className="mt-9 md:mt-10">
+            <Link
+              href="/boxes"
+              className="inline-block font-sans text-[12px] tracking-[0.3em] uppercase text-white border-b border-white pb-1 hover:text-cream-100 hover:border-cream-100 transition-colors"
+            >
+              Shop Now
+            </Link>
           </div>
         </div>
       </div>
