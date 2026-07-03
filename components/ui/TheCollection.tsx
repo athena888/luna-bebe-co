@@ -33,11 +33,21 @@ export function TheCollection() {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
-        {/* Card — carousel inside, description on the card surface below the
-            photo. Whole card ≈ 80–90% of the viewport height. */}
-        <div className="bg-white border border-cream-200 shadow-sm overflow-hidden">
+        {/* Card — description panel on the left, carousel on the right (stacked
+            description-first on phones). Whole card ≈ 80–90% viewport height. */}
+        <div className="bg-white border border-cream-200 shadow-sm overflow-hidden sm:flex sm:items-stretch">
+          {/* Description — olive framed panel (Unforgettable style), left of the
+              photo; fades in on swap */}
+          <div key={`desc-${idx}`} className="relative bg-[#8A9B63] px-8 py-12 sm:py-8 sm:w-[32%] sm:shrink-0 flex flex-col justify-center text-center" style={{ animation: 'fadeIn 0.8s ease-out both' }}>
+            {/* Double-line frame */}
+            <div className="pointer-events-none absolute inset-3 border-2 border-white">
+              <div className="absolute inset-[5px] border border-white" />
+            </div>
+            <p className="relative font-playfair text-white text-[15px] sm:text-lg leading-relaxed px-2">{box.tagline || box.description}</p>
+          </div>
+
           <div
-            className="relative overflow-hidden bg-cream-100 h-[55vh] sm:h-[66vh]"
+            className="relative overflow-hidden bg-cream-100 h-[52vh] sm:h-[72vh] sm:flex-1"
             onTouchStart={e => { touchX.current = e.touches[0].clientX }}
             onTouchEnd={e => {
               if (touchX.current == null) return
@@ -94,11 +104,6 @@ export function TheCollection() {
                 </button>
               </>
             )}
-          </div>
-
-          {/* Description — on the card, fades in on swap */}
-          <div key={`desc-${idx}`} className="px-6 py-6 sm:py-7 text-center" style={{ animation: 'fadeIn 0.8s ease-out both' }}>
-            <p className="font-playfair italic text-espresso-light text-[15px] sm:text-lg leading-relaxed max-w-2xl mx-auto">{box.tagline || box.description}</p>
           </div>
         </div>
 
