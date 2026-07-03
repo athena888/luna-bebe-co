@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import type { ResolvedBox } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
-import { Package } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 
 function fmt(cents: number) { return `$${(cents / 100).toFixed(0)}` }
@@ -12,28 +12,14 @@ function boxTotal(box: ResolvedBox): number {
   return box.customPrice ?? (BOX_BASE_PRICE + box.items.reduce((s, p) => s + (p?.price ?? 0), 0))
 }
 
-function BoxCard({ box }: { box: ResolvedBox }) {
-  return (
-    <Link href={`/boxes#box-${box.slug}`} className="group block text-center">
-      <div className="relative aspect-[4/5] bg-white overflow-hidden">
-        {box.image
-          ? <Image src={box.image} alt={box.name} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" unoptimized sizes="(max-width:640px) 78vw, 400px" />
-          : <div className="absolute inset-0 flex items-center justify-center text-bark-300"><Package size={32} /></div>}
-      </div>
-      <div className="pt-4 text-espresso transition-colors duration-300 group-hover:text-gold-500">
-        <h3 className="font-serif text-xl font-semibold leading-tight">{box.name}</h3>
-        <p className="font-serif text-lg font-semibold mt-1">{fmt(boxTotal(box))}</p>
-      </div>
-    </Link>
-  )
-}
-
-// "The Collection" — every active box, right below Best Sellers.
-// Desktop: 3-up grid. Mobile: snap carousel with a peek of the next card + dots.
+// "The Collection" — one box at a time as a full-bleed showcase. The photo
+// fills the stage; the description sits over the top of the image and the
+// name + price are baked over the bottom in white. Texts fade in on swap.
+// Arrows + swipe + dots on both desktop and mobile.
 export function TheCollection() {
   const [boxes, setBoxes] = useState<ResolvedBox[]>([])
-  const [active, setActive] = useState(0)
-  const trackRef = useRef<HTMLDivElement>(null)
+  const [idx, setIdx] = useState(0)
+  const touchX = useRef<number | null>(null)
 
   useEffect(() => {
     fetch('/api/boxes').then(r => r.json()).then(d => setBoxes(d.boxes ?? [])).catch(() => {})
@@ -41,18 +27,9 @@ export function TheCollection() {
 
   if (boxes.length === 0) return null
 
-  function onScroll() {
-    const el = trackRef.current
-    if (!el) return
-    const cardW = el.scrollWidth / boxes.length
-    setActive(Math.min(boxes.length - 1, Math.round(el.scrollLeft / cardW)))
-  }
-
-  function scrollToIdx(i: number) {
-    const el = trackRef.current
-    if (!el) return
-    el.scrollTo({ left: (el.scrollWidth / boxes.length) * i, behavior: 'smooth' })
-  }
+  const box = boxes[idx % boxes.length]
+  const prev = () => setIdx(i => (i - 1 + boxes.length) % boxes.length)
+  const next = () => setIdx(i => (i + 1) % boxes.length)
 
   return (
     <section className="pt-4 pb-14 sm:pt-6">
@@ -61,44 +38,93 @@ export function TheCollection() {
         <h2 className="font-playfair text-[2rem] sm:text-[2.6rem] uppercase tracking-[0.01em] font-medium text-espresso leading-none">The Collection</h2>
       </div>
 
-      {/* Desktop — grid */}
-      <div className="hidden sm:grid max-w-6xl mx-auto px-6 grid-cols-3 gap-x-5 gap-y-10">
-        {boxes.map(box => <BoxCard key={box.slug} box={box} />)}
-      </div>
-
-      {/* Mobile — snap carousel with peek + dots */}
-      <div className="sm:hidden">
+      <div className="max-w-6xl mx-auto sm:px-6">
         <div
-          ref={trackRef}
-          onScroll={onScroll}
-          className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory gap-4 pl-6 pr-6 scroll-pl-6 pb-2"
+          className="relative overflow-hidden bg-cream-100 aspect-[4/5] sm:aspect-[16/9]"
+          onTouchStart={e => { touchX.current = e.touches[0].clientX }}
+          onTouchEnd={e => {
+            if (touchX.current == null) return
+            const dx = e.changedTouches[0].clientX - touchX.current
+            touchX.current = null
+            if (dx > 40) prev()
+            else if (dx < -40) next()
+          }}
         >
-          {boxes.map(box => (
-            <div key={box.slug} className="shrink-0 w-[78vw] snap-start">
-              <BoxCard box={box} />
-            </div>
+          {/* Cross-fading photos — all mounted, active one visible */}
+          {boxes.map((b, i) => (
+            b.image && (
+              <Image
+                key={b.slug}
+                src={b.image}
+                alt={b.name}
+                fill
+                className={`object-cover transition-opacity duration-700 ${i === idx ? 'opacity-100' : 'opacity-0'}`}
+                unoptimized
+                sizes="(max-width:640px) 100vw, 1152px"
+              />
+            )
           ))}
+
+          {/* Legibility gradients */}
+          <div className="absolute inset-x-0 top-0 h-28 sm:h-32 bg-gradient-to-b from-black/45 to-transparent" aria-hidden="true" />
+          <div className="absolute inset-x-0 bottom-0 h-32 sm:h-40 bg-gradient-to-t from-black/55 to-transparent" aria-hidden="true" />
+
+          {/* Whole stage links to the box */}
+          <Link href={`/boxes#box-${box.slug}`} className="absolute inset-0 z-10" aria-label={box.name} />
+
+          {/* Description — over the top of the image, fades in on swap */}
+          <div key={`desc-${idx}`} className="absolute top-0 inset-x-0 pt-5 sm:pt-7 px-8 sm:px-16 text-center pointer-events-none z-10" style={{ animation: 'fadeIn 0.9s ease-out both' }}>
+            <p className="font-playfair italic text-white/95 text-[13px] sm:text-lg leading-snug drop-shadow-md">{box.tagline || box.description}</p>
+          </div>
+
+          {/* Name + price — baked over the bottom in white, rises in on swap */}
+          <div key={`name-${idx}`} className="absolute bottom-0 inset-x-0 pb-6 sm:pb-8 px-6 text-center pointer-events-none z-10" style={{ animation: 'slideUp 0.7s ease-out both' }}>
+            <p className="font-playfair text-white text-2xl sm:text-4xl drop-shadow-md">{box.name}</p>
+            <p className="font-sans text-white/90 text-[11px] tracking-[0.25em] uppercase mt-1.5 drop-shadow-md">{fmt(boxTotal(box))}</p>
+          </div>
+
+          {/* Arrows — desktop & mobile */}
+          {boxes.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={prev}
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full pl-round-full bg-white/90 shadow-md flex items-center justify-center text-bark-600 hover:bg-white hover:text-espresso transition-colors"
+                aria-label="Previous box"
+              >
+                <ChevronLeft size={18} strokeWidth={1.5} />
+              </button>
+              <button
+                type="button"
+                onClick={next}
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full pl-round-full bg-white/90 shadow-md flex items-center justify-center text-bark-600 hover:bg-white hover:text-espresso transition-colors"
+                aria-label="Next box"
+              >
+                <ChevronRight size={18} strokeWidth={1.5} />
+              </button>
+            </>
+          )}
         </div>
-        <div className="flex justify-center gap-2 mt-4">
-          {boxes.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => scrollToIdx(i)}
-              aria-label={`Go to box ${i + 1}`}
-              className={`w-2 h-2 rounded-full pl-round-full transition-colors ${i === active ? 'bg-gold-500' : 'bg-cream-300'}`}
-            />
-          ))}
-        </div>
+
+        {/* Dots */}
+        {boxes.length > 1 && (
+          <div className="flex justify-center gap-2 mt-5">
+            {boxes.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setIdx(i)}
+                aria-label={`Go to box ${i + 1}`}
+                className={`w-2 h-2 rounded-full pl-round-full transition-colors ${i === idx ? 'bg-gold-500' : 'bg-cream-300'}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Lavender divider */}
+      {/* Lavender divider — watercolor artwork */}
       <div className="pt-12 px-6 flex justify-center">
-        <div className="flex items-center gap-5 w-full max-w-xs sm:max-w-sm justify-center">
-          <span className="flex-1 h-px bg-gold-400/60" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/sprig-color.png" alt="" aria-hidden="true" className="h-8 w-auto object-contain" />
-          <span className="flex-1 h-px bg-gold-400/60" />
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto" />
       </div>
     </section>
   )

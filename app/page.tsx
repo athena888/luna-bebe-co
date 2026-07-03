@@ -87,7 +87,7 @@ export default async function HomePage() {
                 We see the mother,<br />not just the baby.
               </h1>
               <p className="font-serif text-cream-200/90 text-base sm:text-xl leading-relaxed mb-6">
-                Luxury organic gift boxes — hand-packed, wax-sealed, delivered with love.
+                Luxury organic gift boxes — hand-packed and delivered with love.
               </p>
               <Link
                 href="/boxes"
@@ -119,16 +119,12 @@ export default async function HomePage() {
           <CollectionsSection initial={collectionsData ?? undefined} />
         </div>
 
-        {/* ── Divider — lavender sprig between gold rules, brand line beneath.
+        {/* ── Divider — watercolor lavender artwork, brand line beneath.
              Transparent white space between the occasion tiles and the panel. ── */}
         <div className="bg-white pt-14 sm:pt-20 px-6 flex flex-col items-center text-center">
-          <div className="flex items-center gap-5 w-full max-w-xs sm:max-w-sm justify-center">
-            <span className="flex-1 h-px bg-gold-400/60" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/sprig-color.png" alt="" aria-hidden="true" className="h-9 w-auto object-contain" />
-            <span className="flex-1 h-px bg-gold-400/60" />
-          </div>
-          <p className="font-serif italic text-espresso-light text-lg sm:text-xl mt-4">Fait avec amour, pour vous.</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-2xl h-auto" />
+          <p className="font-serif italic text-espresso-light text-lg sm:text-xl mt-5">Fait avec amour, pour vous.</p>
         </div>
 
         {/* ── "Create Something Unforgettable" framed panel — the only editorial

@@ -30,11 +30,11 @@ export function PrebuiltBoxesSection() {
         <h2 className="font-playfair text-[2rem] sm:text-[2.6rem] uppercase tracking-[0.01em] font-medium text-espresso leading-none">Best Sellers</h2>
       </div>
 
-      {/* Cover photos — vertical stack on mobile, horizontal carousel from sm up.
-          Click to open the set. */}
-      <div className="flex flex-col gap-9 px-6 sm:flex-row sm:overflow-x-auto scrollbar-hide sm:snap-x sm:snap-mandatory sm:gap-5 sm:px-0 sm:pl-9 sm:pr-6 sm:scroll-pl-9 pb-2">
+      {/* Cover photos — contained grid with side margins on desktop, vertical
+          stack on mobile. Click to open the set. */}
+      <div className="max-w-6xl mx-auto px-6 flex flex-col gap-9 sm:grid sm:grid-cols-3 sm:gap-x-5 sm:gap-y-10">
         {boxes.map(box => (
-          <Link key={box.slug} href={`/boxes#box-${box.slug}`} className="group w-full sm:shrink-0 sm:w-[340px] lg:w-[380px] sm:snap-start text-center">
+          <Link key={box.slug} href={`/boxes#box-${box.slug}`} className="group w-full text-center">
             <div className="relative aspect-[4/5] bg-white overflow-hidden">
               {box.image
                 ? <Image src={box.image} alt={box.name} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" unoptimized sizes="(max-width:640px) 78vw, 380px" />
@@ -48,7 +48,6 @@ export function PrebuiltBoxesSection() {
             </div>
           </Link>
         ))}
-        <div className="hidden sm:block shrink-0 w-9" />
       </div>
     </section>
   )
