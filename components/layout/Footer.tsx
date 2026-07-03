@@ -72,92 +72,74 @@ export function Footer() {
       {/* Main footer — optional owner-managed background sits behind everything;
           a translucent scrim keeps the cream look (and text legible) when set. */}
       <SlotBackground slotKey="footer.bg" scrim="bg-cream-100/30" className="bg-cream-100 border-t border-cream-300">
-        <div className="max-w-6xl mx-auto px-6 py-16">
+        <div className="max-w-6xl mx-auto px-6 py-10 sm:py-12">
 
-          {/* Logo + tagline */}
-          <div className="mb-10 text-center">
-            <LogoMark className="h-24 w-auto mx-auto mb-4" style={{ color: '#4A3B30' }} alt="Petite Lavande" />
-            <div className="font-serif text-3xl tracking-[0.15em] uppercase text-espresso mb-2">Petite Lavande</div>
-            <p className="font-serif italic text-espresso text-sm">Fait avec amour, pour vous.</p>
-          </div>
+          {/* Top row — brand + newsletter (left) · link columns (right) */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1.35fr] gap-8 lg:gap-16">
 
-          {/* Find us — social + email icons + labels + handle/address subline, above the signup */}
-          <div className="flex justify-center gap-10 mb-12">
-            <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1.5 text-bark-400 hover:text-bark-600 transition-colors">
-              <IgIcon />
-              <span className="font-sans text-[10px] tracking-[0.2em] uppercase">Instagram</span>
-              <span className="font-sans text-[10px] text-bark-400/70 tracking-wide">@petitelavandeco</span>
-            </a>
-            <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1.5 text-bark-400 hover:text-bark-600 transition-colors">
-              <FbIcon />
-              <span className="font-sans text-[10px] tracking-[0.2em] uppercase">Facebook</span>
-              <span className="font-sans text-[10px] text-bark-400/70 tracking-wide">@petitelavandeco</span>
-            </a>
-            <a href={`mailto:${CONTACT_EMAIL}`} className="flex flex-col items-center gap-1.5 text-bark-400 hover:text-bark-600 transition-colors">
-              <Mail size={22} strokeWidth={1.5} />
-              <span className="font-sans text-[10px] tracking-[0.2em] uppercase">Email</span>
-              <span className="font-sans text-[10px] text-bark-400/70 tracking-wide break-all">{CONTACT_EMAIL}</span>
-            </a>
-          </div>
-
-          {/* Email signup — 10% off the first order */}
-          <div className="max-w-md mx-auto text-center mb-14">
-            <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-espresso mb-2 font-medium">Join our list — 10% off your first box</p>
-            <p className="font-sans text-xs text-espresso mb-4 leading-relaxed">New-parent gift guides, quiet launches, and a welcome code for your first order.</p>
-            <EmailSignup />
-          </div>
-
-          {/* Link columns */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 mb-12 text-center">
-
-            {/* Shop & Gift — merged */}
+            {/* Brand + newsletter */}
             <div>
-              <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-espresso mb-4 font-semibold">Shop &amp; Gift</p>
-              <ul className="space-y-2.5 text-[13px] font-sans font-medium">
-                <li><Link href="/gift-guides" className="text-espresso hover:text-espresso transition-colors">Gifting Ideas</Link></li>
-                <li><Link href="/boxes" className="text-espresso hover:text-espresso transition-colors">Ready-Made Boxes</Link></li>
-                <li><Link href="/build" className="text-espresso hover:text-espresso transition-colors">Build Your Own Box</Link></li>
-                <li><Link href="/gift-cards" className="text-espresso hover:text-espresso transition-colors">Gift Cards</Link></li>
-              </ul>
+              <div className="flex items-center gap-2.5 mb-2">
+                <LogoMark className="h-10 w-auto" style={{ color: '#4A3B30' }} alt="Petite Lavande" />
+                <span className="font-serif text-lg tracking-[0.18em] uppercase text-espresso">Petite Lavande</span>
+              </div>
+              <p className="font-serif italic text-espresso-light text-sm mb-5">Fait avec amour, pour vous.</p>
+
+              <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-espresso mb-1.5">Join our list — 10% off your first box</p>
+              <p className="font-sans text-xs text-espresso-light mb-3 leading-relaxed max-w-sm">New-parent gift guides, quiet launches, and a welcome code for your first order.</p>
+              <div className="max-w-sm"><EmailSignup /></div>
+
+              {/* Social */}
+              <div className="flex items-center gap-4 mt-4 text-bark-400">
+                <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" className="hover:text-bark-600 transition-colors" title="Instagram · @petitelavandeco" aria-label="Instagram"><IgIcon /></a>
+                <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" className="hover:text-bark-600 transition-colors" title="Facebook" aria-label="Facebook"><FbIcon /></a>
+                <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-bark-600 transition-colors" title={CONTACT_EMAIL} aria-label="Email"><Mail size={22} strokeWidth={1.5} /></a>
+              </div>
             </div>
 
-            {/* About */}
-            <div>
-              <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-espresso mb-4 font-semibold">About</p>
-              <ul className="space-y-2.5 text-[13px] font-sans font-medium">
-                <li><Link href="/story" className="text-espresso hover:text-espresso transition-colors">Our Story</Link></li>
-                <li><Link href="/journal" className="text-espresso hover:text-espresso transition-colors">The Journal</Link></li>
-                <li><Link href="/track" className="text-espresso hover:text-espresso transition-colors">Track Order</Link></li>
-                <li><Link href="/account" className="text-espresso hover:text-espresso transition-colors">My Account</Link></li>
-              </ul>
-            </div>
-
-            {/* Corporate */}
-            <div>
-              <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-espresso mb-4 font-semibold">Corporate</p>
-              <ul className="space-y-2.5 text-[13px] font-sans font-medium">
-                <li><Link href="/corporate" className="text-espresso hover:text-espresso transition-colors">Corporate &amp; Team Gifting</Link></li>
-                <li><a href={`mailto:${CONTACT_EMAIL}`} className="text-espresso hover:text-espresso transition-colors break-all">{CONTACT_EMAIL}</a></li>
-              </ul>
+            {/* Link columns */}
+            <div className="grid grid-cols-3 gap-5 sm:gap-10">
+              <div>
+                <p className="font-serif text-sm tracking-[0.1em] uppercase text-espresso mb-3">Shop &amp; Gift</p>
+                <ul className="space-y-2 text-[13px] font-sans">
+                  <li><Link href="/gift-guides" className="text-espresso-light hover:text-espresso transition-colors">Gifting Ideas</Link></li>
+                  <li><Link href="/boxes" className="text-espresso-light hover:text-espresso transition-colors">Ready-Made Boxes</Link></li>
+                  <li><Link href="/build" className="text-espresso-light hover:text-espresso transition-colors">Build Your Own Box</Link></li>
+                  <li><Link href="/gift-cards" className="text-espresso-light hover:text-espresso transition-colors">Gift Cards</Link></li>
+                </ul>
+              </div>
+              <div>
+                <p className="font-serif text-sm tracking-[0.1em] uppercase text-espresso mb-3">About</p>
+                <ul className="space-y-2 text-[13px] font-sans">
+                  <li><Link href="/story" className="text-espresso-light hover:text-espresso transition-colors">Our Story</Link></li>
+                  <li><Link href="/journal" className="text-espresso-light hover:text-espresso transition-colors">The Journal</Link></li>
+                  <li><Link href="/track" className="text-espresso-light hover:text-espresso transition-colors">Track Order</Link></li>
+                  <li><Link href="/account" className="text-espresso-light hover:text-espresso transition-colors">My Account</Link></li>
+                </ul>
+              </div>
+              <div>
+                <p className="font-serif text-sm tracking-[0.1em] uppercase text-espresso mb-3">Corporate</p>
+                <ul className="space-y-2 text-[13px] font-sans">
+                  <li><Link href="/corporate" className="text-espresso-light hover:text-espresso transition-colors">Team Gifting</Link></li>
+                  <li><a href={`mailto:${CONTACT_EMAIL}`} className="text-espresso-light hover:text-espresso transition-colors break-all">{CONTACT_EMAIL}</a></li>
+                </ul>
+              </div>
             </div>
 
           </div>
 
-          {/* Copyright + legal — same container, separated by a divider */}
-          <div className="pt-6 border-t border-cream-300">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-              <p className="font-sans text-[11px] text-espresso">© {new Date().getFullYear()} Petite Lavande. Sent with love.</p>
-              <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-sans text-[11px] text-espresso">
-                <RegionSwitcher />
-                <span className="text-espresso/40 hidden sm:inline">·</span>
-                {/* Privacy · Terms · Returns — kept on one line */}
-                <div className="flex items-center gap-2.5 whitespace-nowrap">
-                  <Link href="/legal/privacy" className="hover:text-espresso transition-colors">Privacy</Link>
-                  <span className="text-espresso/40">·</span>
-                  <Link href="/legal/terms" className="hover:text-espresso transition-colors">Terms</Link>
-                  <span className="text-espresso/40">·</span>
-                  <Link href="/legal/returns" className="hover:text-espresso transition-colors">Returns</Link>
-                </div>
+          {/* Legal bar */}
+          <div className="mt-8 pt-5 border-t border-cream-300 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="font-sans text-[11px] text-espresso">© {new Date().getFullYear()} Petite Lavande. Sent with love.</p>
+            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 font-sans text-[11px] text-espresso">
+              <RegionSwitcher />
+              <span className="text-espresso/40 hidden sm:inline">·</span>
+              <div className="flex items-center gap-2.5 whitespace-nowrap">
+                <Link href="/legal/privacy" className="hover:text-espresso transition-colors">Privacy</Link>
+                <span className="text-espresso/40">·</span>
+                <Link href="/legal/terms" className="hover:text-espresso transition-colors">Terms</Link>
+                <span className="text-espresso/40">·</span>
+                <Link href="/legal/returns" className="hover:text-espresso transition-colors">Returns</Link>
               </div>
             </div>
           </div>

@@ -188,21 +188,40 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
       <div className={`transition-colors duration-500 ${transparent ? 'bg-gradient-to-b from-black/30 via-black/10 to-transparent' : 'bg-[#FEF8F4]'}`}>
 
         {/* Desktop */}
-        <div className={`hidden md:block relative w-full px-9 transition-all duration-500 ${expanded ? 'py-5' : 'py-2'}`}>
-          <div className={`flex items-center transition-all duration-500 ${expanded ? 'flex-col justify-center gap-3' : 'flex-row gap-6'}`}>
-            <Wordmark light={light} expanded={expanded} />
-            {/* Compact: nav fills the row and centres (nudged down + reserving the
-                right icon space) so it lines up with the wordmark text. */}
-            <nav className={`flex items-center gap-6 lg:gap-9 font-sans text-[11px] tracking-[0.2em] transition-all duration-500 ${expanded ? '' : 'flex-1 justify-center pr-24'}`}>
-              <NavLinks light={light} />
-            </nav>
-          </div>
-          <div className="absolute right-9 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
-            <Link href="/account" className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`} title="My Account">
-              <User size={16} />
-            </Link>
-            <CartButton light={light} />
-          </div>
+        <div className={`hidden md:block relative w-full px-9 transition-all duration-500 ${expanded ? 'py-5' : 'py-3'}`}>
+          {expanded ? (
+            // Hero top — big centred logo with the nav beneath it.
+            <>
+              <div className="flex flex-col items-center justify-center gap-3">
+                <Wordmark light={light} expanded />
+                <nav className="flex items-center gap-6 lg:gap-9 font-sans text-[11px] tracking-[0.2em]">
+                  <NavLinks light={light} />
+                </nav>
+              </div>
+              <div className="absolute right-9 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+                <Link href="/account" className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`} title="My Account">
+                  <User size={16} />
+                </Link>
+                <CartButton light={light} />
+              </div>
+            </>
+          ) : (
+            // Compact — balanced three-part row: nav left · logo centre · icons right.
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+              <nav className="justify-self-start flex items-center gap-6 lg:gap-8 font-sans text-[11px] tracking-[0.2em]">
+                <NavLinks light={light} />
+              </nav>
+              <div className="justify-self-center">
+                <Wordmark light={light} expanded={false} />
+              </div>
+              <div className="justify-self-end flex items-center gap-0.5">
+                <Link href="/account" className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`} title="My Account">
+                  <User size={16} />
+                </Link>
+                <CartButton light={light} />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Mobile — logo centered (shrinks on scroll); hamburger left, cart right */}

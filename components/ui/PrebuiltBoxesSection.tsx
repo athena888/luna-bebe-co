@@ -25,13 +25,11 @@ export function PrebuiltBoxesSection() {
 
   return (
     <section className="pt-10 pb-12 sm:pt-12">
-      <div className="pl-6 sm:pl-9 pr-6 mb-6 flex items-end justify-between">
-        <div>
-          <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Ready-Made</p>
-          <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-espresso">Best Sellers</h2>
-          <p className="font-sans text-xs text-bark-400 mt-2 tracking-wide">Tap any set to see the full box.</p>
-        </div>
-        <Link href="/boxes" className="hidden sm:inline-block font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 hover:text-bark-700 transition-colors border-b border-bark-400 pb-0.5">
+      <div className="px-6 mb-8 text-center">
+        <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Ready-Made</p>
+        <h2 className="font-serif text-[2.5rem] sm:text-[3.25rem] uppercase tracking-[0.06em] text-espresso">Best Sellers</h2>
+        <p className="font-sans text-xs text-bark-400 mt-3 tracking-wide">Tap any set to see the full box.</p>
+        <Link href="/boxes" className="inline-block mt-4 font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 hover:text-bark-700 transition-colors border-b border-bark-400 pb-0.5">
           View All →
         </Link>
       </div>
@@ -39,20 +37,17 @@ export function PrebuiltBoxesSection() {
       {/* Carousel of cover photos — click to open the set */}
       <div className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory gap-5 pl-6 sm:pl-9 pr-6 scroll-pl-6 sm:scroll-pl-9 pb-2">
         {boxes.map(box => (
-          <Link key={box.slug} href={`/boxes#box-${box.slug}`} className="group shrink-0 w-[78vw] sm:w-[340px] lg:w-[380px] snap-start text-left">
+          <Link key={box.slug} href={`/boxes#box-${box.slug}`} className="group shrink-0 w-[78vw] sm:w-[340px] lg:w-[380px] snap-start text-center">
             <div className="relative aspect-[4/5] bg-white overflow-hidden">
               {box.image
                 ? <Image src={box.image} alt={box.name} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" unoptimized sizes="(max-width:640px) 78vw, 380px" />
                 : <div className="absolute inset-0 flex items-center justify-center text-bark-300"><Package size={32} /></div>}
-              {/* Name + price baked onto the image */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
-              <div className="absolute bottom-0 inset-x-0 p-4">
-                <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-cream-100/80 mb-1">{box.style}</p>
-                <div className="flex items-baseline justify-between gap-2">
-                  <h3 className="font-serif text-xl text-white truncate drop-shadow">{box.name}</h3>
-                  <span className="font-serif text-lg text-white shrink-0 drop-shadow">{fmt(boxTotal(box))}</span>
-                </div>
-              </div>
+            </div>
+            {/* Caption below the image — espresso, warms to caramel on hover */}
+            <div className="pt-4 text-espresso transition-colors duration-300 group-hover:text-[#B67B47]">
+              <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-gold-400 mb-1.5 transition-colors duration-300 group-hover:text-[#B67B47]">{box.style}</p>
+              <h3 className="font-serif text-xl leading-tight">{box.name}</h3>
+              <p className="font-serif text-lg mt-1">{fmt(boxTotal(box))}</p>
             </div>
           </Link>
         ))}
