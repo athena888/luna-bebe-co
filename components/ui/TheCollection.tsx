@@ -3,8 +3,14 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import type { ResolvedBox } from '@/lib/prebuilt-boxes-db'
+import { BOX_BASE_PRICE } from '@/lib/products'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
+
+function fmt(cents: number) { return `$${(cents / 100).toFixed(0)}` }
+function boxTotal(box: ResolvedBox): number {
+  return box.customPrice ?? (BOX_BASE_PRICE + box.items.reduce((s, p) => s + (p?.price ?? 0), 0))
+}
 
 // "The Collection" — one box at a time as a full-bleed showcase. The photo
 // fills the stage; the description sits over the top of the image and the
@@ -46,12 +52,30 @@ export function TheCollection() {
           />
           {/* Description — olive framed panel (Unforgettable style), left of the
               photo; fades in on swap */}
-          <div key={`desc-${idx}`} className="relative bg-[#8A9B63] px-8 py-12 sm:py-8 sm:w-[32%] sm:shrink-0 flex flex-col justify-center text-center" style={{ animation: 'fadeIn 0.8s ease-out both' }}>
+          <div key={`desc-${idx}`} className="relative bg-[#8A9B63] px-8 py-12 sm:py-10 sm:w-[32%] sm:shrink-0 flex flex-col justify-center text-center" style={{ animation: 'fadeIn 0.8s ease-out both' }}>
             {/* Double-line frame */}
             <div className="pointer-events-none absolute inset-3 border-2 border-white">
               <div className="absolute inset-[5px] border border-white" />
             </div>
-            <p className="relative font-playfair text-white text-[15px] sm:text-lg leading-relaxed px-2">{box.tagline || box.description}</p>
+            <div className="relative px-2 overflow-y-auto scrollbar-hide">
+              {/* Name — same script as "Create Something Unforgettable" */}
+              <p className="font-pinyon text-white text-[1.8rem] sm:text-[2rem] leading-tight mb-3">{box.name}</p>
+              {(box.tagline || box.description) && (
+                <p className="font-playfair italic text-white/90 text-[13px] sm:text-[14px] leading-relaxed mb-5">{box.tagline || box.description}</p>
+              )}
+              {/* Everything inside */}
+              <div className="space-y-1.5 mb-5">
+                {box.items.filter(Boolean).map((it, i) => (
+                  <p key={i} className="font-playfair text-white text-[13px] sm:text-[14px] leading-snug">{it!.name}</p>
+                ))}
+              </div>
+              {/* Price */}
+              <p className="font-playfair text-white text-xl sm:text-2xl mb-4">{fmt(boxTotal(box))}</p>
+              {/* Default inclusions */}
+              <p className="font-playfair text-white/80 text-[10px] sm:text-[11px] leading-relaxed">
+                * Every box comes with a lavender sachet, dried bouquet, sea grass basket &amp; personal card
+              </p>
+            </div>
           </div>
 
           <div
