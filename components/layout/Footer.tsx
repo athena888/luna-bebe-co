@@ -63,8 +63,8 @@ export function Footer() {
             {/* Brand + newsletter */}
             <div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-color.png" alt="Petite Lavande" className="h-14 sm:h-[4.25rem] w-auto mb-2.5" />
-              <p className="font-serif italic text-espresso text-[15px] font-medium mb-5">Fait avec amour, pour vous.</p>
+              <img src="/logo-color.png" alt="Petite Lavande" className="h-14 sm:h-[4.25rem] w-auto mb-2.5 mx-auto" />
+              <p className="font-serif italic text-espresso text-[15px] font-medium mb-5 text-center">Fait avec amour, pour vous.</p>
 
               <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-espresso font-semibold mb-1.5">Join our list — 10% off your first box</p>
               <p className="font-sans text-[13px] text-espresso font-medium mb-3 leading-relaxed max-w-sm">New-parent gift guides, quiet launches, and a welcome code for your first order.</p>
@@ -106,12 +106,15 @@ export function Footer() {
 
           </div>
 
-          {/* Legal bar — one centred line */}
+          {/* Legal bar — one centred line; the legal links stay grouped on a single
+              line on every screen size */}
           <div className="mt-8 pt-6 border-t border-cream-300 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 font-sans text-[13px] font-medium text-espresso">
-            <p>© {new Date().getFullYear()} Petite Lavande. Sent with love.</p>
-            <Link href="/legal/privacy" className="hover:text-gold-500 transition-colors">Privacy Policy</Link>
-            <Link href="/legal/terms" className="hover:text-gold-500 transition-colors">Terms of Service</Link>
-            <Link href="/legal/returns" className="hover:text-gold-500 transition-colors">Returns</Link>
+            <p className="whitespace-nowrap">© {new Date().getFullYear()} Petite Lavande.</p>
+            <div className="flex items-center gap-x-5 sm:gap-x-8 whitespace-nowrap">
+              <Link href="/legal/privacy" className="hover:text-gold-500 transition-colors">Privacy Policy</Link>
+              <Link href="/legal/terms" className="hover:text-gold-500 transition-colors">Terms of Service</Link>
+              <Link href="/legal/returns" className="hover:text-gold-500 transition-colors">Returns</Link>
+            </div>
           </div>
 
         </div>

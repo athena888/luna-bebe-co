@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { EditorialFeature } from '@/components/ui/EditorialFeature'
@@ -90,7 +89,7 @@ export default async function HomePage() {
               <h1 className="font-serif text-[2.25rem] sm:text-[3.25rem] text-cream-50 leading-[1.05] mb-3">
                 A New Chapter,<br />Wrapped in Care.
               </h1>
-              <p className="font-serif italic text-cream-200/80 text-sm sm:text-base leading-relaxed">This is the moment Petite Lavande was made for.</p>
+              <p className="font-serif italic text-cream-200/90 text-lg sm:text-2xl leading-relaxed">Fait avec amour, pour vous.</p>
             </div>
           </div>
         </section>
@@ -148,14 +147,11 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── Shop by Occasion — heading above the image tiles ── */}
-        <div className="pt-8 sm:pt-12">
+        {/* ── Shop by Occasion — heading above the image tiles, styled like Best Sellers ── */}
+        <div className="pt-10 sm:pt-14">
           <div className="px-6 mb-8 text-center">
+            <p className="font-sans text-[11px] tracking-[0.22em] uppercase font-semibold text-gold-500 mb-1.5">Curated sets for every new chapter — or start from scratch.</p>
             <h2 className="font-serif text-[2.5rem] sm:text-[3.25rem] uppercase tracking-normal font-medium text-espresso leading-none">Shop by Occasion</h2>
-            <p className="font-sans text-xs text-bark-400 mt-3 tracking-wide">Curated sets for every new chapter — or start from scratch.</p>
-            <Link href="/build" className="inline-block mt-3 font-sans text-[10px] tracking-[0.2em] uppercase font-medium text-bark-400 hover:text-bark-700 transition-colors border-b border-bark-400 pb-0.5">
-              Build Your Own Box →
-            </Link>
           </div>
           <CollectionsSection initial={collectionsData ?? undefined} />
         </div>
@@ -173,11 +169,11 @@ export default async function HomePage() {
             const bullets = f.bullets.filter(b => b.trim())
             return (
               <EditorialFeature key={i} images={imgs} alt={f.eyebrow || 'Petite Lavande'} side={i % 2 === 0 ? 'left' : 'right'}>
-                {/* Palette echoes the sage panel above: gold eyebrow, espresso
-                    heading, olive-sage body, espresso bullets with gold dashes. */}
+                {/* Warm-brown palette: gold eyebrow, espresso heading, light warm
+                    brown body, espresso bullets with gold dashes. */}
                 {f.eyebrow && <p className="font-sans text-[10px] tracking-[0.45em] uppercase font-semibold text-gold-500 mb-5">{f.eyebrow}</p>}
                 <h2 className="font-serif text-[2rem] sm:text-[2.75rem] text-espresso leading-[1.05] mb-5 whitespace-pre-line">{f.title}</h2>
-                <p className="font-cormorant text-lg text-sage-500 leading-loose whitespace-pre-line">{f.body}</p>
+                <p className="font-cormorant text-lg text-[#9A7E68] leading-loose whitespace-pre-line">{f.body}</p>
                 {bullets.length > 0 && (
                   <ul className="space-y-2.5 mt-6">
                     {bullets.map((b, j) => (
