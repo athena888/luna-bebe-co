@@ -98,31 +98,53 @@ export default async function HomePage() {
         {/* ── Best Sellers — right below the hero ── */}
         <PrebuiltBoxesSection />
 
-        {/* ── What makes it special — editable intro + the promise perks,
-             combined into one block right under Best Sellers ── */}
+        {/* ── What makes it special — card-artwork sides (carriage / bonnet from
+             our printed cards) flanking a sage panel with the editable intro +
+             promise perks. Mobile: sage panel first, then the two artworks 2-up. ── */}
         <section className="bg-cream-white">
-          {/* Editable intro */}
-          <div className="max-w-3xl mx-auto text-center px-6 sm:px-8 pt-12 sm:pt-16 pb-8 sm:pb-10">
-            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">{content.why.eyebrow}</p>
-            <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-espresso leading-tight mb-5">{content.why.title}</h2>
-            <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose">{content.why.intro}</p>
-          </div>
-          {/* The promise perks */}
-          <div className="max-w-6xl mx-auto px-6 sm:px-10 pb-12 sm:pb-16">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-4 md:divide-x md:divide-cream-300/80 pt-2 sm:pt-4">
-              {content.perks.map(({ label, sub }, i) => {
-                const Icon = PERK_ICONS[i % PERK_ICONS.length]
-                return (
-                  <div key={label} className="flex flex-col items-center text-center px-3 sm:px-5">
-                    <span className="w-12 h-12 rounded-full pl-round-full border border-gold-300/70 flex items-center justify-center mb-4">
-                      <Icon size={19} className="text-gold-500" strokeWidth={1.5} />
-                    </span>
-                    <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-espresso mb-1.5">{label}</p>
-                    <p className="font-cormorant text-sm text-bark-400 leading-snug">{sub}</p>
-                  </div>
-                )
-              })}
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_1.6fr_1fr] items-stretch">
+            {/* Left artwork — the lavender carriage */}
+            <div className="hidden md:flex items-center justify-center bg-[#FDFAF5] p-8">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/decor/card-carriage.webp" alt="" aria-hidden="true" className="w-full max-h-full object-contain" />
             </div>
+
+            {/* Sage centre panel — tone drawn from the card foliage */}
+            <div className="bg-[#B3BBA4] flex flex-col items-center justify-center text-center px-6 sm:px-12 py-14 sm:py-16">
+              <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-espresso/70 mb-3">{content.why.eyebrow}</p>
+              <h2 className="font-serif text-[2.1rem] sm:text-[2.75rem] text-espresso leading-tight mb-4">{content.why.title}</h2>
+              <p className="font-cormorant text-lg text-espresso-light leading-relaxed max-w-md mb-10">{content.why.intro}</p>
+
+              {/* The promise perks — 2×2 inside the panel */}
+              <div className="grid grid-cols-2 gap-x-6 gap-y-8 max-w-md">
+                {content.perks.map(({ label, sub }, i) => {
+                  const Icon = PERK_ICONS[i % PERK_ICONS.length]
+                  return (
+                    <div key={label} className="flex flex-col items-center text-center">
+                      <span className="w-11 h-11 rounded-full pl-round-full border border-espresso/25 flex items-center justify-center mb-2.5">
+                        <Icon size={17} className="text-espresso" strokeWidth={1.5} />
+                      </span>
+                      <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-espresso mb-1">{label}</p>
+                      <p className="font-cormorant text-sm text-espresso-light leading-snug">{sub}</p>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Right artwork — the linen bonnet */}
+            <div className="hidden md:flex items-center justify-center bg-[#FDFAF5] p-8">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/decor/card-bonnet.webp" alt="" aria-hidden="true" className="w-full max-h-full object-contain" />
+            </div>
+          </div>
+
+          {/* Mobile: the two artworks side-by-side beneath the panel */}
+          <div className="md:hidden grid grid-cols-2 items-center bg-[#FDFAF5] px-4 py-6 gap-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/decor/card-carriage.webp" alt="" aria-hidden="true" className="w-full h-auto" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/decor/card-bonnet.webp" alt="" aria-hidden="true" className="w-full h-auto" />
           </div>
         </section>
 

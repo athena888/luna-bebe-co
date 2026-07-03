@@ -41,6 +41,23 @@ function CartButton({ light }: { light: boolean }) {
   )
 }
 
+// lucide no longer ships brand marks, so inline the two socials we show on the
+// left of the bar (balancing the account/cart icons on the right).
+function IgIcon({ size = 17 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.9" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+function FbIcon({ size = 17 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true">
+      <path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z" />
+    </svg>
+  )
+}
+
 // The lavender sprig. Over the hero (light) we use the white cut-out; on the
 // solid bar the coloured version. Falls back to the built-in SVG if the PNG
 // isn't present yet.
@@ -189,39 +206,31 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
 
         {/* Desktop */}
         <div className={`hidden md:block relative w-full px-9 transition-all duration-500 ${expanded ? 'py-5' : 'py-3'}`}>
-          {expanded ? (
-            // Hero top — big centred logo with the nav beneath it.
-            <>
-              <div className="flex flex-col items-center justify-center gap-3">
-                <Wordmark light={light} expanded />
-                <nav className="flex items-center gap-6 lg:gap-9 font-sans text-[11px] tracking-[0.2em]">
-                  <NavLinks light={light} />
-                </nav>
-              </div>
-              <div className="absolute right-9 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
-                <Link href="/account" className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`} title="My Account">
-                  <User size={16} />
-                </Link>
-                <CartButton light={light} />
-              </div>
-            </>
-          ) : (
-            // Compact — balanced three-part row: nav left · logo centre · icons right.
-            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-              <nav className="justify-self-start flex items-center gap-6 lg:gap-8 font-sans text-[11px] tracking-[0.2em]">
-                <NavLinks light={light} />
-              </nav>
-              <div className="justify-self-center">
-                <Wordmark light={light} expanded={false} />
-              </div>
-              <div className="justify-self-end flex items-center gap-0.5">
-                <Link href="/account" className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`} title="My Account">
-                  <User size={16} />
-                </Link>
-                <CartButton light={light} />
-              </div>
-            </div>
-          )}
+          {/* Both states: centred logo with the nav beneath it (balanced), icons
+              pinned right. Expanded (hero top) is just bigger and roomier. */}
+          <div className={`flex flex-col items-center justify-center transition-all duration-500 ${expanded ? 'gap-3' : 'gap-1.5'}`}>
+            <Wordmark light={light} expanded={expanded} />
+            <nav className="flex items-center gap-6 lg:gap-9 font-sans text-[11px] tracking-[0.2em]">
+              <NavLinks light={light} />
+            </nav>
+          </div>
+          {/* Socials left — balances the account/cart icons on the right */}
+          <div className="absolute left-9 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+            <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" title="Instagram · @petitelavandeco" aria-label="Instagram"
+              className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`}>
+              <IgIcon />
+            </a>
+            <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" title="Facebook" aria-label="Facebook"
+              className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`}>
+              <FbIcon />
+            </a>
+          </div>
+          <div className="absolute right-9 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+            <Link href="/account" className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50/90 hover:text-white' : 'text-bark-400 hover:text-bark-600'}`} title="My Account">
+              <User size={16} />
+            </Link>
+            <CartButton light={light} />
+          </div>
         </div>
 
         {/* Mobile — logo centered (shrinks on scroll); hamburger left, cart right */}
