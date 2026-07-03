@@ -4,7 +4,18 @@ import { Footer } from '@/components/layout/Footer'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { SlotImage } from '@/components/ui/SlotImage'
 import { HandHeart, Leaf, Phone } from 'lucide-react'
-import { CorporateForm } from './CorporateForm'
+import { CONTACT_EMAIL } from '@/lib/site-config'
+
+// Closing line at the bottom of the three-points band — replaces the lead form.
+function ContactLine({ className = '' }: { className?: string }) {
+  return (
+    <p className={`text-center font-playfair text-base sm:text-lg text-cream-50/90 ${className}`}>
+      Contact{' '}
+      <a href={`mailto:${CONTACT_EMAIL}`} className="text-gold-300 underline underline-offset-4 hover:text-gold-200 transition-colors">{CONTACT_EMAIL}</a>
+      {' '}for your team and organization.
+    </p>
+  )
+}
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
@@ -86,6 +97,7 @@ export default function CorporatePage() {
             <SlotBackground slotKey="corporate.points_bg" fit="natural" scrim="">
               <section className="px-6 py-16">
                 <Points className="max-w-5xl mx-auto grid-cols-3 gap-12" />
+                <ContactLine className="mt-14" />
               </section>
             </SlotBackground>
           </div>
@@ -94,18 +106,10 @@ export default function CorporatePage() {
             <SlotImage slotKey="corporate.points_bg" className="block w-full" imgClassName="w-full h-auto block" />
             <div className="px-6 py-12">
               <Points className="grid-cols-1 gap-9" />
+              <ContactLine className="mt-10" />
             </div>
           </div>
         </div>
-
-        {/* Lead form — background uploadable via Portal → Site Images → Corporate */}
-        <SlotBackground slotKey="corporate.form_bg" scrim="bg-cream-50/85">
-          <section className="px-6 py-16 sm:py-24">
-            <div className="max-w-xl mx-auto">
-              <CorporateForm />
-            </div>
-          </section>
-        </SlotBackground>
 
       </main>
       <Footer />

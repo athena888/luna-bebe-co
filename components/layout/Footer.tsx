@@ -71,8 +71,7 @@ export function Footer() {
             {/* Brand + newsletter */}
             <div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-color.png" alt="Petite Lavande" className="h-14 sm:h-[4.25rem] w-auto mb-2.5 mx-auto" />
-              <p className="font-serif italic text-espresso text-[15px] font-medium mb-5 text-center">Fait avec amour, pour vous.</p>
+              <img src="/logo-color.png" alt="Petite Lavande" className="h-14 sm:h-[4.25rem] w-auto mb-5 mx-auto" />
 
               <p className="font-playfair text-[15px] text-espresso mb-1.5 text-center">Join our list — <span className="underline underline-offset-2">10% off your first box</span></p>
               <p className="font-playfair text-[14px] text-espresso-light mb-3 leading-relaxed max-w-md mx-auto text-center">New-parent gift guides, quiet launches, and a welcome code for your first order.</p>

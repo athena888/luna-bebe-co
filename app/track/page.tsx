@@ -6,8 +6,10 @@ import { Footer } from '@/components/layout/Footer'
 import { CONTACT_EMAIL } from '@/lib/site-config'
 import { Package, Truck, CheckCircle, Clock, ExternalLink } from 'lucide-react'
 
-const inputClass = "w-full px-4 py-3 border border-cream-300 bg-cream-50 font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-bark-400 transition-colors"
-const labelClass = "block font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2"
+// Styled to match the account sign-in: serif espresso labels, white inputs,
+// olive button, gold accents.
+const inputClass = "w-full px-4 py-3 border border-cream-300 bg-white font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-gold-400 transition-colors"
+const labelClass = "block font-serif text-lg text-espresso mb-2"
 
 type Order = {
   id: string
@@ -69,12 +71,6 @@ export default function TrackPage() {
     <>
       <Header />
       <main className="min-h-screen bg-cream-50">
-        <div className="border-b border-cream-300 px-6 py-12 text-center bg-cream-50">
-          <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">Order Status</p>
-          <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-2">Track Your Order</h1>
-          <p className="font-sans text-xs text-bark-400 tracking-wide">Enter your email to find your Petite Lavande order.</p>
-        </div>
-
         <div className="max-w-xl mx-auto px-6 py-14">
           <form onSubmit={handleLookup} className="space-y-4 mb-10">
             <div>
@@ -88,7 +84,7 @@ export default function TrackPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-bark-700 transition-colors disabled:opacity-40"
+              className="w-full bg-[#7A8E7C] text-white font-serif text-lg tracking-[0.06em] uppercase py-3.5 hover:bg-[#6d8070] transition-colors disabled:opacity-40"
             >
               {loading ? 'Looking up...' : 'Find My Order'}
             </button>
@@ -158,7 +154,7 @@ export default function TrackPage() {
                       <div className="px-6 py-4">
                         <p className="font-sans text-xs text-bark-400">
                           Tracking information will appear here once your box ships. Questions? Email{' '}
-                          <a href={`mailto:${CONTACT_EMAIL}`} className="text-bark-600 underline underline-offset-2">{CONTACT_EMAIL}</a>
+                          <a href={`mailto:${CONTACT_EMAIL}`} className="text-gold-500 underline underline-offset-2 hover:text-gold-600 transition-colors">{CONTACT_EMAIL}</a>
                         </p>
                       </div>
                     )}
