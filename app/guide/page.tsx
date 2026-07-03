@@ -151,7 +151,7 @@ export default function GuidePage() {
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={handleBuildWithRecs}
-                  className="flex-1 inline-flex items-center justify-center gap-2 bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-4 rounded-lg hover:bg-bark-700 transition-colors"
+                  className="flex-1 inline-flex items-center justify-center gap-2 bg-[#7A8E7C] text-white font-sans text-[10px] tracking-[0.25em] uppercase px-8 py-4 rounded-lg hover:bg-[#6d8070] transition-colors"
                 >
                   Build This Box <ArrowRight size={15} />
                 </button>

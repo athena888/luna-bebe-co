@@ -13,7 +13,7 @@ import BoxesPortal from '@/app/portal/boxes/page'
 import CardStylesPortal from '@/app/portal/card-styles/page'
 import { GiftGuidesEditor } from '@/components/portal/GiftGuidesEditor'
 
-type PageId = 'home' | 'story' | 'build' | 'boxes' | 'guides' | 'giftcards' | 'corporate' | 'global' | 'social' | 'journal' | 'signin' | 'products' | 'prebuilt' | 'cardstyles'
+type PageId = 'home' | 'story' | 'build' | 'boxes' | 'guides' | 'giftcards' | 'corporate' | 'track' | 'global' | 'social' | 'journal' | 'signin' | 'products' | 'prebuilt' | 'cardstyles'
 
 const TABS: { id: PageId; label: string }[] = [
   { id: 'home',       label: 'Homepage' },
@@ -26,6 +26,7 @@ const TABS: { id: PageId; label: string }[] = [
   { id: 'guides',     label: 'Gift Guides' },
   { id: 'giftcards',  label: 'Gift Cards' },
   { id: 'corporate',  label: 'Corporate' },
+  { id: 'track',      label: 'Track Order' },
   { id: 'global',     label: 'Global' },
   { id: 'social',     label: 'Social Feed' },
   { id: 'journal',    label: 'Journal' },
@@ -212,6 +213,31 @@ export default function ContentPage() {
                 hint="Soft, light — the form sits on top · ~2000×1130"
                 where="Behind the &ldquo;Tell us about your team&rdquo; contact form"
                 scrim={{ hex: '#FAF9F8', opacity: 0.85, label: 'Colour overlay', note: 'cream wash over the photo so the form stays readable' }}
+              />
+            </div>
+          </div>
+        )}
+
+        {active === 'track' && (
+          <div className="p-8 max-w-3xl">
+            <SectionHeading title="Track Order" note="The /track order-lookup page. Text is edited in code — this controls the background photo behind the form." />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <SlotRow
+                slotKey="track.bg"
+                label="Page background"
+                context="Background behind the order tracking form"
+                ratio="21:9"
+                hint="Wide & soft — the form sits on top · ~2000×860"
+                where="Fills the /track page behind the email + order-reference form"
+                scrim={{ hex: '#FAF9F8', opacity: 0.85, label: 'Colour overlay', note: 'cream wash over the photo so the form stays readable' }}
+              />
+              <SlotRow
+                slotKey="track.bg.mobile"
+                label="Page background — Mobile"
+                context="Background behind the order tracking form on mobile"
+                ratio="9:16"
+                hint="Mobile crop · ~1080×1920. Portrait — shown on phones instead of the desktop image."
+                where="Behind the tracking form on phones"
               />
             </div>
           </div>

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { SlotBackground } from '@/components/ui/SlotBackground'
 import { CONTACT_EMAIL } from '@/lib/site-config'
 import { Package, Truck, CheckCircle, Clock, ExternalLink } from 'lucide-react'
 
@@ -71,6 +72,8 @@ export default function TrackPage() {
     <>
       <Header />
       <main className="min-h-screen bg-cream-50">
+        {/* Optional background photo — Portal → Pages & Content → Track Order */}
+        <SlotBackground slotKey="track.bg" scrim="bg-cream-50/85" className="min-h-screen">
         <div className="max-w-xl mx-auto px-6 py-14">
           <form onSubmit={handleLookup} className="space-y-4 mb-10">
             <div>
@@ -164,6 +167,7 @@ export default function TrackPage() {
             </div>
           )}
         </div>
+        </SlotBackground>
       </main>
       <Footer />
     </>

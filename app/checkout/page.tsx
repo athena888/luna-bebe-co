@@ -389,7 +389,7 @@ export default function CheckoutPage() {
                         <button
                           type="submit"
                           disabled={isSubmitting || entries.length === 0}
-                          className="w-full bg-sage-400 text-white font-sans text-[13px] tracking-[0.2em] uppercase py-4 hover:bg-sage-500 transition-colors disabled:opacity-40"
+                          className="w-full bg-[#7A8E7C] text-white font-sans text-[13px] tracking-[0.2em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40"
                         >
                           {isSubmitting ? 'Processing…' : 'Checkout'}
                         </button>

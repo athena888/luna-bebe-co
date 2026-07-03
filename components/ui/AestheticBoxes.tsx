@@ -62,7 +62,7 @@ function PriceBlock({ box }: { box: ResolvedBox }) {
         <span className="font-serif text-3xl text-espresso">{fmt(price)}</span>
         {saving && <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-sage-600">Save {fmt(regular - price)}</span>}
       </div>
-      <p className="font-sans text-[11px] text-bark-400 mt-1">Box, packaging &amp; wax seal included · card at checkout</p>
+      <p className="font-sans text-[11px] text-bark-400 mt-1">Card at checkout</p>
     </div>
   )
 }

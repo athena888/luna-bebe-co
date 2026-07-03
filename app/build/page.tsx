@@ -645,7 +645,7 @@ export default function BuildPage() {
           <button
             onClick={handleCheckout}
             disabled={!hasItems}
-            className="w-full bg-bark-700 text-cream-50 font-sans text-[11px] tracking-[0.25em] uppercase py-4 hover:bg-bark-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.25em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Check Out
           </button>
@@ -872,7 +872,7 @@ export default function BuildPage() {
                     <button
                       onClick={() => toggleVariant(modalProduct, pickColor!, pickSize!, pickedVariant?.color_hex, pickStyle ?? '')}
                       disabled={!pickInStock}
-                      className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-bark-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                      className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                       {!pickColor ? 'Choose a color' : needsStyle && !pickStyle ? 'Choose a style' : !pickSize ? 'Choose a size' : 'Add to Box'}
                     </button>
                   )
@@ -890,7 +890,7 @@ export default function BuildPage() {
                   </div>
                 ) : (
                   <button onClick={() => toggle(modalProduct)}
-                    className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-bark-700 transition-colors">
+                    className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-[#6d8070] transition-colors">
                     Add to Box
                   </button>
                 )}

@@ -132,7 +132,7 @@ export default function GiftCardsPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-bark-700 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+                    className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
                   >
                     <Lock size={12} />
                     {loading ? 'Processing...' : `Purchase $${(amount / 100).toFixed(0)} Gift Card`}

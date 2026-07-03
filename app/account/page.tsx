@@ -105,7 +105,7 @@ export default function AccountPage() {
             <button
               type="submit"
               disabled={authLoading}
-              className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-bark-700 transition-colors disabled:opacity-40"
+              className="w-full bg-[#7A8E7C] text-white font-serif text-lg tracking-[0.06em] uppercase py-3.5 hover:bg-[#6d8070] transition-colors disabled:opacity-40"
             >
               {authLoading ? 'Sending...' : 'Send Sign-In Link'}
             </button>

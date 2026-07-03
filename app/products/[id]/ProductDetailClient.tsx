@@ -230,7 +230,7 @@ export default function ProductDetailClient() {
                     </div>
                     <button
                       onClick={() => router.push('/build')}
-                      className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-bark-700 transition-colors"
+                      className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-[#6d8070] transition-colors"
                     >
                       Go to Your Box
                     </button>
@@ -238,7 +238,7 @@ export default function ProductDetailClient() {
                 ) : (
                   <button
                     onClick={handleAddToBox}
-                    className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-bark-700 transition-colors mb-4"
+                    className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-[#6d8070] transition-colors mb-4"
                   >
                     Add to Box
                   </button>

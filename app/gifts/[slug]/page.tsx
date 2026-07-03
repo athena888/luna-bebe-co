@@ -155,7 +155,7 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
                 ))}
               </ul>
               <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href="/build" className="bg-bark-600 text-cream-50 font-sans text-[10px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-bark-700 transition-colors">Build Your Box</Link>
+                <Link href="/build" className="bg-[#7A8E7C] text-white font-sans text-[10px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-[#6d8070] transition-colors">Build Your Box</Link>
                 <Link href="/boxes" className="border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-bark-600 hover:text-cream-50 transition-colors">Shop Ready-Made</Link>
               </div>
             </div>
