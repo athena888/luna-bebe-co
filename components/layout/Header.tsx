@@ -111,6 +111,10 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
 export function Header({ overHero = false }: { overHero?: boolean }) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  // Auto-hide (non-hero pages only): the sticky bar slides up while scrolling
+  // down (max product/image space) and slides back in on scroll-up (cart + nav
+  // one flick away). Standard Shopify-Dawn / DTC pattern.
+  const [hidden, setHidden] = useState(false)
 
   useEffect(() => {
     if (!overHero) return
@@ -120,6 +124,23 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
     return () => window.removeEventListener('scroll', onScroll)
   }, [overHero])
 
+  useEffect(() => {
+    if (overHero) return
+    let lastY = window.scrollY
+    const onScroll = () => {
+      const y = window.scrollY
+      if (y < 80) setHidden(false)              // always visible near the top
+      else if (y > lastY + 4) setHidden(true)   // scrolling down → hide
+      else if (y < lastY - 4) setHidden(false)  // scrolling up → reveal
+      lastY = y
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [overHero])
+
+  // Reveal the bar whenever the mobile menu is open, so it never hides mid-use.
+  useEffect(() => { if (open) setHidden(false) }, [open])
+
   // expanded = big centered logo with nav beneath (hero top). On scroll (or on a
   // page without a hero) it collapses to the compact logo-beside-nav bar.
   const expanded = overHero && !scrolled
@@ -127,7 +148,9 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
   const light = transparent
 
   return (
-    <header className={overHero ? 'absolute top-0 inset-x-0 z-40' : 'relative z-40 bg-[#FEF8F4]'}>
+    <header className={overHero
+      ? 'absolute top-0 inset-x-0 z-40'
+      : `sticky top-0 z-40 bg-[#FEF8F4] transition-transform duration-300 ease-out ${hidden ? '-translate-y-full' : 'translate-y-0'}`}>
 
       {/* Coming-soon announcement strip */}
       <div className="bg-[#4A3B30] text-cream-50 text-center py-2.5 px-4">
