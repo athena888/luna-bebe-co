@@ -4,14 +4,15 @@ import { Footer } from '@/components/layout/Footer'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { SlotImage } from '@/components/ui/SlotImage'
 import { HandHeart, Leaf, Phone } from 'lucide-react'
+import { ScrollFlyIn } from '@/components/ui/ScrollFlyIn'
 import { CONTACT_EMAIL } from '@/lib/site-config'
 
 // Closing line at the bottom of the three-points band — replaces the lead form.
-function ContactLine({ className = '' }: { className?: string }) {
+function ContactLine({ className = '', olive = false }: { className?: string; olive?: boolean }) {
   return (
-    <p className={`text-center font-playfair text-base sm:text-lg text-cream-50/90 ${className}`}>
+    <p className={`text-center font-playfair text-base sm:text-lg ${olive ? 'text-white/95' : 'text-cream-50/90'} ${className}`}>
       Contact{' '}
-      <a href={`mailto:${CONTACT_EMAIL}`} className="text-gold-300 underline underline-offset-4 hover:text-gold-200 transition-colors">{CONTACT_EMAIL}</a>
+      <a href={`mailto:${CONTACT_EMAIL}`} className={`underline underline-offset-4 transition-colors ${olive ? 'text-white hover:text-cream-100' : 'text-gold-300 hover:text-gold-200'}`}>{CONTACT_EMAIL}</a>
       {' '}for your team and organization.
     </p>
   )
@@ -49,18 +50,20 @@ const POINTS = [
   },
 ]
 
-// The three selling points — white text, centered. Reused for the desktop
-// (overlaid on the photo) and mobile (stacked under the photo) layouts.
-function Points({ className = '' }: { className?: string }) {
+// The three selling points — centered, each rising in on scroll with a small
+// stagger. `variant`: 'photo' = over the desktop photo band; 'olive' = inside
+// the mobile framed olive panel (Unforgettable-panel styling).
+function Points({ className = '', variant = 'photo' }: { className?: string; variant?: 'photo' | 'olive' }) {
+  const olive = variant === 'olive'
   return (
     <div className={`grid text-center ${className}`}>
-      {POINTS.map(({ Icon, title, body }) => (
-        <div key={title}>
-          <Icon size={26} strokeWidth={1.5} className="text-gold-300 mx-auto mb-4" />
-          <div className="w-8 h-px bg-gold-400 mb-5 mx-auto" />
-          <h2 className="font-serif text-xl text-cream-50 mb-3 leading-snug">{title}</h2>
-          <p className="font-sans text-sm text-cream-100/85 leading-relaxed">{body}</p>
-        </div>
+      {POINTS.map(({ Icon, title, body }, i) => (
+        <ScrollFlyIn key={title} from="up" delay={i * 160}>
+          <Icon size={26} strokeWidth={1.5} className={`${olive ? 'text-white' : 'text-gold-300'} mx-auto mb-4`} />
+          <div className={`w-8 h-px ${olive ? 'bg-white/70' : 'bg-gold-400'} mb-5 mx-auto`} />
+          <h2 className={`font-serif text-xl ${olive ? 'text-white' : 'text-cream-50'} mb-3 leading-snug`}>{title}</h2>
+          <p className={`${olive ? 'font-playfair text-[15px] text-white/95' : 'font-sans text-sm text-cream-100/85'} leading-relaxed`}>{body}</p>
+        </ScrollFlyIn>
       ))}
     </div>
   )
@@ -91,9 +94,9 @@ export default function CorporatePage() {
             Corporate. Desktop: the whole photo shows and the points overlay it.
             Mobile: the photo alone isn't tall enough for three stacked points,
             so the photo sits on top and the points stack below on the dark band. */}
-        <div className="border-b border-cream-300 bg-bark-800">
+        <div className="border-b border-cream-300">
           {/* Desktop — points overlaid on the full-width photo */}
-          <div className="hidden md:block">
+          <div className="hidden md:block bg-bark-800">
             <SlotBackground slotKey="corporate.points_bg" fit="natural" scrim="">
               <section className="px-6 py-16">
                 <Points className="max-w-5xl mx-auto grid-cols-3 gap-12" />
@@ -101,12 +104,21 @@ export default function CorporatePage() {
               </section>
             </SlotBackground>
           </div>
-          {/* Mobile — photo, then points stacked below */}
+          {/* Mobile — photo, then the points inside the framed olive panel
+              (same design as the homepage "Create Something Unforgettable"). */}
           <div className="md:hidden">
             <SlotImage slotKey="corporate.points_bg" className="block w-full" imgClassName="w-full h-auto block" />
-            <div className="px-6 py-12">
-              <Points className="grid-cols-1 gap-9" />
-              <ContactLine className="mt-10" />
+            <div className="bg-[#8A9B63]">
+              <div className="relative px-9 py-14">
+                {/* Double-line frame — heavier outer rule, thin inner rule */}
+                <div className="pointer-events-none absolute inset-4 border-2 border-white">
+                  <div className="absolute inset-[6px] border border-white" />
+                </div>
+                <div className="relative">
+                  <Points variant="olive" className="grid-cols-1 gap-9" />
+                  <ContactLine olive className="mt-10" />
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
-import { Leaf, X, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Leaf, X, ZoomIn, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react'
 import { CertBadges } from '@/components/ui/CertBadges'
 import type { ResolvedBox, BoxItem } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
@@ -41,6 +41,31 @@ function FlyIn({ children, delay = 0, from = 'bottom', className = '', style }: 
       transition: `opacity 0.75s ease ${delay}ms, transform 0.75s ease ${delay}ms`,
     }}>
       {children}
+    </div>
+  )
+}
+
+// Scrollable area with a "more below" hint: a white fade + bouncing arrow at
+// the bottom whenever there's unscrolled content, gone once you reach the end.
+function FadeScroll({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [more, setMore] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const check = () => setMore(el.scrollHeight - el.scrollTop - el.clientHeight > 12)
+    check()
+    el.addEventListener('scroll', check, { passive: true })
+    const ro = new ResizeObserver(check)
+    ro.observe(el)
+    return () => { el.removeEventListener('scroll', check); ro.disconnect() }
+  }, [])
+  return (
+    <div className="relative lg:flex-1 lg:min-h-0 flex flex-col">
+      <div ref={ref} className={className}>{children}</div>
+      <div className={`pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-center h-16 bg-gradient-to-t from-white via-white/70 to-transparent transition-opacity duration-300 ${more ? 'opacity-100' : 'opacity-0'}`} aria-hidden="true">
+        <ChevronDown size={16} strokeWidth={1.5} className="text-bark-400 mb-1 animate-bounce" />
+      </div>
     </div>
   )
 }
@@ -463,9 +488,9 @@ function BoxSection({
         {box.items.length > 0 && (
           <div className="px-8 lg:px-12 xl:px-16 mt-5 lg:mt-4 pb-8 lg:pb-6 lg:flex-1 lg:min-h-0 flex flex-col">
             <p className="font-sans text-[9px] tracking-[0.4em] uppercase text-bark-300 mb-3 shrink-0">What&apos;s Inside</p>
-            <div className="max-h-[380px] lg:max-h-none lg:flex-1 lg:min-h-0 overflow-y-auto scrollbar-hide pr-1 pb-2">
+            <FadeScroll className="max-h-[380px] lg:max-h-none lg:flex-1 lg:min-h-0 overflow-y-auto scrollbar-hide pr-1 pb-2">
               <ItemsList box={box} onOpen={onPreview} />
-            </div>
+            </FadeScroll>
           </div>
         )}
       </div>
@@ -485,7 +510,7 @@ export function AestheticBoxes({ byStyle }: { byStyle: Array<{ style: string; bo
         <div key={style} id={`edition-${editionSlug(style)}`} className="scroll-mt-20">
           {/* Edition label — clean horizontal divider, no repeat count */}
           <div className="flex items-center gap-8 px-8 lg:px-12 xl:px-16 py-6 border-b border-cream-300">
-            <span className="font-serif text-2xl sm:text-3xl text-espresso shrink-0 tracking-wide">{style}</span>
+            <span className="font-playfair text-2xl sm:text-3xl uppercase tracking-[0.01em] font-medium text-espresso shrink-0 leading-none">{style}</span>
             <span className="flex-1 h-px bg-cream-300" />
           </div>
           {boxes.map(box => {

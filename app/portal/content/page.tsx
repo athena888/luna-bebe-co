@@ -13,7 +13,7 @@ import BoxesPortal from '@/app/portal/boxes/page'
 import CardStylesPortal from '@/app/portal/card-styles/page'
 import { GiftGuidesEditor } from '@/components/portal/GiftGuidesEditor'
 
-type PageId = 'home' | 'story' | 'build' | 'boxes' | 'guides' | 'giftcards' | 'corporate' | 'track' | 'global' | 'social' | 'journal' | 'signin' | 'products' | 'prebuilt' | 'cardstyles'
+type PageId = 'home' | 'story' | 'build' | 'boxes' | 'guides' | 'giftcards' | 'corporate' | 'track' | 'legal' | 'global' | 'social' | 'journal' | 'signin' | 'products' | 'prebuilt' | 'cardstyles'
 
 const TABS: { id: PageId; label: string }[] = [
   { id: 'home',       label: 'Homepage' },
@@ -27,6 +27,7 @@ const TABS: { id: PageId; label: string }[] = [
   { id: 'giftcards',  label: 'Gift Cards' },
   { id: 'corporate',  label: 'Corporate' },
   { id: 'track',      label: 'Track Order' },
+  { id: 'legal',      label: 'Legal' },
   { id: 'global',     label: 'Global' },
   { id: 'social',     label: 'Social Feed' },
   { id: 'journal',    label: 'Journal' },
@@ -238,6 +239,31 @@ export default function ContentPage() {
                 ratio="9:16"
                 hint="Mobile crop · ~1080×1920. Portrait — shown on phones instead of the desktop image."
                 where="Behind the tracking form on phones"
+              />
+            </div>
+          </div>
+        )}
+
+        {active === 'legal' && (
+          <div className="p-8 max-w-3xl">
+            <SectionHeading title="Legal pages" note="Privacy Policy, Terms of Service and Returns share ONE background — upload it once here and all three pages use it." />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <SlotRow
+                slotKey="legal.bg"
+                label="Page background"
+                context="Background behind the legal pages (privacy, terms, returns)"
+                ratio="21:9"
+                hint="Wide & soft — the text sits on top · ~2000×860"
+                where="Behind Privacy Policy, Terms of Service and Returns"
+                scrim={{ hex: '#FAF9F8', opacity: 0.85, label: 'Colour overlay', note: 'cream wash over the photo so the legal text stays readable' }}
+              />
+              <SlotRow
+                slotKey="legal.bg.mobile"
+                label="Page background — Mobile"
+                context="Background behind the legal pages on mobile"
+                ratio="9:16"
+                hint="Mobile crop · ~1080×1920. Portrait — shown on phones instead of the desktop image."
+                where="Behind the legal pages on phones"
               />
             </div>
           </div>

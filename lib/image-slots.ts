@@ -41,6 +41,9 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   { key: 'corporate.form_bg', label: 'Lead form background', group: 'Corporate', where: 'Background behind the "Tell us about your team" contact form', ratio: '16:9', hint: 'Soft, light — form sits on top · ~2000×1130', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.85 } },
   { key: 'corporate.points_bg', label: 'Three-points background', group: 'Corporate', where: 'Behind the dark "One less thing / Traceable / Simple to run" band (white text)', ratio: '21:9', hint: 'Shown full width, uncropped — the band height follows the image. Use a wide image with room for text · ~2000×860', scrimDefault: { hex: '#181716', opacity: 0 } },
 
+  // ── Legal Pages ─────────────────────────────────────────────────────────────
+  { key: 'legal.bg', label: 'Page background', group: 'Legal Pages', where: 'Behind Privacy Policy, Terms of Service and Returns (one shared image)', ratio: '21:9', hint: 'Wide & soft — the text sits on top · ~2000×860', mobile: { ratio: '9:16', hint: 'Taller phone crop · ~1080×1920' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.85 } },
+
   // ── Ready-Made Boxes ────────────────────────────────────────────────────────
   { key: 'boxes.custom_cta_bg', label: 'Build-your-own CTA background', group: 'Ready-Made Boxes', where: 'Background behind the "Prefer to choose yourself?" CTA', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.70 } },
 
