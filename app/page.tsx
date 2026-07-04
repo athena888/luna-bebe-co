@@ -115,9 +115,14 @@ export default async function HomePage() {
           <CollectionsSection initial={collectionsData ?? undefined} />
         </div>
 
-        {/* ── Our Story teaser — one quiet line linking to the full story.
+        {/* ── Our Story teaser — one quiet line linking to the full story,
+             framed by mirrored lavender dividers (top one flipped).
              The headline is the Story page's hero heading (Portal → Story). ── */}
-        <section className="bg-white py-16 sm:py-20 px-6 text-center">
+        <section className="bg-white py-14 sm:py-16 px-6 text-center">
+          <div className="flex justify-center mb-10 sm:mb-12">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto rotate-180" />
+          </div>
           <p className="font-sans text-[12px] tracking-[0.3em] uppercase font-bold text-[#7A8E7C] mb-4">Our Story</p>
           <h2 className="font-playfair text-2xl sm:text-3xl text-espresso leading-snug max-w-2xl mx-auto mb-6">{story.hero.heading}</h2>
           <Link
@@ -126,6 +131,11 @@ export default async function HomePage() {
           >
             Read Our Story
           </Link>
+          <div className="flex flex-col items-center mt-10 sm:mt-12">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto" />
+            <p className="font-serif italic text-espresso-light text-lg sm:text-xl mt-4">Fait avec amour, pour vous.</p>
+          </div>
         </section>
 
         {/* ── What makes it special — full-bleed editorial photo with overlaid

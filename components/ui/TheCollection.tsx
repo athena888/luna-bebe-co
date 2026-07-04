@@ -146,12 +146,6 @@ export function TheCollection({ title, body, items }: { title: string; body: str
         </div>
       </div>
 
-      {/* Lavender divider — watercolor artwork, brand line beneath */}
-      <div className="pt-12 px-6 flex flex-col items-center text-center">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto" />
-        <p className="font-serif italic text-espresso-light text-lg sm:text-xl mt-4">Fait avec amour, pour vous.</p>
-      </div>
     </section>
   )
 }
