@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import type { ResolvedBox } from '@/lib/prebuilt-boxes-db'
+import { BOX_BASE_PRICE } from '@/lib/products'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { QuickAddBox } from '@/components/ui/QuickAddBox'
@@ -10,6 +11,10 @@ import { QuickAddBox } from '@/components/ui/QuickAddBox'
 // "The Collection" — full-bleed split: the "Create Something Unforgettable"
 // olive panel on the left (copy from Portal → Homepage), the box carousel on
 // the right with the name baked over the photo. Arrows + swipe + dots.
+function boxTotal(box: ResolvedBox): number {
+  return box.customPrice ?? (BOX_BASE_PRICE + box.items.reduce((s, p) => s + (p?.price ?? 0), 0))
+}
+
 export function TheCollection({ title, body, items }: { title: string; body: string; items: string[] }) {
   const [boxes, setBoxes] = useState<ResolvedBox[]>([])
   const [idx, setIdx] = useState(0)
@@ -107,7 +112,10 @@ export function TheCollection({ title, body, items }: { title: string; body: str
 
             {/* Name only — baked over the bottom of the image, rises in on swap */}
             <div key={`name-${idx}`} className="absolute bottom-0 inset-x-0 pb-5 sm:pb-7 px-6 text-center pointer-events-none z-10" style={{ animation: 'slideUp 0.7s ease-out both' }}>
-              <p className="font-playfair text-white text-2xl sm:text-4xl drop-shadow-md">{box.name}</p>
+              <p className="font-playfair text-white text-2xl sm:text-4xl drop-shadow-md">
+                {box.name}
+                <span className="text-lg sm:text-2xl text-white/90 ml-3">${(boxTotal(box) / 100).toFixed(0)}</span>
+              </p>
             </div>
 
             {/* Quick add — drops the current box into the bag */}
