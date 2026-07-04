@@ -116,14 +116,6 @@ export default async function HomePage() {
           <CollectionsSection initial={collectionsData ?? undefined} />
         </div>
 
-        {/* ── Divider — watercolor lavender artwork, brand line beneath.
-             Transparent white space between the occasion tiles and the panel. ── */}
-        <div className="bg-white pt-14 sm:pt-20 px-6 flex flex-col items-center text-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-2xl h-auto" />
-          <p className="font-serif italic text-espresso-light text-lg sm:text-xl mt-5">Fait avec amour, pour vous.</p>
-        </div>
-
         {/* ── 8. Testimonials — shown only when NEXT_PUBLIC_SHOW_REVIEWS=true and there are real reviews ── */}
         {process.env.NEXT_PUBLIC_SHOW_REVIEWS === 'true' && content.reviews.items.length > 0 && (
           <SlotBackground slotKey="home.testimonials_bg" scrim="bg-cream-50/85" className="border-t border-cream-300">
