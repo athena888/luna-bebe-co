@@ -131,10 +131,9 @@ export default async function HomePage() {
           >
             Read Our Story
           </Link>
-          <div className="flex flex-col items-center mt-10 sm:mt-12">
+          <div className="flex justify-center mt-10 sm:mt-12">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto" />
-            <p className="font-serif italic text-espresso-light text-lg sm:text-xl mt-4">Fait avec amour, pour vous.</p>
           </div>
         </section>
 
