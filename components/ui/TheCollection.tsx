@@ -5,6 +5,7 @@ import Image from 'next/image'
 import type { ResolvedBox } from '@/lib/prebuilt-boxes-db'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
+import { QuickAddBox } from '@/components/ui/QuickAddBox'
 
 // "The Collection" — full-bleed split: the "Create Something Unforgettable"
 // olive panel on the left (copy from Portal → Homepage), the box carousel on
@@ -100,6 +101,9 @@ export function TheCollection({ title, body, items }: { title: string; body: str
             <div key={`name-${idx}`} className="absolute bottom-0 inset-x-0 pb-5 sm:pb-7 px-6 text-center pointer-events-none z-10" style={{ animation: 'slideUp 0.7s ease-out both' }}>
               <p className="font-playfair text-white text-2xl sm:text-4xl drop-shadow-md">{box.name}</p>
             </div>
+
+            {/* Quick add — drops the current box into the bag */}
+            <QuickAddBox box={box} className="absolute bottom-4 right-3 sm:bottom-6 sm:right-5 z-20" />
 
             {/* Arrows — just inside the photo's edges on every screen size */}
             {boxes.length > 1 && (

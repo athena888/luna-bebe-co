@@ -6,6 +6,7 @@ import type { ResolvedBox } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
 import { Package } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { QuickAddBox } from '@/components/ui/QuickAddBox'
 
 function fmt(cents: number) { return `$${(cents / 100).toFixed(0)}` }
 
@@ -39,6 +40,7 @@ export function PrebuiltBoxesSection() {
               {box.image
                 ? <Image src={box.image} alt={box.name} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" unoptimized sizes="(max-width:640px) 78vw, 380px" />
                 : <div className="absolute inset-0 flex items-center justify-center text-bark-300"><Package size={32} /></div>}
+              <QuickAddBox box={box} className="absolute bottom-3 right-3 z-10 sm:opacity-0 sm:group-hover:opacity-100 sm:transition-opacity sm:duration-300" />
             </div>
             {/* Caption below the image — espresso, turns gold on hover */}
             <div className="pt-4 text-espresso transition-colors duration-300 group-hover:text-gold-500">
