@@ -79,11 +79,10 @@ export const DEFAULT_HOME_CONTENT: HomeContent = {
     title: 'Create Something Unforgettable',
     body: 'A botanical lavender bouquet and wellness rituals to soften the long days, each chosen the way a daughter would choose for her own mother.',
     items: [
-      'Wellness care for mama',
-      'Organic cotton, no pesticides',
+      'Bath soaks & calming rituals for mama',
+      'Organic cotton from certified makers',
       'Premium baby essentials & heirloom toys',
-      'Customized card',
-      'Wax seal & linen ribbon',
+      'Hand-packed with a personalized card',
     ],
   },
   reviews: {

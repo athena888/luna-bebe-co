@@ -65,16 +65,17 @@ export default async function HomePage() {
 
   return (
     <>
-      <Header />
+      <Header overHero />
       <main>
 
         {/* ── 1. Hero ── */}
-        <section className="relative w-full min-h-[75vh] sm:min-h-[85vh] bg-cream-200 overflow-hidden">
+        <section className="relative w-full min-h-[85vh] sm:min-h-[92vh] bg-cream-200 overflow-hidden">
           <ParallaxLayer>
             <RotatingImage urls={galleries.hero} alt="Petite Lavande — Timeless Moments, Made With Love" className="hero-fade" />
           </ParallaxLayer>
           <ScrimOverlay scrimKey="home.hero" defaultHex="#181716" defaultOpacity={0.4} variant="gradient-top" />
-          <div className="relative z-10 w-full min-h-[75vh] sm:min-h-[85vh] px-6 sm:px-12 pt-10 sm:pt-14 pb-10 sm:pb-14 flex flex-col justify-end items-end">
+          {/* pt reserves a safe zone for the overlaid header so the copy never rides under it */}
+          <div className="relative z-10 w-full min-h-[85vh] sm:min-h-[92vh] px-6 sm:px-12 pt-36 sm:pt-44 pb-10 sm:pb-14 flex flex-col justify-end items-end">
             <div className="hero-rise w-full max-w-[320px] sm:max-w-md text-right" style={{ animationDelay: '0.35s' }}>
               <h1 className="font-serif text-[1.75rem] sm:text-[2.4rem] text-cream-50 leading-[1.1] mb-3">
                 We see the mother,<br />not just the baby.

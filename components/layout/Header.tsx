@@ -36,7 +36,7 @@ function CartButton({ light }: { light: boolean }) {
     >
       <ShoppingBag size={27} strokeWidth={1.2} />
       {count > 0 && (
-        <span className="absolute top-0.5 right-0 min-w-[17px] h-[17px] px-1 bg-bark-600 text-cream-50 rounded-full pl-round-full text-[10px] font-sans flex items-center justify-center leading-none">{count}</span>
+        <span className="absolute top-0.5 right-0 min-w-[17px] h-[17px] px-1 bg-espresso text-cream-50 rounded-full pl-round-full text-[10px] font-sans flex items-center justify-center leading-none">{count}</span>
       )}
     </Link>
   )
@@ -101,7 +101,7 @@ function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
 }
 
 function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) {
-  const base = light ? 'text-cream-50/90 hover:text-white' : 'text-[#6F5B4D] hover:text-espresso'
+  const base = light ? 'text-cream-50/90 hover:text-white' : 'text-espresso hover:text-gold-500'
   const cls = `uppercase font-medium ${base} transition-colors whitespace-nowrap`
   return (
     <>
