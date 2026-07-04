@@ -137,36 +137,9 @@ function HomepageEditor() {
         </div>
       </section>
 
-      {/* 2 · Best Sellers */}
+      {/* 2 · Promise ticker */}
       <section className="mb-12">
-        <SectionTitle n="2" title="Best Sellers" note="The box carousel right below the hero (stacked vertically on phones). Pick which boxes appear." />
-        <BoxPicker />
-      </section>
-
-      {/* 3 · The Collection — "Create Something Unforgettable" panel */}
-      <section className="mb-12">
-        <SectionTitle n="3" title={'The Collection · "Create Something Unforgettable" panel'} note="The framed olive panel on the left of The Collection carousel. Script heading, paragraph, and the hyphenated list. Shop Now links to the boxes page. The photos on the right are your box cover photos (Portal → Prebuilt Boxes)." />
-        <div className="bg-white border border-cream-200 rounded-lg p-4 space-y-3">
-          <Field label="Script heading (keeps to one line — keep it short)" value={c.unforgettable.title} onChange={v => setUnf({ title: v })} ai={{ kind: 'title', context: 'a short elegant script heading for the gift-box feature panel' }} />
-          <Area label="Paragraph" value={c.unforgettable.body} onChange={v => setUnf({ body: v })} rows={3} ai={{ kind: 'body', context: 'the intro paragraph inside the framed feature panel about the mama gift box' }} />
-          <Area label="List — one per line (each shown with a hyphen)" value={c.unforgettable.items.join('\n')} onChange={v => setUnf({ items: v.split('\n') })} rows={5} />
-        </div>
-      </section>
-
-      {/* 4 · What makes it special */}
-      <section className="mb-12">
-        <SectionTitle n="4" title={'"What makes it special"'} note="Full-bleed lifestyle photo with the heading + Shop Now overlaid at the bottom, then the scrolling promise ticker." />
-        <div className="bg-white border border-cream-200 rounded-lg p-3 mb-5">
-          <p className="font-sans text-[10px] text-bark-400 mb-2">Section photo — the text overlays its lower third</p>
-          <SiteImageUploader slotKey="home.special_bg" context="Full-bleed editorial lifestyle photo behind the What makes it special heading" ratio="21:9" hint="wide editorial lifestyle · ~2200×950" compact />
-          <p className="font-sans text-[10px] text-bark-400 mt-3 mb-2">Optional phone crop — shown on small screens instead</p>
-          <SiteImageUploader slotKey="home.special_bg.mobile" context="Taller phone crop of the What makes it special photo" ratio="4:5" hint="taller phone crop · ~1000×1250" compact />
-        </div>
-        <div className="space-y-3 mb-6">
-          <Field label="Heading (first word renders italic, the rest in big caps)" value={c.why.title} onChange={v => setWhy({ title: v })} ai={{ kind: 'title', context: 'the section heading for why-choose-us' }} />
-          <Area label="Subline under the heading" value={c.why.intro} onChange={v => setWhy({ intro: v })} ai={{ kind: 'body', context: 'the one-sentence subline under the why-choose-us heading' }} />
-        </div>
-        <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500 mb-2">Promise ticker — the line that scrolls right-to-left below the photo</p>
+        <SectionTitle n="2" title="Promise ticker" note="The line that scrolls right-to-left directly below the hero." />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {c.perks.map((p, i) => (
             <Card key={i} onRemove={() => setPerks(c.perks.filter((_, j) => j !== i))}>
@@ -178,7 +151,23 @@ function HomepageEditor() {
         <div className="mt-3"><AddButton onClick={() => setPerks([...c.perks, { label: '', sub: '' }])} label="Add ticker item" /></div>
       </section>
 
-      {/* 5 · Shop by Occasion */}
+      {/* 3 · Best Sellers */}
+      <section className="mb-12">
+        <SectionTitle n="3" title="Best Sellers" note="The box carousel below the promise ticker (stacked vertically on phones). Pick which boxes appear." />
+        <BoxPicker />
+      </section>
+
+      {/* 4 · The Collection — "Create Something Unforgettable" panel */}
+      <section className="mb-12">
+        <SectionTitle n="4" title={'The Collection · "Create Something Unforgettable" panel'} note="The framed olive panel on the left of The Collection carousel. Script heading, paragraph, and the hyphenated list. Shop Now links to the boxes page. The photos on the right are your box cover photos (Portal → Prebuilt Boxes)." />
+        <div className="bg-white border border-cream-200 rounded-lg p-4 space-y-3">
+          <Field label="Script heading (keeps to one line — keep it short)" value={c.unforgettable.title} onChange={v => setUnf({ title: v })} ai={{ kind: 'title', context: 'a short elegant script heading for the gift-box feature panel' }} />
+          <Area label="Paragraph" value={c.unforgettable.body} onChange={v => setUnf({ body: v })} rows={3} ai={{ kind: 'body', context: 'the intro paragraph inside the framed feature panel about the mama gift box' }} />
+          <Area label="List — one per line (each shown with a hyphen)" value={c.unforgettable.items.join('\n')} onChange={v => setUnf({ items: v.split('\n') })} rows={5} />
+        </div>
+      </section>
+
+      {/* 5 · Shop by Category */}
       <section className="mb-12">
         <SectionTitle n="5" title="Shop by Category" note="The four category tiles. Newborn/Mama/Custom link into the build page; the Bundle tile cycles through your boxes." />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
@@ -191,9 +180,24 @@ function HomepageEditor() {
         <CollectionsEditor />
       </section>
 
-      {/* 6 · Reviews */}
+      {/* 6 · What makes it special */}
       <section className="mb-12">
-        <SectionTitle n="6" title="Reviews" note="The testimonials block near the bottom of the homepage. Only shows when reviews are enabled and at least one review exists." />
+        <SectionTitle n="6" title={'"What makes it special"'} note="Full-bleed lifestyle photo with the heading + Shop Now overlaid at the bottom — now the closing section of the homepage (after the Our Story line)." />
+        <div className="bg-white border border-cream-200 rounded-lg p-3 mb-5">
+          <p className="font-sans text-[10px] text-bark-400 mb-2">Section photo — the text overlays its lower third</p>
+          <SiteImageUploader slotKey="home.special_bg" context="Full-bleed editorial lifestyle photo behind the What makes it special heading" ratio="21:9" hint="wide editorial lifestyle · ~2200×950" compact />
+          <p className="font-sans text-[10px] text-bark-400 mt-3 mb-2">Optional phone crop — shown on small screens instead</p>
+          <SiteImageUploader slotKey="home.special_bg.mobile" context="Taller phone crop of the What makes it special photo" ratio="4:5" hint="taller phone crop · ~1000×1250" compact />
+        </div>
+        <div className="space-y-3">
+          <Field label="Heading (first word renders italic, the rest in big caps)" value={c.why.title} onChange={v => setWhy({ title: v })} ai={{ kind: 'title', context: 'the section heading for why-choose-us' }} />
+          <Area label="Subline under the heading" value={c.why.intro} onChange={v => setWhy({ intro: v })} ai={{ kind: 'body', context: 'the one-sentence subline under the why-choose-us heading' }} />
+        </div>
+      </section>
+
+      {/* 7 · Reviews */}
+      <section className="mb-12">
+        <SectionTitle n="7" title="Reviews" note="The testimonials block near the bottom of the homepage. Only shows when reviews are enabled and at least one review exists." />
         <div className="bg-white border border-cream-200 rounded-lg p-3 mb-5">
           <p className="font-sans text-[10px] text-bark-400 mb-2">Section background (optional)</p>
           <SiteImageUploader slotKey="home.testimonials_bg" context="Background behind the homepage reviews/testimonials section" ratio="21:9" hint="soft, light lifestyle · ~2000×860" compact />

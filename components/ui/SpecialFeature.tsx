@@ -5,11 +5,33 @@ import { SlotBackground } from './SlotBackground'
 
 interface Perk { label: string; sub: string }
 
+// The promise perks — one continuous line, looping right-to-left. Rendered on
+// its own right below the homepage hero.
+export function PerksTicker({ perks }: { perks: Perk[] }) {
+  return (
+    <div className="bg-cream-white border-y border-cream-300 py-4 overflow-hidden" aria-label="Our promises">
+      <div className="flex w-max animate-[pl-marquee_32s_linear_infinite]">
+        {[0, 1].map(copy => (
+          <div key={copy} className="flex shrink-0 items-baseline" aria-hidden={copy === 1}>
+            {perks.map(({ label, sub }) => (
+              <span key={`${copy}-${label}`} className="flex items-baseline whitespace-nowrap px-8 sm:px-12">
+                <span className="font-sans text-[11px] tracking-[0.25em] uppercase font-semibold text-espresso">{label}</span>
+                <span className="font-cormorant text-[15px] text-espresso-light ml-3">{sub}</span>
+                <span className="w-1 h-1 rounded-full pl-round-full bg-gold-400 ml-8 sm:ml-12 self-center" />
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // "What makes it special" — full-bleed editorial photo (owner-managed
 // home.special_bg slot) with the heading overlaid on the lower third,
 // High-Summer-Edit style: italic first word + big didone caps, subline and a
-// SHOP NOW link. Beneath it the promise perks drift right-to-left on a loop.
-export function SpecialFeature({ title, intro, perks }: { title: string; intro: string; perks: Perk[] }) {
+// SHOP NOW link.
+export function SpecialFeature({ title, intro }: { title: string; intro: string }) {
   const [first, ...rest] = title.split(' ')
 
   return (
@@ -37,23 +59,6 @@ export function SpecialFeature({ title, intro, perks }: { title: string; intro: 
           </div>
         )}
       </SlotBackground>
-
-      {/* The promise perks — one continuous line, looping right-to-left */}
-      <div className="bg-cream-white border-y border-cream-300 py-4 overflow-hidden" aria-label="Our promises">
-        <div className="flex w-max animate-[pl-marquee_32s_linear_infinite]">
-          {[0, 1].map(copy => (
-            <div key={copy} className="flex shrink-0 items-baseline" aria-hidden={copy === 1}>
-              {perks.map(({ label, sub }) => (
-                <span key={`${copy}-${label}`} className="flex items-baseline whitespace-nowrap px-8 sm:px-12">
-                  <span className="font-sans text-[11px] tracking-[0.25em] uppercase font-semibold text-espresso">{label}</span>
-                  <span className="font-cormorant text-[15px] text-espresso-light ml-3">{sub}</span>
-                  <span className="w-1 h-1 rounded-full pl-round-full bg-gold-400 ml-8 sm:ml-12 self-center" />
-                </span>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
     </section>
   )
 }

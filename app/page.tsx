@@ -12,7 +12,7 @@ import { getHomeContent } from '@/lib/home-content'
 import { getStoryContent } from '@/lib/story-content'
 import { getHomeGalleries } from '@/lib/site-images'
 import { getActiveSocialPosts } from '@/lib/social-posts'
-import { SpecialFeature } from '@/components/ui/SpecialFeature'
+import { SpecialFeature, PerksTicker } from '@/components/ui/SpecialFeature'
 import { TestimonialsCarousel } from '@/components/ui/TestimonialsCarousel'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 
@@ -93,7 +93,10 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── Best Sellers — right below the hero ── */}
+        {/* ── Promise ticker — runs right below the hero ── */}
+        <PerksTicker perks={content.perks} />
+
+        {/* ── Best Sellers ── */}
         <PrebuiltBoxesSection />
 
         {/* ── The Collection — Unforgettable panel + box carousel; lavender divider beneath ── */}
@@ -102,11 +105,6 @@ export default async function HomePage() {
           body={content.unforgettable.body}
           items={content.unforgettable.items}
         />
-
-        {/* ── What makes it special — full-bleed editorial photo with overlaid
-             heading + looping perks ticker (client component; photo managed via
-             Portal → Site Images → home.special_bg). ── */}
-        <SpecialFeature title={content.why.title} intro={content.why.intro} perks={content.perks} />
 
         {/* ── Shop by Category — heading above the image tiles, styled like Best Sellers ── */}
         <div className="pt-14 sm:pt-20">
@@ -129,6 +127,10 @@ export default async function HomePage() {
             Read Our Story
           </Link>
         </section>
+
+        {/* ── What makes it special — full-bleed editorial photo with overlaid
+             heading (client component; photo managed via Portal → Homepage). ── */}
+        <SpecialFeature title={content.why.title} intro={content.why.intro} />
 
         {/* ── 8. Testimonials — shown only when NEXT_PUBLIC_SHOW_REVIEWS=true and there are real reviews ── */}
         {process.env.NEXT_PUBLIC_SHOW_REVIEWS === 'true' && content.reviews.items.length > 0 && (
