@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { StepsFeature } from '@/components/ui/StepsFeature'
 import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
 import { TheCollection } from '@/components/ui/TheCollection'
@@ -28,12 +27,6 @@ export const metadata: Metadata = {
 
 // Revalidate bestsellers periodically so they reflect real sales
 export const revalidate = 300
-
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
-function homeImg(slot: string) {
-  return `${SUPABASE_URL}/storage/v1/object/public/home-images/${slot}.jpg`
-}
-
 
 const SUPABASE_URL_ENV = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 function collectionImg(slot: string) {
@@ -66,7 +59,7 @@ async function getCollectionsData() {
 
 export default async function HomePage() {
   const [collectionsData, content, galleries, igPosts] = await Promise.all([
-    getCollectionsData(), getHomeContent(), getHomeGalleries(['hero', 'box', 'brand', 'inside']), getActiveSocialPosts(6),
+    getCollectionsData(), getHomeContent(), getHomeGalleries(['hero']), getActiveSocialPosts(6),
   ])
 
   return (
@@ -130,23 +123,6 @@ export default async function HomePage() {
           <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-2xl h-auto" />
           <p className="font-serif italic text-espresso-light text-lg sm:text-xl mt-5">Fait avec amour, pour vous.</p>
         </div>
-
-        {/* ── "Create Something Unforgettable" framed panel — the only editorial
-             feature beat (the "For the mother…" feature was removed). ── */}
-        <section className="bg-white pt-10 sm:pt-14">
-          {(() => {
-            const slot = content.why.features[0]?.slot ?? 'brand'
-            return (
-              <StepsFeature
-                images={galleries[slot] ?? [homeImg(slot)]}
-                side="left"
-                title={content.unforgettable.title}
-                body={content.unforgettable.body}
-                items={content.unforgettable.items}
-              />
-            )
-          })()}
-        </section>
 
         {/* ── 8. Testimonials — shown only when NEXT_PUBLIC_SHOW_REVIEWS=true and there are real reviews ── */}
         {process.env.NEXT_PUBLIC_SHOW_REVIEWS === 'true' && content.reviews.items.length > 0 && (

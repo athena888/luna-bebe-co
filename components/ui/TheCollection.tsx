@@ -101,65 +101,29 @@ export function TheCollection({ title, body, items }: { title: string; body: str
               <p className="font-playfair text-white text-2xl sm:text-4xl drop-shadow-md">{box.name}</p>
             </div>
 
-            {/* Arrows on the photo — mobile only; web arrows sit outside the card */}
+            {/* Arrows — just inside the photo's edges on every screen size */}
             {boxes.length > 1 && (
-              <div className="sm:hidden">
+              <>
                 <button
                   type="button"
                   onClick={prev}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full pl-round-full bg-white/90 shadow-md flex items-center justify-center text-bark-600 hover:bg-white hover:text-espresso transition-colors"
+                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center text-white/90 drop-shadow-md hover:text-white transition-colors"
                   aria-label="Previous box"
                 >
-                  <ChevronLeft size={18} strokeWidth={1.5} />
+                  <ChevronLeft size={28} strokeWidth={1.5} />
                 </button>
                 <button
                   type="button"
                   onClick={next}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full pl-round-full bg-white/90 shadow-md flex items-center justify-center text-bark-600 hover:bg-white hover:text-espresso transition-colors"
+                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center text-white/90 drop-shadow-md hover:text-white transition-colors"
                   aria-label="Next box"
                 >
-                  <ChevronRight size={18} strokeWidth={1.5} />
+                  <ChevronRight size={28} strokeWidth={1.5} />
                 </button>
-              </div>
+              </>
             )}
           </div>
         </div>
-
-        {/* Web arrows — outside the card, in the side gutters */}
-        {boxes.length > 1 && (
-          <>
-            <button
-              type="button"
-              onClick={prev}
-              className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full pl-round-full bg-white border border-bark-600 shadow-sm items-center justify-center text-bark-600 hover:bg-cream-100 transition-colors"
-              aria-label="Previous box"
-            >
-              <ChevronLeft size={18} strokeWidth={1.5} />
-            </button>
-            <button
-              type="button"
-              onClick={next}
-              className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full pl-round-full bg-white border border-bark-600 shadow-sm items-center justify-center text-bark-600 hover:bg-cream-100 transition-colors"
-              aria-label="Next box"
-            >
-              <ChevronRight size={18} strokeWidth={1.5} />
-            </button>
-          </>
-        )}
-
-        {/* Dots */}
-        {boxes.length > 1 && (
-          <div className="flex justify-center gap-2 mt-5">
-            {boxes.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setIdx(i)}
-                aria-label={`Go to box ${i + 1}`}
-                className={`w-2 h-2 rounded-full pl-round-full transition-colors ${i === idx ? 'bg-gold-500' : 'bg-cream-300'}`}
-              />
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Lavender divider — watercolor artwork */}

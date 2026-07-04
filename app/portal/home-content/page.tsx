@@ -125,7 +125,6 @@ function HomepageEditor() {
   const setWhy = (why: Partial<HomeContent['why']>) => setC({ ...c, why: { ...c.why, ...why } })
   const setUnf = (patch: Partial<HomeContent['unforgettable']>) => setC({ ...c, unforgettable: { ...c.unforgettable, ...patch } })
   const setReviews = (reviews: Partial<HomeContent['reviews']>) => setC({ ...c, reviews: { ...c.reviews, ...reviews } })
-  const panelSlot = c.why.features[0]?.slot ?? 'brand'
 
   return (
     <>
@@ -144,9 +143,19 @@ function HomepageEditor() {
         <BoxPicker />
       </section>
 
-      {/* 3 · What makes it special */}
+      {/* 3 · The Collection — "Create Something Unforgettable" panel */}
       <section className="mb-12">
-        <SectionTitle n="3" title={'"What makes it special"'} note="Full-bleed lifestyle photo with the heading + Shop Now overlaid at the bottom, then the scrolling promise ticker." />
+        <SectionTitle n="3" title={'The Collection · "Create Something Unforgettable" panel'} note="The framed olive panel on the left of The Collection carousel. Script heading, paragraph, and the hyphenated list. Shop Now links to the boxes page. The photos on the right are your box cover photos (Portal → Prebuilt Boxes)." />
+        <div className="bg-white border border-cream-200 rounded-lg p-4 space-y-3">
+          <Field label="Script heading (keeps to one line — keep it short)" value={c.unforgettable.title} onChange={v => setUnf({ title: v })} ai={{ kind: 'title', context: 'a short elegant script heading for the gift-box feature panel' }} />
+          <Area label="Paragraph" value={c.unforgettable.body} onChange={v => setUnf({ body: v })} rows={3} ai={{ kind: 'body', context: 'the intro paragraph inside the framed feature panel about the mama gift box' }} />
+          <Area label="List — one per line (each shown with a hyphen)" value={c.unforgettable.items.join('\n')} onChange={v => setUnf({ items: v.split('\n') })} rows={5} />
+        </div>
+      </section>
+
+      {/* 4 · What makes it special */}
+      <section className="mb-12">
+        <SectionTitle n="4" title={'"What makes it special"'} note="Full-bleed lifestyle photo with the heading + Shop Now overlaid at the bottom, then the scrolling promise ticker." />
         <div className="bg-white border border-cream-200 rounded-lg p-3 mb-5">
           <p className="font-sans text-[10px] text-bark-400 mb-2">Section photo — the text overlays its lower third</p>
           <SiteImageUploader slotKey="home.special_bg" context="Full-bleed editorial lifestyle photo behind the What makes it special heading" ratio="21:9" hint="wide editorial lifestyle · ~2200×950" compact />
@@ -169,9 +178,9 @@ function HomepageEditor() {
         <div className="mt-3"><AddButton onClick={() => setPerks([...c.perks, { label: '', sub: '' }])} label="Add ticker item" /></div>
       </section>
 
-      {/* 4 · Shop by Occasion */}
+      {/* 5 · Shop by Occasion */}
       <section className="mb-12">
-        <SectionTitle n="4" title="Shop by Occasion" note="The four occasion tiles. Newborn/Mama/Custom link into the build page; the Bundle tile cycles through your boxes." />
+        <SectionTitle n="5" title="Shop by Occasion" note="The four occasion tiles. Newborn/Mama/Custom link into the build page; the Bundle tile cycles through your boxes." />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <ImageSlotCard slotKey="newborn" label="Newborn Gifts" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
           <ImageSlotCard slotKey="mama" label="For Mama" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
@@ -180,20 +189,6 @@ function HomepageEditor() {
         </div>
         <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500 mb-2">Collections — name, subtitle and products behind each tile</p>
         <CollectionsEditor />
-      </section>
-
-      {/* 5 · Create Something Unforgettable */}
-      <section className="mb-12">
-        <SectionTitle n="5" title={'"Create Something Unforgettable" panel'} note="The framed olive panel beside a photo. Script heading, paragraph, and the hyphenated list. Shop Now links to the boxes page." />
-        <div className="bg-white border border-cream-200 rounded-lg p-4 space-y-4">
-          <GallerySlot slot={panelSlot} label="Panel photo(s) · shown left" description="Add one or more — they cross-fade on the homepage." />
-          <div className="space-y-3">
-            <Field label="Script heading (keeps to one line — keep it short)" value={c.unforgettable.title} onChange={v => setUnf({ title: v })} ai={{ kind: 'title', context: 'a short elegant script heading for the gift-box feature panel' }} />
-            <Area label="Paragraph" value={c.unforgettable.body} onChange={v => setUnf({ body: v })} rows={3} ai={{ kind: 'body', context: 'the intro paragraph inside the framed feature panel about the mama gift box' }} />
-            <Area label="List — one per line (each shown with a hyphen)" value={c.unforgettable.items.join('\n')} onChange={v => setUnf({ items: v.split('\n') })} rows={5} />
-          </div>
-        </div>
-        <p className="font-sans text-[10px] text-bark-400/80 mt-3">Photos upload immediately; text changes go live when you press "Save changes" below.</p>
       </section>
 
       {/* 6 · Reviews */}
