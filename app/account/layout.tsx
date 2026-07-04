@@ -11,7 +11,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-cream-50">
+      <main className="sm:min-h-screen bg-cream-50">
         {children}
       </main>
       <Footer />
