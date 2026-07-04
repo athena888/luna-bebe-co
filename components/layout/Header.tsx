@@ -129,24 +129,28 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
 // get the solid in-flow header.
 export function Header({ overHero = false }: { overHero?: boolean }) {
   const [open, setOpen] = useState(false)
-  // Auto-hide (non-hero pages only): the sticky bar slides up while scrolling
-  // down (max product/image space) and slides back in on scroll-up (cart + nav
-  // one flick away). Standard Shopify-Dawn / DTC pattern.
+  // Auto-hide: the bar slides up while scrolling down (max product/image
+  // space) and slides back in on scroll-up (cart + nav one flick away).
+  // Standard Shopify-Dawn / DTC pattern. On over-hero pages the revealed bar
+  // is the solid coloured one; near the top of the page it hands back to the
+  // transparent white-logo overlay.
   const [hidden, setHidden] = useState(false)
+  const [atTop, setAtTop] = useState(true)
 
   useEffect(() => {
-    if (overHero) return
     let lastY = window.scrollY
     const onScroll = () => {
       const y = window.scrollY
+      setAtTop(y < 120)
       if (y < 80) setHidden(false)              // always visible near the top
       else if (y > lastY + 4) setHidden(true)   // scrolling down → hide
       else if (y < lastY - 4) setHidden(false)  // scrolling up → reveal
       lastY = y
     }
+    onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
-  }, [overHero])
+  }, [])
 
   // Reveal the bar whenever the mobile menu is open, so it never hides mid-use.
   useEffect(() => { if (open) setHidden(false) }, [open])
@@ -170,17 +174,15 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
   }, [overHero])
 
   // expanded = big centered logo with nav beneath, transparent over the hero.
-  // Over-hero pages stay transparent the whole time the bar is visible (it's
-  // absolute, so it simply scrolls away with the hero — no cream flash).
-  const expanded = overHero
+  // Only at the top of an over-hero page; the scroll-up-revealed bar mid-page
+  // is the compact solid one.
+  const expanded = overHero && atTop
   const transparent = expanded && !open
   const light = transparent
 
   return (
     <>
-    <header ref={headerRef} className={overHero
-      ? 'absolute top-0 inset-x-0 z-40'
-      : `fixed top-0 inset-x-0 z-40 bg-[#FBF5E9] transition-transform duration-300 ease-out ${hidden ? '-translate-y-full' : 'translate-y-0'}`}>
+    <header ref={headerRef} className={`fixed top-0 inset-x-0 z-40 transition-transform duration-300 ease-out ${hidden ? '-translate-y-full' : 'translate-y-0'} ${overHero ? '' : 'bg-[#FBF5E9]'}`}>
 
       {/* Coming-soon announcement strip — right-to-left looping marquee */}
       <div className="bg-[#4A3B30] text-cream-50 py-2.5 overflow-hidden">
