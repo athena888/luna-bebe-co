@@ -43,14 +43,6 @@ export function TheCollection() {
             description-first with a little padding on phones), ~85vh like the
             Unforgettable section. No card border. */}
         <div className="relative sm:flex sm:items-stretch p-3 sm:p-0">
-          {/* Web only: lavender artwork straddling the panel/photo seam, top layer */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/decor/lavender-divider.png"
-            alt=""
-            aria-hidden="true"
-            className="hidden sm:block absolute bottom-5 left-1/2 -translate-x-1/2 w-[360px] lg:w-[440px] h-auto z-20 pointer-events-none drop-shadow-sm"
-          />
           {/* Description — olive framed panel (Unforgettable style), left of the
               photo; fades in on swap */}
           <div key={`desc-${idx}`} className="relative bg-[#8A9B63] px-8 sm:px-14 lg:px-20 py-12 sm:py-10 sm:w-1/2 sm:shrink-0 flex flex-col justify-center text-center" style={{ animation: 'fadeIn 0.8s ease-out both' }}>
