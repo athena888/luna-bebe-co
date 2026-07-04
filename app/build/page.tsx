@@ -429,8 +429,8 @@ export default function BuildPage() {
       <Header />
       <main className="min-h-screen bg-white">
 
-        {/* Hero — full-viewport, parallax bg, Why Simple text, fade-in */}
-        <section className="relative w-full min-h-screen bg-bark-700 flex items-end overflow-hidden border-b border-cream-300">
+        {/* Hero — ~85% of the viewport, parallax bg, Why Simple text, fade-in */}
+        <section className="relative w-full min-h-[85vh] bg-bark-700 flex items-end overflow-hidden border-b border-cream-300">
           {(heroImg || heroImgMobile) ? (
             <>
               <ParallaxLayer strength={0.2}>
