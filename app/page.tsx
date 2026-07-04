@@ -9,6 +9,7 @@ import { RotatingImage } from '@/components/ui/RotatingImage'
 import { ScrimOverlay } from '@/components/ui/ScrimOverlay'
 import { ParallaxLayer } from '@/components/ui/ParallaxLayer'
 import { getHomeContent } from '@/lib/home-content'
+import { getStoryContent } from '@/lib/story-content'
 import { getHomeGalleries } from '@/lib/site-images'
 import { getActiveSocialPosts } from '@/lib/social-posts'
 import { SpecialFeature } from '@/components/ui/SpecialFeature'
@@ -58,8 +59,8 @@ async function getCollectionsData() {
 }
 
 export default async function HomePage() {
-  const [collectionsData, content, galleries, igPosts] = await Promise.all([
-    getCollectionsData(), getHomeContent(), getHomeGalleries(['hero']), getActiveSocialPosts(6),
+  const [collectionsData, content, galleries, igPosts, story] = await Promise.all([
+    getCollectionsData(), getHomeContent(), getHomeGalleries(['hero']), getActiveSocialPosts(6), getStoryContent(),
   ])
 
   return (
@@ -105,6 +106,19 @@ export default async function HomePage() {
              heading + looping perks ticker (client component; photo managed via
              Portal → Site Images → home.special_bg). ── */}
         <SpecialFeature title={content.why.title} intro={content.why.intro} perks={content.perks} />
+
+        {/* ── Our Story teaser — one quiet line linking to the full story.
+             The headline is the Story page's hero heading (Portal → Story). ── */}
+        <section className="bg-white pt-16 sm:pt-20 px-6 text-center">
+          <p className="font-sans text-[12px] tracking-[0.3em] uppercase font-bold text-[#7A8E7C] mb-4">Our Story</p>
+          <h2 className="font-playfair text-2xl sm:text-3xl text-espresso leading-snug max-w-2xl mx-auto mb-6">{story.hero.heading}</h2>
+          <Link
+            href="/story"
+            className="inline-block font-sans text-[12px] tracking-[0.3em] uppercase text-espresso border-b border-espresso pb-1 hover:text-gold-500 hover:border-gold-500 transition-colors"
+          >
+            Read Our Story
+          </Link>
+        </section>
 
         {/* ── Shop by Occasion — heading above the image tiles, styled like Best Sellers ── */}
         <div className="pt-14 sm:pt-20">
