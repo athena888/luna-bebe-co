@@ -97,16 +97,11 @@ export default function StoryPortal() {
 
       {/* 3 · French apothecary — closing section, split layout */}
       <section className="mb-12">
-        <SectionTitle n="3" title="French apothecary soul" note="The closing section. The photo fills the band; text sits on a cream panel over the left half, the right half shows the photo clean." />
-        <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
-          <BackgroundBox appliesTo="the right half of the closing band (the left half is a cream text panel)">
-            <SiteImageUploader slotKey="story.french_bg" context="Photo for the French apothecary closing section" ratio="16:9" hint="landscape lifestyle — keep the subject toward the right" compact />
-          </BackgroundBox>
-          <div className="space-y-3">
-            <Field label="Eyebrow" value={c.french.eyebrow} onChange={v => setFrench({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'eyebrow about the French apothecary aesthetic' }} />
-            <Area label="Paragraphs (blank line between)" value={toText(c.french.paragraphs)} onChange={v => setFrench({ paragraphs: toParas(v) })} rows={6} ai={{ kind: 'body', context: 'copy about a French apothecary aesthetic with PNW sourcing' }} />
-            <Field label="Tagline (italic)" value={c.french.tagline} onChange={v => setFrench({ tagline: v })} ai={{ kind: 'tagline', context: 'a short evocative tagline about far-away-yet-close' }} />
-          </div>
+        <SectionTitle n="3" title="French apothecary soul" note="The closing section — white band framed by the lavender dividers. The big headline is the 'Born from a belief…' line; the eyebrow, paragraphs and tagline sit beneath it." />
+        <div className="space-y-3">
+          <Field label="Eyebrow" value={c.french.eyebrow} onChange={v => setFrench({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'eyebrow about the French apothecary aesthetic' }} />
+          <Area label="Paragraphs (blank line between)" value={toText(c.french.paragraphs)} onChange={v => setFrench({ paragraphs: toParas(v) })} rows={6} ai={{ kind: 'body', context: 'copy about a French apothecary aesthetic with PNW sourcing' }} />
+          <Field label="Tagline (italic)" value={c.french.tagline} onChange={v => setFrench({ tagline: v })} ai={{ kind: 'tagline', context: 'a short evocative tagline about far-away-yet-close' }} />
         </div>
       </section>
 

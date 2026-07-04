@@ -5,7 +5,6 @@ import type { Metadata } from 'next'
 import { getSiteImages } from '@/lib/site-images'
 import { getStoryContent } from '@/lib/story-content'
 import { getActiveSocialPosts } from '@/lib/social-posts'
-import { SlotImage } from '@/components/ui/SlotImage'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { ScrollFlyIn } from '@/components/ui/ScrollFlyIn'
 
@@ -79,17 +78,18 @@ export default async function StoryPage() {
           </div>
         </section>
 
-        {/* Headline + French apothecary soul — one full-bleed photo band with
-            all the text baked over it, dropping in on scroll. Photo managed in
-            Portal → Story. */}
-        <section className="relative border-t border-cream-300 bg-bark-800 overflow-hidden">
-          <SlotImage slotKey="story.french_bg" className="absolute inset-0 w-full h-full" imgClassName="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-bark-900/50" aria-hidden="true" />
-          <div className="relative z-10 max-w-3xl mx-auto px-6 py-24 sm:py-32 text-center">
+        {/* Headline + French apothecary soul — white band framed by mirrored
+            lavender dividers (top one flipped), text dropping in on scroll. */}
+        <section className="bg-white overflow-hidden">
+          <div className="pt-12 px-6 flex justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto rotate-180" />
+          </div>
+          <div className="max-w-3xl mx-auto px-6 py-14 sm:py-16 text-center">
             <ScrollFlyIn from="down">
               <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-[#8A9B63] mb-4">{content.hero.eyebrow}</p>
               <h2
-                className="text-3xl sm:text-4xl lg:text-5xl text-gold-300 leading-tight mb-14"
+                className="text-3xl sm:text-4xl lg:text-5xl text-gold-500 leading-tight mb-14"
                 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400 }}
               >
                 {content.hero.heading}
@@ -98,11 +98,15 @@ export default async function StoryPage() {
             <ScrollFlyIn from="down">
               <div className="max-w-xl mx-auto">
                 {content.french.paragraphs.map((para, i) => (
-                  <p key={i} className="font-sans text-sm text-cream-white leading-relaxed mb-4">{para}</p>
+                  <p key={i} className="font-sans text-sm text-bark-500 leading-relaxed mb-4">{para}</p>
                 ))}
               </div>
-              <p className="text-2xl text-cream-white mt-2" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.french.tagline}</p>
+              <p className="text-2xl text-espresso mt-2" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.french.tagline}</p>
             </ScrollFlyIn>
+          </div>
+          <div className="pb-12 px-6 flex justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto" />
           </div>
         </section>
 
