@@ -33,7 +33,7 @@ export default async function StoryPage() {
         {/* Founder letter — opens the page (the logo + headline moved down to
             the full-bleed section between the values and the closing). */}
         <SlotBackground slotKey="story.hero_bg" scrim="bg-[#FBF7F0]/92" className="border-b border-cream-300">
-          <div className="max-w-4xl mx-auto px-6 pt-14 sm:pt-20 pb-20 sm:flex sm:items-start sm:gap-10">
+          <div className="max-w-4xl mx-auto px-6 pt-10 sm:pt-12 pb-12 sm:pb-14 sm:flex sm:items-start sm:gap-10">
             {founder && (
               <div className="mb-6 sm:mb-0 sm:order-2 sm:w-64 shrink-0">
                 <div className="aspect-[3/4] overflow-hidden border border-cream-300">
