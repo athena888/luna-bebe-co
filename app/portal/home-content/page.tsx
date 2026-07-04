@@ -180,7 +180,7 @@ function HomepageEditor() {
 
       {/* 5 · Shop by Occasion */}
       <section className="mb-12">
-        <SectionTitle n="5" title="Shop by Occasion" note="The four occasion tiles. Newborn/Mama/Custom link into the build page; the Bundle tile cycles through your boxes." />
+        <SectionTitle n="5" title="Shop by Category" note="The four category tiles. Newborn/Mama/Custom link into the build page; the Bundle tile cycles through your boxes." />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <ImageSlotCard slotKey="newborn" label="Newborn Gifts" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
           <ImageSlotCard slotKey="mama" label="For Mama" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />

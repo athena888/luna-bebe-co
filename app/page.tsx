@@ -108,9 +108,18 @@ export default async function HomePage() {
              Portal → Site Images → home.special_bg). ── */}
         <SpecialFeature title={content.why.title} intro={content.why.intro} perks={content.perks} />
 
+        {/* ── Shop by Category — heading above the image tiles, styled like Best Sellers ── */}
+        <div className="pt-14 sm:pt-20">
+          <div className="px-6 mb-8 text-center">
+            <p className="font-sans text-[13px] tracking-[0.18em] uppercase font-medium text-gold-500 mb-2">Curated sets for every new chapter — or start from scratch.</p>
+            <h2 className="font-playfair text-[2rem] sm:text-[2.6rem] uppercase tracking-[0.01em] font-medium text-espresso leading-none">Shop by Category</h2>
+          </div>
+          <CollectionsSection initial={collectionsData ?? undefined} />
+        </div>
+
         {/* ── Our Story teaser — one quiet line linking to the full story.
              The headline is the Story page's hero heading (Portal → Story). ── */}
-        <section className="bg-white pt-16 sm:pt-20 px-6 text-center">
+        <section className="bg-white py-16 sm:py-20 px-6 text-center">
           <p className="font-sans text-[12px] tracking-[0.3em] uppercase font-bold text-[#7A8E7C] mb-4">Our Story</p>
           <h2 className="font-playfair text-2xl sm:text-3xl text-espresso leading-snug max-w-2xl mx-auto mb-6">{story.hero.heading}</h2>
           <Link
@@ -120,15 +129,6 @@ export default async function HomePage() {
             Read Our Story
           </Link>
         </section>
-
-        {/* ── Shop by Occasion — heading above the image tiles, styled like Best Sellers ── */}
-        <div className="pt-14 sm:pt-20">
-          <div className="px-6 mb-8 text-center">
-            <p className="font-sans text-[13px] tracking-[0.18em] uppercase font-medium text-gold-500 mb-2">Curated sets for every new chapter — or start from scratch.</p>
-            <h2 className="font-playfair text-[2rem] sm:text-[2.6rem] uppercase tracking-[0.01em] font-medium text-espresso leading-none">Shop by Occasion</h2>
-          </div>
-          <CollectionsSection initial={collectionsData ?? undefined} />
-        </div>
 
         {/* ── 8. Testimonials — shown only when NEXT_PUBLIC_SHOW_REVIEWS=true and there are real reviews ── */}
         {process.env.NEXT_PUBLIC_SHOW_REVIEWS === 'true' && content.reviews.items.length > 0 && (
