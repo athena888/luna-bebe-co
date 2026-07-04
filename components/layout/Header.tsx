@@ -8,7 +8,7 @@ import { CONTACT_EMAIL } from '@/lib/site-config'
 import { LavenderSprig } from '@/components/ui/LavenderSprig'
 
 // Cart lives in the nav row so it scrolls with the header. On the build page it
-// opens the bag drawer in place; elsewhere it links to /build.
+// opens the bag drawer in place; elsewhere it goes to the Shopping Bag.
 function CartButton({ light }: { light: boolean }) {
   const pathname = usePathname()
   const [count, setCount] = useState(0)
@@ -28,11 +28,11 @@ function CartButton({ light }: { light: boolean }) {
 
   return (
     <Link
-      href="/build"
+      href="/checkout"
       onClick={e => { if (pathname?.startsWith('/build')) { e.preventDefault(); window.dispatchEvent(new Event('pl:open-bag')) } }}
       className={`relative w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50 hover:text-white' : 'text-gold-500 hover:text-espresso'}`}
-      title="Your box"
-      aria-label="Your box"
+      title="Shopping bag"
+      aria-label="Shopping bag"
     >
       <ShoppingBag size={27} strokeWidth={1.2} />
       {count > 0 && (
@@ -129,19 +129,10 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
 // get the solid in-flow header.
 export function Header({ overHero = false }: { overHero?: boolean }) {
   const [open, setOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
   // Auto-hide (non-hero pages only): the sticky bar slides up while scrolling
   // down (max product/image space) and slides back in on scroll-up (cart + nav
   // one flick away). Standard Shopify-Dawn / DTC pattern.
   const [hidden, setHidden] = useState(false)
-
-  useEffect(() => {
-    if (!overHero) return
-    const onScroll = () => setScrolled(window.scrollY > 40)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [overHero])
 
   useEffect(() => {
     if (overHero) return
@@ -178,9 +169,10 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
     return () => { ro.disconnect(); window.removeEventListener('resize', measure) }
   }, [overHero])
 
-  // expanded = big centered logo with nav beneath (hero top). On scroll (or on a
-  // page without a hero) it collapses to the compact logo-beside-nav bar.
-  const expanded = overHero && !scrolled
+  // expanded = big centered logo with nav beneath, transparent over the hero.
+  // Over-hero pages stay transparent the whole time the bar is visible (it's
+  // absolute, so it simply scrolls away with the hero — no cream flash).
+  const expanded = overHero
   const transparent = expanded && !open
   const light = transparent
 
