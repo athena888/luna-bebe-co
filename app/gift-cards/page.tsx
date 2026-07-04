@@ -15,8 +15,11 @@ const AMOUNTS = [
   { value: 20000, label: '$200', popular: false },
 ]
 
-const inputClass = "w-full px-4 py-3 border border-cream-300 bg-cream-50 font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-bark-400 transition-colors"
-const labelClass = "block font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2"
+// Same field styling as the Track an Order / Sign In pages: serif labels,
+// white inputs with a gold focus ring, olive section headings.
+const inputClass = "w-full px-4 py-3 border border-cream-300 bg-white font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-gold-400 transition-colors"
+const labelClass = "block font-serif text-lg text-espresso mb-2"
+const sectionClass = "font-sans text-[12px] tracking-[0.3em] uppercase font-bold text-[#7A8E7C] mb-5 pb-3 border-b border-cream-300"
 
 export default function GiftCardsPage() {
   const [amount, setAmount] = useState(10000)
@@ -73,7 +76,7 @@ export default function GiftCardsPage() {
 
               {/* Amount */}
               <div>
-                <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-5 pb-3 border-b border-cream-300">Choose an Amount</p>
+                <p className={sectionClass}>Choose an Amount</p>
                 <div className="grid grid-cols-2 gap-3">
                   {AMOUNTS.map(opt => (
                     <button
@@ -93,7 +96,7 @@ export default function GiftCardsPage() {
 
               {/* Recipient */}
               <div>
-                <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-5 pb-3 border-b border-cream-300">Send To</p>
+                <p className={sectionClass}>Send To</p>
                 <div className="space-y-4">
                   <div>
                     <label className={labelClass}>Recipient Name</label>
@@ -108,7 +111,7 @@ export default function GiftCardsPage() {
 
               {/* Sender */}
               <div>
-                <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-5 pb-3 border-b border-cream-300">From</p>
+                <p className={sectionClass}>From</p>
                 <div className="space-y-4">
                   <div>
                     <label className={labelClass}>Your Name</label>
@@ -132,9 +135,9 @@ export default function GiftCardsPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+                    className="w-full bg-[#7A8E7C] text-white font-serif text-lg tracking-[0.06em] uppercase py-3.5 hover:bg-[#6d8070] transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
                   >
-                    <Lock size={12} />
+                    <Lock size={14} />
                     {loading ? 'Processing...' : `Purchase $${(amount / 100).toFixed(0)} Gift Card`}
                   </button>
                   <p className="text-center font-sans text-[10px] text-bark-400/50">Powered by Stripe · 256-bit SSL</p>

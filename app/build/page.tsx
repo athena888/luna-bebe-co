@@ -469,7 +469,7 @@ export default function BuildPage() {
         </section>
 
         <div
-          className="w-full py-12 relative"
+          className="w-full pt-12 pb-4 relative"
           style={productsBg ? {
             backgroundImage: `url(${productsBg})`,
             backgroundSize: 'cover',
@@ -530,7 +530,7 @@ export default function BuildPage() {
           {/* Spacer so the floating bag button doesn't overlap the footer on mobile.
               Kept INSIDE the background container so the image covers it — otherwise
               a cream gap shows between the image and the footer on phones. */}
-          <div className="h-16 lg:hidden" />
+          <div className="h-8 lg:hidden" />
           </div>
         </div>
         <Footer />

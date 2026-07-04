@@ -39,10 +39,9 @@ export function QuickAddBox({ box, className = '' }: { box: ResolvedBox; classNa
       onClick={add}
       aria-label={`Add ${box.name} to bag`}
       title="Add to bag"
-      className={`flex items-center gap-1.5 bg-white/95 text-espresso font-sans text-[10px] tracking-[0.2em] uppercase px-4 py-2.5 shadow-sm hover:bg-white transition-colors ${className}`}
+      className={`flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 border border-white text-white bg-transparent hover:bg-white/20 transition-colors drop-shadow-md ${className}`}
     >
-      {added ? <Check size={13} strokeWidth={2} /> : <Plus size={13} strokeWidth={2} />}
-      {added ? 'Added' : 'Add'}
+      {added ? <Check size={16} strokeWidth={1.5} /> : <Plus size={16} strokeWidth={1.5} />}
     </button>
   )
 }
