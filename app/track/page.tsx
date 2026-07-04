@@ -71,9 +71,9 @@ export default function TrackPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-cream-50">
+      <main className="sm:min-h-screen bg-cream-50">
         {/* Optional background photo — Portal → Pages & Content → Track Order */}
-        <SlotBackground slotKey="track.bg" scrim="bg-cream-50/85" className="min-h-screen">
+        <SlotBackground slotKey="track.bg" scrim="bg-cream-50/85" className="sm:min-h-screen">
         <div className="max-w-xl mx-auto px-6 py-14">
           <div className="text-center mb-10">
             <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">Order Status</p>
