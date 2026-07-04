@@ -22,22 +22,22 @@ export default async function JournalIndex() {
     <>
       <Header />
       <main className="bg-cream-50 min-h-screen">
-        <section className="border-b border-cream-300 px-6 sm:px-8 py-16 sm:py-20 text-center">
+        <section className="border-b border-cream-300 px-6 sm:px-8 py-12 sm:py-14 text-center">
           <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">The Journal</p>
           <h1 className="font-serif text-[2.5rem] sm:text-[3.5rem] text-espresso leading-tight">Gift guides &amp; new-parent notes</h1>
-          <p className="font-cormorant text-lg sm:text-xl text-bark-400 mt-4 max-w-2xl mx-auto leading-loose">
+          <p className="font-cormorant text-lg sm:text-xl text-bark-400 mt-3 max-w-2xl mx-auto leading-relaxed">
             Thoughtful reading on organic baby gifts, postpartum care, and the small details that make a present feel personal.
           </p>
         </section>
 
-        <section className="max-w-4xl mx-auto px-6 sm:px-8 py-14 grid gap-10">
+        <section className="max-w-4xl mx-auto px-6 sm:px-8 py-10 grid gap-7">
           {posts.map(post => (
-            <Link key={post.slug} href={`/journal/${post.slug}`} className="group border-b border-cream-300 pb-10 last:border-0">
-              <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-gold-400 mb-2">
+            <Link key={post.slug} href={`/journal/${post.slug}`} className="group border-b border-cream-300 pb-7 last:border-0">
+              <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-gold-400 mb-1.5">
                 {new Date(post.date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} · {post.readMins} min read
               </p>
-              <h2 className="font-serif text-2xl sm:text-3xl text-espresso leading-snug mb-2 group-hover:text-bark-800 transition-colors">{post.title}</h2>
-              <p className="font-cormorant text-lg text-bark-400 leading-relaxed mb-3">{post.excerpt}</p>
+              <h2 className="font-serif text-2xl sm:text-3xl text-espresso leading-snug mb-1.5 group-hover:text-bark-800 transition-colors">{post.title}</h2>
+              <p className="font-cormorant text-lg text-bark-400 leading-relaxed mb-2.5">{post.excerpt}</p>
               <span className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500 border-b border-bark-400 pb-0.5">Read more →</span>
             </Link>
           ))}

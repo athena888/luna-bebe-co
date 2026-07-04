@@ -33,9 +33,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 function renderBlock(b: Block, i: number) {
-  if ('h2' in b) return <h2 key={i} className="font-serif text-2xl text-espresso mt-10 mb-3">{b.h2}</h2>
+  if ('h2' in b) return <h2 key={i} className="font-serif text-2xl text-espresso mt-8 mb-2.5">{b.h2}</h2>
   if ('ul' in b) return (
-    <ul key={i} className="my-4 space-y-2">
+    <ul key={i} className="my-3.5 space-y-1.5">
       {b.ul.map((li, j) => (
         <li key={j} className="font-cormorant text-lg text-bark-500 leading-relaxed flex gap-3">
           <span className="w-3 h-px bg-gold-400 mt-3.5 shrink-0" />{li}
@@ -43,7 +43,7 @@ function renderBlock(b: Block, i: number) {
       ))}
     </ul>
   )
-  return <p key={i} className="font-cormorant text-lg text-bark-500 leading-loose mb-4">{b.p}</p>
+  return <p key={i} className="font-cormorant text-lg text-bark-500 leading-relaxed mb-3.5">{b.p}</p>
 }
 
 export default async function JournalPostPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -77,17 +77,17 @@ export default async function JournalPostPage({ params }: { params: Promise<{ sl
       }} />
 
       <main className="bg-cream-50 min-h-screen">
-        <article className="max-w-2xl mx-auto px-6 sm:px-8 py-14 sm:py-20">
+        <article className="max-w-2xl mx-auto px-6 sm:px-8 py-10 sm:py-14">
           <Link href="/journal" className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 hover:text-bark-600 transition-colors">← The Journal</Link>
-          <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-gold-400 mt-8 mb-3">
+          <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-gold-400 mt-6 mb-3">
             {new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} · {post.readMins} min read
           </p>
-          <h1 className="font-serif text-[2.25rem] sm:text-[3rem] text-espresso leading-[1.1] mb-8">{post.title}</h1>
+          <h1 className="font-serif text-[2.25rem] sm:text-[3rem] text-espresso leading-[1.1] mb-6">{post.title}</h1>
 
           <div>{post.body.map(renderBlock)}</div>
 
           {/* Internal links */}
-          <div className="mt-12 pt-8 border-t border-cream-300">
+          <div className="mt-10 pt-6 border-t border-cream-300">
             <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-gold-400 mb-4">Keep exploring</p>
             <div className="flex flex-col gap-2.5">
               {post.related.map(r => (
