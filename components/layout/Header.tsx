@@ -34,7 +34,7 @@ function CartButton({ light }: { light: boolean }) {
       title="Your box"
       aria-label="Your box"
     >
-      <ShoppingBag size={24} strokeWidth={1.5} />
+      <ShoppingBag size={27} strokeWidth={1.2} />
       {count > 0 && (
         <span className="absolute top-0.5 right-0 min-w-[17px] h-[17px] px-1 bg-bark-600 text-cream-50 rounded-full pl-round-full text-[10px] font-sans flex items-center justify-center leading-none">{count}</span>
       )}
@@ -44,17 +44,18 @@ function CartButton({ light }: { light: boolean }) {
 
 // lucide no longer ships brand marks, so inline the two socials we show on the
 // left of the bar (balancing the account/cart icons on the right).
-function IgIcon({ size = 23 }: { size?: number }) {
+function IgIcon({ size = 26 }: { size?: number }) {
   return (
-    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.9" fill="currentColor" stroke="none" />
     </svg>
   )
 }
-function FbIcon({ size = 23 }: { size?: number }) {
+function FbIcon({ size = 26 }: { size?: number }) {
   return (
-    <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true">
-      <path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z" />
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M15.3 7.5h-1.4c-1.1 0-1.8.7-1.8 1.8V12h3.1l-.45 2.7h-2.65V22" />
     </svg>
   )
 }
@@ -239,12 +240,12 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
                 </a>
                 <a href={`mailto:${CONTACT_EMAIL}`} title={CONTACT_EMAIL} aria-label="Email"
                   className="w-11 h-11 flex items-center justify-center transition-colors text-gold-500 hover:text-espresso">
-                  <Mail size={23} strokeWidth={1.6} />
+                  <Mail size={26} strokeWidth={1.2} />
                 </a>
               </div>
               <div className={`absolute right-9 flex items-center gap-0.5 ${expanded ? 'bottom-2' : 'bottom-0.5'}`}>
                 <Link href="/account" className="w-11 h-11 flex items-center justify-center transition-colors text-gold-500 hover:text-espresso" title="My Account">
-                  <User size={24} />
+                  <User size={27} strokeWidth={1.2} />
                 </Link>
                 <CartButton light={false} />
               </div>
