@@ -78,30 +78,30 @@ export default function StoryPortal() {
 
       {/* 2 · Values */}
       <section className="mb-12">
-        <SectionTitle n="2" title="What we stand for" note="Photo on the left, the three values listed on a green panel to the right." />
-        <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
-          <div>
-            <p className="font-sans text-[10px] text-bark-400 mb-1">Left photo</p>
-            <SiteImageUploader slotKey="story.values" context="Photo beside the What We Stand For values panel (lavender lifestyle)" ratio="3:4" hint="portrait or square · ~1200×1500. Until one is uploaded, the old lavender value photo is shown." compact />
-          </div>
-          <div className="space-y-4">
-            {c.values.map((v, i) => (
-              <div key={i} className="bg-white border border-cream-200 rounded-lg p-3 space-y-3">
-                <Field label={`Value ${i + 1} — title`} value={v.title} onChange={val => setValue(i, { title: val })} ai={{ kind: 'title', context: 'a short brand-value title (2–3 words)' }} />
-                <Area label="Body" value={v.body} onChange={val => setValue(i, { body: val })} rows={3} ai={{ kind: 'body', context: `body copy for the brand value "${v.title}"` }} />
-              </div>
-            ))}
-          </div>
+        <SectionTitle n="2" title="What we stand for" note="Three points on white, framed by the lavender dividers. Text only — no photo in this section." />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {c.values.map((v, i) => (
+            <div key={i} className="bg-white border border-cream-200 rounded-lg p-3 space-y-3">
+              <Field label={`Value ${i + 1} — title`} value={v.title} onChange={val => setValue(i, { title: val })} ai={{ kind: 'title', context: 'a short brand-value title (2–3 words)' }} />
+              <Area label="Body" value={v.body} onChange={val => setValue(i, { body: val })} rows={3} ai={{ kind: 'body', context: `body copy for the brand value "${v.title}"` }} />
+            </div>
+          ))}
         </div>
       </section>
 
       {/* 3 · French apothecary — closing section, split layout */}
       <section className="mb-12">
-        <SectionTitle n="3" title="French apothecary soul" note="The closing section — white band framed by the lavender dividers. The big headline is the 'Born from a belief…' line; the eyebrow, paragraphs and tagline sit beneath it." />
-        <div className="space-y-3">
-          <Field label="Eyebrow" value={c.french.eyebrow} onChange={v => setFrench({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'eyebrow about the French apothecary aesthetic' }} />
-          <Area label="Paragraphs (blank line between)" value={toText(c.french.paragraphs)} onChange={v => setFrench({ paragraphs: toParas(v) })} rows={6} ai={{ kind: 'body', context: 'copy about a French apothecary aesthetic with PNW sourcing' }} />
-          <Field label="Tagline (italic)" value={c.french.tagline} onChange={v => setFrench({ tagline: v })} ai={{ kind: 'tagline', context: 'a short evocative tagline about far-away-yet-close' }} />
+        <SectionTitle n="3" title="French apothecary soul" note="The closing split — photo on the left, sage panel on the right with the 'Born from a belief…' headline (edited in section 1) plus the paragraphs and tagline below it." />
+        <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
+          <div>
+            <p className="font-sans text-[10px] text-bark-400 mb-1">Left photo</p>
+            <SiteImageUploader slotKey="story.values" context="Photo beside the closing 'Born from a belief' sage panel (lavender lifestyle)" ratio="3:4" hint="portrait or square · ~1200×1500. Until one is uploaded, the old lavender value photo is shown." compact />
+          </div>
+          <div className="space-y-3">
+            <Field label="Eyebrow" value={c.french.eyebrow} onChange={v => setFrench({ eyebrow: v })} ai={{ kind: 'eyebrow', context: 'eyebrow about the French apothecary aesthetic' }} />
+            <Area label="Paragraphs (blank line between)" value={toText(c.french.paragraphs)} onChange={v => setFrench({ paragraphs: toParas(v) })} rows={6} ai={{ kind: 'body', context: 'copy about a French apothecary aesthetic with PNW sourcing' }} />
+            <Field label="Tagline (italic)" value={c.french.tagline} onChange={v => setFrench({ tagline: v })} ai={{ kind: 'tagline', context: 'a short evocative tagline about far-away-yet-close' }} />
+          </div>
         </div>
       </section>
 

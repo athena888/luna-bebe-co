@@ -55,58 +55,59 @@ export default async function StoryPage() {
           </div>
         </SlotBackground>
 
-        {/* Brand values — editorial split: lavender photo left, muted-green
-            panel right with the three values listed (High-Summer-Edit style). */}
-        <section className="border-t border-cream-300">
-          <div className="grid grid-cols-1 md:grid-cols-2 items-stretch">
-            <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[70vh] bg-cream-100">
-              {valuesPhoto
-                ? <img src={valuesPhoto.public_url} alt={valuesPhoto.alt_text} className="absolute inset-0 w-full h-full object-cover" />
-                : <div className="absolute inset-0 bg-cream-200" />}
-            </div>
-            <div className="bg-[#76927E] flex flex-col items-center justify-center text-center px-8 sm:px-14 lg:px-20 py-16 md:py-12">
-              <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-[#F6F2E7]/70 mb-10">What We Stand For</p>
-              <div className="space-y-9 max-w-md">
-                {content.values.map(({ title, body }, i) => (
-                  <div key={i}>
-                    <h3 className="font-serif text-lg tracking-[0.12em] uppercase text-[#F6F2E7] mb-2.5">{title}</h3>
-                    <p className="font-playfair text-[15px] text-[#F6F2E7]/90 leading-relaxed">{body}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Headline + French apothecary soul — white band framed by mirrored
-            lavender dividers (top one flipped), text dropping in on scroll. */}
+        {/* What We Stand For — three points on white, framed by mirrored
+            lavender dividers (top one flipped), each point rising in. */}
         <section className="bg-white overflow-hidden">
           <div className="pt-12 px-6 flex justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto rotate-180" />
           </div>
-          <div className="max-w-3xl mx-auto px-6 py-14 sm:py-16 text-center">
-            <ScrollFlyIn from="down">
-              <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-[#8A9B63] mb-4">{content.hero.eyebrow}</p>
-              <h2
-                className="text-3xl sm:text-4xl lg:text-5xl text-gold-500 leading-tight mb-14"
-                style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400 }}
-              >
-                {content.hero.heading}
-              </h2>
-            </ScrollFlyIn>
-            <ScrollFlyIn from="down">
-              <div className="max-w-xl mx-auto">
-                {content.french.paragraphs.map((para, i) => (
-                  <p key={i} className="font-sans text-sm text-bark-500 leading-relaxed mb-4">{para}</p>
-                ))}
-              </div>
-              <p className="text-2xl text-espresso mt-2" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.french.tagline}</p>
-            </ScrollFlyIn>
+          <div className="max-w-5xl mx-auto px-6 py-14 sm:py-16 text-center">
+            <p className="font-sans text-[12px] tracking-[0.35em] uppercase font-bold text-[#7A8E7C] mb-12">What We Stand For</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
+              {content.values.map(({ title, body }, i) => (
+                <ScrollFlyIn key={i} from="up" delay={i * 160}>
+                  <h3 className="font-serif text-lg tracking-[0.12em] uppercase text-espresso mb-2.5">{title}</h3>
+                  <p className="font-playfair text-[15px] text-espresso-light leading-relaxed max-w-xs mx-auto">{body}</p>
+                </ScrollFlyIn>
+              ))}
+            </div>
           </div>
           <div className="pb-12 px-6 flex justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto" />
+          </div>
+        </section>
+
+        {/* French apothecary soul — editorial split below the three points:
+            lavender photo left, sage panel right with the "Born from a belief…"
+            headline and the French copy. */}
+        <section className="border-t border-cream-300">
+          <div className="grid grid-cols-1 md:grid-cols-2 items-stretch">
+            <div className="relative aspect-[4/5] md:aspect-auto md:min-h-[70vh] bg-cream-100">
+              {valuesPhoto
+                ? <img src={valuesPhoto.public_url} alt={valuesPhoto.alt_text} className="absolute inset-0 w-full h-full object-cover" />
+                : <div className="absolute inset-0 bg-cream-200" />}
+            </div>
+            <div className="bg-[#76927E] flex flex-col items-center justify-center text-center px-8 sm:px-14 lg:px-20 py-16 md:py-12">
+              <ScrollFlyIn from="down">
+                <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-[#F6F2E7]/70 mb-6">{content.hero.eyebrow}</p>
+                <h2
+                  className="text-3xl sm:text-4xl text-[#F6F2E7] leading-tight mb-10"
+                  style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400 }}
+                >
+                  {content.hero.heading}
+                </h2>
+              </ScrollFlyIn>
+              <ScrollFlyIn from="down">
+                <div className="max-w-md mx-auto">
+                  {content.french.paragraphs.map((para, i) => (
+                    <p key={i} className="font-sans text-sm text-[#F6F2E7]/90 leading-relaxed mb-4">{para}</p>
+                  ))}
+                </div>
+                <p className="text-2xl text-[#F6F2E7] mt-2" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.french.tagline}</p>
+              </ScrollFlyIn>
+            </div>
           </div>
         </section>
 

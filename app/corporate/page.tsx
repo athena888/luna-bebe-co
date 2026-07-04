@@ -77,7 +77,7 @@ export default function CorporatePage() {
 
         {/* Hero — background uploadable via Portal → Site Images → Corporate */}
         <SlotBackground slotKey="corporate.hero_bg" scrim="bg-cream-50/40" className="border-b border-cream-300">
-          <section className="px-6 py-20 sm:py-28 text-center">
+          <section className="px-6 py-12 sm:py-16 text-center">
             <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-5" style={{ animation: 'slideUp 0.7s ease-out both' }}>Corporate &amp; Team Gifting</p>
             <h1 className="font-serif text-4xl sm:text-6xl text-espresso leading-tight max-w-3xl mx-auto" style={{ animation: 'slideUp 0.9s ease-out 0.12s both' }}>
               When your people become parents
@@ -107,7 +107,11 @@ export default function CorporatePage() {
           {/* Mobile — photo, then the points inside the framed olive panel
               (same design as the homepage "Create Something Unforgettable"). */}
           <div className="md:hidden">
-            <SlotImage slotKey="corporate.points_bg" className="block w-full" imgClassName="w-full h-auto block" />
+            {/* Cropped to a tall 4:5 on phones so it carries the same visual
+                weight as the other full-width photos (wide originals otherwise
+                render as a short strip). Upload corporate.points_bg.mobile for
+                a hand-tuned phone crop. */}
+            <SlotImage slotKey="corporate.points_bg" className="block w-full aspect-[4/5] overflow-hidden" imgClassName="w-full h-full object-cover block" />
             <div className="bg-[#8A9B63]">
               <div className="relative px-9 py-14">
                 {/* Double-line frame — heavier outer rule, thin inner rule */}
