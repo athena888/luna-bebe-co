@@ -3,20 +3,13 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import type { ResolvedBox } from '@/lib/prebuilt-boxes-db'
-import { BOX_BASE_PRICE } from '@/lib/products'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 
-function fmt(cents: number) { return `$${(cents / 100).toFixed(0)}` }
-function boxTotal(box: ResolvedBox): number {
-  return box.customPrice ?? (BOX_BASE_PRICE + box.items.reduce((s, p) => s + (p?.price ?? 0), 0))
-}
-
-// "The Collection" — one box at a time as a full-bleed showcase. The photo
-// fills the stage; the description sits over the top of the image and the
-// name + price are baked over the bottom in white. Texts fade in on swap.
-// Arrows + swipe + dots on both desktop and mobile.
-export function TheCollection() {
+// "The Collection" — full-bleed split: the "Create Something Unforgettable"
+// olive panel on the left (copy from Portal → Homepage), the box carousel on
+// the right with the name baked over the photo. Arrows + swipe + dots.
+export function TheCollection({ title, body, items }: { title: string; body: string; items: string[] }) {
   const [boxes, setBoxes] = useState<ResolvedBox[]>([])
   const [idx, setIdx] = useState(0)
   const touchX = useRef<number | null>(null)
@@ -43,31 +36,31 @@ export function TheCollection() {
             description-first with a little padding on phones), ~85vh like the
             Unforgettable section. No card border. */}
         <div className="relative sm:flex sm:items-stretch p-3 sm:p-0">
-          {/* Description — olive framed panel (Unforgettable style), left of the
-              photo; fades in on swap */}
-          <div key={`desc-${idx}`} className="relative bg-[#8A9B63] px-8 sm:px-14 lg:px-20 py-12 sm:py-10 sm:w-1/2 sm:shrink-0 flex flex-col justify-center text-center" style={{ animation: 'fadeIn 0.8s ease-out both' }}>
-            {/* Double-line frame */}
-            <div className="pointer-events-none absolute inset-3 border-2 border-white">
-              <div className="absolute inset-[5px] border border-white" />
+          {/* Left — the "Create Something Unforgettable" panel (static copy,
+              editable in Portal → Homepage), frame inset like the homepage one */}
+          <div className="relative bg-[#8A9B63] px-10 sm:px-16 lg:px-20 py-16 sm:py-12 sm:w-1/2 sm:shrink-0 flex flex-col items-center justify-center text-center">
+            {/* Double-line frame — heavier outer rule, thin inner rule */}
+            <div className="pointer-events-none absolute inset-4 sm:inset-6 border-2 border-white">
+              <div className="absolute inset-[6px] border border-white" />
             </div>
-            <div className="relative px-2 overflow-y-auto scrollbar-hide">
-              {/* Name — same script as "Create Something Unforgettable" */}
-              <p className="font-pinyon text-white text-[1.8rem] sm:text-[2.3rem] leading-tight mb-4">{box.name}</p>
-              {(box.tagline || box.description) && (
-                <p className="font-playfair italic text-white/90 text-[13px] sm:text-[15px] leading-relaxed mb-6">{box.tagline || box.description}</p>
-              )}
-              {/* Everything inside */}
-              <div className="space-y-2 mb-6">
-                {box.items.filter(Boolean).map((it, i) => (
-                  <p key={i} className="font-playfair text-white text-[13px] sm:text-[15px] leading-snug">{it!.name}</p>
+            <div className="relative max-w-md w-full">
+              <h3 className="font-pinyon text-[clamp(1.5rem,6.2vw,2rem)] sm:text-[clamp(1.5rem,2.9vw,2.5rem)] text-white leading-tight whitespace-nowrap mb-7">
+                {title}
+              </h3>
+              <p className="font-playfair text-[15px] sm:text-[16px] text-white/95 leading-relaxed mb-8">
+                {body}
+              </p>
+              <div className="space-y-2.5 mb-9">
+                {items.filter(it => it.trim()).map((item, i) => (
+                  <p key={i} className="font-playfair text-[14px] sm:text-[15px] text-white leading-relaxed">- {item}</p>
                 ))}
               </div>
-              {/* Price */}
-              <p className="font-playfair text-white text-xl sm:text-2xl mb-4">{fmt(boxTotal(box))}</p>
-              {/* Default inclusions */}
-              <p className="font-playfair text-white/80 text-[10px] sm:text-[11px] leading-relaxed">
-                * Every box comes with a lavender sachet, dried bouquet, sea grass basket &amp; personal card
-              </p>
+              <Link
+                href="/boxes"
+                className="inline-block font-sans text-[12px] tracking-[0.3em] uppercase text-white border-b border-white pb-1 hover:text-cream-100 hover:border-cream-100 transition-colors"
+              >
+                Shop Now
+              </Link>
             </div>
           </div>
 

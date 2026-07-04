@@ -102,8 +102,12 @@ export default async function HomePage() {
         {/* ── Best Sellers — right below the hero ── */}
         <PrebuiltBoxesSection />
 
-        {/* ── The Collection — every active box; lavender divider beneath ── */}
-        <TheCollection />
+        {/* ── The Collection — Unforgettable panel + box carousel; lavender divider beneath ── */}
+        <TheCollection
+          title={content.unforgettable.title}
+          body={content.unforgettable.body}
+          items={content.unforgettable.items}
+        />
 
         {/* ── What makes it special — full-bleed editorial photo with overlaid
              heading + looping perks ticker (client component; photo managed via
