@@ -19,6 +19,14 @@ export function TheCollection({ title, body, items }: { title: string; body: str
     fetch('/api/boxes').then(r => r.json()).then(d => setBoxes(d.boxes ?? [])).catch(() => {})
   }, [])
 
+  // Auto-advance every 2s. Keying on idx restarts the timer after any manual
+  // change (arrows, swipe), so it only fires when the user leaves it alone.
+  useEffect(() => {
+    if (boxes.length < 2) return
+    const t = setTimeout(() => setIdx(i => (i + 1) % boxes.length), 2000)
+    return () => clearTimeout(t)
+  }, [idx, boxes.length])
+
   if (boxes.length === 0) return null
 
   const box = boxes[idx % boxes.length]
