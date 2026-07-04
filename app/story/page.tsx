@@ -91,9 +91,9 @@ export default async function StoryPage() {
             </div>
             <div className="bg-[#76927E] flex flex-col items-center justify-center text-center px-8 sm:px-14 lg:px-20 py-16 md:py-12">
               <ScrollFlyIn from="down">
-                <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-[#F6F2E7]/70 mb-6">{content.hero.eyebrow}</p>
+                <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-white/70 mb-6">{content.hero.eyebrow}</p>
                 <h2
-                  className="text-3xl sm:text-4xl text-[#F6F2E7] leading-tight mb-10"
+                  className="text-3xl sm:text-4xl text-white leading-tight mb-10"
                   style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400 }}
                 >
                   {content.hero.heading}
@@ -102,10 +102,10 @@ export default async function StoryPage() {
               <ScrollFlyIn from="down">
                 <div className="max-w-md mx-auto">
                   {content.french.paragraphs.map((para, i) => (
-                    <p key={i} className="font-sans text-sm text-[#F6F2E7]/90 leading-relaxed mb-4">{para}</p>
+                    <p key={i} className="font-sans text-sm text-white/90 leading-relaxed mb-4">{para}</p>
                   ))}
                 </div>
-                <p className="text-2xl text-[#F6F2E7] mt-2" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.french.tagline}</p>
+                <p className="text-2xl text-white mt-2" style={{ fontFamily: 'var(--font-cormorant)', fontStyle: 'italic' }}>{content.french.tagline}</p>
               </ScrollFlyIn>
             </div>
           </div>
