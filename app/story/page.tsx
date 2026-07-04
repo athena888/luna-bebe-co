@@ -65,13 +65,13 @@ export default async function StoryPage() {
                 ? <img src={valuesPhoto.public_url} alt={valuesPhoto.alt_text} className="absolute inset-0 w-full h-full object-cover" />
                 : <div className="absolute inset-0 bg-cream-200" />}
             </div>
-            <div className="bg-[#7A8E7C] flex flex-col items-center justify-center text-center px-8 sm:px-14 lg:px-20 py-16 md:py-12">
-              <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-white/60 mb-10">What We Stand For</p>
+            <div className="bg-[#76927E] flex flex-col items-center justify-center text-center px-8 sm:px-14 lg:px-20 py-16 md:py-12">
+              <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-[#F6F2E7]/70 mb-10">What We Stand For</p>
               <div className="space-y-9 max-w-md">
                 {content.values.map(({ title, body }, i) => (
                   <div key={i}>
-                    <h3 className="font-sans text-xs tracking-[0.25em] uppercase text-white mb-2.5">{title}</h3>
-                    <p className="font-playfair text-[15px] text-white/90 leading-relaxed">{body}</p>
+                    <h3 className="font-serif text-lg tracking-[0.12em] uppercase text-[#F6F2E7] mb-2.5">{title}</h3>
+                    <p className="font-playfair text-[15px] text-[#F6F2E7]/90 leading-relaxed">{body}</p>
                   </div>
                 ))}
               </div>
