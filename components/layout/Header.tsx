@@ -6,6 +6,7 @@ import { Menu, X, User, ShoppingBag, Mail } from 'lucide-react'
 import { cartCount } from '@/lib/cart'
 import { CONTACT_EMAIL } from '@/lib/site-config'
 import { LavenderSprig } from '@/components/ui/LavenderSprig'
+import { BagDrawer } from '@/components/ui/BagDrawer'
 
 // Cart lives in the nav row so it scrolls with the header. On the build page it
 // opens the bag drawer in place; elsewhere it goes to the Shopping Bag.
@@ -29,7 +30,7 @@ function CartButton({ light }: { light: boolean }) {
   return (
     <Link
       href="/checkout"
-      onClick={e => { if (pathname?.startsWith('/build')) { e.preventDefault(); window.dispatchEvent(new Event('pl:open-bag')) } }}
+      onClick={e => { e.preventDefault(); window.dispatchEvent(new Event('pl:open-bag')) }}
       className={`relative w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50 hover:text-white' : 'text-gold-500 hover:text-espresso'}`}
       title="Shopping bag"
       aria-label="Shopping bag"
@@ -313,6 +314,9 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
     </header>
     {/* Reserves the fixed bar's height so content doesn't hide beneath it. */}
     {!overHero && <div aria-hidden style={{ height: spacerH }} />}
+    {/* Global slide-out bag — the cart icon opens it on any page (the Build
+        page has its own richer drawer; BagDrawer no-ops there). */}
+    <BagDrawer />
     </>
   )
 }
