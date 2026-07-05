@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { anthropic } from '@/lib/anthropic'
 import { CONTACT_EMAIL } from '@/lib/site-config'
-import { CHAT_SYSTEM_PROMPT as SYSTEM_PROMPT } from '@/lib/chat-prompt'
+import { buildChatSystemPrompt } from '@/lib/chat-prompt'
 
 
 
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 300,
-      system: SYSTEM_PROMPT,
+      system: await buildChatSystemPrompt(),
       messages: recent,
     })
 

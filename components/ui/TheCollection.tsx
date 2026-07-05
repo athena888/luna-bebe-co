@@ -18,19 +18,20 @@ function boxTotal(box: ResolvedBox): number {
 export function TheCollection({ title, body, items }: { title: string; body: string; items: string[] }) {
   const [boxes, setBoxes] = useState<ResolvedBox[]>([])
   const [idx, setIdx] = useState(0)
+  const [paused, setPaused] = useState(false)
   const touchX = useRef<number | null>(null)
 
   useEffect(() => {
     fetch('/api/boxes').then(r => r.json()).then(d => setBoxes(d.boxes ?? [])).catch(() => {})
   }, [])
 
-  // Auto-advance every 2s. Keying on idx restarts the timer after any manual
-  // change (arrows, swipe), so it only fires when the user leaves it alone.
+  // Auto-advance every 4s. Keying on idx restarts the timer after any manual
+  // change (arrows, swipe), and hovering the photo pauses it.
   useEffect(() => {
-    if (boxes.length < 2) return
-    const t = setTimeout(() => setIdx(i => (i + 1) % boxes.length), 2000)
+    if (boxes.length < 2 || paused) return
+    const t = setTimeout(() => setIdx(i => (i + 1) % boxes.length), 4000)
     return () => clearTimeout(t)
-  }, [idx, boxes.length])
+  }, [idx, boxes.length, paused])
 
   if (boxes.length === 0) return null
 
@@ -80,6 +81,8 @@ export function TheCollection({ title, body, items }: { title: string; body: str
 
           <div
             className="relative overflow-hidden bg-cream-100 h-[52vh] sm:h-auto sm:min-h-[85vh] sm:flex-1"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
             onTouchStart={e => { touchX.current = e.touches[0].clientX }}
             onTouchEnd={e => {
               if (touchX.current == null) return
@@ -118,8 +121,9 @@ export function TheCollection({ title, body, items }: { title: string; body: str
               </p>
             </div>
 
-            {/* Quick add — drops the current box into the bag */}
-            <QuickAddBox box={box} className="absolute bottom-4 right-3 sm:bottom-6 sm:right-5 z-20" />
+            {/* Quick add — drops the current box into the bag. Keyed per box so
+                the size-chooser state never carries over between slides. */}
+            <QuickAddBox key={box.slug} box={box} className="absolute bottom-4 right-3 sm:bottom-6 sm:right-5 z-20" />
 
             {/* Arrows — just inside the photo's edges on every screen size */}
             {boxes.length > 1 && (

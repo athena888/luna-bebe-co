@@ -264,33 +264,31 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
               <NavLinks light={light} />
             </nav>
           </div>
-          {/* Socials left + account/cart right — only on the solid (coloured-logo)
-              bar; hidden while the white logo sits over the hero. Both rows sit
-              on the nav-links line rather than the bar's centre. */}
+          {/* Socials left — only on the solid (coloured-logo) bar. Account/cart
+              right — ALWAYS shown, white over the hero, gold on the solid bar;
+              both rows sit on the nav-links line rather than the bar's centre. */}
           {!light && (
-            <>
-              <div className={`absolute left-9 flex items-center gap-0.5 ${expanded ? 'bottom-2' : 'bottom-0.5'}`}>
-                <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" title="Instagram · @petitelavandeco" aria-label="Instagram"
-                  className="w-11 h-11 flex items-center justify-center transition-colors text-gold-500 hover:text-espresso">
-                  <IgIcon />
-                </a>
-                <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" title="Facebook" aria-label="Facebook"
-                  className="w-11 h-11 flex items-center justify-center transition-colors text-gold-500 hover:text-espresso">
-                  <FbIcon />
-                </a>
-                <a href={`mailto:${CONTACT_EMAIL}`} title={CONTACT_EMAIL} aria-label="Email"
-                  className="w-11 h-11 flex items-center justify-center transition-colors text-gold-500 hover:text-espresso">
-                  <Mail size={26} strokeWidth={1.2} />
-                </a>
-              </div>
-              <div className={`absolute right-9 flex items-center gap-0.5 ${expanded ? 'bottom-2' : 'bottom-0.5'}`}>
-                <Link href="/account" className="w-11 h-11 flex items-center justify-center transition-colors text-gold-500 hover:text-espresso" title="My Account">
-                  <User size={27} strokeWidth={1.2} />
-                </Link>
-                <CartButton light={false} />
-              </div>
-            </>
+            <div className={`absolute left-9 flex items-center gap-0.5 ${expanded ? 'bottom-2' : 'bottom-0.5'}`}>
+              <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" title="Instagram · @petitelavandeco" aria-label="Instagram"
+                className="w-11 h-11 flex items-center justify-center transition-colors text-gold-500 hover:text-espresso">
+                <IgIcon />
+              </a>
+              <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" title="Facebook" aria-label="Facebook"
+                className="w-11 h-11 flex items-center justify-center transition-colors text-gold-500 hover:text-espresso">
+                <FbIcon />
+              </a>
+              <a href={`mailto:${CONTACT_EMAIL}`} title={CONTACT_EMAIL} aria-label="Email"
+                className="w-11 h-11 flex items-center justify-center transition-colors text-gold-500 hover:text-espresso">
+                <Mail size={26} strokeWidth={1.2} />
+              </a>
+            </div>
           )}
+          <div className={`absolute right-9 flex items-center gap-0.5 ${expanded ? 'bottom-2' : 'bottom-0.5'}`}>
+            <Link href="/account" className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50 hover:text-white' : 'text-gold-500 hover:text-espresso'}`} title="My Account">
+              <User size={27} strokeWidth={1.2} />
+            </Link>
+            <CartButton light={light} />
+          </div>
         </div>
 
         {/* Mobile — logo centered (shrinks on scroll); hamburger left, cart right */}

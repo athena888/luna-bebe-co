@@ -23,6 +23,9 @@ export function QuickAddBox({ box, className = '' }: { box: ResolvedBox; classNa
   const [avail, setAvail] = useState<Record<string, boolean> | null>(null)
   const hasGarment = box.items.some(it => it && isGarment(it))
 
+  // A box with no resolved items has nothing to add — no button.
+  if (!box.items || box.items.filter(Boolean).length === 0) return null
+
   // A size is offered only if EVERY garment in the box has stock for it
   // (colour-aware; garments without variant rows stay permissive).
   async function loadAvailability() {
