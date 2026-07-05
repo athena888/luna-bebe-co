@@ -84,7 +84,7 @@ export default function AccountPage() {
 
   if (!user) {
     return (
-      <SlotBackground slotKey="signin.bg" scrim="bg-cream-50/85" className="sm:min-h-screen">
+      <SlotBackground slotKey="signin.bg" scrim="bg-cream-50/85" className="sm:min-h-[90vh]">
         <div className="max-w-xl mx-auto px-6 py-14">
         <div className="text-center mb-10">
           <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">My Account</p>
