@@ -123,11 +123,37 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
   )
 }
 
+// The coming-soon announcement strip — right-to-left looping marquee. Exported
+// so pages can also place it in the flow (the homepage runs it below the hero
+// and puts the perks ticker in the header instead).
+export function LaunchMarquee() {
+  return (
+    <div className="bg-[#4A3B30] text-cream-50 py-2.5 overflow-hidden">
+      <div className="flex w-max animate-[pl-marquee_36s_linear_infinite]">
+        {[0, 1].map(copy => (
+          <div key={copy} className="flex shrink-0" aria-hidden={copy === 1}>
+            {[0, 1, 2].map(i => (
+              <p key={i} className="font-sans text-[10px] tracking-[0.25em] uppercase leading-relaxed whitespace-nowrap px-12">
+                Fait avec amour, pour vous. &nbsp;·&nbsp; Petite Lavande is launching soon &mdash;&nbsp;
+                <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" tabIndex={copy === 1 ? -1 : undefined} className="underline underline-offset-2 hover:text-gold-300 transition-colors">Instagram</a>
+                &nbsp;&amp;&nbsp;
+                <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" tabIndex={copy === 1 ? -1 : undefined} className="underline underline-offset-2 hover:text-gold-300 transition-colors">Facebook</a>
+                &nbsp;for updates
+              </p>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // `overHero`: on pages whose first section is a full-bleed hero, the header sits
 // transparent over the image at the top (cream-white text) and turns into the
 // normal solid bar once the user scrolls. Pages without a hero pass nothing and
-// get the solid in-flow header.
-export function Header({ overHero = false }: { overHero?: boolean }) {
+// get the solid in-flow header. `strip` swaps the top announcement strip for
+// custom content (the homepage passes the perks ticker).
+export function Header({ overHero = false, strip }: { overHero?: boolean; strip?: React.ReactNode }) {
   const [open, setOpen] = useState(false)
   // Auto-hide: the bar slides up while scrolling down (max product/image
   // space) and slides back in on scroll-up (cart + nav one flick away).
@@ -184,24 +210,8 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
     <>
     <header ref={headerRef} className={`fixed top-0 inset-x-0 z-40 transition-transform duration-300 ease-out ${hidden ? '-translate-y-full' : 'translate-y-0'} ${overHero ? '' : 'bg-[#FBF5E9]'}`}>
 
-      {/* Coming-soon announcement strip — right-to-left looping marquee */}
-      <div className="bg-[#4A3B30] text-cream-50 py-2.5 overflow-hidden">
-        <div className="flex w-max animate-[pl-marquee_36s_linear_infinite]">
-          {[0, 1].map(copy => (
-            <div key={copy} className="flex shrink-0" aria-hidden={copy === 1}>
-              {[0, 1, 2].map(i => (
-                <p key={i} className="font-sans text-[10px] tracking-[0.25em] uppercase leading-relaxed whitespace-nowrap px-12">
-                  Fait avec amour, pour vous. &nbsp;·&nbsp; Petite Lavande is launching soon &mdash;&nbsp;
-                  <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" tabIndex={copy === 1 ? -1 : undefined} className="underline underline-offset-2 hover:text-gold-300 transition-colors">Instagram</a>
-                  &nbsp;&amp;&nbsp;
-                  <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" tabIndex={copy === 1 ? -1 : undefined} className="underline underline-offset-2 hover:text-gold-300 transition-colors">Facebook</a>
-                  &nbsp;for updates
-                </p>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Top strip — the launch marquee by default; pages can swap it */}
+      {strip ?? <LaunchMarquee />}
 
       {/* Nav bar — Organic-Zoo style: at the hero top, a big centered logo with the
           nav beneath it; on scroll it collapses smoothly to a compact bar with the

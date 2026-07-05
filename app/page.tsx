@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Header } from '@/components/layout/Header'
+import { Header, LaunchMarquee } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
@@ -65,7 +65,9 @@ export default async function HomePage() {
 
   return (
     <>
-      <Header overHero />
+      {/* The two marquees swap places on the homepage: perks run in the header
+          strip, the launch message runs below the hero. */}
+      <Header overHero strip={<PerksTicker perks={content.perks} />} />
       <main>
 
         {/* ── 1. Hero ── */}
@@ -93,8 +95,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── Promise ticker — runs right below the hero ── */}
-        <PerksTicker perks={content.perks} />
+        {/* ── Launch marquee — runs right below the hero ── */}
+        <LaunchMarquee />
 
         {/* ── Best Sellers ── */}
         <PrebuiltBoxesSection />
@@ -107,7 +109,7 @@ export default async function HomePage() {
         />
 
         {/* ── Shop by Category — heading above the image tiles, styled like Best Sellers ── */}
-        <div className="pt-14 sm:pt-20">
+        <div className="pt-2 sm:pt-4">
           <div className="px-6 mb-8 text-center">
             <p className="font-sans text-[13px] tracking-[0.18em] uppercase font-medium text-gold-500 mb-2">Curated sets for every new chapter — or start from scratch.</p>
             <h2 className="font-playfair text-[2rem] sm:text-[2.6rem] uppercase tracking-[0.01em] font-medium text-espresso leading-none">Shop by Category</h2>
