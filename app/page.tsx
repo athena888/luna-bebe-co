@@ -118,8 +118,8 @@ export default async function HomePage() {
         {/* ── Our Story teaser — one quiet line linking to the full story,
              framed by mirrored lavender dividers (top one flipped).
              The headline is the Story page's hero heading (Portal → Story). ── */}
-        <section className="bg-white py-14 sm:py-16 px-6 text-center">
-          <div className="flex justify-center mb-10 sm:mb-12">
+        <section className="bg-white py-8 sm:py-10 px-6 text-center">
+          <div className="flex justify-center mb-7 sm:mb-8">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto rotate-180" />
           </div>
@@ -131,7 +131,7 @@ export default async function HomePage() {
           >
             Read Our Story
           </Link>
-          <div className="flex justify-center mt-10 sm:mt-12">
+          <div className="flex justify-center mt-7 sm:mt-8">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto" />
           </div>
