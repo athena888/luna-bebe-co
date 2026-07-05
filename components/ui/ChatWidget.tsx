@@ -59,11 +59,11 @@ export function ChatWidget() {
   }
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
+    <div className="fixed bottom-5 left-5 z-50 flex flex-col items-start gap-3">
 
       {/* Chat panel */}
       {open && (
-        <div className="w-[340px] max-w-[calc(100vw-2.5rem)] bg-white rounded-2xl pl-round-full shadow-2xl flex flex-col overflow-hidden"
+        <div className="w-[340px] max-w-[calc(100vw-2.5rem)] bg-white shadow-2xl flex flex-col overflow-hidden"
           style={{ height: '520px', maxHeight: 'calc(100vh - 7rem)', borderRadius: 18 }}>
 
           {/* Header — soft beige, greeting beneath the title */}
@@ -86,7 +86,7 @@ export function ChatWidget() {
                 <div className="space-y-2">
                   {INSTANT_ANSWERS.map(q => (
                     <button key={q} type="button" onClick={() => send(q)}
-                      className="w-full text-left border border-cream-300 rounded-xl pl-round-full px-4 py-3 font-sans text-sm text-espresso hover:border-gold-400 hover:bg-cream-50 transition-colors"
+                      className="w-full text-left border border-cream-300 px-4 py-3 font-sans text-sm text-espresso hover:border-gold-400 hover:bg-cream-50 transition-colors"
                       style={{ borderRadius: 12 }}>
                       {q}
                     </button>
@@ -97,9 +97,7 @@ export function ChatWidget() {
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[82%] px-3.5 py-2.5 font-sans text-sm leading-relaxed ${
-                  msg.role === 'user'
-                    ? 'bg-[#E3D6C8] text-espresso rounded-2xl rounded-br-sm'
-                    : 'bg-cream-100 text-bark-600 rounded-2xl rounded-bl-sm'
+                  msg.role === 'user' ? 'bg-[#E3D6C8] text-espresso' : 'bg-cream-100 text-bark-600'
                 }`} style={{ borderRadius: 14 }}>
                   {msg.content}
                 </div>
