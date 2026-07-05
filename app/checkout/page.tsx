@@ -22,6 +22,11 @@ function productImage(p: { id: string; image?: string | null }): string | null {
 const inputClass = "w-full px-4 py-3 border border-cream-300 bg-cream-50 font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-bark-400 transition-colors"
 const labelClass = "block font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2"
 
+// Garments quick-added from the homepage default to the first box size; the
+// bag line lets buyers flip it — guarded against variant stock below.
+const BOX_GARMENT_SIZES = ['0–3 mo', '3–6 mo']
+type VariantRow = { color: string | null; size: string; quantity: number }
+
 export default function CheckoutPage() {
   const router = useRouter()
   const [selection, setSelection] = useState<BoxSelection | null>(null)
@@ -41,6 +46,28 @@ export default function CheckoutPage() {
   const [promoState, setPromoState] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle')
   const [promoId, setPromoId] = useState<string | null>(null)
   const [promoLabel, setPromoLabel] = useState('')
+
+  // Per-variant stock for the size pills on garment lines (product id → rows).
+  const [variantStock, setVariantStock] = useState<Record<string, VariantRow[]>>({})
+  const [sizeNote, setSizeNote] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    if (!selection) return
+    const garmentIds = Object.values(selection)
+      .filter((it): it is NonNullable<typeof it> => !!it)
+      .filter(it => (it as { selectedSize?: string }).selectedSize && BOX_GARMENT_SIZES.includes((it as { selectedSize?: string }).selectedSize!))
+      .map(it => it.id)
+    for (const id of Array.from(new Set(garmentIds))) {
+      if (variantStock[id]) continue
+      fetch(`/api/products/${id}`)
+        .then(r => r.ok ? r.json() : null)
+        .then(d => {
+          if (d && Array.isArray(d.variants)) setVariantStock(v => ({ ...v, [id]: d.variants }))
+        })
+        .catch(() => {})
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selection])
 
   useEffect(() => {
     const storedBox = sessionStorage.getItem('pl_box_selection')
@@ -112,13 +139,24 @@ export default function CheckoutPage() {
   function removeItem(key: string) {
     updateSelection({ ...(selection as object), [key]: null } as unknown as BoxSelection)
   }
-  // Garments quick-added from the homepage default to the first box size; the
-  // bag line lets buyers flip it here. Only shown when the stored size is one
-  // of the box sizes (product-variant sizes stay display-only).
-  const BOX_GARMENT_SIZES = ['0–3 mo', '3–6 mo']
+  // Is `size` in stock for this line? Uses the per-variant rows when the
+  // product has them; products without variant rows stay permissive.
+  function sizeAvailability(item: CartItem, size: string): { ok: boolean; msg?: string } {
+    const variants = variantStock[item.id]
+    if (!variants || variants.length === 0) return { ok: true }
+    const rows = variants.filter(v => v.size === size && (!item.selectedColor || !v.color || v.color.toLowerCase() === item.selectedColor!.toLowerCase()))
+    if (rows.length === 0) return { ok: false, msg: `${size} is unavailable` }
+    const q = rows.reduce((s, v) => s + (v.quantity ?? 0), 0)
+    if (q <= 0) return { ok: false, msg: `${size} is sold out` }
+    if (q < (item.qty ?? 1)) return { ok: false, msg: `Only ${q} left in ${size}` }
+    return { ok: true }
+  }
   function setSizeFor(key: string, size: string) {
     const item = (selection as unknown as Record<string, CartItem | null>)[key]
     if (!item) return
+    const avail = sizeAvailability(item, size)
+    if (!avail.ok) { setSizeNote(n => ({ ...n, [key]: avail.msg! })); return }
+    setSizeNote(n => ({ ...n, [key]: '' }))
     updateSelection({ ...(selection as object), [key]: { ...item, selectedSize: size } } as unknown as BoxSelection)
   }
 
@@ -215,18 +253,29 @@ export default function CheckoutPage() {
                             <p className="font-sans text-[15px] text-espresso leading-snug">{item.name}</p>
                             <p className="font-sans text-sm text-bark-500 mt-1.5">{formatPrice(item.price)}</p>
                             {item.selectedSize && BOX_GARMENT_SIZES.includes(item.selectedSize) ? (
+                              <>
                               <div className="flex items-center gap-2 mt-2">
                                 {item.selectedColor && <span className="font-sans text-[12px] text-bark-400 capitalize">{item.selectedColor} ·</span>}
                                 <span className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400">Size</span>
                                 <div className="flex gap-1.5">
-                                  {BOX_GARMENT_SIZES.map(s => (
-                                    <button key={s} type="button" onClick={() => setSizeFor(key, s)}
-                                      className={`border px-2.5 py-1 font-sans text-[11px] transition-colors ${item.selectedSize === s ? 'border-bark-600 bg-bark-600 text-cream-50' : 'border-cream-300 text-bark-600 hover:border-bark-400'}`}>
-                                      {s}
-                                    </button>
-                                  ))}
+                                  {BOX_GARMENT_SIZES.map(s => {
+                                    const avail = sizeAvailability(item, s).ok
+                                    return (
+                                      <button key={s} type="button" onClick={() => setSizeFor(key, s)}
+                                        title={avail ? undefined : 'Not available'}
+                                        className={`border px-2.5 py-1 font-sans text-[11px] transition-colors ${
+                                          item.selectedSize === s ? 'border-bark-600 bg-bark-600 text-cream-50'
+                                          : avail ? 'border-cream-300 text-bark-600 hover:border-bark-400'
+                                          : 'border-cream-200 text-bark-300 line-through cursor-not-allowed'
+                                        }`}>
+                                        {s}
+                                      </button>
+                                    )
+                                  })}
                                 </div>
                               </div>
+                              {sizeNote[key] && <p className="font-sans text-[11px] text-red-600 mt-1">{sizeNote[key]}</p>}
+                              </>
                             ) : (item.selectedColor || item.selectedSize) && (
                               <p className="font-sans text-[12px] text-bark-400 mt-1 capitalize">
                                 {[item.selectedColor, item.selectedSize].filter(Boolean).join(' · ')}
