@@ -112,11 +112,6 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
             <span className="bg-white/90 font-sans text-[11px] tracking-[0.25em] uppercase text-bark-600 px-3 py-1.5">Sold Out</span>
           </div>
         )}
-        {selected && !soldOut && (
-          <div className="absolute top-2 right-2 w-5 h-5 bg-bark-600 flex items-center justify-center z-10">
-            <Check size={10} className="text-cream-50" />
-          </div>
-        )}
         {!soldOut && !hasHoverMedia && (
           <div className="absolute inset-0 bg-bark-600/75 flex items-end p-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <p className="font-sans text-[11px] text-cream-100 leading-relaxed line-clamp-3">{product.description}</p>
@@ -143,7 +138,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
           {!soldOut && (
             <button onClick={onToggle}
               className={`w-5 h-5 flex items-center justify-center shrink-0 transition-colors ${
-                selected ? 'bg-bark-600 text-cream-50' : 'border border-bark-300 text-bark-400 hover:border-bark-600 hover:text-bark-600'
+                selected ? 'bg-espresso text-cream-50' : 'border border-espresso text-espresso hover:bg-espresso hover:text-cream-50'
               }`}
               title={selected ? 'Remove' : 'Add to box'}>
               {selected ? <Check size={10} /> : <Plus size={10} />}
