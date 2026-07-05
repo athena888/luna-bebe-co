@@ -62,16 +62,17 @@ export default function ContentPage() {
   const [active, setActive] = useState<PageId>('home')
 
   return (
-    <div className="flex min-h-screen">
-      {/* Left page selector */}
-      <aside className="w-44 shrink-0 border-r border-cream-300 bg-cream-50 py-8 px-3">
-        <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-bark-400 mb-3 px-2">Page</p>
-        <nav className="flex flex-col gap-0.5">
+    <div className="flex flex-col md:flex-row min-h-screen">
+      {/* Page selector — left column on desktop, horizontal scrollable chip
+          row on phones (a fixed side column left no room for the editors). */}
+      <aside className="w-full md:w-44 shrink-0 border-b md:border-b-0 md:border-r border-cream-300 bg-cream-50 py-3 md:py-8 px-3">
+        <p className="hidden md:block font-sans text-[9px] tracking-[0.35em] uppercase text-bark-400 mb-3 px-2">Page</p>
+        <nav className="flex flex-row md:flex-col gap-1 md:gap-0.5 overflow-x-auto scrollbar-hide">
           {TABS.map(t => (
             <button
               key={t.id}
               onClick={() => setActive(t.id)}
-              className={`w-full text-left px-3 py-2.5 rounded-lg font-sans text-sm transition-colors ${
+              className={`shrink-0 md:w-full text-left px-3 py-2 md:py-2.5 rounded-lg font-sans text-sm whitespace-nowrap transition-colors ${
                 active === t.id ? 'bg-bark-600/10 text-bark-700 font-medium' : 'text-bark-500 hover:bg-cream-200'
               }`}
             >

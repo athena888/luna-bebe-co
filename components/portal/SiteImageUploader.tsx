@@ -93,7 +93,7 @@ export function SiteImageUploader({ slotKey, ratio, hint, context, compact = fal
     <div>
       {(ratio || hint) && <p className="font-sans text-[10px] text-bark-400 mb-1.5">{ratio}{hint ? ` · ${hint}` : ''}</p>}
       <div
-        className={`relative ${compact ? 'aspect-square' : 'aspect-[3/4]'} bg-cream-100 rounded-lg overflow-hidden mb-2 cursor-pointer border border-cream-200 group`}
+        className={`relative ${compact ? 'aspect-square max-w-[180px]' : 'aspect-[3/4] max-w-[200px]'} bg-cream-100 rounded-lg overflow-hidden mb-2 cursor-pointer border border-cream-200 group`}
         onClick={() => inputRef.current?.click()}
         onDragOver={e => e.preventDefault()}
         onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) upload(f) }}

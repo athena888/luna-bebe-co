@@ -158,3 +158,13 @@ html { scroll-behavior: smooth; }
     background-size: min(50%, 240px);
   }
 }
+
+/* ── Portal on phones — wide admin tables scroll inside their own box instead
+     of pushing the whole page wider than the screen (right side cut off). */
+@media (max-width: 767px) {
+  .portal-main table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

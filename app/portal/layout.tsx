@@ -127,7 +127,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
       </aside>
 
       {/* Content */}
-      <main className="flex-1 overflow-auto bg-cream-100 pt-14 md:pt-0">
+      <main className="portal-main flex-1 min-w-0 overflow-auto bg-cream-100 pt-14 md:pt-0">
         {children}
       </main>
     </div>
