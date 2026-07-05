@@ -117,7 +117,7 @@ function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) 
 
 function MobileMenu({ onClose }: { onClose: () => void }) {
   return (
-    <div className="md:hidden bg-[#FBF5E9] border-b border-cream-300 px-6 py-8 flex flex-col gap-6 font-playfair text-[15px] tracking-[0.14em]">
+    <div className="md:hidden bg-cream-white border-b border-cream-300 px-6 py-8 flex flex-col gap-6 font-playfair text-[15px] tracking-[0.14em]">
       <NavLinks light={false} onClick={onClose} />
       <Link href="/account" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors" onClick={onClose}>My Account</Link>
     </div>
@@ -244,7 +244,7 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
 
   return (
     <>
-    <header ref={headerRef} className={`fixed top-0 inset-x-0 z-40 transition-transform duration-300 ease-out ${hidden ? '-translate-y-full' : 'translate-y-0'} ${overHero ? '' : 'bg-[#FBF5E9]'}`}>
+    <header ref={headerRef} className={`fixed top-0 inset-x-0 z-40 transition-transform duration-300 ease-out ${hidden ? '-translate-y-full' : 'translate-y-0'} ${overHero ? '' : 'bg-cream-white'}`}>
 
       {/* Top strip — the perks marquee, identical on every page */}
       <PerksMarquee />
@@ -252,7 +252,7 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
       {/* Nav bar — Organic-Zoo style: at the hero top, a big centered logo with the
           nav beneath it; on scroll it collapses smoothly to a compact bar with the
           nav beside the logo. Pages without a hero start compact. */}
-      <div className={`transition-colors duration-500 ${transparent ? 'bg-gradient-to-b from-black/30 via-black/10 to-transparent' : 'bg-[#FBF5E9]'}`}>
+      <div className={`transition-colors duration-500 ${transparent ? 'bg-gradient-to-b from-black/30 via-black/10 to-transparent' : 'bg-cream-white'}`}>
 
         {/* Desktop */}
         <div className={`hidden md:block relative w-full px-9 transition-all duration-500 ${expanded ? 'py-5' : 'py-3'}`}>
