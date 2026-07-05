@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { MessageCircle, X, Send, Loader2 } from 'lucide-react'
+import { X, Send, Loader2 } from 'lucide-react'
 import { CONTACT_EMAIL } from '@/lib/site-config'
 
 interface Message {
@@ -9,14 +9,19 @@ interface Message {
   content: string
 }
 
-const GREETING: Message = {
-  role: 'assistant',
-  content: "Hi! I'm here to help with anything about Petite Lavande — products, shipping, orders, or gift ideas. What can I help you with?",
-}
+// One-tap questions shown under the greeting until the visitor writes.
+const INSTANT_ANSWERS = [
+  'Track my order',
+  'What materials are your products made from?',
+  'How long does shipping take?',
+  'Can I customize a box?',
+]
 
+// On-brand chat widget — beige "Chat with us" header, white body, instant-answer
+// chips, AI-backed replies via /api/chat, and an email handoff for humans.
 export function ChatWidget() {
   const [open, setOpen] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([GREETING])
+  const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -29,13 +34,12 @@ export function ChatWidget() {
     }
   }, [open, messages])
 
-  async function send() {
-    const text = input.trim()
-    if (!text || loading) return
+  async function send(text?: string) {
+    const content = (text ?? input).trim()
+    if (!content || loading) return
     setInput('')
 
-    const userMsg: Message = { role: 'user', content: text }
-    const next = [...messages, userMsg]
+    const next = [...messages, { role: 'user', content } as Message]
     setMessages(next)
     setLoading(true)
 
@@ -59,42 +63,54 @@ export function ChatWidget() {
 
       {/* Chat panel */}
       {open && (
-        <div className="w-[340px] bg-white border border-cream-300 shadow-2xl flex flex-col overflow-hidden"
-          style={{ height: '480px' }}>
+        <div className="w-[340px] max-w-[calc(100vw-2.5rem)] bg-white rounded-2xl pl-round-full shadow-2xl flex flex-col overflow-hidden"
+          style={{ height: '520px', maxHeight: 'calc(100vh - 7rem)', borderRadius: 18 }}>
 
-          {/* Header */}
-          <div className="bg-bark-600 px-4 py-3.5 flex items-center justify-between shrink-0">
-            <div>
-              <p className="font-sans text-sm font-medium text-cream-100">Petite Lavande Assistant</p>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-sage-400" />
-                <p className="font-sans text-[11px] text-cream-300">Online now</p>
-              </div>
-            </div>
-            <button onClick={() => setOpen(false)} className="text-cream-300 hover:text-cream-100 transition-colors">
-              <X size={18} />
+          {/* Header — soft beige, greeting beneath the title */}
+          <div className="bg-[#E3D6C8] px-5 pt-5 pb-6 shrink-0 relative">
+            <button onClick={() => setOpen(false)} aria-label="Close chat"
+              className="absolute top-3.5 right-3.5 text-espresso/50 hover:text-espresso transition-colors">
+              <X size={17} />
             </button>
+            <p className="font-serif text-xl text-espresso mb-1.5">Chat with us</p>
+            <p className="font-sans text-[13px] text-espresso/80 leading-relaxed">
+              👋 Hi, message us with any questions. We&rsquo;re happy to help!
+            </p>
           </div>
 
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-cream-50">
+          {/* Messages + instant answers */}
+          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-white">
+            {messages.length === 0 && (
+              <div>
+                <p className="font-sans text-[12px] tracking-[0.06em] text-bark-400 text-center mb-3">Instant answers</p>
+                <div className="space-y-2">
+                  {INSTANT_ANSWERS.map(q => (
+                    <button key={q} type="button" onClick={() => send(q)}
+                      className="w-full text-left border border-cream-300 rounded-xl pl-round-full px-4 py-3 font-sans text-sm text-espresso hover:border-gold-400 hover:bg-cream-50 transition-colors"
+                      style={{ borderRadius: 12 }}>
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[80%] px-3.5 py-2.5 font-sans text-sm leading-relaxed ${
+                <div className={`max-w-[82%] px-3.5 py-2.5 font-sans text-sm leading-relaxed ${
                   msg.role === 'user'
-                    ? 'bg-bark-600 text-cream-50 rounded-2xl rounded-br-sm'
-                    : 'bg-white border border-cream-300 text-bark-600 rounded-2xl rounded-bl-sm'
-                }`}>
+                    ? 'bg-[#E3D6C8] text-espresso rounded-2xl rounded-br-sm'
+                    : 'bg-cream-100 text-bark-600 rounded-2xl rounded-bl-sm'
+                }`} style={{ borderRadius: 14 }}>
                   {msg.content}
                 </div>
               </div>
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-white border border-cream-300 px-3.5 py-2.5 rounded-2xl rounded-bl-sm flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 bg-bark-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-1.5 h-1.5 bg-bark-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-1.5 h-1.5 bg-bark-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <div className="bg-cream-100 px-3.5 py-2.5 flex items-center gap-1.5" style={{ borderRadius: 14 }}>
+                  <span className="w-1.5 h-1.5 bg-bark-400 rounded-full pl-round-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-1.5 h-1.5 bg-bark-400 rounded-full pl-round-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-1.5 h-1.5 bg-bark-400 rounded-full pl-round-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
               </div>
             )}
@@ -103,44 +119,56 @@ export function ChatWidget() {
 
           {/* Human handoff */}
           <div className="px-4 py-2 border-t border-cream-200 bg-white shrink-0">
-            <a
-              href={`mailto:${CONTACT_EMAIL}`}
-              className="font-sans text-[11px] text-bark-400 hover:text-bark-600 transition-colors"
-            >
-              Prefer to talk to a person? Email us →
+            <a href={`mailto:${CONTACT_EMAIL}`} className="font-sans text-[11px] text-bark-400 hover:text-bark-600 transition-colors">
+              Prefer a person? Email us →
             </a>
           </div>
 
           {/* Input */}
-          <div className="px-3 py-3 border-t border-cream-200 bg-white flex gap-2 shrink-0">
+          <div className="px-3 pb-3 bg-white flex gap-2 shrink-0">
             <input
               ref={inputRef}
               type="text"
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') send() }}
-              placeholder="Ask anything…"
-              className="flex-1 px-3 py-2 border border-cream-300 font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-bark-400 transition-colors bg-cream-50"
+              placeholder="Write message"
+              className="flex-1 px-4 py-2.5 border border-cream-300 font-sans text-sm text-bark-600 placeholder:text-bark-400/50 focus:outline-none focus:border-gold-400 transition-colors bg-white"
+              style={{ borderRadius: 12 }}
             />
             <button
-              onClick={send}
+              onClick={() => send()}
               disabled={!input.trim() || loading}
-              className="px-3 py-2 bg-bark-600 text-cream-50 hover:bg-bark-700 transition-colors disabled:opacity-40"
+              aria-label="Send"
+              className="px-3.5 text-espresso/70 hover:text-espresso transition-colors disabled:opacity-30"
             >
-              {loading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+              {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
             </button>
           </div>
         </div>
       )}
 
-      {/* Bubble button */}
+      {/* Launcher — soft beige circle, white speech bubble */}
       <button
+        type="button"
         onClick={() => setOpen(o => !o)}
-        className="pl-round-full bg-bark-600 text-cream-50 shadow-lg hover:bg-bark-700 transition-colors flex items-center justify-center"
-        style={{ width: 52, height: 52 }}
-        aria-label="Open chat"
+        aria-label={open ? 'Close chat' : 'Chat with us'}
+        title="Chat with us"
+        className="w-14 h-14 rounded-full pl-round-full shadow-md flex items-center justify-center bg-[#E3D6C8] hover:bg-[#d9c9b8] transition-colors"
       >
-        {open ? <X size={20} /> : <MessageCircle size={22} />}
+        {open ? (
+          <X size={20} className="text-white" />
+        ) : (
+          <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+            <path
+              d="M5.5 3.5h13A3 3 0 0 1 21.5 6.5v7a3 3 0 0 1-3 3h-6.2l-3.1 3.2a.6.6 0 0 1-1-.4v-2.8h-2.7a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z"
+              fill="#fff"
+            />
+            <circle cx="8.4" cy="10" r="1.15" fill="#E3D6C8" />
+            <circle cx="12" cy="10" r="1.15" fill="#E3D6C8" />
+            <circle cx="15.6" cy="10" r="1.15" fill="#E3D6C8" />
+          </svg>
+        )}
       </button>
 
     </div>
