@@ -33,6 +33,7 @@ export function SlotBackground({
   scrim = 'bg-cream-50/70',
   fit = 'cover',
   parallax = false,
+  attach = 'scroll',
 }: {
   slotKey: string
   // children can be plain content, or a function that adapts to whether an
@@ -42,6 +43,10 @@ export function SlotBackground({
   scrim?: string  // pass '' to show the photo with no opaque overlay
   fit?: 'cover' | 'contain' | 'natural'
   parallax?: boolean
+  // 'fixed': anchor the photo to the VIEWPORT (background-attachment) so a
+  // section that grows very tall (e.g. many order results) never blows the
+  // image up to cover it. Cover-fit only.
+  attach?: 'scroll' | 'fixed'
 }) {
   const [web, setWeb] = useState<Img | null>(null)
   const [mobile, setMobile] = useState<Img | null>(null)
@@ -96,6 +101,20 @@ export function SlotBackground({
 
   const fitClass = fit === 'contain' ? 'object-contain' : 'object-cover'
   const layer = (() => {
+    if (attach === 'fixed' && fit === 'cover') {
+      // CSS background layers, viewport-anchored. Mobile keeps normal scroll
+      // attachment (iOS Safari jank) — the tall-section problem is desktop.
+      return (
+        <>
+          {mobile && (
+            <div className="absolute inset-0 bg-cover bg-center sm:hidden" style={{ backgroundImage: `url(${mobile.public_url})` }} aria-hidden="true" />
+          )}
+          {web && (
+            <div className={`absolute inset-0 bg-cover bg-center sm:bg-fixed ${mobile ? 'hidden sm:block' : ''}`} style={{ backgroundImage: `url(${web.public_url})` }} aria-hidden="true" />
+          )}
+        </>
+      )
+    }
     if (web && mobile) {
       return (
         <>
