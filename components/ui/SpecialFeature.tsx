@@ -10,7 +10,7 @@ interface Perk { label: string; sub: string }
 export function PerksTicker({ perks }: { perks: Perk[] }) {
   return (
     <div className="bg-cream-white border-y border-cream-300 py-4 overflow-hidden" aria-label="Our promises">
-      <div className="flex w-max animate-[pl-marquee_32s_linear_infinite]">
+      <div className="flex w-max animate-[pl-marquee_18s_linear_infinite]">
         {[0, 1].map(copy => (
           <div key={copy} className="flex shrink-0 items-baseline" aria-hidden={copy === 1}>
             {perks.map(({ label, sub }) => (

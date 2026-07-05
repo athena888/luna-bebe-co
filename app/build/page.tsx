@@ -680,16 +680,18 @@ export default function BuildPage() {
                 const idx = Math.min(modalImgIdx, Math.max(0, photos.length - 1))
                 const mainSrc = photos[idx] ?? null
                 return (
-                  <div className="flex gap-3 h-full">
-                    {/* Thumbnail rail */}
+                  <div className="flex flex-col sm:flex-row gap-3 h-full">
+                    {/* Thumbnail rail — left column on desktop, horizontal row
+                        BELOW the big photo on phones (keeps the big photo's
+                        proportions balanced on small screens). */}
                     {photos.length > 1 && (
-                      <div className="w-16 sm:w-20 shrink-0 flex flex-col gap-2 overflow-y-auto scrollbar-hide">
+                      <div className="order-2 sm:order-1 w-full sm:w-20 shrink-0 flex flex-row sm:flex-col gap-2 overflow-x-auto sm:overflow-x-visible sm:overflow-y-auto scrollbar-hide">
                         {photos.map((src, i) => (
                           <button
                             key={i}
                             type="button"
                             onClick={() => setModalImgIdx(i)}
-                            className={`relative w-full shrink-0 overflow-hidden bg-cream-100 border transition-colors ${i === idx ? 'border-bark-600' : 'border-transparent hover:border-cream-300'}`}
+                            className={`relative w-14 sm:w-full shrink-0 overflow-hidden bg-cream-100 border transition-colors ${i === idx ? 'border-bark-600' : 'border-transparent hover:border-cream-300'}`}
                             style={{ aspectRatio: '3/4' }}
                             aria-label={`Photo ${i + 1}`}
                           >
@@ -697,7 +699,7 @@ export default function BuildPage() {
                           </button>
                         ))}
                         {modalVideo && (
-                          <div className="relative w-full shrink-0 overflow-hidden bg-cream-100" style={{ aspectRatio: '3/4' }}>
+                          <div className="relative w-14 sm:w-full shrink-0 overflow-hidden bg-cream-100" style={{ aspectRatio: '3/4' }}>
                             <video src={modalVideo} muted loop playsInline autoPlay className="absolute inset-0 w-full h-full object-cover" />
                           </div>
                         )}
@@ -705,7 +707,7 @@ export default function BuildPage() {
                     )}
 
                     {/* Main photo with arrows */}
-                    <div className="relative flex-1 bg-cream-50 overflow-hidden" style={{ aspectRatio: '3/4' }}>
+                    <div className="order-1 sm:order-2 relative flex-1 bg-cream-50 overflow-hidden" style={{ aspectRatio: '3/4' }}>
                       {mainSrc ? (
                         <button type="button" onClick={() => setLightbox(mainSrc)} className="absolute inset-0 cursor-zoom-in group">
                           <Image src={mainSrc} alt={modalProduct.name} fill className="object-cover" sizes="(max-width:1023px) 90vw, 560px" />
@@ -721,18 +723,18 @@ export default function BuildPage() {
                           <button
                             type="button"
                             onClick={() => setModalImgIdx((idx - 1 + photos.length) % photos.length)}
-                            className="absolute left-1 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center text-gold-500 hover:text-gold-600 transition-colors"
+                            className="absolute left-1 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center text-white/90 drop-shadow-md hover:text-white transition-colors"
                             aria-label="Previous photo"
                           >
-                            <ChevronLeft size={26} strokeWidth={1.2} />
+                            <ChevronLeft size={26} strokeWidth={1.5} />
                           </button>
                           <button
                             type="button"
                             onClick={() => setModalImgIdx((idx + 1) % photos.length)}
-                            className="absolute right-1 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center text-gold-500 hover:text-gold-600 transition-colors"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center text-white/90 drop-shadow-md hover:text-white transition-colors"
                             aria-label="Next photo"
                           >
-                            <ChevronRight size={26} strokeWidth={1.2} />
+                            <ChevronRight size={26} strokeWidth={1.5} />
                           </button>
                         </>
                       )}

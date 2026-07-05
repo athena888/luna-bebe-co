@@ -192,7 +192,10 @@ export default function CheckoutPage() {
                       const src = productImage(item)
                       const qty = item.qty ?? 1
                       return (
-                        <div key={key} className="bg-white p-5 sm:p-6 flex gap-5">
+                        // Phones: photo + info on the top row, qty/remove on a
+                        // full-width row beneath (three columns squeeze the
+                        // name and distort the photo on small screens).
+                        <div key={key} className="bg-white p-4 sm:p-6 flex flex-wrap sm:flex-nowrap gap-4 sm:gap-5">
                           <div className="relative w-20 sm:w-24 aspect-[3/4] shrink-0 bg-cream-100 overflow-hidden">
                             {src
                               ? <Image src={src} alt={item.name} fill className="object-cover" unoptimized sizes="96px" />
@@ -208,7 +211,7 @@ export default function CheckoutPage() {
                               </p>
                             )}
                           </div>
-                          <div className="flex flex-col items-end justify-between shrink-0">
+                          <div className="w-full sm:w-auto flex sm:flex-col flex-row items-center sm:items-end justify-between shrink-0 gap-3 border-t border-cream-200 pt-3 sm:border-0 sm:pt-0">
                             <div className="flex items-center border border-cream-300">
                               <button type="button" onClick={() => setQty(key, qty - 1)} disabled={qty <= 1} aria-label="Decrease quantity"
                                 className="w-9 h-9 flex items-center justify-center text-bark-500 hover:text-espresso disabled:opacity-30 transition-colors">−</button>
