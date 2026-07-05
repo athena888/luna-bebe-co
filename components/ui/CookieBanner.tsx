@@ -34,13 +34,13 @@ export function CookieBanner() {
         <div className="flex gap-3 shrink-0">
           <button
             onClick={decline}
-            className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 hover:text-cream-300 transition-colors px-4 py-2"
+            className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-cream-300 transition-colors px-4 py-2"
           >
             Decline
           </button>
           <button
             onClick={accept}
-            className="font-sans text-[10px] tracking-[0.15em] uppercase bg-gold-400 text-bark-700 hover:bg-gold-300 transition-colors px-5 py-2"
+            className="font-sans text-[11px] tracking-[0.15em] uppercase bg-gold-400 text-bark-700 hover:bg-gold-300 transition-colors px-5 py-2"
           >
             Accept
           </button>

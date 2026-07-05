@@ -91,7 +91,7 @@ export default async function StoryPage() {
             </div>
             <div className="bg-[#76927E] flex flex-col items-center justify-center text-center px-8 sm:px-14 lg:px-20 py-16 md:py-12">
               <ScrollFlyIn from="down">
-                <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-white/70 mb-6">{content.hero.eyebrow}</p>
+                <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-white/70 mb-6">{content.hero.eyebrow}</p>
                 <h2
                   className="text-3xl sm:text-4xl text-white leading-tight mb-10"
                   style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400 }}
@@ -118,7 +118,7 @@ export default async function StoryPage() {
             <div className="border-t border-cream-300">
               <div className="py-4 text-center">
                 <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer"
-                  className="font-sans text-[9px] tracking-[0.35em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
+                  className="font-sans text-[11px] tracking-[0.3em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
                   Follow @petitelavandeco on Instagram
                 </a>
               </div>

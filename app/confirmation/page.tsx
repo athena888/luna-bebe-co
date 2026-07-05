@@ -65,7 +65,7 @@ function ConfirmationInner() {
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-bark-400">Step {i + 1}</span>
+                      <span className="font-sans text-[11px] font-semibold uppercase tracking-widest text-bark-400">Step {i + 1}</span>
                     </div>
                     <h3 className="font-serif text-lg text-bark-600 mb-1">{title}</h3>
                     <p className="font-sans text-sm text-bark-400 leading-relaxed">{body}</p>
@@ -77,7 +77,7 @@ function ConfirmationInner() {
 
           {/* A Note to the New Mother — the note tucked inside every box */}
           <div className="rounded-2xl border border-[#d8c7a8] bg-[#f3ecdc] p-7 sm:p-10 text-left mb-8">
-            <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-bark-400 mb-4 text-center">Tucked inside your box</p>
+            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-bark-400 mb-4 text-center">Tucked inside your box</p>
             <p className="font-serif italic text-2xl text-espresso text-center mb-6">We see you.</p>
             <div className="space-y-4 font-sans text-sm text-bark-600 leading-relaxed">
               <p>You are doing one of the hardest, most loving things a person can do. You are running on broken sleep and feeding schedules and a love so big it doesn&rsquo;t fit in your chest.</p>

@@ -70,13 +70,13 @@ export async function SocialFeed() {
     <section className="border-t border-cream-300 bg-cream-50 py-16 sm:py-24 px-6">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-gold-400 mb-2">Follow Along</p>
+          <p className="font-sans text-[11px] tracking-[0.5em] uppercase text-gold-400 mb-2">Follow Along</p>
           <h2 className="font-serif text-[2rem] sm:text-[2.5rem] text-espresso mb-6">Moments We Love</h2>
           <div className="flex gap-4 justify-center">
-            <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.2em] uppercase px-6 py-3 hover:bg-bark-600 hover:text-cream-50 transition-colors">
+            <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 border border-bark-600 text-bark-600 font-sans text-[11px] tracking-[0.2em] uppercase px-6 py-3 hover:bg-bark-600 hover:text-cream-50 transition-colors">
               <InstagramIcon size={14} /> Instagram
             </a>
-            <a href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 border border-bark-600 text-bark-600 font-sans text-[10px] tracking-[0.2em] uppercase px-6 py-3 hover:bg-bark-600 hover:text-cream-50 transition-colors">
+            <a href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 border border-bark-600 text-bark-600 font-sans text-[11px] tracking-[0.2em] uppercase px-6 py-3 hover:bg-bark-600 hover:text-cream-50 transition-colors">
               <span className="text-sm">🎵</span> TikTok
             </a>
           </div>

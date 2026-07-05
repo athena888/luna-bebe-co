@@ -68,7 +68,7 @@ export function ChatWidget() {
               <p className="font-sans text-sm font-medium text-cream-100">Petite Lavande Assistant</p>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-sage-400" />
-                <p className="font-sans text-[10px] text-cream-300">Online now</p>
+                <p className="font-sans text-[11px] text-cream-300">Online now</p>
               </div>
             </div>
             <button onClick={() => setOpen(false)} className="text-cream-300 hover:text-cream-100 transition-colors">
@@ -105,7 +105,7 @@ export function ChatWidget() {
           <div className="px-4 py-2 border-t border-cream-200 bg-white shrink-0">
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="font-sans text-[10px] text-bark-400 hover:text-bark-600 transition-colors"
+              className="font-sans text-[11px] text-bark-400 hover:text-bark-600 transition-colors"
             >
               Prefer to talk to a person? Email us →
             </a>

@@ -29,7 +29,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
             <Link href="/"><Button variant="outline" size="md">Back to Home</Button></Link>
           </div>
           {error.digest && (
-            <p className="font-sans text-[10px] text-bark-300 mt-8">Reference: {error.digest}</p>
+            <p className="font-sans text-[11px] text-bark-300 mt-8">Reference: {error.digest}</p>
           )}
         </div>
       </main>

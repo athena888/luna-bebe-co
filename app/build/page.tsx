@@ -109,7 +109,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
         {soldOut && <div className="absolute inset-0 bg-bark-800/40" />}
         {soldOut && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="bg-white/90 font-sans text-[10px] tracking-[0.25em] uppercase text-bark-600 px-3 py-1.5">Sold Out</span>
+            <span className="bg-white/90 font-sans text-[11px] tracking-[0.25em] uppercase text-bark-600 px-3 py-1.5">Sold Out</span>
           </div>
         )}
         {selected && !soldOut && (
@@ -119,7 +119,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
         )}
         {!soldOut && !hasHoverMedia && (
           <div className="absolute inset-0 bg-bark-600/75 flex items-end p-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <p className="font-sans text-[10px] text-cream-100 leading-relaxed line-clamp-3">{product.description}</p>
+            <p className="font-sans text-[11px] text-cream-100 leading-relaxed line-clamp-3">{product.description}</p>
           </div>
         )}
 
@@ -136,7 +136,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
       <div className={`pt-3.5 pb-1 text-left ${soldOut ? 'opacity-40' : ''}`}>
         <h3 className="font-serif text-[14px] font-medium text-espresso leading-snug mb-1 transition-colors group-hover:text-gold-500">{product.name}</h3>
         {!soldOut && lowStock && (
-          <p className="font-sans text-[10px] tracking-[0.08em] text-red-600 mb-1">{stock} left</p>
+          <p className="font-sans text-[11px] tracking-[0.08em] text-red-600 mb-1">{stock} left</p>
         )}
         <div className="flex items-center justify-between gap-1">
           <span className={`font-serif text-[13px] font-medium text-espresso-light ${soldOut ? 'line-through' : ''}`}>{formatPrice(product.price)}</span>
@@ -455,7 +455,7 @@ export default function BuildPage() {
             className="relative z-10 w-full px-8 sm:px-14 pb-20 sm:pb-28 max-w-3xl"
             style={{ animation: 'slideUp 1.4s cubic-bezier(0.22,1,0.36,1) both' }}
           >
-            <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-cream-200/60 mb-5">Build Your Box</p>
+            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-cream-200/60 mb-5">Build Your Box</p>
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-cream-50 leading-[1.05] mb-6">
               We don&apos;t add what doesn&apos;t belong.
             </h1>
@@ -481,7 +481,7 @@ export default function BuildPage() {
           {activeCategories.map((cat) => (
             <section key={cat} id={`cat-${cat}`}>
               <div className="pl-6 sm:pl-9 pr-6 sm:pr-8 mb-8">
-                <p className="font-sans text-[11px] tracking-[0.35em] uppercase font-bold text-gold-500 mb-1">{CATEGORY_LABELS[cat]}</p>
+                <p className="font-sans text-[11px] tracking-[0.3em] uppercase font-bold text-gold-500 mb-1">{CATEGORY_LABELS[cat]}</p>
                 <h2 className="font-serif text-lg sm:text-xl text-terra-500">{CATEGORY_SUBTITLES[cat]}</h2>
               </div>
               <div className="relative">
@@ -576,7 +576,7 @@ export default function BuildPage() {
                 </div>
               </div>
               <div className="flex justify-end mt-2 pr-1">
-                <span className="font-sans text-[9px] tracking-[0.1em] text-bark-400">$150</span>
+                <span className="font-sans text-[11px] tracking-[0.1em] text-bark-400">$150</span>
               </div>
             </div>
           )
@@ -603,7 +603,7 @@ export default function BuildPage() {
                     }
                   </div>
                   <div className="flex-1 min-w-0 pt-1">
-                    <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mb-0.5">Petite Lavande</p>
+                    <p className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 mb-0.5">Petite Lavande</p>
                     <p className="font-sans text-sm text-bark-700 leading-snug mb-1.5">{product.name}</p>
                     {variantLabel && (
                       <p className="font-sans text-[11px] text-bark-400 capitalize mb-1">{variantLabel}</p>
@@ -623,7 +623,7 @@ export default function BuildPage() {
                       </div>
                       <button
                         onClick={() => removeItem(product.lineKey)}
-                        className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-700 transition-colors"
+                        className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-700 transition-colors"
                       >
                         Remove
                       </button>
@@ -638,10 +638,10 @@ export default function BuildPage() {
         {/* Drawer footer */}
         <div className="shrink-0 border-t border-cream-300 px-6 py-5">
           <div className="flex justify-between items-baseline mb-1">
-            <span className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400">Subtotal</span>
+            <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">Subtotal</span>
             <span className="font-sans text-base font-medium text-bark-600">{formatPrice(subtotal)}</span>
           </div>
-          <p className="font-sans text-[10px] text-bark-400/60 mb-4">Box fee &amp; shipping calculated at checkout</p>
+          <p className="font-sans text-[11px] text-bark-400/60 mb-4">Box fee &amp; shipping calculated at checkout</p>
           <button
             onClick={handleCheckout}
             disabled={!hasItems}
@@ -746,7 +746,7 @@ export default function BuildPage() {
 
             {/* Product info — scrolls on desktop, flows naturally on mobile */}
             <div className="flex-1 lg:min-h-0 lg:overflow-y-auto p-6 lg:p-8 flex flex-col">
-              <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-2">{CATEGORY_LABELS[modalProduct.category]}</p>
+              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-2">{CATEGORY_LABELS[modalProduct.category]}</p>
               <h2 className="font-sans text-2xl lg:text-3xl text-espresso leading-tight mb-2">{modalProduct.name}</h2>
               <p className="font-sans text-base text-bark-400 mb-4">{formatPrice(modalProduct.price)}</p>
 
@@ -759,8 +759,8 @@ export default function BuildPage() {
                   <div className="flex items-start justify-between">
                     {[{ label: 'Free Shipping', sub: '$150+' }, { label: 'Handcrafted', sub: 'with care' }, { label: 'Gift Ready', sub: 'carefully packed' }].map(({ label, sub }) => (
                       <div key={label} className="flex-1 text-center">
-                        <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
-                        <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>
+                        <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
+                        <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>
                       </div>
                     ))}
                   </div>
@@ -770,7 +770,7 @@ export default function BuildPage() {
               {/* Materials — covers the cotton story */}
               {modalProduct.ingredients && (
                 <div className="border-t border-cream-300 py-3.5 mb-0.5 flex items-start gap-2">
-                  <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
+                  <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
                   <span className="font-sans text-xs text-bark-400">{cleanGots(modalProduct.ingredients)}</span>
                 </div>
               )}
@@ -779,7 +779,7 @@ export default function BuildPage() {
               {modalHasVariants && !allVariantsOut && (
                 <div className="border-t border-cream-300 pt-4 space-y-4 mb-4">
                   <div>
-                    <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">
+                    <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">
                       Color{pickColor ? <span className="text-bark-600 capitalize">: {pickColor}</span> : ''}
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -802,7 +802,7 @@ export default function BuildPage() {
 
                   {pickColor && needsStyle && (
                     <div>
-                      <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">
+                      <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">
                         Style{pickStyle ? <span className="text-bark-600 capitalize">: {pickStyle}</span> : ''}
                       </p>
                       <div className="flex flex-wrap gap-2">
@@ -828,7 +828,7 @@ export default function BuildPage() {
 
                   {pickColor && (!needsStyle || pickStyle) && (
                     <div>
-                      <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">Size</p>
+                      <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">Size</p>
                       <div className="flex flex-wrap gap-2">
                         {sizesForColor.map(v => {
                           const out = v.quantity <= 0
@@ -906,7 +906,7 @@ export default function BuildPage() {
                   className="w-full flex items-center justify-between text-left"
                   aria-expanded={descOpen}
                 >
-                  <span className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-600">Description</span>
+                  <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-600">Description</span>
                   <ChevronDown size={15} strokeWidth={1.5} className={`text-bark-400 transition-transform duration-300 ${descOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {descOpen && (
@@ -916,7 +916,7 @@ export default function BuildPage() {
                 )}
               </div>
               {modalProduct.tag && (
-                <span className="inline-block bg-terra-100 text-terra-500 font-sans text-[9px] tracking-[0.2em] uppercase px-3 py-1 mb-2 self-start">
+                <span className="inline-block bg-terra-100 text-terra-500 font-sans text-[11px] tracking-[0.2em] uppercase px-3 py-1 mb-2 self-start">
                   {modalProduct.tag}
                 </span>
               )}

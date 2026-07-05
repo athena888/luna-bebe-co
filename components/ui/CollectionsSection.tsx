@@ -46,7 +46,7 @@ function BundleTile({ boxes, fallback }: { boxes: BoxItem[]; fallback: Category 
           <Image src={fallback.img} alt={fallback.label} fill className="object-cover object-top group-hover:scale-105 transition-transform duration-700" unoptimized />
           <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
           <div className="absolute bottom-0 inset-x-0 flex justify-center pb-5 px-3">
-            <span className="text-center text-white font-sans text-[10px] tracking-[0.2em] uppercase px-2 py-1 drop-shadow-md">{fallback.label}</span>
+            <span className="text-center text-white font-sans text-[11px] tracking-[0.2em] uppercase px-2 py-1 drop-shadow-md">{fallback.label}</span>
           </div>
         </div>
       </Link>
@@ -62,7 +62,7 @@ function BundleTile({ boxes, fallback }: { boxes: BoxItem[]; fallback: Category 
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
         {/* Name + subtitle baked into the photo */}
         <div className="absolute bottom-0 inset-x-0 flex flex-col items-center text-center pb-4 px-3">
-          <span className="text-white font-sans text-[10px] tracking-[0.2em] uppercase px-2 py-1 drop-shadow-md">{box.name}</span>
+          <span className="text-white font-sans text-[11px] tracking-[0.2em] uppercase px-2 py-1 drop-shadow-md">{box.name}</span>
           <span className="text-white/85 font-serif italic text-[12px] leading-snug drop-shadow-md">{BUNDLE_SUB}</span>
         </div>
       </div>
@@ -142,7 +142,7 @@ export function CollectionsSection({ initial }: { initial?: CollectionsInitial }
               <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
               {/* Label + tagline — baked over the image (no button background) */}
               <div className="absolute bottom-0 inset-x-0 flex flex-col items-center text-center pb-4 px-3">
-                <span className="text-white font-sans text-[10px] tracking-[0.2em] uppercase px-2 py-1 drop-shadow-md">
+                <span className="text-white font-sans text-[11px] tracking-[0.2em] uppercase px-2 py-1 drop-shadow-md">
                   {cat.label}
                 </span>
                 {cat.sub && (

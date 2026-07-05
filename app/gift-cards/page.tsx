@@ -61,7 +61,7 @@ export default function GiftCardsPage() {
         <SlotBackground slotKey="giftcards.header_bg" scrim="bg-cream-50/55" className="px-6 pt-16 pb-14 sm:pt-20">
           <div className="max-w-4xl mx-auto">
             <div className="text-center">
-              <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-3">The Perfect Gift</p>
+              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-3">The Perfect Gift</p>
               <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-2">Gift Cards</h1>
               <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">
                 Can't decide? Give the gift of choice. Your recipient builds their own Petite Lavande box with your love.
@@ -87,7 +87,7 @@ export default function GiftCardsPage() {
                     >
                       {opt.label}
                       {opt.popular && (
-                        <span className="absolute top-2 right-2 font-sans text-[9px] tracking-[0.15em] uppercase bg-gold-400 text-white px-1.5 py-0.5">Popular</span>
+                        <span className="absolute top-2 right-2 font-sans text-[11px] tracking-[0.15em] uppercase bg-gold-400 text-white px-1.5 py-0.5">Popular</span>
                       )}
                     </button>
                   ))}
@@ -140,7 +140,7 @@ export default function GiftCardsPage() {
                     <Lock size={14} />
                     {loading ? 'Processing...' : `Purchase $${(amount / 100).toFixed(0)} Gift Card`}
                   </button>
-                  <p className="text-center font-sans text-[10px] text-bark-400/50">Powered by Stripe · 256-bit SSL</p>
+                  <p className="text-center font-sans text-[11px] text-bark-400/50">Powered by Stripe · 256-bit SSL</p>
                 </>
               ) : (
                 <div className="text-center border border-cream-300 bg-cream-50 py-4 px-4">
@@ -155,7 +155,7 @@ export default function GiftCardsPage() {
                 <SlotImage slotKey="giftcard.visual" className="w-full aspect-[3/2] overflow-hidden" />
                 <div className="p-8 pt-6">
                   <Gift size={32} className="text-gold-300 mx-auto mb-4" />
-                <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-gold-400 mb-2">Petite Lavande</p>
+                <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-2">Petite Lavande</p>
                 <p className="font-serif text-4xl text-cream-100 mb-1">${(amount / 100).toFixed(0)}</p>
                 <p className="font-sans text-sm text-cream-50 mb-6">Gift Card</p>
                 {recipientName && (
@@ -168,7 +168,7 @@ export default function GiftCardsPage() {
                   <p className="font-serif italic text-cream-300/70 text-sm leading-relaxed border-t border-bark-600 pt-4 mt-4">&ldquo;{message}&rdquo;</p>
                 )}
                 <div className="mt-6 pt-6 border-t border-bark-600/60">
-                  <p className="font-sans text-[10px] text-cream-200/90 leading-relaxed tracking-wide">
+                  <p className="font-sans text-[11px] text-cream-200/90 leading-relaxed tracking-wide">
                     Delivered instantly by email · Valid forever · Redeemable at checkout
                   </p>
                 </div>

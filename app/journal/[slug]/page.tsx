@@ -78,8 +78,8 @@ export default async function JournalPostPage({ params }: { params: Promise<{ sl
 
       <main className="bg-cream-50 min-h-screen">
         <article className="max-w-2xl mx-auto px-6 sm:px-8 py-10 sm:py-14">
-          <Link href="/journal" className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 hover:text-bark-600 transition-colors">← The Journal</Link>
-          <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-gold-400 mt-6 mb-3">
+          <Link href="/journal" className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 hover:text-bark-600 transition-colors">← The Journal</Link>
+          <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-gold-400 mt-6 mb-3">
             {new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} · {post.readMins} min read
           </p>
           <h1 className="font-serif text-[2.25rem] sm:text-[3rem] text-espresso leading-[1.1] mb-6">{post.title}</h1>
@@ -88,7 +88,7 @@ export default async function JournalPostPage({ params }: { params: Promise<{ sl
 
           {/* Internal links */}
           <div className="mt-10 pt-6 border-t border-cream-300">
-            <p className="font-sans text-[9px] tracking-[0.35em] uppercase text-gold-400 mb-4">Keep exploring</p>
+            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-4">Keep exploring</p>
             <div className="flex flex-col gap-2.5">
               {post.related.map(r => (
                 <Link key={r.href} href={r.href} className="font-serif text-lg text-bark-600 hover:text-bark-800 transition-colors inline-flex items-center gap-2">

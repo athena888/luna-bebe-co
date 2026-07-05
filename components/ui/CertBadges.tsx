@@ -58,7 +58,7 @@ export function CertBadges({ certs, organic }: { certs: ResolvedCert[]; organic?
         {organicOnly && (
           <span className="shrink-0 flex items-center gap-1.5" title="Made with organic cotton">
             <span className="w-4 h-4 rounded-full pl-round-full bg-sage-500 flex items-center justify-center shrink-0"><Leaf size={10} className="text-white" /></span>
-            <span className="font-sans text-[9px] tracking-[0.06em] uppercase text-sage-700 whitespace-nowrap">Organic</span>
+            <span className="font-sans text-[11px] tracking-[0.06em] uppercase text-sage-700 whitespace-nowrap">Organic</span>
           </span>
         )}
         {active.map((cert, idx) => (
@@ -68,14 +68,14 @@ export function CertBadges({ certs, organic }: { certs: ResolvedCert[]; organic?
             className="shrink-0 flex items-center gap-1.5 group"
           >
             <CertIcon c={cert} size={10} />
-            <span className="font-sans text-[9px] tracking-[0.06em] uppercase whitespace-nowrap text-bark-600 group-hover:text-gold-500 underline-offset-2 group-hover:underline transition-colors">{label(cert)}</span>
+            <span className="font-sans text-[11px] tracking-[0.06em] uppercase whitespace-nowrap text-bark-600 group-hover:text-gold-500 underline-offset-2 group-hover:underline transition-colors">{label(cert)}</span>
           </button>
         ))}
       </div>
       {active.length > 0 && (
         <button
           onClick={() => openModal(0)}
-          className="font-sans text-[9px] text-bark-400/70 hover:text-bark-500 transition-colors underline underline-offset-2 mt-1.5"
+          className="font-sans text-[11px] text-bark-400/70 hover:text-bark-500 transition-colors underline underline-offset-2 mt-1.5"
         >
           What do these mean?
         </button>
@@ -129,7 +129,7 @@ export function CertBadges({ certs, organic }: { certs: ResolvedCert[]; organic?
               )}
 
               {hasTabs && !docRevealed && opened.certificateUrl && (
-                <p className="mb-3 font-sans text-[10px] text-gold-500/80">Tap a tab above to view its paperwork.</p>
+                <p className="mb-3 font-sans text-[11px] text-gold-500/80">Tap a tab above to view its paperwork.</p>
               )}
 
               <div className="flex items-center gap-3 mb-2">
@@ -137,16 +137,16 @@ export function CertBadges({ certs, organic }: { certs: ResolvedCert[]; organic?
                 <h3 className="font-serif text-lg text-bark-600">{openedGots ? 'Made with GOTS-certified organic cotton' : (opened.full_name || opened.name)}</h3>
               </div>
               {openedGots && <p className="font-sans text-xs text-bark-500 mb-2">From a GOTS-certified manufacturer. Their scope certificate is shown above.</p>}
-              {opened.region && <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mb-3">{opened.region}</p>}
+              {opened.region && <p className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 mb-3">{opened.region}</p>}
               {opened.blurb && <p className="font-sans text-sm text-bark-600 leading-relaxed">{opened.blurb}</p>}
-              {opened.valid_until && <p className="font-sans text-[10px] text-bark-400/70 mt-3">Valid until {opened.valid_until}</p>}
-              {!opened.certificateUrl && <p className="font-sans text-[10px] text-bark-400/60 mt-4">Certificate available on request.</p>}
+              {opened.valid_until && <p className="font-sans text-[11px] text-bark-400/70 mt-3">Valid until {opened.valid_until}</p>}
+              {!opened.certificateUrl && <p className="font-sans text-[11px] text-bark-400/60 mt-4">Certificate available on request.</p>}
             </div>
 
             {active.length > 1 && (
               <div className="flex items-center justify-between px-5 py-3">
                 <button onClick={prev} disabled={openIdx === 0} className="flex items-center gap-1 font-sans text-xs text-bark-400 hover:text-bark-600 transition-colors disabled:opacity-30"><ChevronLeft size={14} /> Prev</button>
-                <span className="font-sans text-[10px] text-bark-400">{(openIdx ?? 0) + 1} of {active.length}</span>
+                <span className="font-sans text-[11px] text-bark-400">{(openIdx ?? 0) + 1} of {active.length}</span>
                 <button onClick={next} disabled={openIdx === active.length - 1} className="flex items-center gap-1 font-sans text-xs text-bark-400 hover:text-bark-600 transition-colors disabled:opacity-30">Next <ChevronRight size={14} /></button>
               </div>
             )}

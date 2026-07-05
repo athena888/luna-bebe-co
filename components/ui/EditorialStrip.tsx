@@ -86,7 +86,7 @@ export function EditorialStrip() {
       <div className="absolute inset-0 bg-bark-800/40 flex items-center justify-center">
         <div ref={captionRef} className="text-center px-6">
           <p
-            className="font-sans text-[9px] tracking-[0.5em] uppercase text-cream-200/90 mb-2.5 sm:mb-4"
+            className="font-sans text-[11px] tracking-[0.5em] uppercase text-cream-200/90 mb-2.5 sm:mb-4"
             style={{ textShadow: '0 1px 10px rgba(0,0,0,0.4)', opacity: revealed ? 1 : 0, transition: 'opacity 0.8s ease' }}
           >Handcrafted With Love</p>
           <h2 className="font-serif text-[1.75rem] sm:text-5xl text-cream-50 leading-tight" style={{ textShadow: '0 1px 14px rgba(0,0,0,0.4)' }}>
@@ -116,8 +116,8 @@ export function EditorialStrip() {
               transitionDelay: `${buttonsDelay}ms`,
             }}
           >
-            <Link href="/build" className="w-auto bg-cream-50 text-bark-600 font-sans text-[9px] tracking-[0.2em] uppercase px-7 py-3 sm:px-8 sm:py-3.5 hover:bg-cream-100 transition-colors">Build Your Own Box</Link>
-            <Link href="/boxes" className="w-auto border border-cream-50/70 text-cream-50 font-sans text-[9px] tracking-[0.2em] uppercase px-7 py-3 sm:px-8 sm:py-3.5 hover:bg-cream-50/10 transition-colors">Shop Gift Ideas</Link>
+            <Link href="/build" className="w-auto bg-cream-50 text-bark-600 font-sans text-[11px] tracking-[0.2em] uppercase px-7 py-3 sm:px-8 sm:py-3.5 hover:bg-cream-100 transition-colors">Build Your Own Box</Link>
+            <Link href="/boxes" className="w-auto border border-cream-50/70 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase px-7 py-3 sm:px-8 sm:py-3.5 hover:bg-cream-50/10 transition-colors">Shop Gift Ideas</Link>
           </div>
         </div>
       </div>

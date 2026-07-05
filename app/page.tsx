@@ -12,7 +12,7 @@ import { getHomeContent } from '@/lib/home-content'
 import { getStoryContent } from '@/lib/story-content'
 import { getHomeGalleries } from '@/lib/site-images'
 import { getActiveSocialPosts } from '@/lib/social-posts'
-import { SpecialFeature, PerksTicker } from '@/components/ui/SpecialFeature'
+import { SpecialFeature } from '@/components/ui/SpecialFeature'
 import { TestimonialsCarousel } from '@/components/ui/TestimonialsCarousel'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 
@@ -65,9 +65,7 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* The two marquees swap places on the homepage: perks run in the header
-          strip, the launch message runs below the hero. */}
-      <Header overHero strip={<PerksTicker perks={content.perks} />} />
+      <Header overHero />
       <main>
 
         {/* ── 1. Hero ── */}
@@ -149,7 +147,7 @@ export default async function HomePage() {
             <section className="py-12 sm:py-16 px-6 sm:px-10">
               <div className="max-w-6xl mx-auto">
                 <div className="text-center mb-10">
-                  <p className="font-sans text-[9px] tracking-[0.45em] uppercase text-gold-400 mb-3">{content.reviews.eyebrow}</p>
+                  <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-3">{content.reviews.eyebrow}</p>
                   <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-espresso">{content.reviews.title}</h2>
                   {content.reviews.ratingLine && (
                     <p className="font-sans text-[11px] tracking-[0.2em] text-gold-400 mt-3">{content.reviews.ratingLine}</p>
@@ -168,7 +166,7 @@ export default async function HomePage() {
             <div>
               <div className="py-4 text-center">
                 <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer"
-                  className="font-sans text-[9px] tracking-[0.35em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
+                  className="font-sans text-[11px] tracking-[0.3em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
                   Follow @petitelavandeco on Instagram
                 </a>
               </div>

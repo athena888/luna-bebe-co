@@ -28,7 +28,7 @@ export function NewsletterForm() {
           →
         </button>
       </form>
-      <p className="font-sans text-[9px] text-bark-400/50 mt-3 leading-relaxed">
+      <p className="font-sans text-[11px] text-bark-400/50 mt-3 leading-relaxed">
         By subscribing you agree to receive occasional emails. Unsubscribe any time.
       </p>
     </>

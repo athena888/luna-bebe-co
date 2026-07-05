@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <article className="prose prose-sm max-w-none font-sans text-bark-600">
-      <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-gold-400 mb-4">Legal</p>
+      <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-4">Legal</p>
       <h1 className="font-serif text-4xl font-normal text-espresso mb-2">Privacy Policy</h1>
       <p className="text-bark-400 text-sm mb-10">Last updated: June 2026</p>
 

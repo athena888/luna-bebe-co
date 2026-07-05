@@ -178,7 +178,7 @@ export default function ProductDetailClient() {
                         {/* Organic indicator on the main photo (leaf + word), like the carousel. */}
                         {idx === 0 && show && isOrganicProduct(product) && (
                           <div className="absolute bottom-2.5 right-2.5 z-10 flex flex-col items-center gap-0.5 pointer-events-none">
-                            <span className="font-sans text-[9px] tracking-[0.18em] uppercase text-white drop-shadow">Organic</span>
+                            <span className="font-sans text-[11px] tracking-[0.18em] uppercase text-white drop-shadow">Organic</span>
                             <span className="w-7 h-7 rounded-full pl-round-full bg-sage-500/90 flex items-center justify-center shadow-md"><Leaf size={13} className="text-white" /></span>
                           </div>
                         )}
@@ -192,14 +192,14 @@ export default function ProductDetailClient() {
               <div className="w-full lg:flex-1 pt-1 px-3">
 
                 {/* Breadcrumb */}
-                <nav className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mb-4 flex items-center gap-1.5 flex-wrap">
+                <nav className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 mb-4 flex items-center gap-1.5 flex-wrap">
                   <Link href="/build" className="hover:text-bark-600 transition-colors">Build Your Box</Link>
                   <span>/</span>
                   <span>{CATEGORY_LABELS[product.category]}</span>
                 </nav>
 
                 {/* Category label */}
-                <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-1.5">
+                <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-1.5">
                   {CATEGORY_LABELS[product.category]}
                 </p>
 
@@ -216,7 +216,7 @@ export default function ProductDetailClient() {
                 {/* Tag badge */}
                 {product.tag && (
                   <div className="mb-4">
-                    <span className="bg-terra-100 text-terra-500 font-sans text-[10px] tracking-[0.2em] uppercase px-3 py-1">
+                    <span className="bg-terra-100 text-terra-500 font-sans text-[11px] tracking-[0.2em] uppercase px-3 py-1">
                       {product.tag}
                     </span>
                   </div>
@@ -252,8 +252,8 @@ export default function ProductDetailClient() {
                     { label: 'Gift Ready', sub: 'carefully packed' },
                   ].map(({ label, sub }) => (
                     <div key={label} className="flex-1 text-center">
-                      <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
-                      <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>
+                      <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
+                      <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>
                     </div>
                   ))}
                 </div>
@@ -297,7 +297,7 @@ export default function ProductDetailClient() {
                 {product.ingredients && (
                   <div className="border-t border-cream-300">
                     <div className="py-3.5 flex items-start gap-2">
-                      <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
+                      <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
                       <span className="font-sans text-xs text-bark-400">{clean(product.ingredients)}</span>
                     </div>
                   </div>
@@ -307,7 +307,7 @@ export default function ProductDetailClient() {
                 {hasGotsCert(product as unknown as { certifications?: Array<{ key?: string; name?: string }> }) && (
                   <div className="border-t border-cream-300">
                     <div className="py-3.5 flex items-start gap-2">
-                      <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
+                      <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
                       <span className="font-sans text-xs text-bark-400">Made with GOTS-certified organic cotton from a GOTS-certified manufacturer.</span>
                     </div>
                   </div>
@@ -316,7 +316,7 @@ export default function ProductDetailClient() {
                 <div className="border-t border-cream-300 pt-4 mt-1">
                   <Link
                     href="/build"
-                    className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-600 transition-colors"
+                    className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-600 transition-colors"
                   >
                     ← Back to Build
                   </Link>

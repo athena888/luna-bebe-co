@@ -137,7 +137,7 @@ export default function CardPage() {
             {/* Left — vertical carousel of whole (portrait) cards */}
             {styles.length > 0 && (
               <div className="md:w-48 lg:w-56 shrink-0 md:sticky md:top-6">
-                <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-bark-400 mb-3">Choose a card design — scroll to see them all</p>
+                <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400 mb-3">Choose a card design — scroll to see them all</p>
                 <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto md:max-h-[78vh] scrollbar-hide snap-x md:snap-y snap-mandatory -mx-4 px-4 md:mx-0 md:px-0 md:pr-1 pb-2 md:pb-0">
                   {styles.map(s => {
                     const active = s.id === styleId
@@ -150,7 +150,7 @@ export default function CardPage() {
                         </div>
                         <div className="pt-1.5">
                           <p className="font-sans text-xs font-medium text-bark-600 truncate">{s.name}</p>
-                          <p className="font-sans text-[10px] text-bark-400">{Math.max(s.word_limit, 160)} words max</p>
+                          <p className="font-sans text-[11px] text-bark-400">{Math.max(s.word_limit, 160)} words max</p>
                         </div>
                       </button>
                     )
@@ -159,7 +159,7 @@ export default function CardPage() {
                 {/* Carousel affordance — small & elegant */}
                 {styles.length > 1 && (
                   <div className="flex items-center justify-center gap-1.5 mt-2 text-bark-400/70">
-                    <span className="font-sans text-[9px] tracking-[0.25em] uppercase">{styles.length} designs</span>
+                    <span className="font-sans text-[11px] tracking-[0.25em] uppercase">{styles.length} designs</span>
                     <ChevronRight size={11} className="md:hidden animate-pulse" />
                     <ChevronDown size={11} className="hidden md:block animate-pulse" />
                   </div>
@@ -238,7 +238,7 @@ export default function CardPage() {
                 const setZ = (patch: Partial<Zone>) => setZone(z => ({ ...z, ...patch }))
                 return (
                   <div className="mb-6">
-                    <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-bark-400 mb-3 text-center">Preview on your card</p>
+                    <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400 mb-3 text-center">Preview on your card</p>
                     <div className="relative mx-auto w-full max-w-sm border border-cream-300 shadow-sm bg-white overflow-hidden">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={selectedStyle.image_url} alt={selectedStyle.name} className="w-full h-auto block" />
@@ -263,11 +263,11 @@ export default function CardPage() {
                     {/* Placement control — move the note over the card's empty area */}
                     <div className="mx-auto w-full max-w-sm mt-3 bg-cream-50 border border-cream-200 rounded-xl p-4">
                       <div className="flex items-center justify-between mb-3">
-                        <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-bark-400">Message placement</p>
+                        <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400">Message placement</p>
                         <button
                           type="button"
                           onClick={() => { const z = selectedStyle.meta?.textZone; setZone(z ? { x: z.x, y: z.y, w: z.w, align: (z.align ?? 'center') as Align } : FALLBACK_ZONE) }}
-                          className="font-sans text-[9px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-600 underline underline-offset-2"
+                          className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-600 underline underline-offset-2"
                         >
                           Reset
                         </button>
@@ -284,7 +284,7 @@ export default function CardPage() {
                             onChange={e => setZ({ [s.key]: Number(e.target.value) } as Partial<Zone>)}
                             className="flex-1 accent-[#7b876a]"
                           />
-                          <span className="font-sans text-[10px] text-bark-400 w-9 text-right tabular-nums">{zone[s.key]}%</span>
+                          <span className="font-sans text-[11px] text-bark-400 w-9 text-right tabular-nums">{zone[s.key]}%</span>
                         </div>
                       ))}
                       <div className="flex items-center gap-3 mt-3">
@@ -293,7 +293,7 @@ export default function CardPage() {
                           {(['left', 'center', 'right'] as Align[]).map(a => (
                             <button
                               key={a} type="button" onClick={() => setZ({ align: a })}
-                              className={`font-sans text-[10px] tracking-[0.1em] uppercase px-3 py-1.5 rounded border transition-colors ${zone.align === a ? 'bg-[#7b876a] text-white border-[#7b876a]' : 'bg-white text-bark-500 border-cream-300 hover:border-bark-400'}`}
+                              className={`font-sans text-[11px] tracking-[0.1em] uppercase px-3 py-1.5 rounded border transition-colors ${zone.align === a ? 'bg-[#7b876a] text-white border-[#7b876a]' : 'bg-white text-bark-500 border-cream-300 hover:border-bark-400'}`}
                             >
                               {a}
                             </button>
@@ -301,7 +301,7 @@ export default function CardPage() {
                         </div>
                       </div>
                     </div>
-                    <p className="font-sans text-[10px] text-bark-400 text-center mt-2">Move the dashed area over the card&rsquo;s empty space — that&rsquo;s where your note prints.</p>
+                    <p className="font-sans text-[11px] text-bark-400 text-center mt-2">Move the dashed area over the card&rsquo;s empty space — that&rsquo;s where your note prints.</p>
                   </div>
                 )
               })()}

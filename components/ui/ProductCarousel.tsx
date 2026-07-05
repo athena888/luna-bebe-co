@@ -173,13 +173,13 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
 
           {/* Info panel */}
           <div className="flex-1 lg:min-h-0 lg:overflow-y-auto p-6 lg:p-8 flex flex-col">
-            <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-2">
+            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-2">
               {CATEGORY_LABELS[product.category]}
             </p>
             <h2 className="font-sans text-2xl lg:text-3xl text-espresso leading-tight mb-2">{product.name}</h2>
             <p className="font-sans text-base text-bark-400 mb-4">{formatPrice(product.price)}</p>
             {product.tag && (
-              <span className="inline-block bg-terra-100 text-terra-500 font-sans text-[9px] tracking-[0.2em] uppercase px-3 py-1 mb-4 self-start">
+              <span className="inline-block bg-terra-100 text-terra-500 font-sans text-[11px] tracking-[0.2em] uppercase px-3 py-1 mb-4 self-start">
                 {product.tag}
               </span>
             )}
@@ -199,8 +199,8 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
                 <div className="flex items-start justify-between">
                   {[{ label: 'Free Shipping', sub: '$150+' }, { label: 'Handcrafted', sub: 'with care' }, { label: 'Gift Ready', sub: 'carefully packed' }].map(({ label, sub }) => (
                     <div key={label} className="flex-1 text-center">
-                      <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
-                      <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>
+                      <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
+                      <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>
                     </div>
                   ))}
                 </div>
@@ -209,14 +209,14 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
 
             {ingredients && (
               <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
-                <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
+                <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
                 <span className="font-sans text-xs text-bark-400">{clean(ingredients)}</span>
               </div>
             )}
 
             {certs.some(isGots) && (
               <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
-                <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
+                <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
                 <span className="font-sans text-xs text-bark-400">Made with <span className="text-bark-600">GOTS-certified organic cotton</span> from a GOTS-certified manufacturer.</span>
               </div>
             )}
@@ -225,7 +225,7 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
             {hasVariants && (
               <div className="border-t border-cream-300 pt-4 mb-4 space-y-3">
                 <div>
-                  <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-2">
+                  <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400 mb-2">
                     Color{pickColor ? <span className="text-bark-600 capitalize">: {pickColor}</span> : ''}
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -247,7 +247,7 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
                 </div>
                 {pickColor && (
                   <div>
-                    <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-bark-400 mb-2">Size</p>
+                    <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400 mb-2">Size</p>
                     <div className="flex flex-wrap gap-2">
                       {sizesForColor.map(v => (
                         <button
@@ -525,7 +525,7 @@ export function ProductCarousel({ products }: { products: Product[] }) {
 
                   {product.tag && (
                     <div className="absolute top-3 left-3">
-                      <span className="font-sans text-[9px] tracking-[0.15em] uppercase bg-gold-400/30 backdrop-blur-sm text-gold-100 px-2 py-0.5">
+                      <span className="font-sans text-[11px] tracking-[0.15em] uppercase bg-gold-400/30 backdrop-blur-sm text-gold-100 px-2 py-0.5">
                         {product.tag}
                       </span>
                     </div>
@@ -547,7 +547,7 @@ export function ProductCarousel({ products }: { products: Product[] }) {
                 </div>
 
                 <div className={`text-center mt-2 transition-opacity duration-300 ${isCenter ? 'opacity-100' : 'opacity-0'}`}>
-                  <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400">
+                  <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">
                     Tap to view details
                   </p>
                 </div>

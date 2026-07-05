@@ -20,7 +20,7 @@ function productImage(p: { id: string; image?: string | null }): string | null {
 }
 
 const inputClass = "w-full px-4 py-3 border border-cream-300 bg-cream-50 font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-bark-400 transition-colors"
-const labelClass = "block font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2"
+const labelClass = "block font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2"
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -112,6 +112,15 @@ export default function CheckoutPage() {
   function removeItem(key: string) {
     updateSelection({ ...(selection as object), [key]: null } as unknown as BoxSelection)
   }
+  // Garments quick-added from the homepage default to the first box size; the
+  // bag line lets buyers flip it here. Only shown when the stored size is one
+  // of the box sizes (product-variant sizes stay display-only).
+  const BOX_GARMENT_SIZES = ['0–3 mo', '3–6 mo']
+  function setSizeFor(key: string, size: string) {
+    const item = (selection as unknown as Record<string, CartItem | null>)[key]
+    if (!item) return
+    updateSelection({ ...(selection as object), [key]: { ...item, selectedSize: size } } as unknown as BoxSelection)
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -202,10 +211,23 @@ export default function CheckoutPage() {
                               : <span className="absolute inset-0 flex items-center justify-center text-2xl">{item.imageEmoji}</span>}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 mb-1.5">Petite Lavande</p>
+                            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-bark-400 mb-1.5">Petite Lavande</p>
                             <p className="font-sans text-[15px] text-espresso leading-snug">{item.name}</p>
                             <p className="font-sans text-sm text-bark-500 mt-1.5">{formatPrice(item.price)}</p>
-                            {(item.selectedColor || item.selectedSize) && (
+                            {item.selectedSize && BOX_GARMENT_SIZES.includes(item.selectedSize) ? (
+                              <div className="flex items-center gap-2 mt-2">
+                                {item.selectedColor && <span className="font-sans text-[12px] text-bark-400 capitalize">{item.selectedColor} ·</span>}
+                                <span className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400">Size</span>
+                                <div className="flex gap-1.5">
+                                  {BOX_GARMENT_SIZES.map(s => (
+                                    <button key={s} type="button" onClick={() => setSizeFor(key, s)}
+                                      className={`border px-2.5 py-1 font-sans text-[11px] transition-colors ${item.selectedSize === s ? 'border-bark-600 bg-bark-600 text-cream-50' : 'border-cream-300 text-bark-600 hover:border-bark-400'}`}>
+                                      {s}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : (item.selectedColor || item.selectedSize) && (
                               <p className="font-sans text-[12px] text-bark-400 mt-1 capitalize">
                                 {[item.selectedColor, item.selectedSize].filter(Boolean).join(' · ')}
                               </p>
@@ -311,7 +333,7 @@ export default function CheckoutPage() {
                           <div className="text-right">
                             <p className="font-sans text-sm text-bark-600">{formatPrice(option.price)}</p>
                             {'badge' in option && option.badge && (
-                              <span className="font-sans text-[10px] tracking-wide uppercase text-gold-400">{option.badge}</span>
+                              <span className="font-sans text-[11px] tracking-wide uppercase text-gold-400">{option.badge}</span>
                             )}
                           </div>
                         </div>
@@ -377,10 +399,10 @@ export default function CheckoutPage() {
                       </button>
                     </div>
                     {promoState === 'valid' && (
-                      <p className="font-sans text-[10px] text-sage-600 mt-1.5">✓ {promoLabel} applied — discount shown at payment</p>
+                      <p className="font-sans text-[11px] text-sage-600 mt-1.5">✓ {promoLabel} applied — discount shown at payment</p>
                     )}
                     {promoState === 'invalid' && (
-                      <p className="font-sans text-[10px] text-red-500 mt-1.5">Invalid or expired code</p>
+                      <p className="font-sans text-[11px] text-red-500 mt-1.5">Invalid or expired code</p>
                     )}
                   </div>
 
@@ -399,7 +421,7 @@ export default function CheckoutPage() {
                         <p className="text-center font-sans text-[11px] text-bark-500 mt-3">
                           By placing this order, you agree to our <Link href="/legal/terms" className="underline underline-offset-2 hover:text-espresso">Terms &amp; Conditions</Link>.
                         </p>
-                        <p className="text-center font-sans text-[10px] text-bark-400/60 mt-1.5">Secure payment powered by Stripe</p>
+                        <p className="text-center font-sans text-[11px] text-bark-400/60 mt-1.5">Secure payment powered by Stripe</p>
                       </>
                     ) : (
                       <div className="text-center border border-cream-300 bg-cream-50 py-4 px-4">

@@ -44,7 +44,7 @@ export function PrebuiltBoxesSection() {
             </div>
             {/* Caption below the image — espresso, turns gold on hover */}
             <div className="pt-4 text-espresso transition-colors duration-300 group-hover:text-gold-500">
-              <p className="font-sans text-[9px] tracking-[0.3em] uppercase font-semibold text-gold-400 mb-1.5 transition-colors duration-300 group-hover:text-gold-500">{box.style}</p>
+              <p className="font-sans text-[11px] tracking-[0.3em] uppercase font-semibold text-gold-400 mb-1.5 transition-colors duration-300 group-hover:text-gold-500">{box.style}</p>
               <h3 className="font-serif text-xl font-semibold leading-tight">{box.name}</h3>
               <p className="font-serif text-lg font-semibold mt-1">{fmt(boxTotal(box))}</p>
             </div>

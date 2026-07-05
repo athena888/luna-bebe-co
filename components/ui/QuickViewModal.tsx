@@ -131,13 +131,13 @@ export function QuickViewModal({ product, onClose }: { product: Product; onClose
 
         {/* Info */}
         <div className="flex-1 lg:min-h-0 lg:overflow-y-auto p-6 lg:p-8 flex flex-col">
-          <p className="font-sans text-[10px] tracking-[0.35em] uppercase text-gold-400 mb-2">
+          <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-2">
             {CATEGORY_LABELS[product.category]}
           </p>
           <h2 id={titleId} className="font-serif text-2xl lg:text-3xl text-espresso leading-tight mb-2">{product.name}</h2>
           <p className="font-sans text-base text-bark-400 mb-4">{formatPrice(product.price)}</p>
           {product.tag && (
-            <span className="inline-block bg-terra-100 text-terra-500 font-sans text-[9px] tracking-[0.2em] uppercase px-3 py-1 mb-4 self-start">
+            <span className="inline-block bg-terra-100 text-terra-500 font-sans text-[11px] tracking-[0.2em] uppercase px-3 py-1 mb-4 self-start">
               {product.tag}
             </span>
           )}
@@ -152,7 +152,7 @@ export function QuickViewModal({ product, onClose }: { product: Product; onClose
 
           {clean(product.ingredients) && (
             <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
-              <span className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
+              <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
               <span className="font-sans text-xs text-bark-400">{clean(product.ingredients)}</span>
             </div>
           )}

@@ -104,7 +104,7 @@ export function ProductGridCard({ product, primarySrc, secondarySrc }: {
           type="button"
           onClick={() => setQuick(true)}
           aria-label={`Quick view ${product.name}`}
-          className={`absolute top-2 right-2 z-20 flex items-center gap-1 bg-white/85 text-bark-600 hover:bg-white font-sans text-[9px] tracking-[0.15em] uppercase px-2 py-1 transition-opacity ${
+          className={`absolute top-2 right-2 z-20 flex items-center gap-1 bg-white/85 text-bark-600 hover:bg-white font-sans text-[11px] tracking-[0.15em] uppercase px-2 py-1 transition-opacity ${
             canHover ? 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100' : 'opacity-100'
           }`}
         >

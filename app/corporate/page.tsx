@@ -78,7 +78,7 @@ export default function CorporatePage() {
         {/* Hero — background uploadable via Portal → Site Images → Corporate */}
         <SlotBackground slotKey="corporate.hero_bg" scrim="bg-cream-50/40" className="border-b border-cream-300">
           <section className="px-6 py-12 sm:py-16 text-center">
-            <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400 mb-5" style={{ animation: 'slideUp 0.7s ease-out both' }}>Corporate &amp; Team Gifting</p>
+            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-5" style={{ animation: 'slideUp 0.7s ease-out both' }}>Corporate &amp; Team Gifting</p>
             <h1 className="font-serif text-4xl sm:text-6xl text-espresso leading-tight max-w-3xl mx-auto" style={{ animation: 'slideUp 0.9s ease-out 0.12s both' }}>
               When your people become parents
             </h1>

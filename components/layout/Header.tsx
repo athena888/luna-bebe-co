@@ -123,21 +123,57 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
   )
 }
 
-// The coming-soon announcement strip — right-to-left looping marquee. Exported
-// so pages can also place it in the flow (the homepage runs it below the hero
-// and puts the perks ticker in the header instead).
+// The promise perks — espresso strip pinned to the top of the header on EVERY
+// page. Perks come from Portal → Homepage (falls back to the defaults until
+// the fetch lands).
+type Perk = { label: string; sub: string }
+const DEFAULT_PERKS: Perk[] = [
+  { label: 'Free Shipping', sub: 'On orders over $150' },
+  { label: 'Personalized Card', sub: 'Printed for every box' },
+  { label: 'Organic Cotton', sub: 'From GOTS-certified makers' },
+  { label: 'Gift-Ready', sub: 'Ships within 3 days' },
+]
+function PerksMarquee() {
+  const [perks, setPerks] = useState<Perk[]>(DEFAULT_PERKS)
+  useEffect(() => {
+    fetch('/api/home-perks')
+      .then(r => r.json())
+      .then(d => { if (Array.isArray(d.perks) && d.perks.length > 0) setPerks(d.perks) })
+      .catch(() => {})
+  }, [])
+  return (
+    <div className="bg-[#4A3B30] py-2.5 overflow-hidden" aria-label="Our promises">
+      <div className="flex w-max animate-[pl-marquee_18s_linear_infinite]">
+        {[0, 1].map(copy => (
+          <div key={copy} className="flex shrink-0 items-baseline" aria-hidden={copy === 1}>
+            {perks.map(({ label, sub }) => (
+              <span key={`${copy}-${label}`} className="flex items-baseline whitespace-nowrap px-8 sm:px-12">
+                <span className="font-sans text-[11px] tracking-[0.25em] uppercase font-semibold text-cream-50">{label}</span>
+                <span className="font-cormorant text-[15px] text-cream-200 ml-3">{sub}</span>
+                <span className="w-1 h-1 rounded-full pl-round-full bg-gold-400 ml-8 sm:ml-12 self-center" />
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// The coming-soon announcement — cream marquee the homepage runs below the
+// hero (colours swapped with the perks strip above).
 export function LaunchMarquee() {
   return (
-    <div className="bg-[#4A3B30] text-cream-50 py-2.5 overflow-hidden">
+    <div className="bg-cream-white border-y border-cream-300 text-espresso py-2.5 overflow-hidden">
       <div className="flex w-max animate-[pl-marquee_36s_linear_infinite]">
         {[0, 1].map(copy => (
           <div key={copy} className="flex shrink-0" aria-hidden={copy === 1}>
             {[0, 1, 2].map(i => (
-              <p key={i} className="font-sans text-[10px] tracking-[0.25em] uppercase leading-relaxed whitespace-nowrap px-12">
+              <p key={i} className="font-sans text-[11px] tracking-[0.25em] uppercase leading-relaxed whitespace-nowrap px-12">
                 Fait avec amour, pour vous. &nbsp;·&nbsp; Petite Lavande is launching soon &mdash;&nbsp;
-                <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" tabIndex={copy === 1 ? -1 : undefined} className="underline underline-offset-2 hover:text-gold-300 transition-colors">Instagram</a>
+                <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" tabIndex={copy === 1 ? -1 : undefined} className="underline underline-offset-2 hover:text-gold-500 transition-colors">Instagram</a>
                 &nbsp;&amp;&nbsp;
-                <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" tabIndex={copy === 1 ? -1 : undefined} className="underline underline-offset-2 hover:text-gold-300 transition-colors">Facebook</a>
+                <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" tabIndex={copy === 1 ? -1 : undefined} className="underline underline-offset-2 hover:text-gold-500 transition-colors">Facebook</a>
                 &nbsp;for updates
               </p>
             ))}
@@ -151,9 +187,8 @@ export function LaunchMarquee() {
 // `overHero`: on pages whose first section is a full-bleed hero, the header sits
 // transparent over the image at the top (cream-white text) and turns into the
 // normal solid bar once the user scrolls. Pages without a hero pass nothing and
-// get the solid in-flow header. `strip` swaps the top announcement strip for
-// custom content (the homepage passes the perks ticker).
-export function Header({ overHero = false, strip }: { overHero?: boolean; strip?: React.ReactNode }) {
+// get the solid in-flow header.
+export function Header({ overHero = false }: { overHero?: boolean }) {
   const [open, setOpen] = useState(false)
   // Auto-hide: the bar slides up while scrolling down (max product/image
   // space) and slides back in on scroll-up (cart + nav one flick away).
@@ -210,8 +245,8 @@ export function Header({ overHero = false, strip }: { overHero?: boolean; strip?
     <>
     <header ref={headerRef} className={`fixed top-0 inset-x-0 z-40 transition-transform duration-300 ease-out ${hidden ? '-translate-y-full' : 'translate-y-0'} ${overHero ? '' : 'bg-[#FBF5E9]'}`}>
 
-      {/* Top strip — the launch marquee by default; pages can swap it */}
-      {strip ?? <LaunchMarquee />}
+      {/* Top strip — the perks marquee, identical on every page */}
+      <PerksMarquee />
 
       {/* Nav bar — Organic-Zoo style: at the hero top, a big centered logo with the
           nav beneath it; on scroll it collapses smoothly to a compact bar with the

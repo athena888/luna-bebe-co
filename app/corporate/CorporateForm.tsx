@@ -6,7 +6,7 @@ import { submitB2bLead } from '@/app/actions/b2b'
 const TEAM_SIZES = ['<50', '50-200', '200-1000', '1000+']
 const GIFTS_PER_YEAR = ['Just once', '1–25', '25–100', '100–500', '500+']
 
-const labelCls = 'block font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-1.5'
+const labelCls = 'block font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-1.5'
 const inputCls = 'w-full px-4 py-3 border border-cream-300 bg-cream-50 font-sans text-sm text-bark-700 focus:outline-none focus:border-bark-400 transition-colors'
 
 export function CorporateForm() {
