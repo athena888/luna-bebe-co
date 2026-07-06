@@ -20,9 +20,9 @@ export const CARTONS: Carton[] = [
 ]
 
 // Prebuilt-box slug → carton id. Sets not listed default to 'M'.
-// Flagged for physical test-packs: l-heritage in XL (fullest set), the
-// bouquet sets in S (bouquet ~25cm fits diagonally), petit-marin in M
-// (may drop to S without the towel).
+// Dried bouquets are 16–20cm — they fit FLAT in every carton size.
+// Flagged for physical test-packs: l-heritage in XL (fullest set) and
+// petit-marin in M (may drop to S without the towel).
 export const BOX_CARTON: Record<string, string> = {
   'l-heritage': 'XL',
   'aube-rosee': 'L',
