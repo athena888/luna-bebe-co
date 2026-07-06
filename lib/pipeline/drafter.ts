@@ -1,6 +1,6 @@
 import { anthropic } from '../anthropic'
 import { supabaseAdmin } from '../supabase'
-import { getLookbookToggle, bumpDailyStats } from './config'
+import { getLookbookToggle, bumpDailyStats, pipelineEnabled } from './config'
 import { getCurrentLookbook } from '../lookbook/current'
 
 // Stage 2 — drafter. For each discovered A/B prospect, assemble the email from
@@ -80,10 +80,12 @@ Rules:
 
 export interface DrafterStats { drafted: number; followups: number; skipped: { id: string; why: string }[]; dry: boolean }
 
-export async function runDrafter(opts: { dry?: boolean; timeBudgetMs?: number } = {}): Promise<DrafterStats> {
+export async function runDrafter(opts: { dry?: boolean; timeBudgetMs?: number } = {}): Promise<DrafterStats & { paused?: boolean }> {
   const deadline = Date.now() + (opts.timeBudgetMs ?? 270_000)
   const dry = Boolean(opts.dry)
-  const stats: DrafterStats = { drafted: 0, followups: 0, skipped: [], dry }
+  const stats: DrafterStats & { paused?: boolean } = { drafted: 0, followups: 0, skipped: [], dry }
+
+  if (!(await pipelineEnabled())) { stats.paused = true; return stats }
 
   const templates = await getPipelineTemplates()
   if (!templates.length) throw new Error('pipeline_templates is empty — run supabase/migrations/outreach_pipeline.sql')

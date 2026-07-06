@@ -4,7 +4,7 @@ import { emailDomain } from '../outreach'
 import { verifyEmail } from '../emailVerifier'
 import {
   getRotation, comboForCursor, advanceRotation, getBlockedDomains, isBlockedEmail,
-  getDailySendCap, bumpDailyStats, type Combo,
+  getDailySendCap, bumpDailyStats, pipelineEnabled, type Combo,
 } from './config'
 
 // Stage 1 — nightly prospector. A Claude agent (web_search tool) finds ~40
@@ -140,9 +140,16 @@ export function patternCandidates(personName: string, domain: string): string[] 
 }
 
 // ── Main run ─────────────────────────────────────────────────────────────────
-export async function runProspector(opts: { dry?: boolean; timeBudgetMs?: number } = {}): Promise<ProspectorStats> {
+export async function runProspector(opts: { dry?: boolean; timeBudgetMs?: number } = {}): Promise<ProspectorStats & { paused?: boolean }> {
   const deadline = Date.now() + (opts.timeBudgetMs ?? 270_000)
   const dry = Boolean(opts.dry)
+
+  if (!(await pipelineEnabled())) {
+    return {
+      combo: { metro: '', category: '', titles: [] }, combosWorked: 0, found: 0, dedupRejected: 0,
+      gradeA: 0, gradeB: 0, gradeC: 0, gradeD: 0, parked: 0, reverified: 0, dry, paused: true,
+    }
+  }
 
   const rotation = await getRotation()
   const combo = comboForCursor(rotation, rotation.cursor)

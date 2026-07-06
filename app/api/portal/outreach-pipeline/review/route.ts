@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { addSuppression, emailDomain } from '@/lib/outreach'
 import { quotaStatus } from '@/lib/emailVerifier'
-import { getDailySendCap, bumpDailyStats, getRecentRuns } from '@/lib/pipeline/config'
+import { getDailySendCap, bumpDailyStats, getRecentRuns, pipelineEnabled, setPipelineEnabled } from '@/lib/pipeline/config'
 import { getCurrentLookbook } from '@/lib/lookbook/current'
 import { getCurrentPressKit } from '@/lib/press-kit'
 import { getPipelineTemplates, renderPipelineTemplate } from '@/lib/pipeline/drafter'
@@ -44,6 +44,7 @@ export async function GET() {
       getCurrentLookbook(),
       getCurrentPressKit(),
     ])
+    const enabled = await pipelineEnabled()
 
     const [queuedCount, sentToday, replied, manualCheck, lookbookWaiting, needsPersonalization, awaitingKit] = await Promise.all([
       supabaseAdmin.from('sends').select('id', { count: 'exact', head: true }).eq('status', 'queued'),
@@ -87,6 +88,7 @@ export async function GET() {
         needsPersonalization: needsPersonalization.data ?? [],
         awaitingKit: awaitingKit.count ?? 0,
       },
+      pipelineEnabled: enabled,
     })
   } catch (e) {
     console.error('review GET error:', e)
@@ -100,6 +102,12 @@ export async function POST(req: NextRequest) {
   const { action, draftId } = body
 
   try {
+    // ── Master switch: pause/resume the whole pipeline (prospect+draft+send) ──
+    if (action === 'set_pipeline_enabled') {
+      await setPipelineEnabled(Boolean((body as { enabled?: boolean }).enabled))
+      return NextResponse.json({ ok: true })
+    }
+
     // ── Press: finish a parked personalization by hand ───────────────────────
     if (action === 'finish_personalization' && body.prospectId) {
       const ref = (body.guideReference ?? '').trim()

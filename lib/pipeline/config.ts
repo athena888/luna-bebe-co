@@ -66,6 +66,17 @@ export async function getDailySendCap(): Promise<number> {
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : 25
 }
 
+/** Master switch for the whole pipeline (prospect + draft + send). Missing row
+ *  = enabled; only an explicit false pauses. Toggled from Morning Review. */
+export async function pipelineEnabled(): Promise<boolean> {
+  const v = await getConfig<boolean>('pipeline_enabled')
+  return v !== false
+}
+
+export async function setPipelineEnabled(enabled: boolean): Promise<void> {
+  await setConfig('pipeline_enabled', enabled)
+}
+
 export async function getLookbookToggle(): Promise<boolean> {
   const v = await getConfig<{ include_in_first_touch?: boolean }>('lookbook')
   return Boolean(v?.include_in_first_touch)

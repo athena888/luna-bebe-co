@@ -3,7 +3,7 @@ import { supabaseAdmin } from '../supabase'
 import { sendEmail, gmailSender } from '../gmail'
 import { withFooter } from '../outreach-templates'
 import { getSuppressedSet, emailDomain } from '../outreach'
-import { getDailySendCap, getConfig, bumpDailyStats } from './config'
+import { getDailySendCap, getConfig, bumpDailyStats, pipelineEnabled } from './config'
 
 // Pipeline queue drainer. THE structural guarantee lives here: the only query
 // that feeds sendEmail() inner-joins email_drafts with status
@@ -19,6 +19,7 @@ export interface DrainStats {
   failed: number
   skipped: { to: string; why: string }[]
   dry: boolean
+  paused?: boolean
 }
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
@@ -71,6 +72,11 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
   const budget = opts.timeBudgetMs ?? 280_000
   const dry = Boolean(opts.dry)
 
+  // Paused from Morning Review → even already-approved drafts hold (queued).
+  if (!(await pipelineEnabled())) {
+    return { capRemaining: 0, sent: 0, failed: 0, skipped: [], dry, paused: true }
+  }
+
   const cap = await getDailySendCap()
   const capRemaining = Math.max(0, cap - (await sentTodayCount()))
   const stats: DrainStats = { capRemaining, sent: 0, failed: 0, skipped: [], dry }
@@ -94,6 +100,21 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
   let pressSent = await pressSentTodayCount()
   let pressSentThisDrain = 0
 
+  // Belt-and-suspenders duplicate guard: never hit the same address twice in a
+  // day, regardless of how the drafts came to exist. Seeded with everything
+  // already sent today, then updated as this drain sends.
+  const sentToday = new Set<string>()
+  {
+    const since = `${new Date().toISOString().slice(0, 10)}T00:00:00Z`
+    const { data: todays } = await supabaseAdmin.from('sends')
+      .select('id, draft:email_drafts!inner(prospect:prospects!inner(email))')
+      .eq('status', 'sent').gte('sent_at', since)
+    for (const r of (todays ?? []) as unknown as { draft: { prospect: { email: string | null } } }[]) {
+      const e = r.draft?.prospect?.email?.toLowerCase()
+      if (e) sentToday.add(e)
+    }
+  }
+
   for (let i = 0; i < rows.length; i++) {
     if (Date.now() - started > budget) break
     if (stats.sent >= capRemaining) break
@@ -113,10 +134,12 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
     if (p.status === 'replied' || p.status === 'bounced' || p.status === 'suppressed') { await skip(`prospect ${p.status}`); continue }
     // Press sub-cap reached → leave the row QUEUED for tomorrow's drain.
     if (isPress && pressSent >= pressCap) { await skip('press daily cap reached (stays queued)', false); continue }
+    // Same address already contacted today → hold until tomorrow, never double-send.
+    if (sentToday.has(to)) { await skip('already emailed today (stays queued)', false); continue }
     if (!(await hasMx(emailDomain(to)))) { await skip('no MX record (would bounce)'); continue }
 
     const body = withFooter(r.draft.body)   // CAN-SPAM footer at send time, never in the draft
-    if (dry) { stats.sent++; if (isPress) pressSent++; continue }
+    if (dry) { stats.sent++; if (isPress) pressSent++; sentToday.add(to); continue }
 
     try {
       const res = await sendEmail({ to, subject: r.draft.subject, text: body, replyTo: gmailSender() })
@@ -134,6 +157,7 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
         updated_at: new Date().toISOString(),
       }).eq('id', p.id)
       if (isPress) { pressSent++; pressSentThisDrain++ }
+      sentToday.add(to)
       // Mirror into the unified touches ledger (cockpit visibility). No
       // followup_due — the pipeline drafts its own follow-ups after 6 days.
       const contactId = await mirrorContact(to, p.company, p.person_name)

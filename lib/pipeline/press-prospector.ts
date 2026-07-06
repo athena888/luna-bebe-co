@@ -2,7 +2,7 @@ import { anthropic } from '../anthropic'
 import { supabaseAdmin } from '../supabase'
 import { emailDomain, getSuppressedSet } from '../outreach'
 import { verifyEmail } from '../emailVerifier'
-import { getConfig, setConfig, bumpDailyStats } from './config'
+import { getConfig, setConfig, bumpDailyStats, pipelineEnabled } from './config'
 import { patternCandidates } from './prospector'
 
 // Press-channel prospector — the byline method. For each outlet in tonight's
@@ -117,6 +117,8 @@ export async function runPressProspector(opts: { dry?: boolean; timeBudgetMs?: n
     outletsWorked: 0, found: 0, dedupRejected: 0, reopened: 0,
     gradeA: 0, gradeB: 0, gradeC: 0, gradeD: 0, parked: 0, dry,
   }
+
+  if (!(await pipelineEnabled())) return stats   // paused from Morning Review
 
   const cfg = await getPressConfig()
   if (!cfg) return null   // press config not migrated/seeded yet — press mode inactive

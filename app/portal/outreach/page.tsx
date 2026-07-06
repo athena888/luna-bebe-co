@@ -43,6 +43,7 @@ interface Payload {
   queue: Draft[]; stats: Stats; quota: Quota; runs: Run[]; replies: Reply[]
   lookbook: { published: { url: string; version: number } | null; waiting: number }
   press?: { kit: { url: string; imageCount: number } | null; needsPersonalization: ParkedPress[]; awaitingKit: number }
+  pipelineEnabled?: boolean
 }
 
 const LAVENDER = '#C6B2DC'
@@ -143,6 +144,19 @@ export default function ReviewPage() {
     if (url) void act('mark_placement', { prospectId, url })
   }
 
+  async function togglePipeline() {
+    const enabled = data?.pipelineEnabled !== false
+    if (enabled && !confirm('Pause ALL outreach? Prospecting, drafting, and sending stop — even already-approved drafts hold until you resume.')) return
+    setBusy('pipeline')
+    try {
+      await fetch('/api/portal/outreach-pipeline/review', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'set_pipeline_enabled', enabled: !enabled }),
+      })
+      await load()
+    } finally { setBusy(null) }
+  }
+
   const q = data?.queue ?? []
   const corporate = q.filter(d => d.prospect?.channel !== 'press')
   const pressQ = q.filter(d => d.prospect?.channel === 'press')
@@ -215,6 +229,14 @@ export default function ReviewPage() {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
         <h1 className="font-serif text-2xl text-bark-700">Morning Review</h1>
         <div className="flex items-center gap-2">
+          {data && (
+            <button onClick={togglePipeline} disabled={busy !== null}
+              title={data.pipelineEnabled !== false ? 'Click to pause all outreach (prospecting, drafting, sending)' : 'Click to resume outreach'}
+              className={`inline-flex items-center gap-1.5 font-sans text-[10px] tracking-[0.1em] uppercase px-2.5 py-1 rounded-lg transition-colors ${data.pipelineEnabled !== false ? 'bg-sage-500 text-cream-50 hover:bg-sage-600' : 'bg-bark-700 text-cream-100 hover:bg-bark-600'}`}>
+              {busy === 'pipeline' ? <Loader size={11} className="animate-spin" /> : <span className={`w-1.5 h-1.5 rounded-full ${data.pipelineEnabled !== false ? 'bg-cream-50' : 'bg-rose-300'}`} />}
+              {data.pipelineEnabled !== false ? 'Outreach on' : 'Paused — resume'}
+            </button>
+          )}
           {lb && (lb.published
             ? <span className="inline-flex items-center gap-1 bg-sage-100 text-sage-600 font-sans text-[10px] tracking-[0.1em] uppercase px-2 py-1 rounded-lg"><BookOpen size={11} /> Lookbook v{lb.published.version}</span>
             : <span className="inline-flex items-center gap-1 bg-rose-100 text-bark-600 font-sans text-[10px] tracking-[0.1em] uppercase px-2 py-1 rounded-lg"><BookOpen size={11} /> Not published{lb.waiting > 0 ? ` — ${lb.waiting} waiting` : ''}</span>)}
@@ -234,6 +256,13 @@ export default function ReviewPage() {
       {error && (
         <div className="flex items-center gap-2 bg-rose-200/70 border border-rose-300 text-bark-700 rounded-xl px-4 py-3 mb-4 font-sans text-sm">
           <AlertTriangle size={16} className="shrink-0" /> {error}
+        </div>
+      )}
+
+      {data?.pipelineEnabled === false && (
+        <div className="flex items-center gap-2 bg-bark-700 text-cream-100 rounded-xl px-4 py-3 mb-4 font-sans text-sm">
+          <AlertTriangle size={16} className="shrink-0 text-rose-300" />
+          Outreach is paused — no prospecting, drafting, or sending (approved drafts stay queued). Hit “Paused — resume” above to restart.
         </div>
       )}
 

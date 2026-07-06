@@ -1,6 +1,6 @@
 import { anthropic } from '../anthropic'
 import { supabaseAdmin } from '../supabase'
-import { bumpDailyStats } from './config'
+import { bumpDailyStats, pipelineEnabled } from './config'
 import { getPressConfig } from './press-prospector'
 import { getCurrentPressKit } from '../press-kit'
 import { renderPipelineTemplate, getPipelineTemplates } from './drafter'
@@ -79,6 +79,8 @@ interface PressProspectRow {
 export async function runPressDrafter(opts: { dry?: boolean; deadline: number }): Promise<PressDrafterStats> {
   const stats: PressDrafterStats = { pressDrafted: 0, parkedPersonalization: 0, parkedAwaitingKit: 0, releasedFromAwaitingKit: 0 }
   const dry = Boolean(opts.dry)
+
+  if (!(await pipelineEnabled())) return stats   // paused from Morning Review
 
   const cfg = await getPressConfig()
   if (!cfg) return stats   // press not migrated/seeded yet
