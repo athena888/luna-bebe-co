@@ -140,7 +140,11 @@ insert into public.outreach_config (key, value) values
       'apollo',          jsonb_build_object('monthly_quota', 100,  'used', 0, 'cycle_start', null),
       'neverbounce',     jsonb_build_object('monthly_quota', 1000, 'used', 0, 'cycle_start', null),
       'millionverifier', jsonb_build_object('monthly_quota', 200,  'used', 0, 'cycle_start', null)))),
-  ('lookbook', jsonb_build_object('include_in_first_touch', false))
+  ('lookbook', jsonb_build_object(
+    'include_in_first_touch', false,
+    'logo_ribbon', 'printed gift tag with your logo, +$2/box',
+    'lead_time', '2–3 weeks for orders of 25+',
+    'contact_line', 'hello@petitelavande.com · petitelavande.com/corporate'))
 on conflict (key) do nothing;
 
 insert into public.pipeline_templates (key, category, subject, body, generic_opening) values

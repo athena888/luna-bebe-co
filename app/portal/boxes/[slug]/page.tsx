@@ -285,7 +285,7 @@ export default function BoxEditorPage({ slugProp, onBack }: { slugProp?: string;
             <ArrowLeft size={18} />
           </button>
           <div>
-            <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 capitalize">{audience === 'baby' ? 'For Baby' : audience === 'mama' ? 'For Mama' : 'Baby & Mama'} · {variant}{season ? ` · ${season}` : ''}</p>
+            <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-bark-400 capitalize">{audience === 'baby' ? 'For Baby' : audience === 'mama' ? 'Wellness' : 'Baby & Wellness'} · {variant}{season ? ` · ${season}` : ''}</p>
             <h1 className="font-serif text-2xl text-bark-600">{box.name}</h1>
           </div>
         </div>
@@ -313,8 +313,8 @@ export default function BoxEditorPage({ slugProp, onBack }: { slugProp?: string;
               <label className={labelCls}>Audience (grouping)</label>
               <select value={audience} onChange={e => setAudience(e.target.value as 'baby' | 'mama' | 'bundle')} className={inputCls}>
                 <option value="baby">For Baby</option>
-                <option value="mama">For Mama</option>
-                <option value="bundle">Baby &amp; Mama Bundle</option>
+                <option value="mama">Wellness</option>
+                <option value="bundle">Baby &amp; Wellness Bundle</option>
               </select>
             </div>
             <div>
@@ -500,9 +500,9 @@ export default function BoxEditorPage({ slugProp, onBack }: { slugProp?: string;
                     {product && Number.isFinite(product.price) && <span className="text-[10px] text-bark-500/60">• ${(product.price / 100).toFixed(2)}</span>}
                   </div>
                   <ProductPicker products={products} value={slot.product_id} onChange={id => updateSlotProduct(slot.key, id)} />
-                  {/* For Baby / For Mama — optional grouping shown on the box page */}
+                  {/* For Baby / Wellness — optional grouping shown on the box page */}
                   <div className="flex items-center gap-1 mt-1.5">
-                    {([['baby', 'For Baby'], ['mama', 'For Mama']] as const).map(([val, lbl]) => (
+                    {([['baby', 'For Baby'], ['mama', 'Wellness']] as const).map(([val, lbl]) => (
                       <button
                         key={val}
                         type="button"

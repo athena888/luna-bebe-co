@@ -12,12 +12,13 @@ export const metadata = {
 
 export default async function BoxesPage() {
   const boxes = await getBoxes()
-  // Group by AUDIENCE (For Baby / For Mama / Baby & Mama Bundle); season is a
-  // per-box label. Only non-empty groups, in this order.
+  // Group by AUDIENCE (For Baby / Wellness / Baby & Wellness Bundle); season is
+  // a per-box label. Only non-empty groups, in this order. ("Wellness", not
+  // "Mama" — Emily wants box naming that doesn't presume who it's for.)
   const AUDIENCE_GROUPS = [
     { key: 'baby', label: 'For Baby' },
-    { key: 'mama', label: 'For Mama' },
-    { key: 'bundle', label: 'Baby & Mama Bundle' },
+    { key: 'mama', label: 'Wellness' },
+    { key: 'bundle', label: 'Baby & Wellness Bundle' },
   ] as const
   const byStyle = AUDIENCE_GROUPS
     .map(g => ({ style: g.label, boxes: boxes.filter(b => b.audience === g.key) }))

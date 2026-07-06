@@ -47,12 +47,12 @@ export default function BoxesPortalPage() {
     } finally { setBusy(null) }
   }
 
-  // Group by audience (For Baby / For Mama / Baby & Mama Bundle); season is a
-  // per-box label.
+  // Group by audience (For Baby / Wellness / Baby & Wellness Bundle); season is
+  // a per-box label. The 'mama' DB value keeps its name — only labels changed.
   const AUDIENCE_GROUPS = [
     { key: 'baby', label: 'For Baby' },
-    { key: 'mama', label: 'For Mama' },
-    { key: 'bundle', label: 'Baby & Mama Bundle' },
+    { key: 'mama', label: 'Wellness' },
+    { key: 'bundle', label: 'Baby & Wellness Bundle' },
   ] as const
   const groups = AUDIENCE_GROUPS
     .map(g => ({ style: g.label, items: boxes.filter(b => b.audience === g.key) }))

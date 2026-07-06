@@ -652,7 +652,11 @@ insert into public.outreach_config (key, value) values
       'apollo',          jsonb_build_object('monthly_quota', 100,  'used', 0, 'cycle_start', null),
       'neverbounce',     jsonb_build_object('monthly_quota', 1000, 'used', 0, 'cycle_start', null),
       'millionverifier', jsonb_build_object('monthly_quota', 200,  'used', 0, 'cycle_start', null)))),
-  ('lookbook', jsonb_build_object('include_in_first_touch', false))
+  ('lookbook', jsonb_build_object(
+    'include_in_first_touch', false,
+    'logo_ribbon', 'printed gift tag with your logo, +$2/box',
+    'lead_time', '2–3 weeks for orders of 25+',
+    'contact_line', 'hello@petitelavande.com · petitelavande.com/corporate'))
 on conflict (key) do nothing;
 
 insert into public.pipeline_templates (key, category, subject, body, generic_opening) values
@@ -856,13 +860,13 @@ values ('brand-assets', 'brand-assets', false)
 on conflict (id) do nothing;
 
 -- Seed the six tiers (edit inline in Portal → Lookbook → Builder).
-insert into public.catalog_tiers (name, price, sort) values
-  ('Petit Nuage', 85, 1),
-  ('Douce Maman', 95, 2),
-  ('Signature Lavande', 125, 3),
-  ('Mère et Bébé', 140, 4),
-  ('Maison', 175, 5),
-  ('L''Heure Dorée', 200, 6)
+insert into public.catalog_tiers (name, price, corporate_price_10, corporate_price_25, corporate_price_50, description, sort) values
+  ('Petit Nuage', 85, 81, 77, 72, 'A gentle first hello — soft organic essentials for baby''s first days.', 1),
+  ('Douce Maman', 95, 90, 86, 81, 'For her — calming botanicals and small comforts for the fourth trimester.', 2),
+  ('Signature Lavande', 125, 119, 113, 106, 'Our signature — Provence lavender, organic cotton, and keepsakes chosen with care.', 3),
+  ('Mère et Bébé', 140, 133, 126, 119, 'Comfort for her, softness for baby — one gift that remembers both.', 4),
+  ('Maison', 175, 166, 158, 149, 'A fuller welcome — soft layers, gentle care, and keepsakes for the nursery.', 5),
+  ('L''Heure Dorée', 200, 190, 180, 170, 'The golden hour — our most complete gift, finished by hand.', 6)
 on conflict (name) do nothing;
 
 -- Done.

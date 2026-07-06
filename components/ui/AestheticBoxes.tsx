@@ -182,7 +182,7 @@ function ItemsList({ box, onOpen }: { box: ResolvedBox; onOpen: (i: BoxItem) => 
       )}
       {mama.length > 0 && (
         <div>
-          <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">For Mama</p>
+          <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">Wellness</p>
           <div className="grid grid-cols-2 gap-x-3 gap-y-4">
             {mama.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} onOpen={onOpen} />)}
           </div>
