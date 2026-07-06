@@ -128,7 +128,7 @@ async function findPublishedEmail(domain: string, personName: string): Promise<s
 }
 
 // ── Grade B: pattern inference (verified before it can ever queue) ──────────
-function patternCandidates(personName: string, domain: string): string[] {
+export function patternCandidates(personName: string, domain: string): string[] {
   const parts = personName.toLowerCase().replace(/[^a-z\s-]/g, '').split(/\s+/).filter(Boolean)
   const first = parts[0] ?? ''
   const last = parts.length > 1 ? parts[parts.length - 1] : ''

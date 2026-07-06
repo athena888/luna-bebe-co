@@ -28,6 +28,7 @@ export interface BrandImage {
   tier: string | null
   tags: string[]
   off_palette: boolean
+  is_press: boolean       // shown on the public /press kit page + zip
   width: number | null
   height: number | null
   created_at: string
@@ -140,12 +141,25 @@ export async function listImages(): Promise<BrandImage[]> {
   return rows.map(r => ({ ...r, url: byPath.get(r.storage_path) ?? undefined }))
 }
 
-export async function retagImage(id: string, patch: { kind?: string | null; tier?: string | null; tags?: string[] }): Promise<void> {
+export async function retagImage(id: string, patch: { kind?: string | null; tier?: string | null; tags?: string[]; is_press?: boolean }): Promise<void> {
   const row: Record<string, unknown> = {}
   if (patch.kind !== undefined) row.kind = patch.kind && IMAGE_KINDS.includes(patch.kind as ImageKind) ? patch.kind : null
   if (patch.tier !== undefined) row.tier = patch.tier || null
   if (patch.tags !== undefined) row.tags = patch.tags.slice(0, 8).map(t => String(t).toLowerCase())
+  if (patch.is_press !== undefined) row.is_press = Boolean(patch.is_press)
   if (Object.keys(row).length) await supabaseAdmin.from('brand_images').update(row).eq('id', id)
+}
+
+/** Press-kit images (is_press) with long signed URLs for the public page. */
+export async function listPressImages(expiresIn = 3600): Promise<BrandImage[]> {
+  const { data } = await supabaseAdmin.from('brand_images')
+    .select('*').eq('is_press', true).order('created_at', { ascending: false })
+  const rows = (data ?? []) as BrandImage[]
+  if (!rows.length) return rows
+  const { data: signed } = await supabaseAdmin.storage.from(BRAND_BUCKET)
+    .createSignedUrls(rows.map(r => r.storage_path), expiresIn)
+  const byPath = new Map((signed ?? []).map(s => [s.path, s.signedUrl]))
+  return rows.map(r => ({ ...r, url: byPath.get(r.storage_path) ?? undefined }))
 }
 
 export async function deleteImage(id: string): Promise<void> {

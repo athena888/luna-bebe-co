@@ -137,25 +137,38 @@ export async function runDrafter(opts: { dry?: boolean; timeBudgetMs?: number } 
   return stats
 }
 
+const PRESS_FOLLOWUP_AFTER_DAYS = 7   // press waits a little longer (7–10 day window)
+
 async function draftFollowups(templates: PipelineTemplate[], dry: boolean, deadline: number): Promise<number> {
   const tpl = templates.find(t => t.key === 'followup')
-  if (!tpl) return 0
+  const pressTpl = templates.find(t => t.key === 'press-followup')
+  if (!tpl && !pressTpl) return 0
   const cutoff = new Date(Date.now() - FOLLOWUP_AFTER_DAYS * 86_400_000).toISOString()
+  const pressCutoff = new Date(Date.now() - PRESS_FOLLOWUP_AFTER_DAYS * 86_400_000).toISOString()
+  // Press follow-ups need the press-kit link; loaded lazily to avoid the cost
+  // when there are no press sends yet.
+  const { getCurrentPressKit } = await import('../press-kit')
+  const kit = await getCurrentPressKit().catch(() => null)
 
   // Sends old enough, whose prospect is still in 'sent' (a reply flips it to
   // 'replied', a bounce to 'bounced' — both drop out here automatically).
   const { data } = await supabaseAdmin.from('sends')
-    .select('id, sent_at, draft:email_drafts!inner(id, prospect_id, is_followup, prospect:prospects!inner(id, company, person_name, status))')
+    .select('id, sent_at, draft:email_drafts!inner(id, prospect_id, is_followup, prospect:prospects!inner(id, company, person_name, status, channel, outlet))')
     .eq('status', 'sent').lte('sent_at', cutoff)
   let made = 0
   const seen = new Set<string>()
 
-  for (const row of (data ?? []) as unknown as { draft: { is_followup: boolean; prospect: { id: string; company: string; person_name: string | null; status: string } } }[]) {
+  for (const row of (data ?? []) as unknown as { sent_at: string | null; draft: { is_followup: boolean; prospect: { id: string; company: string; person_name: string | null; status: string; channel: string | null; outlet: string | null } } }[]) {
     if (Date.now() > deadline - 10_000) break
     const pr = row.draft?.prospect
     if (!pr || pr.status !== 'sent' || row.draft.is_followup) continue   // one follow-up max, only un-replied
     if (seen.has(pr.id)) continue
     seen.add(pr.id)
+
+    const isPress = pr.channel === 'press'
+    if (isPress && (!pressTpl || !kit)) continue                                   // no kit → no press follow-up
+    if (isPress && (row.sent_at ?? '') > pressCutoff) continue                     // press waits the full 7 days
+    if (!isPress && !tpl) continue
 
     // Skip if a follow-up draft already exists for this prospect.
     const { count } = await supabaseAdmin.from('email_drafts')
@@ -163,12 +176,14 @@ async function draftFollowups(templates: PipelineTemplate[], dry: boolean, deadl
     if ((count ?? 0) > 0) continue
 
     const firstName = (pr.person_name ?? '').trim().split(/\s+/)[0] ?? ''
-    const rendered = renderPipelineTemplate(tpl, { first_name: firstName, company: pr.company, opening: '-' })
+    const rendered = isPress
+      ? renderPipelineTemplate(pressTpl!, { first_name: firstName, outlet: pr.outlet ?? pr.company, press_kit_url: kit!.url })
+      : renderPipelineTemplate(tpl!, { first_name: firstName, company: pr.company, opening: '-' })
     if (!rendered.ok) continue
 
     if (!dry) {
       await supabaseAdmin.from('email_drafts').insert({
-        prospect_id: pr.id, template_key: 'followup', subject: rendered.subject, body: rendered.body,
+        prospect_id: pr.id, template_key: isPress ? 'press-followup' : 'followup', subject: rendered.subject, body: rendered.body,
         is_followup: true, draft_kind: 'followup', status: 'pending_review',
       })
     }

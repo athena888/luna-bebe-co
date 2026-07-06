@@ -14,7 +14,7 @@ const KINDS = ['hero', 'tier', 'detail', 'lifestyle', 'logo'] as const
 
 interface BrandImage {
   id: string; storage_path: string; kind: string | null; tier: string | null
-  tags: string[]; off_palette: boolean; width: number | null; height: number | null
+  tags: string[]; off_palette: boolean; is_press?: boolean; width: number | null; height: number | null
   created_at: string; url?: string
 }
 
@@ -88,6 +88,14 @@ export default function LookbookImagesPage() {
     await load()
   }
 
+  async function togglePress(img: BrandImage) {
+    setImages(list => list.map(i => i.id === img.id ? { ...i, is_press: !img.is_press } : i))
+    await fetch('/api/portal/lookbook/images', {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: img.id, is_press: !img.is_press }),
+    })
+  }
+
   return (
     <div className="p-4 md:p-8 max-w-5xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
@@ -150,6 +158,11 @@ export default function LookbookImagesPage() {
                   <div className="flex items-center gap-1 font-sans text-[10px] text-bark-500 uppercase tracking-wide">
                     <span className="bg-cream-200 rounded px-1.5 py-0.5">{img.kind ?? 'untagged'}</span>
                     {img.tier && <span className="bg-sage-100 text-sage-600 rounded px-1.5 py-0.5 normal-case">{img.tier}</span>}
+                    <button onClick={() => togglePress(img)}
+                      title="Show this image on the public /press kit page (and its download zip)"
+                      className={`rounded px-1.5 py-0.5 transition-colors ${img.is_press ? 'bg-terra-300 text-cream-50' : 'bg-cream-200 text-bark-300 hover:text-bark-500'}`}>
+                      press
+                    </button>
                   </div>
                   {img.tags.length > 0 && <p className="font-sans text-[10px] text-bark-400 mt-1 truncate">{img.tags.join(' · ')}</p>}
                   <div className="flex gap-1 mt-1.5">

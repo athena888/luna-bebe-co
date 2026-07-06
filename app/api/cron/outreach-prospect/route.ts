@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { runProspector } from '@/lib/pipeline/prospector'
+import { runPressProspector } from '@/lib/pipeline/press-prospector'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
@@ -20,8 +21,13 @@ export async function GET(req: NextRequest) {
   }
   const dry = req.nextUrl.searchParams.get('dry') === '1' || process.env.DRY_RUN === '1'
   try {
-    const stats = await runProspector({ dry, timeBudgetMs: 270_000 })
-    return NextResponse.json({ ok: true, ...stats })
+    // Corporate first (larger volume), then the press byline slice with the
+    // remaining time. Press returns null until its config row is migrated.
+    const started = Date.now()
+    const stats = await runProspector({ dry, timeBudgetMs: 160_000 })
+    const press = await runPressProspector({ dry, startedAt: started, timeBudgetMs: 260_000 })
+      .catch(e => { console.error('press prospector failed:', e); return null })
+    return NextResponse.json({ ok: true, ...stats, press })
   } catch (e) {
     console.error('outreach-prospect cron error:', e)
     return NextResponse.json({ error: e instanceof Error ? e.message : 'Prospector failed' }, { status: 500 })

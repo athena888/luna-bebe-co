@@ -19,9 +19,9 @@ export async function GET() {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const body = (await req.json()) as { id?: string; kind?: string | null; tier?: string | null; tags?: string[] }
+    const body = (await req.json()) as { id?: string; kind?: string | null; tier?: string | null; tags?: string[]; is_press?: boolean }
     if (!body.id) return NextResponse.json({ error: 'id required' }, { status: 400 })
-    await retagImage(body.id, { kind: body.kind, tier: body.tier, tags: body.tags })
+    await retagImage(body.id, { kind: body.kind, tier: body.tier, tags: body.tags, is_press: body.is_press })
     return NextResponse.json({ ok: true })
   } catch (e) {
     console.error('lookbook images PATCH error:', e)
