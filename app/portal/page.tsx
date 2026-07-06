@@ -61,8 +61,8 @@ export default async function PortalDashboard() {
           <div className="space-y-2">
             {[
               { href: '/portal/orders', label: 'View all orders →' },
-              { href: '/portal/cockpit', label: 'Daily Cockpit →' },
-              { href: '/portal/outreach', label: 'Outreach →' },
+              { href: '/portal/outreach', label: 'Morning Review →' },
+              { href: '/portal/lookbook/images', label: 'Lookbook →' },
             ].map(({ href, label }) => (
               <a key={href} href={href} className="block font-sans text-sm text-gold-500 hover:text-gold-600 transition-colors">{label}</a>
             ))}
