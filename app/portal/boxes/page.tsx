@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
-import { Loader, Settings, Package, Eye, EyeOff } from 'lucide-react'
+import { Loader, Settings, Package, Eye, EyeOff, Trash2 } from 'lucide-react'
 import type { ResolvedBox } from '@/lib/prebuilt-boxes-db'
 import BoxEditorPage from './[slug]/page'
 
@@ -25,6 +25,16 @@ export default function BoxesPortalPage() {
   }, [])
 
   useEffect(() => { load() }, [load])
+
+  async function removeBox(slug: string, name: string) {
+    if (!window.confirm(`Permanently delete "${name}"? This cannot be undone — use Hide instead if you might want it back.`)) return
+    setBusy(slug)
+    try {
+      const res = await fetch(`/api/portal/boxes/${slug}`, { method: 'DELETE' })
+      if (res.ok) setBoxes(prev => prev.filter(b => b.slug !== slug))
+      else window.alert('Could not delete the box — try again.')
+    } finally { setBusy(null) }
+  }
 
   async function toggleActive(slug: string, next: boolean) {
     setBusy(slug)
@@ -88,16 +98,25 @@ export default function BoxesPortalPage() {
                           <p className="font-sans text-xs text-bark-400 mt-2">{itemCount}/7 items · {fmt(box.customPrice)}</p>
                         </div>
                       </button>
-                      <div className="px-4 pb-4">
+                      <div className="px-4 pb-4 flex gap-2">
                         <button
                           onClick={() => toggleActive(box.slug, !box.active)}
                           disabled={busy === box.slug}
-                          className={`w-full flex items-center justify-center gap-2 py-2 rounded-lg font-sans text-[10px] tracking-[0.15em] uppercase transition-colors disabled:opacity-50 ${
+                          className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg font-sans text-[10px] tracking-[0.15em] uppercase transition-colors disabled:opacity-50 ${
                             box.active ? 'border border-cream-300 text-bark-500 hover:border-bark-400' : 'bg-bark-600 text-white hover:bg-bark-700'
                           }`}
                         >
                           {busy === box.slug ? <Loader size={12} className="animate-spin" /> : box.active ? <EyeOff size={12} /> : <Eye size={12} />}
                           {box.active ? 'Shown — hide' : 'Hidden — show'}
+                        </button>
+                        <button
+                          onClick={() => removeBox(box.slug, box.name)}
+                          disabled={busy === box.slug}
+                          title="Delete permanently"
+                          aria-label={`Delete ${box.name}`}
+                          className="shrink-0 w-9 flex items-center justify-center py-2 rounded-lg border border-cream-300 text-bark-400 hover:border-red-400 hover:text-red-500 transition-colors disabled:opacity-50"
+                        >
+                          <Trash2 size={13} />
                         </button>
                       </div>
                     </div>

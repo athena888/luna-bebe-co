@@ -209,6 +209,13 @@ export async function updateBox(slug: string, input: UpdateBoxInput): Promise<vo
   if (error) throw error
 }
 
+/** Permanently delete a prebuilt box row. The storefront and portal read by
+ * slug, so no other tables reference it — orders store item snapshots. */
+export async function deleteBox(slug: string): Promise<void> {
+  const { error } = await supabaseAdmin.from('prebuilt_boxes').delete().eq('slug', slug)
+  if (error) throw error
+}
+
 /** Product IDs referenced by any box (used to block deleting them). Returns which boxes use each. */
 export async function getProtectedProductIds(): Promise<Map<string, string[]>> {
   const map = new Map<string, string[]>()
