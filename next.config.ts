@@ -5,11 +5,12 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 const nextConfig: NextConfig = {
-  // The lookbook PDF renderer registers Cormorant Garamond from assets/fonts at
-  // runtime — make sure the serverless bundles for those routes include them.
+  // The lookbook PDF renderer reads fonts AND brand art (lavender divider,
+  // botanical illustration) from assets/ at runtime — make sure the serverless
+  // bundles for those routes include them.
   outputFileTracingIncludes: {
-    '/api/portal/lookbook/render': ['./assets/fonts/**/*'],
-    '/api/portal/lookbook/publish': ['./assets/fonts/**/*'],
+    '/api/portal/lookbook/render': ['./assets/**/*'],
+    '/api/portal/lookbook/publish': ['./assets/**/*'],
   },
   images: {
     remotePatterns: [

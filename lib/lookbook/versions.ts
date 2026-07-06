@@ -12,6 +12,15 @@ import { BRAND_BUCKET, signedUrlFor } from './images'
 
 export interface ImageMap { cover?: string | null; detail?: string | null; tiers?: Record<string, string | null> }
 
+/** The website's corporate hero photo (public site_images slot) — used as the
+ *  cover fallback so the PDF shares the site's imagery before Emily assigns one. */
+async function siteCorporateHeroUrl(): Promise<string | undefined> {
+  const { data } = await supabaseAdmin.from('site_images')
+    .select('public_url').eq('slot_key', 'corporate.hero_bg')
+    .order('sort_order').limit(1).maybeSingle()
+  return (data?.public_url as string) || undefined
+}
+
 /** Resolve brand_images ids in the slot map to signed URLs the renderer can fetch. */
 export async function buildRenderInput(copy: LookbookCopy, imageMap: ImageMap): Promise<RenderInput> {
   const [tiers, corporate] = await Promise.all([getTiers(), getCorporateFields()])
@@ -29,10 +38,13 @@ export async function buildRenderInput(copy: LookbookCopy, imageMap: ImageMap): 
     const url = id ? urlById.get(id) : undefined
     if (url) tierImages[name] = url
   }
+  // Cover falls back to the site's own corporate hero photo when no brand
+  // image is assigned; with neither, the renderer uses the botanical art.
+  const cover = (imageMap.cover ? urlById.get(imageMap.cover) : undefined) ?? (await siteCorporateHeroUrl())
   return {
     copy, tiers, corporate,
     images: {
-      cover: imageMap.cover ? urlById.get(imageMap.cover) : undefined,
+      cover,
       detail: imageMap.detail ? urlById.get(imageMap.detail) : undefined,
       tierImages,
     },
