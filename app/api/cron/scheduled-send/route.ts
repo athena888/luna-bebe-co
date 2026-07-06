@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { logOutboundEmail, getDueCampaigns, updateCampaignProgress, type Campaign } from '@/lib/outreach'
 import { planOutreach, injectCode } from '@/lib/outreach-send'
 import { sendEmail, gmailSender } from '@/lib/gmail'
+import { drainPipelineQueue } from '@/lib/pipeline/sender'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
@@ -11,6 +12,11 @@ export const maxDuration = 300
 // scheduled_at runs. Resumable: a campaign stays 'sending' until its due audience
 // is drained (fewer than a full cap remain), then flips to 'sent'. All the usual
 // guards (suppression, MX, strict merge, footer, STOP) come from planOutreach.
+//
+// ALSO drains the daily-pipeline queue (morning-review approved drafts) first —
+// this tick fires 17:00 UTC (9/10am PT), right after Emily's review. The drainer
+// only ever selects sends joined to drafts with status 'approved_by_user' and
+// enforces the daily cap from today's outbound touches count.
 
 const TIME_BUDGET_MS = 280_000
 
@@ -32,6 +38,12 @@ export async function GET(req: NextRequest) {
   const started = Date.now()
   const nowIso = new Date().toISOString()
   const cap = Math.max(1, Number(process.env.OUTREACH_DAILY_CAP) || 25)
+
+  // 1) Daily-pipeline queue (approved-only, cap-aware, jittered).
+  const pipeline = await drainPipelineQueue({ startedAt: started, timeBudgetMs: TIME_BUDGET_MS })
+    .catch(e => { console.error('pipeline drain failed:', e); return null })
+
+  // 2) Scheduled campaigns.
   const due: Campaign[] = await getDueCampaigns(nowIso)
   const summary: { id: string; name: string | null; sent: number; skipped: number; status: string }[] = []
 
@@ -66,5 +78,10 @@ export async function GET(req: NextRequest) {
     summary.push({ id: c.id, name: c.name, sent, skipped: skipped.length, status: drained ? 'sent' : 'sending' })
   }
 
-  return NextResponse.json({ ok: true, processed: summary.length, campaigns: summary })
+  return NextResponse.json({
+    ok: true,
+    pipeline: pipeline ? { sent: pipeline.sent, failed: pipeline.failed, skipped: pipeline.skipped.length, capRemaining: pipeline.capRemaining } : null,
+    processed: summary.length,
+    campaigns: summary,
+  })
 }

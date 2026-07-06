@@ -5,6 +5,10 @@ import {
 } from '@/lib/outreach'
 import { classifyEmail } from '@/lib/cockpit-ai'
 import { supabaseAdmin } from '@/lib/supabase'
+import {
+  isBounceNotification, extractFailedRecipient, handleProspectBounce,
+  handleProspectReply, handleProspectUnsubscribe,
+} from '@/lib/pipeline/inbound'
 
 // Inbound + outbound email webhook. Public endpoint (NOT under /api/portal) —
 // secured with a shared secret. Point your email provider's inbound/parse
@@ -84,6 +88,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, outbound: true, recipient })
     }
 
+    // ── Bounce NDR (mailer-daemon / "undeliverable") → suppress the failed
+    //    recipient, mark its prospect bounced. Handled before classification so
+    //    delivery notices never look like replies.
+    if (isBounceNotification(fromEmail, subject)) {
+      const failed = extractFailedRecipient(snippet)
+      if (failed) {
+        const prospectBounced = await handleProspectBounce(failed)
+        const c = await findContactByEmail(failed)
+        if (c) await closeOpenOutbound(c.id)
+        return NextResponse.json({ ok: true, bounce: true, failed, prospectBounced })
+      }
+      return NextResponse.json({ ok: true, bounce: true, skipped: 'no failed recipient found' })
+    }
+
     // ── Opt-out: "STOP" / "unsubscribe" → suppress immediately, never email again.
     const optOut = /\b(stop|unsubscribe|opt[\s-]?out|remove me)\b/i.test(`${subject ?? ''} ${snippet ?? ''}`)
     if (optOut) {
@@ -93,12 +111,22 @@ export async function POST(req: NextRequest) {
         await closeOpenOutbound(c.id)
         await supabaseAdmin.from('contacts').update({ status: 'closed', updated_at: new Date().toISOString() }).eq('id', c.id)
       }
+      // Pipeline prospect: also supersede pending drafts + queue a confirm-once
+      // draft for approval.
+      await handleProspectUnsubscribe(fromEmail)
       return NextResponse.json({ ok: true, suppressed: true })
     }
 
     // ── Flow 2: inbound — classify, then match or quarantine ─────────────────
     const classification = await classifyEmail({ from: fromEmail, subject: subject ?? '', body: snippet ?? '' }).catch(() => null)
     const contact = await findContactByEmail(fromEmail)
+
+    // Pipeline prospect reply: mark replied, cancel the pending follow-up, and
+    // (for interested replies) queue the reply-assist draft — lookbook link when
+    // published, "I'll send it this week" fallback otherwise. Review-gated.
+    const interested = classification?.category === 'b2b_reply' && classification.sentiment !== 'negative'
+    const prospectReply = await handleProspectReply(fromEmail, { interested: Boolean(interested) })
+      .catch(e => { console.error('prospect reply handling failed:', e); return { matched: false, replyAssistDrafted: false } })
 
     if (contact) {
       const corporate = looksCorporate(fromEmail)
@@ -120,6 +148,11 @@ export async function POST(req: NextRequest) {
         ? { priority: 'hot', reason: classification?.summary || 'Reply — respond today' }
         : { priority: 'warm', reason: classification?.summary || 'Reply — respond' })
       return NextResponse.json({ ok: true, matched: true, corporate, category: classification?.category ?? null })
+    }
+
+    // A known pipeline prospect (no CRM contact yet) — handled above, don't quarantine.
+    if (prospectReply.matched) {
+      return NextResponse.json({ ok: true, matched: true, prospect: true, replyAssistDrafted: prospectReply.replyAssistDrafted, category: classification?.category ?? null })
     }
 
     // Unknown sender → quarantine (likely_corporate if non-freemail).
