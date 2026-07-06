@@ -15,6 +15,7 @@
     "@capacitor/cli": "^8.3.4",
     "@capacitor/core": "^8.3.4",
     "@google-analytics/data": "^6.1.0",
+    "@react-pdf/renderer": "^4.5.1",
     "@stripe/react-stripe-js": "^6.3.0",
     "@stripe/stripe-js": "^9.5.0",
     "@supabase/ssr": "^0.10.3",
@@ -23,6 +24,7 @@
     "dotenv": "^17.4.2",
     "framer-motion": "^12.38.0",
     "googleapis": "^173.0.0",
+    "heic-convert": "^2.1.0",
     "lucide-react": "^1.14.0",
     "next": "16.2.6",
     "next-intl": "^4.13.0",
@@ -37,6 +39,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/heic-convert": "^2.1.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
