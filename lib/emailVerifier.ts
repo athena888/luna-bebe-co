@@ -100,7 +100,39 @@ const millionverifier: VerifierAdapter = {
   },
 }
 
-export const ADAPTERS: VerifierAdapter[] = [hunter, zerobounce, apollo, neverbounce, millionverifier]
+// Email Awesome is ASYNC: POST creates a validation, then we poll by id until
+// COMPLETE (observed ~25–45s). That latency is why it sits second in the
+// cascade behind Hunter — plentiful (1,000/mo renews) but slow. A timeout or
+// FAILED throws, which fails over to the next provider.
+const emailawesome: VerifierAdapter = {
+  name: 'emailawesome',
+  envVar: 'EMAILAWESOME_API_KEY',
+  async verify(email, apiKey) {
+    const base = 'https://api.emailawesome.com/api/validations/email_validation'
+    const created = await getJson(base, {
+      method: 'POST',
+      headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    })
+    const id = String(created.id ?? '')
+    if (!id) throw new Error('emailawesome: no validation id')
+    for (let i = 0; i < 15; i++) {                       // ~60s ceiling
+      await new Promise(r => setTimeout(r, 4000))
+      const d = await getJson(`${base}/${id}`, { headers: { 'x-api-key': apiKey } })
+      const status = String(d.status ?? '')
+      if (status === 'FAILED') throw new Error('emailawesome: validation failed')
+      if (status !== 'COMPLETE') continue
+      const v = String(d.email_address_status ?? '')
+      if (v === 'VALID') return { verdict: 'deliverable', score: 95 }
+      if (v === 'INVALID') return { verdict: 'undeliverable', score: 0 }
+      if (v === 'CATCH_ALL') return { verdict: 'risky', score: 50 }
+      return { verdict: 'unknown', score: null }
+    }
+    throw new Error('emailawesome: validation timed out')
+  },
+}
+
+export const ADAPTERS: VerifierAdapter[] = [hunter, emailawesome, zerobounce, apollo, neverbounce, millionverifier]
 
 // ── Quota state (outreach_config.verifier) ───────────────────────────────────
 interface ProviderState { monthly_quota: number; used: number; cycle_start: string | null }

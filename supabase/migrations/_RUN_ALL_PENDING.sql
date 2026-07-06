@@ -645,9 +645,10 @@ insert into public.outreach_config (key, value) values
     'domains', jsonb_build_array('amazon.com','walmart.com','verisk.com'),
     'competitors', jsonb_build_array())),
   ('verifier', jsonb_build_object(
-    'cascade', jsonb_build_array('hunter','zerobounce','apollo','neverbounce','millionverifier'),
+    'cascade', jsonb_build_array('hunter','emailawesome','zerobounce','neverbounce','apollo','millionverifier'),
     'providers', jsonb_build_object(
-      'hunter',          jsonb_build_object('monthly_quota', 50,   'used', 0, 'cycle_start', null),
+      'hunter',          jsonb_build_object('monthly_quota', 100,  'used', 0, 'cycle_start', null),
+      'emailawesome',    jsonb_build_object('monthly_quota', 1000, 'used', 0, 'cycle_start', null),
       'zerobounce',      jsonb_build_object('monthly_quota', 100,  'used', 0, 'cycle_start', null),
       'apollo',          jsonb_build_object('monthly_quota', 100,  'used', 0, 'cycle_start', null),
       'neverbounce',     jsonb_build_object('monthly_quota', 1000, 'used', 0, 'cycle_start', null),
