@@ -109,15 +109,15 @@ export function ScrimControl({ scrimKey, defaultScrim, label = 'Colour overlay',
           className="w-24 px-2 py-1.5 border border-cream-300 rounded font-mono text-xs text-bark-600 focus:outline-none focus:border-bark-400"
           placeholder={defaultScrim.hex}
         />
-        {/* Opacity slider */}
-        <div className="flex-1 flex items-center gap-2 min-w-0">
-          <input
-            type="range" min={0} max={100} value={pct}
-            onChange={e => { setPct(+e.target.value); schedule(hex, +e.target.value) }}
-            className="flex-1 accent-bark-600"
-          />
-          <span className="font-sans text-[11px] text-bark-500 w-9 text-right shrink-0">{pct}%</span>
-        </div>
+      </div>
+      {/* Opacity slider — its own row under the swatch so it never gets cramped */}
+      <div className="mt-2 flex items-center gap-2">
+        <input
+          type="range" min={0} max={100} value={pct}
+          onChange={e => { setPct(+e.target.value); schedule(hex, +e.target.value) }}
+          className="flex-1 accent-bark-600"
+        />
+        <span className="font-sans text-[11px] text-bark-500 w-9 text-right shrink-0">{pct}%</span>
       </div>
       {/* Live preview over a checkerboard so transparency is visible */}
       <div className="mt-2 h-6 rounded overflow-hidden border border-cream-200 relative bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGElEQVQYlWNgYGCQwoKxgqGgcJA5h5yTAAAI4AApTKdiVgAAAABJRU5ErkJggg==')] bg-repeat">

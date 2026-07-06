@@ -1,5 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase'
-import { TrendingUp, ShoppingBag, DollarSign, ExternalLink } from 'lucide-react'
+import { TrendingUp, ShoppingBag, DollarSign } from 'lucide-react'
 import { UTMLinkBuilder } from './UTMLinkBuilder'
 import { InsightsTabs } from '@/components/portal/InsightsTabs'
 
@@ -310,34 +310,6 @@ export default async function AnalyticsPage() {
       </div>
 
       <UTMLinkBuilder />
-
-      {/* Deep-dive links */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <a
-          href="https://analytics.google.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-between bg-cream-50 border border-cream-200 rounded-xl px-5 py-4 hover:border-bark-300 transition-colors group"
-        >
-          <div>
-            <p className="font-sans text-sm font-medium text-bark-600">Google Analytics</p>
-            <p className="font-sans text-xs text-bark-400 mt-0.5">Traffic, sessions, bounce rate, conversions</p>
-          </div>
-          <ExternalLink size={16} className="text-bark-400 group-hover:text-bark-600 transition-colors" />
-        </a>
-        <a
-          href="https://business.facebook.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-between bg-cream-50 border border-cream-200 rounded-xl px-5 py-4 hover:border-bark-300 transition-colors group"
-        >
-          <div>
-            <p className="font-sans text-sm font-medium text-bark-600">Meta Business Suite</p>
-            <p className="font-sans text-xs text-bark-400 mt-0.5">Facebook & Instagram ad performance, ROAS</p>
-          </div>
-          <ExternalLink size={16} className="text-bark-400 group-hover:text-bark-600 transition-colors" />
-        </a>
-      </div>
     </div>
   )
 }

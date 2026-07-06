@@ -155,7 +155,6 @@ export function GiftGuidesEditor() {
               <CorpSlot slotKey="corporate.hero_bg" label="Hero — desktop" ratio="21:9" hint="~2000×860 (21:9), subject centered" scrim={{ hex: '#FAF9F8', opacity: 0.40, note: 'tint over the hero photo — raise for legibility' }} />
               <CorpSlot slotKey="corporate.hero_bg.mobile" label="Hero — mobile" ratio="9:16" hint="~1080×1920 portrait — shown on phones" />
               <CorpSlot slotKey="corporate.points_bg" label="Three-points band" ratio="21:9" hint="~2000×860, room for white text" scrim={{ hex: '#181716', opacity: 0, note: 'off by default — raise to darken the photo' }} />
-              <CorpSlot slotKey="corporate.form_bg" label="Lead form background" ratio="16:9" hint="Soft, light · ~2000×1130" scrim={{ hex: '#FAF9F8', opacity: 0.85, note: 'tint so the form stays readable' }} />
             </div>
           </section>
         </div>

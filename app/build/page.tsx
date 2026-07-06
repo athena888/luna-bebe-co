@@ -201,14 +201,12 @@ export default function BuildPage() {
   const [lightbox, setLightbox] = useState<string | null>(null)
   const [heroImg, setHeroImg] = useState<string | null>(null)
   const [heroImgMobile, setHeroImgMobile] = useState<string | null>(null)
-  const [productsBg, setProductsBg] = useState<string | null>(null)
   useEffect(() => {
-    fetch('/api/site-images?keys=build.header_bg,build.header_bg.mobile,build.products_bg')
+    fetch('/api/site-images?keys=build.header_bg,build.header_bg.mobile')
       .then(r => r.json())
       .then(d => {
         setHeroImg(d.images?.['build.header_bg']?.public_url ?? null)
         setHeroImgMobile(d.images?.['build.header_bg.mobile']?.public_url ?? null)
-        setProductsBg(d.images?.['build.products_bg']?.public_url ?? null)
       })
       .catch(() => {})
   }, [])
@@ -463,15 +461,7 @@ export default function BuildPage() {
           </div>
         </section>
 
-        <div
-          className="w-full pt-12 pb-4 relative"
-          style={productsBg ? {
-            backgroundImage: `url(${productsBg})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          } : undefined}
-        >
-          {productsBg && <ScrimOverlay scrimKey="build.products_bg" defaultHex="#FAF9F8" defaultOpacity={0.80} variant="flat" />}
+        <div className="w-full pt-12 pb-4 relative">
           <div className="relative z-10 space-y-8">
           {activeCategories.map((cat) => (
             <section key={cat} id={`cat-${cat}`}>

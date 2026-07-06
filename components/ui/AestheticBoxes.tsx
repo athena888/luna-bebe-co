@@ -419,15 +419,8 @@ function BoxSection({
   box: ResolvedBox; style: string; flip: boolean
   onOpenItems: (b: ResolvedBox) => void; onPreview: (i: BoxItem) => void
 }) {
-  const [panelBg, setPanelBg] = useState<string | null>(null)
   const [size, setSize] = useState<string>(BOX_SIZES[0])
   const hasGarment = box.items.some(isGarment)
-  useEffect(() => {
-    fetch(`/api/site-images?keys=boxes.info_bg`)
-      .then(r => r.json())
-      .then(d => setPanelBg(d.images?.['boxes.info_bg']?.public_url ?? null))
-      .catch(() => {})
-  }, [])
 
   return (
     <section
@@ -448,11 +441,6 @@ function BoxSection({
            mobile: natural flow */}
       <div
         className={`relative isolate lg:w-[40%] flex flex-col lg:h-full lg:overflow-hidden ${flip ? 'lg:order-1' : ''}`}
-        style={panelBg ? {
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.88), rgba(255,255,255,0.88)), url(${panelBg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        } : undefined}
       >
         {SHOW_BOTANICAL && (
           <div className="box-botanical-panel absolute inset-0 pointer-events-none" style={{ zIndex: -1 }} aria-hidden="true" />

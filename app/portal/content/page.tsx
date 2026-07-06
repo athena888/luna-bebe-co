@@ -13,7 +13,7 @@ import BoxesPortal from '@/app/portal/boxes/page'
 import CardStylesPortal from '@/app/portal/card-styles/page'
 import { GiftGuidesEditor } from '@/components/portal/GiftGuidesEditor'
 
-type PageId = 'home' | 'story' | 'build' | 'boxes' | 'guides' | 'giftcards' | 'corporate' | 'track' | 'legal' | 'global' | 'social' | 'journal' | 'signin' | 'products' | 'prebuilt' | 'cardstyles'
+type PageId = 'home' | 'story' | 'build' | 'guides' | 'giftcards' | 'corporate' | 'track' | 'legal' | 'global' | 'social' | 'journal' | 'signin' | 'products' | 'prebuilt' | 'cardstyles'
 
 const TABS: { id: PageId; label: string }[] = [
   { id: 'home',       label: 'Homepage' },
@@ -22,7 +22,6 @@ const TABS: { id: PageId; label: string }[] = [
   { id: 'prebuilt',   label: 'Prebuilt Boxes' },
   { id: 'cardstyles', label: 'Card Styles' },
   { id: 'build',      label: 'Build Your Box' },
-  { id: 'boxes',      label: 'Boxes Page' },
   { id: 'guides',     label: 'Gift Guides' },
   { id: 'giftcards',  label: 'Gift Cards' },
   { id: 'corporate',  label: 'Corporate' },
@@ -115,35 +114,9 @@ export default function ContentPage() {
                 hint="Mobile crop · ~1080×1920. Portrait — shown on phones instead of the desktop image above."
                 where="Fills the entire screen at the top of /build on phones"
               />
-              <SlotRow
-                slotKey="build.products_bg"
-                label="Products area background"
-                context="Background behind the product category list on the Build Your Box page"
-                ratio="16:9"
-                hint="Soft, light — cards sit on top · ~2000×1125 (16:9)"
-                where="Behind the product category list on /build"
-                scrim={{ hex: '#FAF9F8', opacity: 0.80, label: 'Colour overlay', note: 'cream wash over the photo so the product cards stay readable' }}
-              />
             </div>
           </div>
         )}
-
-        {active === 'boxes' && (
-          <div className="p-8 max-w-3xl">
-            <SectionHeading title="Boxes Page" note="The /boxes ready-made gift sets page." />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <SlotRow
-                slotKey="boxes.info_bg"
-                label="Info panel background"
-                context="Background behind the title, item list, and price panel on every box card"
-                ratio="9:16"
-                hint="Portrait, soft & light · ~1000×1800. Shared across all box cards."
-                where="Behind the text panel on every box card on /boxes"
-              />
-            </div>
-          </div>
-        )}
-
 
         {active === 'giftcards' && (
           <div className="p-8 max-w-3xl">
@@ -206,15 +179,6 @@ export default function ContentPage() {
                 ratio="21:9"
                 hint="Shown full width, uncropped — the band height follows the image. Use a wide image with room for text · ~2000×860"
                 where="Behind the dark &ldquo;One less thing / Traceable / Simple to run&rdquo; band (white text)"
-              />
-              <SlotRow
-                slotKey="corporate.form_bg"
-                label="Lead form background"
-                context="Background behind the corporate lead form"
-                ratio="16:9"
-                hint="Soft, light — the form sits on top · ~2000×1130"
-                where="Behind the &ldquo;Tell us about your team&rdquo; contact form"
-                scrim={{ hex: '#FAF9F8', opacity: 0.85, label: 'Colour overlay', note: 'cream wash over the photo so the form stays readable' }}
               />
             </div>
           </div>

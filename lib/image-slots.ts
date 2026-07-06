@@ -34,11 +34,9 @@ export const IMAGE_SLOTS: ImageSlot[] = [
 
   // ── Build Your Box ──────────────────────────────────────────────────────────
   { key: 'build.header_bg',   label: 'Hero background',           group: 'Build Your Box', where: 'Tall hero at the very top of Build Your Box', ratio: '16:9', hint: 'Fills a tall hero — keep the subject centered · ~2400×1500', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1100×1400' }, scrimDefault: { hex: '#181716', opacity: 0.75 } },
-  { key: 'build.products_bg', label: 'Products area background',  group: 'Build Your Box', where: 'Background behind the product category list on /build', ratio: '16:9', hint: 'Soft, light — cards sit on top · ~2000×1130', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.80 } },
 
   // ── Corporate ──────────────────────────────────────────────────────────────
   { key: 'corporate.hero_bg', label: 'Hero background', group: 'Corporate', where: 'Background behind the "When your people become parents" hero', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.40 } },
-  { key: 'corporate.form_bg', label: 'Lead form background', group: 'Corporate', where: 'Background behind the "Tell us about your team" contact form', ratio: '16:9', hint: 'Soft, light — form sits on top · ~2000×1130', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.85 } },
   { key: 'corporate.points_bg', label: 'Three-points background', group: 'Corporate', where: 'Behind the "One less thing / Traceable / Simple to run" band (photo above the olive panel on phones)', ratio: '21:9', hint: 'Shown full width, uncropped on desktop · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250 — phones crop the desktop image to 4:5 otherwise' }, scrimDefault: { hex: '#181716', opacity: 0 } },
 
   // ── Legal Pages ─────────────────────────────────────────────────────────────

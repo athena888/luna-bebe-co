@@ -48,9 +48,13 @@ function BoxPicker() {
   const [busy, setBusy] = useState<string | null>(null)
 
   useEffect(() => {
+    // Only boxes that are actually visible on the site — hidden drafts can't be
+    // featured, so they don't belong in this picker (unhide in Prebuilt Boxes first).
     fetch('/api/portal/boxes')
       .then(r => r.json())
-      .then(d => setBoxes((d.boxes ?? []).map((b: BoxLite) => ({ slug: b.slug, name: b.name, variant: b.variant, image: b.image, featured: b.featured, active: b.active, style: b.style }))))
+      .then(d => setBoxes(((d.boxes ?? []) as BoxLite[])
+        .filter(b => b.active)
+        .map(b => ({ slug: b.slug, name: b.name, variant: b.variant, image: b.image, featured: b.featured, active: b.active, style: b.style }))))
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
@@ -71,21 +75,21 @@ function BoxPicker() {
 
   return (
     <>
-      <p className="font-sans text-[10px] text-bark-400/80 mb-4">Pick which Curated Gift Sets appear in the homepage carousel. {shown} selected. (Inactive boxes never show, even if selected.)</p>
+      <p className="font-sans text-[10px] text-bark-400/80 mb-4">Pick which of your visible boxes appear in the homepage carousel. {shown} selected. Hidden boxes aren&rsquo;t listed — unhide them under Prebuilt Boxes first.</p>
       {loading ? (
         <div className="flex items-center gap-2 text-bark-400 py-6 text-sm"><Loader size={14} className="animate-spin" /> Loading boxes…</div>
       ) : boxes.length === 0 ? (
-        <p className="text-sm text-bark-400 py-4">No boxes yet. Create them under Prebuilt Boxes.</p>
+        <p className="text-sm text-bark-400 py-4">No visible boxes yet — everything in Prebuilt Boxes is currently hidden. Unhide a box there and it will appear here.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {boxes.map(box => (
-            <label key={box.slug} className={`flex items-center gap-3 bg-white border rounded-lg p-3 cursor-pointer transition-colors ${box.featured ? 'border-bark-400' : 'border-cream-200'} ${!box.active ? 'opacity-60' : ''}`}>
+            <label key={box.slug} className={`flex items-center gap-3 bg-white border rounded-lg p-3 cursor-pointer transition-colors ${box.featured ? 'border-bark-400' : 'border-cream-200'}`}>
               <div className="w-12 h-14 shrink-0 bg-cream-200 rounded overflow-hidden">
                 {box.image && <img src={box.image} alt={box.name} className="w-full h-full object-cover" />}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-serif text-base text-bark-600 truncate">{box.name}</p>
-                <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-gold-400">{box.style} · {box.variant}{!box.active && ' · hidden'}</p>
+                <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-gold-400">{box.style} · {box.variant}</p>
               </div>
               {busy === box.slug
                 ? <Loader size={16} className="animate-spin text-bark-400" />
