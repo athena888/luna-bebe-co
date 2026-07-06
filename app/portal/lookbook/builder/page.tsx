@@ -192,7 +192,7 @@ export default function LookbookBuilderPage() {
           </div>
 
           <div className="bg-white rounded-2xl border border-cream-300 p-4 grid sm:grid-cols-3 gap-3">
-            {([['logo_ribbon', 'Logo-ribbon option', 'e.g. satin ribbon with your logo, +$4/box'],
+            {([['logo_ribbon', 'Logo gift-tag option', 'e.g. printed gift tag with your logo on the ribbon, +$2/box'],
               ['lead_time', 'Lead time', 'e.g. 2–3 weeks for 25+'],
               ['contact_line', 'Contact line', 'hello@petitelavande.com · petitelavande.com/corporate']] as const).map(([k, label, ph]) => (
               <label key={k} className="block">

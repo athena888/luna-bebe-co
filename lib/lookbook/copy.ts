@@ -55,7 +55,7 @@ Respond with ONLY a JSON object:
 {"tagline": string (≤10 words, for the cover),
  "brand_story": string (exactly 2 sentences),
  "tier_descriptions": { "<tier name>": string (one line, ≤18 words), ... },
- "corporate_blurb": string (2–3 sentences on the corporate program: per-box pricing at 10/25/50, optional logo ribbon, handled end-to-end)}`
+ "corporate_blurb": string (2–3 sentences on the corporate program: per-box pricing at 10/25/50, an optional printed gift tag with the client's logo hung on the ribbon — NEVER call it printing ON the ribbon — handled end-to-end)}`
 
 export async function draftLookbookCopy(tiers: CatalogTier[], corporate: CorporateFields): Promise<LookbookCopy> {
   const res = await anthropic.messages.create({
@@ -64,7 +64,7 @@ export async function draftLookbookCopy(tiers: CatalogTier[], corporate: Corpora
     system: COPY_SYSTEM,
     messages: [{
       role: 'user',
-      content: `Tiers:\n${tiers.map(t => `- ${t.name} — $${t.price}${t.description ? ` (${t.description})` : ''}`).join('\n')}\n\nCorporate details: logo ribbon: ${corporate.logo_ribbon || 'available'}; lead time: ${corporate.lead_time || '2–3 weeks'}; contact: ${corporate.contact_line || 'hello@petitelavande.com'}.\n\nDraft the lookbook copy.`,
+      content: `Tiers:\n${tiers.map(t => `- ${t.name} — $${t.price}${t.description ? ` (${t.description})` : ''}`).join('\n')}\n\nCorporate details: logo gift tag: ${corporate.logo_ribbon || 'available'}; lead time: ${corporate.lead_time || '2–3 weeks'}; contact: ${corporate.contact_line || 'hello@petitelavande.com'}.\n\nDraft the lookbook copy.`,
     }],
   })
   const text = res.content.filter(b => b.type === 'text').map(b => (b as { text: string }).text).join('')

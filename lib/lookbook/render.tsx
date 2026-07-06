@@ -111,7 +111,7 @@ function LookbookDoc({ copy, tiers, corporate, images }: RenderInput) {
               ))}
             </View>
           ) : null}
-          {corporate.logo_ribbon ? <Text style={s.corpMeta}>Logo ribbon: {corporate.logo_ribbon}</Text> : null}
+          {corporate.logo_ribbon ? <Text style={s.corpMeta}>Logo gift tag: {corporate.logo_ribbon}</Text> : null}
           {corporate.lead_time ? <Text style={s.corpMeta}>Lead time: {corporate.lead_time}</Text> : null}
         </View>
 

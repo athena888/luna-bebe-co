@@ -726,7 +726,7 @@ $tpl$Hi {{first_name}},
 
 {{opening}}
 
-I'm Emily, founder of Petite Lavande — organic newborn & postpartum gift boxes, finished by hand in Seattle. Agencies use us for client and team baby gifts — personal, on-brand for you (your card, optional logo ribbon), and fully handled.
+I'm Emily, founder of Petite Lavande — organic newborn & postpartum gift boxes, finished by hand in Seattle. Agencies use us for client and team baby gifts — personal, on-brand for you (your card, optional logo gift tag), and fully handled.
 
 Could I send our corporate lookbook with pricing? Details at petitelavande.com/corporate.
 
@@ -776,7 +776,7 @@ $tpl$Hi {{first_name}},
 
 Wonderful — here's our lookbook with corporate pricing: {{lookbook_url}}
 
-It covers our boxes, per-box pricing at 10/25/50 quantities, the logo-ribbon option, and lead times. Happy to answer anything, or put together a sample order for {{company}}.
+It covers our boxes, per-box pricing at 10/25/50 quantities, the logo gift-tag option, and lead times. Happy to answer anything, or put together a sample order for {{company}}.
 
 Warmly,
 Emily Liu, Founder · Petite Lavande$tpl$,
