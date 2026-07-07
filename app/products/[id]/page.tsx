@@ -3,6 +3,8 @@ import { getCatalogProduct } from '@/lib/products-db'
 import { CATEGORY_LABELS } from '@/lib/products'
 import { JsonLd } from '@/components/ui/JsonLd'
 import ProductDetailClient from './ProductDetailClient'
+import { getCatalog } from '@/lib/products-db'
+import type { RelatedItem } from '@/components/ui/RelatedProducts'
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
@@ -50,6 +52,18 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const p = await getCatalogProduct(id)
   const url = `${BASE}/products/${id}`
 
+  // Related cross-links (same category first, topped up from the catalog) —
+  // rendered by ProductDetailClient above its footer. Best-effort.
+  let related: RelatedItem[] = []
+  if (p) {
+    try {
+      const catalog = await getCatalog({ activeOnly: true })
+      const same = catalog.filter(x => x.id !== p.id && x.category === p.category)
+      const rest = catalog.filter(x => x.id !== p.id && x.category !== p.category)
+      related = [...same, ...rest].slice(0, 3).map(x => ({ id: x.id, name: x.name, price: x.price, image: productImage(x) }))
+    } catch { /* page renders without cross-links */ }
+  }
+
   return (
     <>
       {p && (
@@ -93,7 +107,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           )}
         </>
       )}
-      <ProductDetailClient />
+      <ProductDetailClient related={related} />
     </>
   )
 }

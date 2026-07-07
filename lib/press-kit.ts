@@ -14,7 +14,9 @@ export async function getCurrentPressKit(): Promise<PressKit | null> {
     const { count } = await supabaseAdmin.from('brand_images')
       .select('id', { count: 'exact', head: true }).eq('is_press', true)
     if (!count) return null
-    return { url: `${BASE}/press`, imageCount: count }
+    // UTM-tagged per docs/utm-conventions.md — /press is a real page, so these
+    // flow into GA + first-touch order attribution via UTMCapture.
+    return { url: `${BASE}/press?utm_source=press&utm_medium=email`, imageCount: count }
   } catch {
     return null   // is_press column not migrated yet — behave as "no kit"
   }

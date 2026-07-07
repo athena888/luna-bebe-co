@@ -4,6 +4,7 @@ import { CONTACT_EMAIL } from '@/lib/site-config'
 export const metadata: Metadata = {
   title: 'Privacy Policy',
   description: 'How Petite Lavande collects, uses, and protects your personal information.',
+  alternates: { canonical: '/legal/privacy' },
 }
 
 export default function PrivacyPage() {

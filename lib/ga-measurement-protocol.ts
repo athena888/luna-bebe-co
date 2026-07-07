@@ -1,0 +1,53 @@
+// Server-side GA4 purchase event via the Measurement Protocol — fired from the
+// Stripe webhook so ad blockers can't erase revenue data. The ONLY place a
+// purchase event exists (nothing fires client-side, so no double counting);
+// transaction_id = order id makes GA dedupe replays regardless.
+// Env: NEXT_PUBLIC_GA_ID (measurement id, already set) + GA4_API_SECRET
+// (GA4 Admin → Data Streams → Measurement Protocol API secrets). Missing env →
+// silent no-op; failures are logged and never block order processing.
+
+interface PurchaseItem { id: string; name: string; price: number; qty?: number; category?: string }
+
+export async function sendPurchaseEvent(input: {
+  orderId: string
+  valueCents: number
+  currency?: string
+  items?: PurchaseItem[]
+  clientId?: string | null   // GA client id when known; falls back to a stable server id
+}): Promise<void> {
+  const measurementId = process.env.NEXT_PUBLIC_GA_ID
+  const apiSecret = process.env.GA4_API_SECRET
+  if (!measurementId || !apiSecret) return
+
+  const body = {
+    // Without the browser's _ga cookie we use the order id as client_id — the
+    // event still lands with full revenue; attribution ties via transaction_id.
+    client_id: input.clientId || `srv.${input.orderId}`,
+    events: [{
+      name: 'purchase',
+      params: {
+        transaction_id: input.orderId,
+        value: input.valueCents / 100,
+        currency: input.currency ?? 'USD',
+        items: (input.items ?? []).map(i => ({
+          item_id: i.id, item_name: i.name, price: i.price / 100, quantity: i.qty ?? 1, item_category: i.category,
+        })),
+      },
+    }],
+  }
+
+  try {
+    const res = await fetch(
+      `https://www.google-analytics.com/mp/collect?measurement_id=${measurementId}&api_secret=${apiSecret}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(5000),
+      },
+    )
+    if (!res.ok && res.status !== 204) console.error('GA4 MP purchase non-OK:', res.status)
+  } catch (e) {
+    console.error('GA4 MP purchase failed (order unaffected):', e)
+  }
+}

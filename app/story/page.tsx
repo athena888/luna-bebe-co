@@ -11,6 +11,7 @@ import { ScrollFlyIn } from '@/components/ui/ScrollFlyIn'
 export const metadata: Metadata = {
   title: 'Our Story',
   description: 'The story behind Petite Lavande — why we believe every new baby deserves a gift as extraordinary as they are.',
+  alternates: { canonical: '/story' },
 }
 
 export const revalidate = 60

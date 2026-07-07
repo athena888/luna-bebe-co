@@ -4,6 +4,7 @@ import { CONTACT_EMAIL } from '@/lib/site-config'
 export const metadata: Metadata = {
   title: 'Terms of Service',
   description: 'Terms and conditions for purchasing from Petite Lavande',
+  alternates: { canonical: '/legal/terms' },
 }
 
 export default function TermsPage() {

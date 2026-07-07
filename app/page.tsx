@@ -131,6 +131,11 @@ export default async function HomePage() {
           >
             Read Our Story
           </Link>
+          {/* Quiet corporate cross-link — the only homepage path to /corporate */}
+          <p className="mt-6 font-sans text-[13px] text-bark-400">
+            Gifting for your team or clients?{' '}
+            <Link href="/corporate" className="underline underline-offset-2 hover:text-gold-500 transition-colors">Explore corporate gifting</Link>
+          </p>
           <div className="flex justify-center mt-7 sm:mt-8">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto" />

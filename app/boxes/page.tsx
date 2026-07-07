@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic'
 export const metadata = {
   title: 'Ready-Made Gift Sets — Petite Lavande',
   description: 'Curated baby gift boxes — thoughtfully assembled, every detail chosen.',
+  alternates: { canonical: '/boxes' },
 }
 
 export default async function BoxesPage() {

@@ -8,6 +8,8 @@ import { ChevronDown, X, ChevronLeft, ChevronRight, Leaf } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { CATEGORY_LABELS } from '@/lib/products'
+import { trackViewItem } from '@/lib/analytics-events'
+import { RelatedProducts, type RelatedItem } from '@/components/ui/RelatedProducts'
 import { ReviewSection } from '@/components/ui/ReviewSection'
 import { CertBadges } from '@/components/ui/CertBadges'
 import type { Product } from '@/types'
@@ -58,7 +60,7 @@ function Spinner() {
   )
 }
 
-export default function ProductDetailClient() {
+export default function ProductDetailClient({ related }: { related?: RelatedItem[] }) {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
 
@@ -90,6 +92,7 @@ export default function ProductDetailClient() {
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(({ product: p, gallery: g }: { product: Product; gallery: GalleryImage[] }) => {
         setProduct(p)
+        trackViewItem({ id: p.id, name: p.name, price: p.price, category: p.category })
         const sorted = [...g].sort((a, b) => {
           if (a.is_primary && !b.is_primary) return -1
           if (!a.is_primary && b.is_primary) return 1
@@ -329,6 +332,7 @@ export default function ProductDetailClient() {
           </div>
         )}
       </main>
+      <RelatedProducts items={related} />
       <Footer />
 
       {/* Lightbox */}

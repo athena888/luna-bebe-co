@@ -102,6 +102,7 @@ export function Footer() {
                 <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">Corporate</p>
                 <ul className="space-y-2.5 text-[13.5px] font-sans font-normal">
                   <li><Link href="/corporate" className="text-espresso hover:text-gold-500 transition-colors">Team Gifting</Link></li>
+                  <li><Link href="/press" className="text-espresso hover:text-gold-500 transition-colors">Press</Link></li>
                   <li><a href={`mailto:${CONTACT_EMAIL}`} className="text-espresso hover:text-gold-500 transition-colors break-all">{CONTACT_EMAIL}</a></li>
                 </ul>
               </div>

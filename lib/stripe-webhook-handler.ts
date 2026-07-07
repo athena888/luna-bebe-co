@@ -2,6 +2,7 @@ import type Stripe from 'stripe'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
 import { sendOrderConfirmationEmail, sendGiftCardEmail } from '@/lib/resend'
+import { sendPurchaseEvent } from '@/lib/ga-measurement-protocol'
 import type { Order } from '@/types'
 
 export async function handleStripeEvent(event: Stripe.Event) {
@@ -102,4 +103,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     total: order.total_amount,
     trackingNumber: order.tracking_number,
   }).catch(err => console.error('Confirmation email error:', err))
+
+  // Server-side GA4 purchase — behind the same first-transition guard above,
+  // so replays never double-report; transaction_id dedupes besides.
+  await sendPurchaseEvent({
+    orderId: order.id,
+    valueCents: order.total_amount ?? 0,
+    currency: (session.currency ?? 'usd').toUpperCase(),
+    items: (order.selected_items ?? []).map(i => ({
+      id: i.id, name: i.name, price: i.price, qty: (i as { qty?: number }).qty ?? 1, category: i.category,
+    })),
+  })
 }

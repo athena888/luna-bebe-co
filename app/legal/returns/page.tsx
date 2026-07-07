@@ -4,6 +4,7 @@ import { CONTACT_EMAIL } from '@/lib/site-config'
 export const metadata: Metadata = {
   title: 'Returns & Refund Policy',
   description: 'Petite Lavande return, exchange, and refund policy.',
+  alternates: { canonical: '/legal/returns' },
 }
 
 export default function ReturnsPage() {

@@ -1,4 +1,5 @@
 import type { Product } from '@/types'
+import { trackCartGrowth } from './analytics-events'
 
 // The "cart" is the box selection stored in sessionStorage as pl_box_selection
 // (an array). The build bag and checkout both read it, so adding from anywhere
@@ -24,7 +25,11 @@ export function readCart(): CartItem[] {
 
 export function writeCart(items: CartItem[]) {
   try {
+    // GA4 add_to_cart fires here — the single choke point every add path
+    // (product add, quick-add box, build page) already flows through.
+    const prev = readCart()
     sessionStorage.setItem(KEY, JSON.stringify(items))
+    trackCartGrowth(prev, items)
     // Let the header cart badge (and anything else) update immediately.
     if (typeof window !== 'undefined') window.dispatchEvent(new Event('pl:cart'))
   } catch { /* ignore */ }

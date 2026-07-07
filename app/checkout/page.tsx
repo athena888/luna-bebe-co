@@ -10,6 +10,7 @@ import type { BoxSelection, ShippingType } from '@/types'
 import Image from 'next/image'
 import Link from 'next/link'
 import { storeCheckoutEnabled } from '@/lib/store-flags'
+import { trackBeginCheckout } from '@/lib/analytics-events'
 
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
 function boxItemTotal(selection: BoxSelection) { return Object.values(selection).reduce((sum, p) => sum + (p?.price ?? 0) * ((p as { qty?: number })?.qty ?? 1), 0) }
@@ -79,6 +80,7 @@ export default function CheckoutPage() {
       try {
         const parsed = JSON.parse(storedBox)
         setSelection(parsed)
+        if (Array.isArray(parsed)) trackBeginCheckout(parsed)
       } catch { router.push('/build') }
     } else {
       router.push('/build')

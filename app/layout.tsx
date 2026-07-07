@@ -55,14 +55,19 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: { card: "summary_large_image", title: "Petite Lavande", description: "Luxury curated organic baby gift boxes.", images: [ogImage] },
     robots: { index: true, follow: true },
-    // Site verification, all env-gated (omitted when unset):
-    //  · Google Search Console  → NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    // Site verification, all env-gated (omitted when unset). Rendered
+    // server-side, so both the NEXT_PUBLIC_ and plain env names work:
+    //  · Google Search Console  → [NEXT_PUBLIC_]GOOGLE_SITE_VERIFICATION
+    //  · Bing Webmaster Tools   → [NEXT_PUBLIC_]BING_SITE_VERIFICATION
     //  · Pinterest (Rich Pins)  → NEXT_PUBLIC_PINTEREST_VERIFICATION
     verification: {
-      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
-      other: process.env.NEXT_PUBLIC_PINTEREST_VERIFICATION
-        ? { 'p:domain_verify': process.env.NEXT_PUBLIC_PINTEREST_VERIFICATION }
-        : {},
+      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || process.env.GOOGLE_SITE_VERIFICATION || undefined,
+      other: {
+        ...(process.env.NEXT_PUBLIC_PINTEREST_VERIFICATION
+          ? { 'p:domain_verify': process.env.NEXT_PUBLIC_PINTEREST_VERIFICATION } : {}),
+        ...((process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || process.env.BING_SITE_VERIFICATION)
+          ? { 'msvalidate.01': (process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || process.env.BING_SITE_VERIFICATION)! } : {}),
+      },
     },
   }
 }
@@ -118,19 +123,26 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           <>
             <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
             <Script id="ga4" strategy="afterInteractive">{`
-              // Own-traffic exclusion: visiting ?internal=1 (or logging into the
-              // portal) flags this browser so GA tags it traffic_type=internal.
-              try {
-                var u = new URL(window.location.href);
-                if (u.searchParams.get('internal') === '1') localStorage.setItem('pl_internal','1');
-                if (u.searchParams.get('internal') === '0') localStorage.removeItem('pl_internal');
-              } catch(e){}
-              var __internal = false;
-              try { __internal = localStorage.getItem('pl_internal') === '1'; } catch(e){}
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${GA_ID}', __internal ? { traffic_type: 'internal' } : {});
+              // Respect the cookie banner: a visitor who clicked Decline is not
+              // configured/tracked (script noop). Undecided or accepted → track.
+              var __declined = false;
+              try { __declined = localStorage.getItem('cookie_consent') === 'declined'; } catch(e){}
+              if (!__declined) {
+                // Own-traffic exclusion: visiting ?internal=1 (or logging into the
+                // portal) flags this browser so GA tags it traffic_type=internal.
+                try {
+                  var u = new URL(window.location.href);
+                  if (u.searchParams.get('internal') === '1') localStorage.setItem('pl_internal','1');
+                  if (u.searchParams.get('internal') === '0') localStorage.removeItem('pl_internal');
+                } catch(e){}
+                var __internal = false;
+                try { __internal = localStorage.getItem('pl_internal') === '1'; } catch(e){}
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                window.gtag = window.gtag || gtag;
+                gtag('js', new Date());
+                gtag('config', '${GA_ID}', __internal ? { traffic_type: 'internal' } : {});
+              }
             `}</Script>
           </>
         )}
@@ -138,13 +150,18 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         {/* Meta Pixel */}
         {META_PIXEL_ID && (
           <Script id="meta-pixel" strategy="afterInteractive">{`
-            !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-            n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-            document,'script','https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '${META_PIXEL_ID}');
-            fbq('track', 'PageView');
+            // Respect the cookie banner (same rule as GA above).
+            var __plxDeclined = false;
+            try { __plxDeclined = localStorage.getItem('cookie_consent') === 'declined'; } catch(e){}
+            if (!__plxDeclined) {
+              !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+              n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+              n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+              t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+              document,'script','https://connect.facebook.net/en_US/fbevents.js');
+              fbq('init', '${META_PIXEL_ID}');
+              fbq('track', 'PageView');
+            }
           `}</Script>
         )}
       </body>
