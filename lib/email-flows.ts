@@ -1,5 +1,6 @@
 import { supabaseAdmin } from './supabase'
 import { isOptedOut } from './unsubscribe'
+import { storeCheckoutEnabled } from './store-flags'
 import {
   sendWelcomeSeries2Email,
   sendWelcomeSeries3Email,
@@ -12,6 +13,12 @@ import {
 // ones. Every send re-checks the opt-out list.
 
 const DAY = 24 * 60 * 60 * 1000
+
+// Templates that invite a purchase. While the store checkout is paused
+// (NEXT_PUBLIC_STORE_OPEN != true) these are HELD, not canceled — they stay
+// queued in email_events and the first daily cron after reopening sends them.
+// Review asks are not marketing and always flow.
+const MARKETING_TEMPLATES = new Set(['welcome-2', 'welcome-3', 'winback'])
 
 /** Newsletter signup → welcome steps 2 (D+2) and 3 (D+4). Step 1 is the
  *  immediate welcome email the subscribe route already sends. */
@@ -42,6 +49,10 @@ export async function schedulePostPurchaseReview(orderId: string, email: string)
 /** Enroll customers whose last paid order is 75+ days old (one email, ever).
  *  Returns how many were newly enrolled. */
 export async function scheduleWinBacks(): Promise<number> {
+  // Don't enroll anyone while checkout is paused — the scan runs daily, so
+  // enrollment resumes by itself once the store reopens.
+  if (!storeCheckoutEnabled()) return 0
+
   const { data: orders } = await supabaseAdmin
     .from('orders')
     .select('customer_email, created_at, status')
@@ -75,16 +86,36 @@ export async function scheduleWinBacks(): Promise<number> {
   return rows.length
 }
 
-/** Send every due, uncanceled event. Opt-outs are canceled instead of sent. */
-export async function processDueEmails(limit = 50): Promise<{ sent: number; skipped: number; errors: number }> {
-  const { data: due } = await supabaseAdmin
+/** Send every due, uncanceled event. Opt-outs are canceled instead of sent;
+ *  marketing templates are held (left queued) while checkout is paused. */
+export async function processDueEmails(limit = 50): Promise<{ sent: number; skipped: number; held: number; errors: number }> {
+  const storeOpen = storeCheckoutEnabled()
+  const nowIso = new Date().toISOString()
+
+  let query = supabaseAdmin
     .from('email_events')
     .select('*')
     .is('sent_at', null)
     .is('canceled_at', null)
-    .lte('scheduled_at', new Date().toISOString())
+    .lte('scheduled_at', nowIso)
     .order('scheduled_at')
     .limit(limit)
+  // Held marketing rows stay out of the batch entirely so they can't starve
+  // review asks queued behind them.
+  if (!storeOpen) query = query.not('template', 'in', `(${[...MARKETING_TEMPLATES].join(',')})`)
+  const { data: due } = await query
+
+  let held = 0
+  if (!storeOpen) {
+    const { count } = await supabaseAdmin
+      .from('email_events')
+      .select('id', { count: 'exact', head: true })
+      .is('sent_at', null)
+      .is('canceled_at', null)
+      .lte('scheduled_at', nowIso)
+      .in('template', [...MARKETING_TEMPLATES])
+    held = count ?? 0
+  }
 
   let sent = 0, skipped = 0, errors = 0
   for (const ev of due ?? []) {
@@ -129,5 +160,5 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
       errors++
     }
   }
-  return { sent, skipped, errors }
+  return { sent, skipped, held, errors }
 }
