@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { PRODUCTS, CATEGORY_LABELS, CATEGORY_ORDER, getAllProducts, BOX_BASE_PRICE } from '@/lib/products'
+import { PRODUCTS, CATEGORY_LABELS, CATEGORY_ORDER, getAllProducts, BOX_BASE_PRICE, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
 import type { Product, ProductCategory } from '@/types'
 import { Check, X, Plus, Minus, Leaf, ZoomIn, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react'
 import Image from 'next/image'
@@ -540,7 +540,7 @@ export default function BuildPage() {
 
         {/* Free shipping progress */}
         {(() => {
-          const threshold = 15000
+          const threshold = FREE_SHIPPING_THRESHOLD
           // Count the real box price toward free shipping (items + the box base).
           const towardFree = subtotal + BOX_BASE_PRICE
           const pct = Math.min(towardFree / threshold, 1)
@@ -561,7 +561,7 @@ export default function BuildPage() {
                 </div>
               </div>
               <div className="flex justify-end mt-2 pr-1">
-                <span className="font-sans text-[11px] tracking-[0.1em] text-bark-400">$150</span>
+                <span className="font-sans text-[11px] tracking-[0.1em] text-bark-400">{`$${Math.round(FREE_SHIPPING_THRESHOLD / 100)}`}</span>
               </div>
             </div>
           )
@@ -742,7 +742,7 @@ export default function BuildPage() {
                   <CertBadges certs={modalCerts} organic={modalProduct.organic} />
                 ) : (
                   <div className="flex items-start justify-between">
-                    {[{ label: 'Free Shipping', sub: '$150+' }, { label: 'Handcrafted', sub: 'with care' }, { label: 'Gift Ready', sub: 'carefully packed' }].map(({ label, sub }) => (
+                    {[{ label: 'Free Shipping', sub: `$${Math.round(FREE_SHIPPING_THRESHOLD / 100)}+` }, { label: 'Handcrafted', sub: 'with care' }, { label: 'Gift Ready', sub: 'carefully packed' }].map(({ label, sub }) => (
                       <div key={label} className="flex-1 text-center">
                         <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
                         <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>

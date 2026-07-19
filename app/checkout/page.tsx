@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { VatNotice } from '@/components/ui/VatNotice'
-import { SHIPPING, BOX_BASE_PRICE } from '@/lib/products'
+import { SHIPPING, BOX_BASE_PRICE, freeShippingApplies } from '@/lib/products'
 import type { BoxSelection, ShippingType } from '@/types'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -121,7 +121,8 @@ export default function CheckoutPage() {
   if (!selection) return null
 
   const itemTotal = boxItemTotal(selection)
-  const shippingCost = SHIPPING[shippingType].price
+  const shipFree = freeShippingApplies(itemTotal + BOX_BASE_PRICE, shippingType)
+  const shippingCost = shipFree ? 0 : SHIPPING[shippingType].price
   const total = itemTotal + BOX_BASE_PRICE + shippingCost
 
   // Bag editing — quantity steppers + remove, persisted back to the session
@@ -382,7 +383,9 @@ export default function CheckoutPage() {
                             <p className="font-sans text-xs text-bark-400 mt-0.5">{option.days}</p>
                           </div>
                           <div className="text-right">
-                            <p className="font-sans text-sm text-bark-600">{formatPrice(option.price)}</p>
+                            <p className="font-sans text-sm text-bark-600">
+                              {freeShippingApplies(itemTotal + BOX_BASE_PRICE, key) ? 'Free' : formatPrice(option.price)}
+                            </p>
                             {'badge' in option && option.badge && (
                               <span className="font-sans text-[11px] tracking-wide uppercase text-gold-400">{option.badge}</span>
                             )}
@@ -410,7 +413,7 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-bark-600">Shipping · {SHIPPING[shippingType].label}</span>
-                      <span className="text-espresso">{formatPrice(shippingCost)}</span>
+                      <span className="text-espresso">{shipFree ? 'Free' : formatPrice(shippingCost)}</span>
                     </div>
                     {letter && (
                       <div className="flex justify-between">

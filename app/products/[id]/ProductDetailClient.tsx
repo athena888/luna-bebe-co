@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { ChevronDown, X, ChevronLeft, ChevronRight, Leaf } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { CATEGORY_LABELS } from '@/lib/products'
+import { CATEGORY_LABELS, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
 import { trackViewItem } from '@/lib/analytics-events'
 import { RelatedProducts, type RelatedItem } from '@/components/ui/RelatedProducts'
 import { ReviewSection } from '@/components/ui/ReviewSection'
@@ -250,7 +250,7 @@ export default function ProductDetailClient({ related }: { related?: RelatedItem
                 {/* Trust badges */}
                 <div className="flex items-start justify-between border-t border-b border-cream-300 py-4 mb-4">
                   {[
-                    { label: 'Free Shipping', sub: '$150+' },
+                    { label: 'Free Shipping', sub: `$${Math.round(FREE_SHIPPING_THRESHOLD / 100)}+` },
                     { label: 'Handcrafted', sub: 'with care' },
                     { label: 'Gift Ready', sub: 'carefully packed' },
                   ].map(({ label, sub }) => (

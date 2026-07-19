@@ -6,8 +6,10 @@ import { SlotImage } from '@/components/ui/SlotImage'
 import { HandHeart, Leaf, Phone } from 'lucide-react'
 import { ScrollFlyIn } from '@/components/ui/ScrollFlyIn'
 import { CONTACT_EMAIL } from '@/lib/site-config'
+import { CorporateForm } from './CorporateForm'
 
-// Closing line at the bottom of the three-points band — replaces the lead form.
+// Closing line at the bottom of the three-points band — the low-friction
+// alternative to the lead form below.
 function ContactLine({ className = '', olive = false }: { className?: string; olive?: boolean }) {
   return (
     <p className={`text-center font-playfair text-base sm:text-lg ${olive ? 'text-white/95' : 'text-cream-50/90'} ${className}`}>
@@ -126,6 +128,15 @@ export default function CorporatePage() {
             </div>
           </div>
         </div>
+
+        {/* Lead form — writes to b2b_leads + the outreach tracker (hot flag,
+            team email) via the submitB2bLead server action. The mailto line
+            above stays as the low-friction alternative. */}
+        <section className="px-6 py-16 sm:py-20">
+          <div className="max-w-xl mx-auto">
+            <CorporateForm />
+          </div>
+        </section>
 
       </main>
       <Footer />

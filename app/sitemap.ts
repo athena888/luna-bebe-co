@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { getCatalog } from '@/lib/products-db'
 import { LANDING_PAGES } from '@/lib/landing-pages'
-import { JOURNAL_POSTS } from '@/lib/journal'
+import { getJournalPosts } from '@/lib/journal-db'
 
 export const revalidate = 3600
 
@@ -29,8 +29,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const lp of LANDING_PAGES) {
     urls.push({ url: `${base}/gifts/${lp.slug}`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 })
   }
-  // Journal posts
-  for (const post of JOURNAL_POSTS) {
+  // Journal posts — DB-published posts merged over the built-in starters, so
+  // portal-created posts get indexed too (fails soft to the starters).
+  for (const post of await getJournalPosts()) {
     urls.push({ url: `${base}/journal/${post.slug}`, lastModified: new Date(post.date), changeFrequency: 'monthly', priority: 0.6 })
   }
   // Live product pages (best-effort)

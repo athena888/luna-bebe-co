@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { getBoxes } from '@/lib/prebuilt-boxes-db'
 import { resend } from '@/lib/resend'
+import { CONTACT_EMAIL } from '@/lib/site-config'
 
-// Vercel Cron — runs daily
-// Add to vercel.json: "crons": [{ "path": "/api/cron/restock-alerts", "schedule": "0 9 * * *" }]
+// Vercel Cron — runs daily (vercel.json: /api/cron/restock-alerts at 09:00 UTC)
 
 export async function GET(req: NextRequest) {
   // Verify it's called from Vercel Cron
@@ -69,8 +69,8 @@ export async function GET(req: NextRequest) {
       `
 
       await resend.emails.send({
-        from: 'Petite Lavande <noreply@petitelavande.com>',
-        to: process.env.ADMIN_EMAIL || 'emily@example.com',
+        from: `Petite Lavande <${CONTACT_EMAIL}>`,
+        to: process.env.ADMIN_EMAIL || CONTACT_EMAIL,
         subject: `Low Stock Alert: ${lowStockItems.length} item(s)`,
         html: emailHtml,
       })

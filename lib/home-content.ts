@@ -1,4 +1,5 @@
 import { supabaseAdmin } from './supabase'
+import { FREE_SHIPPING_THRESHOLD } from './products'
 
 // Editable homepage copy. Each block is stored as one row in `site_content`
 // (key → JSON value). When a row is missing we fall back to these defaults, so
@@ -49,7 +50,7 @@ export interface HomeContent {
 
 export const DEFAULT_HOME_CONTENT: HomeContent = {
   perks: [
-    { label: 'Free Shipping', sub: 'On orders over $150' },
+    { label: 'Free Shipping', sub: `On orders over $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}` },
     { label: 'Personalized Card', sub: 'Printed for every box' },
     { label: 'Organic Cotton', sub: 'From GOTS-certified makers' },
     { label: 'Gift-Ready', sub: 'Ships within 3 days' },

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
-import { BOX_BASE_PRICE, SHIPPING } from '@/lib/products'
+import { BOX_BASE_PRICE, SHIPPING, freeShippingApplies } from '@/lib/products'
 import { resolveLocale, marketFor, LOCALE_COOKIE } from '@/lib/markets'
 import { getProductPrices, BOX_BASE_BY_CURRENCY, SHIPPING_BY_CURRENCY } from '@/lib/pricing'
 import type { Product, ShippingType } from '@/types'
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
     // Per-currency amounts. USD uses the existing static prices (identical to
     // before); other currencies require explicit product_prices rows.
     const boxBase = currency === 'USD' ? BOX_BASE_PRICE : BOX_BASE_BY_CURRENCY[currency]
-    const shipAmount = currency === 'USD' ? shippingOption.price : SHIPPING_BY_CURRENCY[currency][shippingType]
+    let shipAmount = currency === 'USD' ? shippingOption.price : SHIPPING_BY_CURRENCY[currency][shippingType]
     const priceMap = currency === 'USD' ? {} : await getProductPrices(selectedItems.map(i => i.id), currency)
 
     const itemLineItems: Array<{ price_data: { currency: string; product_data: { name: string; description?: string }; unit_amount: number }; quantity: number }> = []
@@ -100,6 +100,12 @@ export async function POST(req: NextRequest) {
         quantity: Math.max(1, Math.round(v.qty ?? 1)),
       })
     }
+
+    // Honor the free-shipping bar the cart drawer shows: standard shipping is
+    // free once box base + items reach FREE_SHIPPING_THRESHOLD (USD only).
+    const merchandiseTotal = boxBase + itemLineItems.reduce((s, li) => s + li.price_data.unit_amount * li.quantity, 0)
+    const shipFree = freeShippingApplies(merchandiseTotal, shippingType, currency)
+    if (shipFree) shipAmount = 0
 
     // Build line items for Stripe
     const lineItems = [

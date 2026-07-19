@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { X, Minus, Plus } from 'lucide-react'
 import { readCart, writeCart, type CartItem } from '@/lib/cart'
-import { BOX_BASE_PRICE } from '@/lib/products'
+import { BOX_BASE_PRICE, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
@@ -50,7 +50,7 @@ export function BagDrawer() {
     update(items.filter(i => (i.lineKey ?? i.id) !== lineKey))
   }
 
-  const threshold = 15000
+  const threshold = FREE_SHIPPING_THRESHOLD
   const towardFree = subtotal + BOX_BASE_PRICE
   const pct = Math.min(towardFree / threshold, 1)
   const earned = towardFree >= threshold
@@ -89,7 +89,7 @@ export function BagDrawer() {
               </div>
             </div>
             <div className="flex justify-end mt-2 pr-1">
-              <span className="font-sans text-[11px] tracking-[0.1em] text-bark-400">$150</span>
+              <span className="font-sans text-[11px] tracking-[0.1em] text-bark-400">{`$${Math.round(threshold / 100)}`}</span>
             </div>
           </div>
         )}

@@ -56,6 +56,17 @@ export const SHIPPING = {
   premium: { label: 'Premium Rush Shipping', price: 2800, days: '1–2 business days', badge: 'Arrives Fast' },
 }
 
+// Free STANDARD shipping once the merchandise total (box base + items) reaches
+// this many USD cents. NEXT_PUBLIC_ so the cart drawer, checkout page, and the
+// checkout session API all read the same number. Premium rush stays paid.
+export const FREE_SHIPPING_THRESHOLD = Number(process.env.NEXT_PUBLIC_FREE_SHIPPING_THRESHOLD || 15000)
+
+// USD-only for now: the threshold is a USD amount and non-USD markets have
+// their own per-currency shipping prices in lib/pricing.ts.
+export function freeShippingApplies(merchandiseTotal: number, shippingType: keyof typeof SHIPPING, currency: string = 'USD') {
+  return currency === 'USD' && shippingType === 'standard' && merchandiseTotal >= FREE_SHIPPING_THRESHOLD
+}
+
 export const FEATURED_IDS = [
   'swaddle-muslin',
   'swaddle-bamboo',

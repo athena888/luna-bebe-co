@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
 import { Menu, X, User, ShoppingBag, Mail } from 'lucide-react'
 import { cartCount } from '@/lib/cart'
+import { FREE_SHIPPING_THRESHOLD } from '@/lib/products'
 import { CONTACT_EMAIL } from '@/lib/site-config'
 import { LavenderSprig } from '@/components/ui/LavenderSprig'
 import { BagDrawer } from '@/components/ui/BagDrawer'
@@ -129,7 +130,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
 // the fetch lands).
 type Perk = { label: string; sub: string }
 const DEFAULT_PERKS: Perk[] = [
-  { label: 'Free Shipping', sub: 'On orders over $150' },
+  { label: 'Free Shipping', sub: `On orders over $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}` },
   { label: 'Personalized Card', sub: 'Printed for every box' },
   { label: 'Organic Cotton', sub: 'From GOTS-certified makers' },
   { label: 'Gift-Ready', sub: 'Ships within 3 days' },
