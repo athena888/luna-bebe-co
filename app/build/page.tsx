@@ -10,6 +10,7 @@ import { Check, X, Plus, Minus, Leaf, ZoomIn, ChevronLeft, ChevronRight, Chevron
 import Image from 'next/image'
 import { memo, useCallback, useMemo, useState as useLocalState } from 'react'
 import { CertBadges } from '@/components/ui/CertBadges'
+import { AddonRow } from '@/components/ui/AddonRow'
 import { SlotImage } from '@/components/ui/SlotImage'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { ScrimOverlay } from '@/components/ui/ScrimOverlay'
@@ -619,6 +620,18 @@ export default function BuildPage() {
             })
           )}
         </div>
+
+        {/* "Complete the gift" add-ons — adds via this page's own selection state */}
+        {hasItems && (
+          <AddonRow
+            inCartIds={selectedList.map(p => p.id)}
+            onAdd={p => setSelected(prev => {
+              const next = new Map(prev)
+              if (!next.has(p.id)) next.set(p.id, { ...p, lineKey: p.id, qty: 1 })
+              return next
+            })}
+          />
+        )}
 
         {/* Drawer footer */}
         <div className="shrink-0 border-t border-cream-300 px-6 py-5">

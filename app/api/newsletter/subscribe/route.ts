@@ -41,6 +41,15 @@ export async function POST(req: NextRequest) {
       console.error('Welcome email send failed:', e)
     }
 
+    // Schedule welcome series steps 2 (D+2) and 3 (D+4) — sent by the daily
+    // flows cron. Best-effort: works only once §31 (email_events) is run.
+    try {
+      const { scheduleWelcomeSeries } = await import('@/lib/email-flows')
+      await scheduleWelcomeSeries(email)
+    } catch (e) {
+      console.error('Welcome series scheduling failed (email_events table ready?):', e)
+    }
+
     return NextResponse.json({ ok: true })
   } catch (error) {
     // Duplicate contact = already subscribed — treat as success

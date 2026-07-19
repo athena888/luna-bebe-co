@@ -69,7 +69,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const body = await req.json()
-  const { name, description, price, category, tag, ingredients, inventoryQuantity, hasVariants, certifications, active, needsReview, featured, organic, seoTitle, seoDescription, faqs } = body
+  const { name, description, price, category, tag, ingredients, inventoryQuantity, hasVariants, certifications, active, needsReview, featured, organic, isAddon, addonRank, seoTitle, seoDescription, faqs } = body
 
   // Save core fields first — never let certifications block a save
   try {
@@ -85,6 +85,15 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       await updateProduct(id, { certifications })
     } catch {
       console.warn('certifications column not ready — run the SQL migration')
+    }
+  }
+
+  // Add-on flags saved separately too — fail-soft until §31 is run
+  if (isAddon !== undefined || addonRank !== undefined) {
+    try {
+      await updateProduct(id, { isAddon, addonRank })
+    } catch {
+      console.warn('is_addon/addon_rank columns not ready — run the SQL migration (§31)')
     }
   }
 

@@ -1,10 +1,12 @@
 import Link from 'next/link'
 
-// Two-tab switcher that unifies Analytics (sales/channels) and Stock Insights
-// under one portal nav item. Plain component (no client hooks) so it works in
-// both the server analytics page and the client stock-insights page.
-export function InsightsTabs({ active }: { active: 'channels' | 'stock' }) {
-  const Tab = ({ href, id, label }: { href: string; id: 'channels' | 'stock'; label: string }) => (
+type TabId = 'channels' | 'stock' | 'economics'
+
+// Tab switcher that unifies Analytics (sales/channels/scorecard), Stock
+// Insights, and Unit Economics under one portal nav item. Plain component (no
+// client hooks) so it works in both server and client pages.
+export function InsightsTabs({ active }: { active: TabId }) {
+  const Tab = ({ href, id, label }: { href: string; id: TabId; label: string }) => (
     <Link
       href={href}
       className={`px-4 py-2.5 font-sans text-sm transition-colors -mb-px border-b-2 ${
@@ -18,6 +20,7 @@ export function InsightsTabs({ active }: { active: 'channels' | 'stock' }) {
     <div className="flex gap-1 mb-6 border-b border-cream-300">
       <Tab href="/portal/analytics" id="channels" label="Sales & Channels" />
       <Tab href="/portal/stock-insights" id="stock" label="Stock & Products" />
+      <Tab href="/portal/economics" id="economics" label="Unit Economics" />
     </div>
   )
 }

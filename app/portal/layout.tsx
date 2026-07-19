@@ -38,7 +38,7 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
           const active = pathname === href
             || (href !== '/portal' && pathname.startsWith(href))
             || (href === '/portal/content' && contentPaths.some(p => pathname.startsWith(p)))
-            || (href === '/portal/analytics' && pathname.startsWith('/portal/stock-insights'))
+            || (href === '/portal/analytics' && (pathname.startsWith('/portal/stock-insights') || pathname.startsWith('/portal/economics')))
             || (href === '/portal/lookbook/images' && pathname.startsWith('/portal/lookbook'))
           return (
             <Link

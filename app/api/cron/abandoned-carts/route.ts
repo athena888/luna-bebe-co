@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { sendAbandonedCartEmail } from '@/lib/resend'
+import { isOptedOut } from '@/lib/unsubscribe'
 import type { Order } from '@/types'
 
 // Runs every hour via Vercel Cron (see vercel.json)
@@ -27,6 +28,11 @@ export async function GET(req: NextRequest) {
 
   const results = await Promise.allSettled(
     (orders as Order[]).map(async (order) => {
+      // Opted-out addresses get marked handled without a send.
+      if (await isOptedOut(order.customer_email)) {
+        await supabaseAdmin.from('orders').update({ abandoned_cart_email_sent: true }).eq('id', order.id)
+        return
+      }
       await sendAbandonedCartEmail({
         customerName: order.customer_name,
         customerEmail: order.customer_email,

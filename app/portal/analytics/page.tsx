@@ -2,6 +2,8 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { TrendingUp, ShoppingBag, DollarSign } from 'lucide-react'
 import { UTMLinkBuilder } from './UTMLinkBuilder'
 import { InsightsTabs } from '@/components/portal/InsightsTabs'
+import { ScorecardNote } from '@/components/portal/ScorecardNote'
+import { computeWeeklyScorecard, type WeekMetrics } from '@/lib/scorecard'
 
 function fmt(cents: number) { return `$${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })}` }
 function pct(n: number, total: number) { return total === 0 ? '0%' : `${Math.round((n / total) * 100)}%` }
@@ -117,8 +119,60 @@ async function getProductVolume(): Promise<ProductVolume[]> {
 
 // ─── Page ────────────────────────────────────────────────────────────────────
 
+function ScorecardSection({ weeks }: { weeks: WeekMetrics[] }) {
+  const fmtPct = (n: number | null) => n == null ? '—' : `${(n * 100).toFixed(1)}%`
+  const recentFirst = [...weeks].reverse()
+  const current = weeks[weeks.length - 1]
+  const weekLabel = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })
+
+  return (
+    <div className="bg-cream-50 border border-cream-200 rounded-2xl overflow-hidden mb-8">
+      <div className="px-6 py-4 border-b border-cream-200">
+        <h2 className="font-serif text-xl text-bark-600">Weekly Scorecard</h2>
+        <p className="font-sans text-xs text-bark-400 mt-0.5">
+          The seven numbers, one row per week (Mon–Sun). Snapshotted every Friday with an email digest — you only write the one sentence.
+          {current?.sessions == null && ' Sessions/CVR show once GA_PROPERTY_ID + GA_SERVICE_ACCOUNT_JSON are set.'}
+        </p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-cream-200">
+              {['Week', 'Revenue', 'Orders', 'AOV', 'Sessions', 'CVR', 'Email rev.', 'Repeat', 'Wks stock'].map((h, i) => (
+                <th key={h} className={`${i === 0 ? 'text-left px-6' : 'text-right px-4'} py-3 font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 whitespace-nowrap`}>{h}</th>
+              ))}
+              <th className="text-left px-4 py-3 font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 min-w-[220px]">This week I&rsquo;ll change…</th>
+            </tr>
+          </thead>
+          <tbody>
+            {recentFirst.map((w, i) => (
+              <tr key={w.weekOf} className={`border-b border-cream-100 ${i === 0 ? 'bg-gold-100/20' : i % 2 === 1 ? 'bg-cream-50/50' : ''}`}>
+                <td className="px-6 py-3 font-sans text-xs text-bark-600 whitespace-nowrap">
+                  {weekLabel(w.weekOf)}{i === 0 && <span className="ml-2 font-sans text-[9px] tracking-wide uppercase text-gold-500">now</span>}
+                </td>
+                <td className="px-4 py-3 text-right font-serif text-sm text-bark-600">{fmt(w.revenue)}</td>
+                <td className="px-4 py-3 text-right font-sans text-sm text-bark-600">{w.orders}</td>
+                <td className="px-4 py-3 text-right font-sans text-xs text-bark-400">{w.orders ? fmt(w.aov) : '—'}</td>
+                <td className="px-4 py-3 text-right font-sans text-xs text-bark-400">{w.sessions ?? '—'}</td>
+                <td className="px-4 py-3 text-right font-sans text-xs text-bark-400">{fmtPct(w.cvr)}</td>
+                <td className="px-4 py-3 text-right font-sans text-xs text-bark-400">{w.emailRevenue ? fmt(w.emailRevenue) : '—'}</td>
+                <td className="px-4 py-3 text-right font-sans text-xs text-bark-400">{fmtPct(w.repeatRate)}</td>
+                <td className="px-4 py-3 text-right font-sans text-xs text-bark-400">{w.weeksOnHand != null ? w.weeksOnHand.toFixed(1) : '—'}</td>
+                <td className="px-4 py-3"><ScorecardNote weekOf={w.weekOf} initial={w.note} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
 export default async function AnalyticsPage() {
-  const [analytics, weekly, productVolume] = await Promise.all([getAnalytics(), getWeeklyRevenue(), getProductVolume()])
+  const [analytics, weekly, productVolume, scorecard] = await Promise.all([
+    getAnalytics(), getWeeklyRevenue(), getProductVolume(),
+    computeWeeklyScorecard(8).catch(() => [] as WeekMetrics[]),
+  ])
   const { channels, totalRevenue, totalOrders, recentRevenue, recentOrders } = analytics
 
   const maxWeek = Math.max(...weekly, 1)
@@ -139,11 +193,14 @@ export default async function AnalyticsPage() {
     <div className="p-4 sm:p-8">
       <InsightsTabs active="channels" />
       <div className="mb-8">
-        <h1 className="font-serif text-3xl text-bark-600">Ad Channel Analytics</h1>
+        <h1 className="font-serif text-3xl text-bark-600">Sales, Channels &amp; Scorecard</h1>
         <p className="font-sans text-sm text-bark-400 mt-1">
-          First-touch attribution — which channels drove orders. UTM params captured at first page view.
+          The weekly scorecard up top; first-touch channel attribution below. UTM params captured at first page view.
         </p>
       </div>
+
+      {/* Weekly scorecard — the 7 numbers, one row per week */}
+      {scorecard.length > 0 && <ScorecardSection weeks={scorecard} />}
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

@@ -1,10 +1,17 @@
 import { Resend } from 'resend'
 import { CONTACT_EMAIL } from '@/lib/site-config'
+import { unsubscribeUrl } from '@/lib/unsubscribe'
 
 export const resend = new Resend(process.env.RESEND_API_KEY!)
 
 const FROM = `Petite Lavande <${CONTACT_EMAIL}>`
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+
+// Marketing/flow emails carry UTMs so GA4 can attribute email revenue
+// (utm_source=email is what the analytics page and scorecard count).
+function utm(path: string, campaign: string) {
+  return `${BASE_URL}${path}${path.includes('?') ? '&' : '?'}utm_source=email&utm_medium=email&utm_campaign=${campaign}`
+}
 
 const brandHeader = `
   <div style="text-align:center;padding:40px 0 24px;">
@@ -23,6 +30,23 @@ const brandFooter = `
     </p>
   </div>
 `
+
+// Footer for marketing/flow emails — brandFooter plus the required
+// unsubscribe link (CAN-SPAM). Transactional emails keep the plain footer.
+function flowFooter(email: string) {
+  return `
+  <div style="text-align:center;padding:24px 0 40px;">
+    <p style="font-family:sans-serif;font-size:11px;color:#9c7c5a;margin:0 0 6px;">
+      Questions? Reply to this email — we're always here.
+    </p>
+    <p style="font-family:sans-serif;font-size:10px;color:#c2a88a;margin:0;">
+      <a href="${BASE_URL}/legal/terms" style="color:#c2a88a;text-decoration:none;">Terms</a> &nbsp;·&nbsp;
+      <a href="${BASE_URL}/legal/privacy" style="color:#c2a88a;text-decoration:none;">Privacy</a> &nbsp;·&nbsp;
+      <a href="${unsubscribeUrl(email)}" style="color:#c2a88a;text-decoration:underline;">Unsubscribe</a>
+    </p>
+  </div>
+`
+}
 
 // Plain-text alert to the team when a corporate inquiry comes in. Reply-to is
 // the lead so it can be answered directly.
@@ -75,12 +99,100 @@ export async function sendWelcomeEmail({
             Use code <strong>WELCOME10</strong> for 10% off your first order.
           </p>
           <div style="text-align:center;">
-            <a href="${BASE_URL}/build" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+            <a href="${utm('/build', 'welcome')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
               Build Your Box
             </a>
           </div>
         </div>
-        ${brandFooter}
+        ${flowFooter(customerEmail)}
+      </div>
+    `,
+  })
+}
+
+// Welcome series step 2 (D+2) — the story and what makes the boxes different.
+export async function sendWelcomeSeries2Email({ customerEmail }: { customerEmail: string }) {
+  return resend.emails.send({
+    from: FROM,
+    to: customerEmail,
+    subject: 'The story behind every box 🌿',
+    html: `
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+        ${brandHeader}
+        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">We don't curate. We trace.</h1>
+        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+            Every item in a Petite Lavande box is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender. The printed card in each box tells the story of every item, so the person you're gifting knows exactly what's touching their baby's skin.
+          </p>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
+            Hand-packed in Seattle, finished with satin ribbon and a wax seal.
+          </p>
+          <div style="text-align:center;">
+            <a href="${utm('/boxes', 'welcome')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+              See the Boxes
+            </a>
+          </div>
+        </div>
+        ${flowFooter(customerEmail)}
+      </div>
+    `,
+  })
+}
+
+// Welcome series step 3 (D+4) — gentle nudge with the code reminder.
+export async function sendWelcomeSeries3Email({ customerEmail }: { customerEmail: string }) {
+  return resend.emails.send({
+    from: FROM,
+    to: customerEmail,
+    subject: 'Still deciding? Your 10% is waiting ✨',
+    html: `
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+        ${brandHeader}
+        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">Not sure which box?</h1>
+        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+            Tell us who you're gifting and our gift guide will point you to the right box — for a new mama, a newborn, or both. Or build your own from scratch, item by item.
+          </p>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
+            Your <strong>WELCOME10</strong> code still takes 10% off your first order.
+          </p>
+          <div style="text-align:center;">
+            <a href="${utm('/guide', 'welcome')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+              Find the Right Box
+            </a>
+          </div>
+        </div>
+        ${flowFooter(customerEmail)}
+      </div>
+    `,
+  })
+}
+
+// Win-back — one email when a customer's last order is 75+ days old.
+export async function sendWinBackEmail({ customerName, customerEmail }: { customerName?: string; customerEmail: string }) {
+  const greeting = customerName ? `Hi ${customerName},` : 'Hi,'
+  return resend.emails.send({
+    from: FROM,
+    to: customerEmail,
+    subject: 'A little lavender, from us to you 💛',
+    html: `
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+        ${brandHeader}
+        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">It's been a while</h1>
+        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+            ${greeting}
+          </p>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
+            Chances are someone around you is expecting — a friend, a colleague, a sister. When the moment comes, we're still here hand-packing organic gift boxes that care for the new parent as much as the baby.
+          </p>
+          <div style="text-align:center;">
+            <a href="${utm('/boxes', 'winback')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+              See What's New
+            </a>
+          </div>
+        </div>
+        ${flowFooter(customerEmail)}
       </div>
     `,
   })
@@ -98,8 +210,12 @@ export async function sendReviewRequestEmail({
   selectedItems: Array<{ id: string; name: string }>
 }) {
   const itemLinks = selectedItems.slice(0, 3).map(item =>
-    `<li style="margin-bottom:8px;"><a href="${BASE_URL}/products/${item.id}" style="font-family:sans-serif;font-size:14px;color:#c9a84c;text-decoration:none;">${item.name}</a></li>`
+    `<li style="margin-bottom:8px;"><a href="${utm(`/products/${item.id}`, 'postpurchase')}" style="font-family:sans-serif;font-size:14px;color:#c9a84c;text-decoration:none;">${item.name}</a></li>`
   ).join('')
+  // CTA goes to the first item's product page — the review form lives there.
+  const reviewHref = selectedItems[0]
+    ? utm(`/products/${selectedItems[0].id}`, 'postpurchase')
+    : utm(`/track?ref=${orderId.slice(-8).toUpperCase()}`, 'postpurchase')
 
   return resend.emails.send({
     from: FROM,
@@ -115,12 +231,12 @@ export async function sendReviewRequestEmail({
           </p>
           ${selectedItems.length > 0 ? `<ul style="padding-left:20px;margin:0 0 24px;">${itemLinks}</ul>` : ''}
           <div style="text-align:center;">
-            <a href="${BASE_URL}/track?ref=${orderId.slice(-8).toUpperCase()}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+            <a href="${reviewHref}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
               Leave a Review
             </a>
           </div>
         </div>
-        ${brandFooter}
+        ${flowFooter(customerEmail)}
       </div>
     `,
   })
@@ -153,14 +269,12 @@ export async function sendAbandonedCartEmail({
             You started building a beautiful gift box but didn't quite finish. Your selections are saved — all you need to do is complete checkout.
           </p>
           <div style="text-align: center;">
-            <a href="${BASE_URL}/build" style="display: inline-block; background: #c9a84c; color: #3d2c1e; font-family: sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; padding: 14px 32px; border-radius: 100px;">
+            <a href="${utm('/build', 'abandonedcart')}" style="display: inline-block; background: #c9a84c; color: #3d2c1e; font-family: sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; padding: 14px 32px; border-radius: 100px;">
               Complete My Box
             </a>
           </div>
         </div>
-        <p style="font-family: sans-serif; font-size: 11px; text-align: center; color: #9c7c5a; margin: 0;">
-          Questions? Reply to this email — we're here to help.
-        </p>
+        ${flowFooter(customerEmail)}
       </div>
     `,
   })

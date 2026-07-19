@@ -31,6 +31,23 @@ export interface GaSnapshot {
   topPages: Array<{ path: string; views: number }>
 }
 
+/** Sessions per day for the last `days` days, keyed 'YYYYMMDD' (GA4 date
+ *  dimension format). Used by the weekly scorecard to compute CVR. */
+export async function getDailySessions(days = 56): Promise<Map<string, number>> {
+  const analytics = getClient()
+  const [res] = await analytics.runReport({
+    property: `properties/${PROPERTY_ID}`,
+    dateRanges: [{ startDate: `${days}daysAgo`, endDate: 'today' }],
+    dimensions: [{ name: 'date' }],
+    metrics: [{ name: 'sessions' }],
+  })
+  const map = new Map<string, number>()
+  for (const r of res.rows ?? []) {
+    map.set(r.dimensionValues?.[0]?.value ?? '', Number(r.metricValues?.[0]?.value ?? 0))
+  }
+  return map
+}
+
 export async function getRealtimeSnapshot(): Promise<GaSnapshot> {
   const analytics = getClient()
   const property = `properties/${PROPERTY_ID}`

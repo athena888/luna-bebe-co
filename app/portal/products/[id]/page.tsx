@@ -93,6 +93,8 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
   const [needsReview, setNeedsReview] = useState(false)
   const [featured, setFeatured] = useState(false)
   const [organic, setOrganic] = useState(false)
+  const [isAddon, setIsAddon] = useState(false)
+  const [addonRank, setAddonRank] = useState(0)
   const [changes, setChanges] = useState<InventoryChange[]>([])
   const [changeBusy, setChangeBusy] = useState(false)
   const [aiScanning, setAiScanning] = useState(false)
@@ -189,6 +191,8 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
       setFaqs(Array.isArray(data.product.faqs) ? data.product.faqs : [])
       setFeatured(!!data.product.featured)
       setOrganic(!!data.product.organic)
+      setIsAddon(!!data.product.is_addon)
+      setAddonRank(data.product.addon_rank ?? 0)
     }
     // Load cert library + pending inventory changes in parallel
     fetch('/api/portal/cert-library').then(r => r.json()).then(d => setCertLibrary(d.certs ?? [])).catch(() => {})
@@ -232,6 +236,8 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
         faqs: faqs.filter(f => f.q.trim() && f.a.trim()),
         featured,
         organic,
+        isAddon,
+        addonRank,
       }),
     })
     if (opts?.active !== undefined) setPublished(opts.active)
@@ -934,6 +940,22 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
                   <input type="checkbox" checked={organic} onChange={e => setOrganic(e.target.checked)} className="accent-sage-500 w-4 h-4" />
                   <span className="font-sans text-xs text-bark-600">🌿 Organic (shows organic badge)</span>
                 </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={isAddon} onChange={e => setIsAddon(e.target.checked)} className="accent-gold-500 w-4 h-4" />
+                  <span className="font-sans text-xs text-bark-600">🎀 &ldquo;Complete the gift&rdquo; add-on (shown in the bag drawer)</span>
+                </label>
+                {isAddon && (
+                  <label className="flex items-center gap-2">
+                    <span className="font-sans text-xs text-bark-400">Add-on rank</span>
+                    <input
+                      type="number"
+                      min={0}
+                      value={addonRank}
+                      onChange={e => setAddonRank(Math.max(0, Math.round(Number(e.target.value) || 0)))}
+                      className="w-16 px-2 py-1 border border-cream-300 bg-cream-50 font-sans text-xs text-bark-600 focus:outline-none focus:border-bark-400"
+                    />
+                  </label>
+                )}
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1.5">

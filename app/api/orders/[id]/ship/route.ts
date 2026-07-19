@@ -55,6 +55,15 @@ export async function POST(
     })
     .eq('id', id)
 
+  // Post-purchase flow: review ask ~10 days out (sent by the daily flows cron).
+  // Best-effort — works only once §31 (email_events) is run.
+  try {
+    const { schedulePostPurchaseReview } = await import('@/lib/email-flows')
+    await schedulePostPurchaseReview(order.id, order.customer_email)
+  } catch (e) {
+    console.error('Post-purchase scheduling failed (email_events table ready?):', e)
+  }
+
   // Send shipping confirmation email
   await sendOrderConfirmationEmail({
     customerName: order.customer_name,
