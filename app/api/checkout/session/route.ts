@@ -172,6 +172,15 @@ export async function POST(req: NextRequest) {
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
+    // GA attribution: carry the visitor's GA client/session ids through Stripe
+    // metadata so the server-side purchase event ties to the real session
+    // instead of showing "(not set)" in GA. Cookie formats:
+    //   _ga            = GA1.1.<client>.<client>      → client id = last two segments
+    //   _ga_<STREAM>   = GS1.1.<session_id>.<n>. ...  → session id = third segment
+    const gaCid = (req.cookies.get('_ga')?.value ?? '').split('.').slice(-2).join('.') || null
+    const gaStream = (process.env.NEXT_PUBLIC_GA_ID || '').replace(/^G-/, '')
+    const gaSid = (gaStream && req.cookies.get(`_ga_${gaStream}`)?.value || '').split('.')[2] || null
+
     // Create Stripe checkout session. Payment methods are automatic (Stripe
     // shows whatever's enabled in the dashboard for this currency/region —
     // card, plus Klarna/iDEAL/Bancontact etc. where applicable). Stripe Tax is
@@ -194,6 +203,8 @@ export async function POST(req: NextRequest) {
         recipient_name: recipientName || '',
         locale,
         currency,
+        ...(gaCid ? { ga_cid: gaCid } : {}),
+        ...(gaSid ? { ga_sid: gaSid } : {}),
       },
     })
 

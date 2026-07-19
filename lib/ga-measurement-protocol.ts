@@ -14,11 +14,13 @@ export async function sendPurchaseEvent(input: {
   currency?: string
   items?: PurchaseItem[]
   clientId?: string | null   // GA client id when known; falls back to a stable server id
+  sessionId?: string | null  // GA session id when known — ties the purchase to the real session
 }): Promise<void> {
   const measurementId = process.env.NEXT_PUBLIC_GA_ID
   const apiSecret = process.env.GA4_API_SECRET
   if (!measurementId || !apiSecret) return
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
   const body = {
     // Without the browser's _ga cookie we use the order id as client_id — the
     // event still lands with full revenue; attribution ties via transaction_id.
@@ -29,6 +31,12 @@ export async function sendPurchaseEvent(input: {
         transaction_id: input.orderId,
         value: input.valueCents / 100,
         currency: input.currency ?? 'USD',
+        // MP events have no browser context — without these, purchases show as
+        // "(not set)" in GA page/session reports.
+        ...(input.sessionId ? { session_id: input.sessionId } : {}),
+        engagement_time_msec: 100,
+        page_location: `${baseUrl}/confirmation`,
+        page_title: 'Order Confirmation | Petite Lavande',
         items: (input.items ?? []).map(i => ({
           item_id: i.id, item_name: i.name, price: i.price / 100, quantity: i.qty ?? 1, item_category: i.category,
         })),

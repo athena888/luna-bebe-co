@@ -110,6 +110,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     orderId: order.id,
     valueCents: order.total_amount ?? 0,
     currency: (session.currency ?? 'usd').toUpperCase(),
+    clientId: session.metadata?.ga_cid ?? null,
+    sessionId: session.metadata?.ga_sid ?? null,
     items: (order.selected_items ?? []).map(i => ({
       id: i.id, name: i.name, price: i.price, qty: (i as { qty?: number }).qty ?? 1, category: i.category,
     })),
