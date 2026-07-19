@@ -58,6 +58,8 @@ export async function createShippingLabel({
     zip: process.env.SHIPPO_FROM_ZIP || '10001',
     country: 'US',
     phone: process.env.SHIPPO_FROM_PHONE || '',
+    // USPS rejects label purchases when the sender has no email.
+    email: process.env.SHIPPO_FROM_EMAIL || 'hello@petitelavande.com',
   }
 
   // Create shipment
@@ -91,14 +93,23 @@ export async function createShippingLabel({
 
   const shipment = await shipmentRes.json()
 
-  // Pick cheapest rate matching carrier preference
-  const rates: { servicelevel: { token: string }; amount: string; carrier: string; object_id: string }[] = shipment.rates || []
+  // Pick a rate: USPS first (the only carrier registered on this Shippo
+  // account — UPS rates come back but fail at purchase with
+  // ups_registration_error), then cheapest match for the service level.
+  const rates: { servicelevel: { token: string }; amount: string; provider?: string; carrier?: string; object_id: string }[] = shipment.rates || []
   if (rates.length === 0) throw new Error('No shipping rates returned from Shippo')
 
-  let rate = isPremium
-    ? rates.find(r => r.servicelevel.token.includes('priority') || r.servicelevel.token.includes('express'))
-    : rates.find(r => r.servicelevel.token.includes('ground') || r.servicelevel.token.includes('first'))
-  if (!rate) rate = rates.sort((a, b) => parseFloat(a.amount) - parseFloat(b.amount))[0]
+  const wanted = (token: string) => isPremium
+    ? token.includes('priority') || token.includes('express')
+    : token.includes('ground') || token.includes('first')
+  const byPrice = (a: typeof rates[number], b: typeof rates[number]) => parseFloat(a.amount) - parseFloat(b.amount)
+  const usps = rates.filter(r => (r.provider ?? r.carrier) === 'USPS')
+
+  const rate =
+    usps.filter(r => wanted(r.servicelevel.token)).sort(byPrice)[0] ??
+    usps.sort(byPrice)[0] ??
+    rates.filter(r => wanted(r.servicelevel.token)).sort(byPrice)[0] ??
+    rates.sort(byPrice)[0]
 
   // Purchase label
   const txRes = await shippoFetch('/transactions/', {
@@ -113,12 +124,16 @@ export async function createShippingLabel({
   }
 
   const tx = await txRes.json()
-  if (tx.status !== 'SUCCESS') throw new Error(`Label purchase failed: ${tx.messages?.join(', ')}`)
+  if (tx.status !== 'SUCCESS') {
+    // messages are objects ({source, code, text}) — surface the text, not [object Object]
+    const detail = (tx.messages ?? []).map((m: { text?: string }) => m?.text ?? JSON.stringify(m)).join(' | ')
+    throw new Error(`Label purchase failed: ${detail || 'unknown Shippo error'}`)
+  }
 
   return {
     trackingNumber: tx.tracking_number,
     trackingUrl: tx.tracking_url_provider,
     labelUrl: tx.label_url,
-    carrier: rate.carrier,
+    carrier: rate.provider ?? rate.carrier ?? 'USPS',
   }
 }
