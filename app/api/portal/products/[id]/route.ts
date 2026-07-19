@@ -13,7 +13,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     supabaseAdmin.from('orders').select('selected_items, created_at, status').neq('status', 'pending'),
   ])
 
-  const inventory = inventoryRes.data ?? { quantity: 0 }
+  const inventory = inventoryRes.data ?? { quantity: 0, lead_time_days: 14, safety_stock: 3 }
   const gallery = galleryRes.data ?? []
   const { data: overrideRow } = await supabaseAdmin
     .from('product_overrides').select('hover_video').eq('product_id', id).maybeSingle()
@@ -60,7 +60,11 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   return NextResponse.json({
     product,
     videoUrl,
-    inventory: { quantity: inventory.quantity },
+    inventory: {
+      quantity: inventory.quantity,
+      lead_time_days: (inventory as { lead_time_days?: number }).lead_time_days ?? 14,
+      safety_stock: (inventory as { safety_stock?: number }).safety_stock ?? 3,
+    },
     gallery,
     sales: { units, revenue, lastOrderedAt },
   })
@@ -69,7 +73,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const body = await req.json()
-  const { name, description, price, category, tag, ingredients, inventoryQuantity, hasVariants, certifications, active, needsReview, featured, organic, isAddon, addonRank, seoTitle, seoDescription, faqs } = body
+  const { name, description, price, category, tag, ingredients, inventoryQuantity, leadTimeDays, safetyStock, hasVariants, certifications, active, needsReview, featured, organic, isAddon, addonRank, seoTitle, seoDescription, faqs } = body
 
   // Save core fields first — never let certifications block a save
   try {
@@ -97,15 +101,18 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
   }
 
-  if (inventoryQuantity !== undefined) {
-    const qty = Math.max(0, Math.round(Number(inventoryQuantity)) || 0)
+  if (inventoryQuantity !== undefined || leadTimeDays !== undefined || safetyStock !== undefined) {
+    const patch: Record<string, number> = {}
+    if (inventoryQuantity !== undefined) patch.quantity = Math.max(0, Math.round(Number(inventoryQuantity)) || 0)
+    if (leadTimeDays !== undefined) patch.lead_time_days = Math.max(0, Math.round(Number(leadTimeDays)) || 0)
+    if (safetyStock !== undefined) patch.safety_stock = Math.max(0, Math.round(Number(safetyStock)) || 0)
     // Manual update-or-insert (no onConflict) + surface errors so a failed
     // stock save no longer silently reports "Saved".
     const { data: existed } = await supabaseAdmin
       .from('inventory').select('product_id').eq('product_id', id).maybeSingle()
     const { error: invErr } = existed
-      ? await supabaseAdmin.from('inventory').update({ quantity: qty }).eq('product_id', id)
-      : await supabaseAdmin.from('inventory').insert({ product_id: id, quantity: qty })
+      ? await supabaseAdmin.from('inventory').update(patch).eq('product_id', id)
+      : await supabaseAdmin.from('inventory').insert({ product_id: id, quantity: 0, ...patch })
     if (invErr) {
       return NextResponse.json({ error: `Stock didn't save: ${invErr.message}` }, { status: 500 })
     }

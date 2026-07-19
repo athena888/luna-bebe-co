@@ -227,7 +227,12 @@ export default function ReviewPage() {
   return (
     <div className="p-4 md:p-8 max-w-3xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
-        <h1 className="font-serif text-2xl text-bark-700">Morning Review</h1>
+        <div className="flex items-baseline gap-4">
+          <h1 className="font-serif text-2xl text-bark-700">Morning Review</h1>
+          <Link href="/portal/outreach/creators" className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
+            Creators →
+          </Link>
+        </div>
         <div className="flex items-center gap-2">
           {data && (
             <button onClick={togglePipeline} disabled={busy !== null}

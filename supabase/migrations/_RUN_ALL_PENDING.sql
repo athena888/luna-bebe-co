@@ -1123,4 +1123,37 @@ alter table public.weekly_scorecard enable row level security;
 drop policy if exists weekly_scorecard_service_all on public.weekly_scorecard;
 create policy weekly_scorecard_service_all on public.weekly_scorecard for all to service_role using (true) with check (true);
 
+-- 32) Gift shipping + reorder-point knobs.
+--     (Also in supabase/migrations/ship_to_recipient.sql)
+--     a) Gift orders shipped directly to the recipient: shipping_address/
+--        recipient_name belong to the giftee, buyer stays in customer_*,
+--        packing slip hides prices.
+alter table orders add column if not exists ship_to_recipient boolean not null default false;
+--     b) Per-product reorder knobs (inventory row doubles as the knob store
+--        even for variant products): reorder_point = daily_rate × lead_time + safety_stock.
+alter table inventory add column if not exists lead_time_days int not null default 14;
+alter table inventory add column if not exists safety_stock int not null default 3;
+
+-- 33) Influencer/creator gifting tracker — the missing half of the outreach
+--     CRM. Portal → Morning Review → Creators.
+--     (Also in supabase/migrations/creators.sql)
+create table if not exists public.creators (
+  id             uuid primary key default gen_random_uuid(),
+  handle         text not null,
+  platform       text not null default 'instagram',
+  followers      int,
+  niche          text,
+  email          text,
+  gifted_at      timestamptz,
+  posted         boolean not null default false,
+  post_url       text,
+  content_rights boolean not null default false,
+  notes          text,
+  created_at     timestamptz not null default now()
+);
+create index if not exists creators_gifted_idx on public.creators (posted, gifted_at);
+alter table public.creators enable row level security;
+drop policy if exists creators_service_all on public.creators;
+create policy creators_service_all on public.creators for all to service_role using (true) with check (true);
+
 -- Done.

@@ -85,7 +85,8 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
 
   // The login page is shown to signed-OUT users — render it bare (no portal nav
   // sidebar/header) so its own full-screen background image fills the viewport.
-  if (pathname === '/portal/login') return <>{children}</>
+  // Packing slips render bare too so the sidebar never prints.
+  if (pathname === '/portal/login' || pathname.endsWith('/packing-slip')) return <>{children}</>
 
   return (
     <div className="flex min-h-screen bg-bark-700">

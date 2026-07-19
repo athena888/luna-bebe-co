@@ -1,82 +1,54 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
-import { getBoxes } from '@/lib/prebuilt-boxes-db'
+import { computeReorderStatus } from '@/lib/reorder'
 import { resend } from '@/lib/resend'
 import { CONTACT_EMAIL } from '@/lib/site-config'
 
-// Vercel Cron — runs daily (vercel.json: /api/cron/restock-alerts at 09:00 UTC)
+// Vercel Cron — runs daily (vercel.json: /api/cron/restock-alerts at 09:00 UTC).
+// Flags every active product at or below its reorder point
+// (daily_rate × lead_time_days + safety_stock; knobs on the inventory row)
+// and emails the list. Emails only when something is flagged.
 
 export async function GET(req: NextRequest) {
-  // Verify it's called from Vercel Cron
   if (req.headers.get('authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   try {
-    const boxes = await getBoxes({ activeOnly: true })
-    const lowStockItems: Array<{ boxName: string; productName: string; quantity: number }> = []
+    const rows = await computeReorderStatus()
+    const low = rows.filter(r => r.low).sort((a, b) => (a.weeksOnHand ?? Infinity) - (b.weeksOnHand ?? Infinity))
 
-    // Check each box's items for low stock
-    for (const box of boxes) {
-      for (const [_slotKey, product] of Object.entries(box.selection)) {
-        if (!product) continue
-
-        // Get stock for this product
-        let quantity = 0
-        const { data: variants } = await supabaseAdmin
-          .from('product_variants')
-          .select('quantity')
-          .eq('product_id', product.id)
-
-        // Sum variant stock if it has variants
-        if (variants && variants.length > 0) {
-          quantity = variants.reduce((sum, v) => sum + (v.quantity || 0), 0)
-        } else {
-          // Check inventory table
-          const { data: inv } = await supabaseAdmin
-            .from('inventory')
-            .select('quantity')
-            .eq('product_id', product.id)
-            .maybeSingle()
-          quantity = inv?.quantity ?? 0
-        }
-
-        // Flag if below 5
-        if (quantity < 5) {
-          lowStockItems.push({
-            boxName: box.name,
-            productName: product.name,
-            quantity,
-          })
-        }
-      }
-    }
-
-    // Send email if there are low stock items
-    if (lowStockItems.length > 0) {
+    if (low.length > 0) {
       const emailHtml = `
-        <h2>🚨 Low Stock Alert</h2>
-        <p>The following items in your prebuilt boxes are running low:</p>
-        <ul>
-          ${lowStockItems.map(item => `
-            <li>
-              <strong>${item.productName}</strong> (${item.quantity} units) — used in: <em>${item.boxName}</em>
-            </li>
+        <h2>🚨 Restock Alert — ${low.length} item(s) at or below reorder point</h2>
+        <table cellpadding="6" style="border-collapse:collapse;font-family:sans-serif;font-size:13px;">
+          <tr style="text-align:left;border-bottom:1px solid #ddd;">
+            <th>Product</th><th>On hand</th><th>Reorder point</th><th>Daily rate</th><th>Weeks left</th>
+          </tr>
+          ${low.map(r => `
+            <tr style="border-bottom:1px solid #eee;">
+              <td><strong>${r.name}</strong></td>
+              <td>${r.onHand}</td>
+              <td>${r.reorderPoint} (lead ${r.leadTimeDays}d + safety ${r.safetyStock})</td>
+              <td>${r.dailyRate.toFixed(2)}/day</td>
+              <td>${r.weeksOnHand != null ? r.weeksOnHand.toFixed(1) : '—'}</td>
+            </tr>
           `).join('')}
-        </ul>
-        <p>Please restock these items to maintain your prebuilt box availability.</p>
-        <a href="https://petitelavande.com/portal/products">Go to Products Portal</a>
+        </table>
+        <p style="font-family:sans-serif;font-size:13px;">
+          Adjust lead time / safety stock on each product's page (Portal → Products).
+          The Buy Sheet under Stock Insights has color/size splits.
+        </p>
+        <a href="https://petitelavande.com/portal/stock-insights">Open Stock Insights</a>
       `
-
       await resend.emails.send({
         from: `Petite Lavande <${CONTACT_EMAIL}>`,
         to: process.env.ADMIN_EMAIL || CONTACT_EMAIL,
-        subject: `Low Stock Alert: ${lowStockItems.length} item(s)`,
+        subject: `Restock alert: ${low.length} item(s) at reorder point`,
         html: emailHtml,
       })
     }
 
-    return NextResponse.json({ checked: boxes.length, lowStock: lowStockItems.length, ok: true })
+    return NextResponse.json({ checked: rows.length, lowStock: low.length, ok: true })
   } catch (error) {
     console.error('Restock alert error:', error)
     return NextResponse.json({ error: 'Failed to check stock' }, { status: 500 })

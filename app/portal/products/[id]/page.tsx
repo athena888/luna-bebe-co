@@ -86,6 +86,8 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
   const [product, setProduct] = useState<ProductData | null>(null)
   const [gallery, setGallery] = useState<GalleryImage[]>([])
   const [inventory, setInventory] = useState(0)
+  const [leadTimeDays, setLeadTimeDays] = useState(14)
+  const [safetyStock, setSafetyStock] = useState(3)
   const [sales, setSales] = useState<{ units: number; revenue: number; lastOrderedAt: string | null }>({ units: 0, revenue: 0, lastOrderedAt: null })
   const [hasVariants, setHasVariants] = useState(false)
   const [variants, setVariants] = useState<Variant[]>([])
@@ -181,6 +183,8 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
       setVideoUrl(data.videoUrl ?? null)
       setGallery(sortGallery(data.gallery ?? []))
       setInventory(data.inventory.quantity)
+      setLeadTimeDays(data.inventory.lead_time_days ?? 14)
+      setSafetyStock(data.inventory.safety_stock ?? 3)
       if (data.sales) setSales(data.sales)
       setHasVariants(!!data.product.has_variants)
       setCerts(data.product.certifications ?? [])
@@ -227,6 +231,8 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
         tag: product.tag,
         ingredients: product.ingredients,
         inventoryQuantity: inventory,
+        leadTimeDays,
+        safetyStock,
         hasVariants,
         certifications: certs,
         active: nextActive,
@@ -1286,6 +1292,30 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
                 )}
               </>
             )}
+
+            {/* Reorder knobs — drive the daily restock alert:
+                reorder point = daily sales rate × lead time + safety stock */}
+            <div className="mt-5 pt-4 border-t border-cream-200 flex flex-wrap items-center gap-x-6 gap-y-2">
+              <label className="flex items-center gap-2">
+                <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400">Lead time</span>
+                <input
+                  type="number" min={0} value={leadTimeDays}
+                  onChange={e => setLeadTimeDays(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-16 text-center border border-cream-300 bg-white font-sans text-sm text-bark-600 py-1.5 focus:outline-none focus:border-bark-400 rounded"
+                />
+                <span className="font-sans text-xs text-bark-400">days</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400">Safety stock</span>
+                <input
+                  type="number" min={0} value={safetyStock}
+                  onChange={e => setSafetyStock(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-16 text-center border border-cream-300 bg-white font-sans text-sm text-bark-600 py-1.5 focus:outline-none focus:border-bark-400 rounded"
+                />
+                <span className="font-sans text-xs text-bark-400">units</span>
+              </label>
+              <p className="w-full font-sans text-[10px] text-bark-400/60">Restock alert fires when stock ≤ daily sales × lead time + safety stock.</p>
+            </div>
           </div>
 
         </div>{/* end Row 2 */}

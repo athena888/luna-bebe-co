@@ -91,7 +91,10 @@ export function OrdersTable({ orders: initial }: { orders: ExtendedOrder[] }) {
                     <p className="font-sans text-sm font-medium text-bark-600">{order.customer_name}</p>
                     <p className="font-sans text-xs text-bark-400">{order.customer_email}</p>
                   </td>
-                  <td className="px-4 py-3 font-sans text-sm text-bark-600">{order.recipient_name || '—'}</td>
+                  <td className="px-4 py-3 font-sans text-sm text-bark-600">
+                    {order.recipient_name || '—'}
+                    {order.ship_to_recipient && <span className="ml-1" title="Gift — ships directly to the recipient, no prices in the box">🎁</span>}
+                  </td>
                   <td className="px-4 py-3 font-sans text-xs text-bark-400">{order.selected_items?.length ?? 0} items</td>
                   <td className="px-4 py-3 font-sans text-sm font-semibold text-bark-600">{formatPrice(order.total_amount)}</td>
                   <td className="px-4 py-3 font-sans text-xs text-bark-400 capitalize">{order.shipping_type}</td>
@@ -139,6 +142,14 @@ export function OrdersTable({ orders: initial }: { orders: ExtendedOrder[] }) {
                       title="Preview & print the inside-box card for this order — auto-filled with the customer's letter, items & chosen design"
                     >
                       <Printer size={12} /> Print card
+                    </Link>
+                    <Link
+                      href={`/portal/orders/${order.id}/packing-slip`}
+                      target="_blank"
+                      className="mt-1.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cream-100 text-bark-600 font-sans text-xs font-semibold hover:bg-cream-200 transition-colors"
+                      title="Print the packing slip — gift orders hide prices and render the gift note"
+                    >
+                      <Printer size={12} /> Packing slip
                     </Link>
                   </td>
                 </tr>

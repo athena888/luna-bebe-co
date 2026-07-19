@@ -39,6 +39,7 @@ export default function CheckoutPage() {
   const [address, setAddress] = useState({ line1: '', line2: '', city: '', state: '', zip: '' })
   const [recipientName, setRecipientName] = useState('')
   const [specialNote, setSpecialNote] = useState('')
+  const [shipToRecipient, setShipToRecipient] = useState(false)
   const [letterVersion, setLetterVersion] = useState<1 | 2>(1)
   const [cardStyle, setCardStyle] = useState('')
   const [letterZone, setLetterZone] = useState<{ x: number; y: number; w: number; align: string } | null>(null)
@@ -191,8 +192,11 @@ export default function CheckoutPage() {
           preferredAssemblyStyle: null,
           recipientName: recipientName || undefined,
           specialNote: specialNote || undefined,
+          shipToRecipient,
           shippingAddress: {
-            name: contact.name,
+            // Gift mode: the label carries the recipient's name; the buyer
+            // stays on the order as customer_* via the session route.
+            name: shipToRecipient && recipientName ? recipientName : contact.name,
             email: contact.email,
             phone: contact.phone,
             line1: address.line1,
@@ -339,7 +343,26 @@ export default function CheckoutPage() {
 
                 {/* Shipping address */}
                 <div className="bg-white p-6 sm:p-7">
-                  <h2 className="font-playfair text-xl text-espresso mb-6 pb-3 border-b border-cream-200">Shipping Address</h2>
+                  <h2 className="font-playfair text-xl text-espresso mb-2 pb-3 border-b border-cream-200">
+                    {shipToRecipient ? 'Recipient’s Shipping Address' : 'Shipping Address'}
+                  </h2>
+                  <label className="flex items-start gap-2.5 cursor-pointer py-3 mb-3">
+                    <input
+                      type="checkbox"
+                      checked={shipToRecipient}
+                      onChange={e => setShipToRecipient(e.target.checked)}
+                      className="accent-gold-500 w-4 h-4 mt-0.5"
+                    />
+                    <span className="font-sans text-sm text-bark-600">
+                      🎁 This is a gift — ship directly to the recipient
+                      <span className="block font-sans text-xs text-bark-400 mt-0.5">
+                        Enter their address below. Receipts and confirmations still go to you, and no prices appear in the box.
+                      </span>
+                    </span>
+                  </label>
+                  {shipToRecipient && !recipientName.trim() && (
+                    <p className="font-sans text-xs text-rose-400 mb-3">Add the recipient&rsquo;s name under Contact Information so the shipping label carries it.</p>
+                  )}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="sm:col-span-2">
                       <label className={labelClass}>Street Address</label>

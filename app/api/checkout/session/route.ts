@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
       shippingAddress,
       recipientName,
       specialNote,
+      shipToRecipient,
       totalAmount,
       promoId,
       preferredAssemblyImage,
@@ -50,6 +51,7 @@ export async function POST(req: NextRequest) {
       }
       recipientName: string
       specialNote?: string
+      shipToRecipient?: boolean
       totalAmount: number
       promoId?: string
       preferredAssemblyImage?: string
@@ -141,6 +143,7 @@ export async function POST(req: NextRequest) {
         customer_phone: shippingAddress.phone || null,
         recipient_name: recipientName || null,
         special_note: specialNote || null,
+        ship_to_recipient: !!shipToRecipient,
         selected_items: selectedItems,
         letter_content: letterContent || null,
         letter_version: letterVersion || null,
@@ -191,7 +194,10 @@ export async function POST(req: NextRequest) {
       mode: 'payment',
       locale: market.stripeLocale,
       customer_email: shippingAddress.email,
-      shipping_address_collection: { allowed_countries: market.shipCountries },
+      // Gift orders ship to the recipient's address collected on our checkout
+      // page — asking Stripe for a shipping address again would prompt the
+      // buyer for THEIR address and confuse the label.
+      ...(shipToRecipient ? {} : { shipping_address_collection: { allowed_countries: market.shipCountries } }),
       allow_promotion_codes: !promoId,
       ...(promoId ? { discounts: [{ promotion_code: promoId }] } : {}),
       ...(taxEnabled ? { automatic_tax: { enabled: true } } : {}),

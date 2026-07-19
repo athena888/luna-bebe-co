@@ -48,6 +48,7 @@ export interface Order {
   customer_phone?: string
   recipient_name?: string
   special_note?: string
+  ship_to_recipient?: boolean
   selected_items: Product[]
   letter_content?: string
   letter_version?: 1 | 2
