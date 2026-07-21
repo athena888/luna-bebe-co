@@ -1,5 +1,5 @@
 export type ShippingType = 'standard' | 'premium'
-export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
+export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded'
 export type IssueStatus = 'open' | 'in_progress' | 'resolved'
 
 export interface Product {

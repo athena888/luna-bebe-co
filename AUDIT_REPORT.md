@@ -7,6 +7,10 @@
 
 **Legend:** ✅ working · 🟡 partial · ❌ missing · 📋 needs dashboard check
 
+> **Update (2026-07-21):** The audit below reflects the pre-fix state. All 9 fixes
+> from §3 were subsequently implemented on this branch — see **§4 · Implementation
+> Status** at the end. Items marked 📋 still require the noted dashboard/env steps.
+
 ---
 
 ## 1 · Status Table
@@ -88,4 +92,28 @@
 
 ---
 
-*No fixes were implemented in this session, per the brief.*
+---
+
+## 4 · Implementation Status (2026-07-21)
+
+All fixes from §3 were implemented on branch `claude/get-latest-5szx8u`.
+
+| # | Fix | Status | Where |
+|---|-----|--------|-------|
+| A1 | Meta Pixel ViewContent / AddToCart / InitiateCheckout / **Purchase** | ✅ done | `lib/analytics-events.ts`, `app/confirmation/page.tsx`, `app/api/checkout/order-summary/route.ts` |
+| A2 | Stripe Tax — `billing_address_collection: 'required'` when tax on | ✅ done (code) · 📋 env/dashboard | `app/api/checkout/session/route.ts` |
+| B3 | `charge.refunded` + `charge.dispute.created` handling (restock, status, emails) | ✅ done | `lib/stripe-webhook-handler.ts`, `supabase/migrations/refunds_and_restock.sql` |
+| B4 | Distinct shipping-notification email | ✅ done | `lib/resend.ts`, `app/api/orders/[id]/ship/route.ts` |
+| B5 | Corporate-inquiry auto-receipt to submitter | ✅ done | `lib/resend.ts`, `app/actions/b2b.ts` |
+| B6 | Abandoned-cart cadence — comment corrected to daily reality | ✅ done | `app/api/cron/abandoned-carts/route.ts` |
+| C7 | Meta Conversions API (server Purchase) with `event_id` dedup | ✅ done | `lib/meta-capi.ts`, `lib/stripe-webhook-handler.ts` |
+| C8 | JSON-LD availability from live stock | ✅ done | `lib/products-db.ts`, `app/products/[id]/page.tsx` |
+| C9 | Failed confirmation email → queued retry | ✅ done | `lib/stripe-webhook-handler.ts`, `lib/email-flows.ts` |
+
+**Still required to go live (not code):**
+- **Run the migration** `supabase/migrations/refunds_and_restock.sql` (widens the `orders.status` CHECK to allow `refunded`, adds `increment_inventory` / `increment_variant`). Refund status updates will fail the CHECK constraint until this runs.
+- **Subscribe the Stripe webhook endpoint** to `charge.refunded` and `charge.dispute.created` (Dashboard → Webhooks → your endpoint → Select events). Handlers exist but Stripe won't deliver these events until they're enabled.
+- **Set env vars:** `NEXT_PUBLIC_META_PIXEL_ID`, `META_CAPI_ACCESS_TOKEN` (Meta), and `STRIPE_TAX_ENABLED=true` once tax is ready.
+- **📋 Dashboard:** confirm Stripe Tax active + WA registration; confirm Resend sending domain verified.
+
+*The original audit was read-only; these fixes were made afterward at the owner's explicit request.*

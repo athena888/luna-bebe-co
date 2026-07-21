@@ -8,6 +8,7 @@ import { Footer } from '@/components/layout/Footer'
 import { Button } from '@/components/ui/Button'
 import { VatNotice } from '@/components/ui/VatNotice'
 import { CheckCircle, Package, Pen, Truck, Phone } from 'lucide-react'
+import { trackPurchase } from '@/lib/analytics-events'
 
 const NEXT_STEPS = [
   { icon: <Package size={20} className="text-gold-400" />, title: 'Box Assembly', body: 'Our team begins handpicking and assembling your items within 24 hours of your order.' },
@@ -30,6 +31,21 @@ function ConfirmationInner() {
     if (sessionId) {
       setOrderId(sessionId.slice(-8).toUpperCase())
     }
+
+    // Meta Pixel Purchase — fetch the real value/currency for this session and
+    // fire once per order (a refresh re-fires, but the shared eventID lets Meta
+    // dedupe against both this and the server-side CAPI purchase).
+    if (!sessionId) return
+    fetch(`/api/checkout/order-summary?session_id=${encodeURIComponent(sessionId)}`)
+      .then(r => (r.ok ? r.json() : null))
+      .then((s: { paid?: boolean; orderId?: string | null; value?: number; currency?: string; contentIds?: string[] } | null) => {
+        if (!s?.paid || !s.orderId) return
+        const flag = `pl_purchase_fired_${s.orderId}`
+        try { if (sessionStorage.getItem(flag)) return } catch { /* ignore */ }
+        trackPurchase({ orderId: s.orderId, value: s.value ?? 0, currency: s.currency ?? 'USD', contentIds: s.contentIds })
+        try { sessionStorage.setItem(flag, '1') } catch { /* ignore */ }
+      })
+      .catch(() => {})
   }, [sessionId])
 
   return (

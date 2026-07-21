@@ -6,6 +6,7 @@ import {
   sendWelcomeSeries3Email,
   sendWinBackEmail,
   sendReviewRequestEmail,
+  sendOrderConfirmationEmail,
 } from './resend'
 
 // Customer email flows on top of the `email_events` table (§31). Triggers
@@ -43,6 +44,20 @@ export async function schedulePostPurchaseReview(orderId: string, email: string)
   await supabaseAdmin.from('email_events').insert({
     flow: 'postpurchase', step: 1, recipient, order_id: orderId,
     template: 'postpurchase-review', scheduled_at: new Date(Date.now() + 10 * DAY).toISOString(),
+  })
+}
+
+/** Queue a retry for an order-confirmation email that failed to send inside the
+ *  webhook, so a transient Resend error doesn't silently lose it. Transactional,
+ *  so it always flows (never held while checkout is paused). One retry per order. */
+export async function enqueueOrderConfirmationRetry(orderId: string, email: string): Promise<void> {
+  const recipient = email.trim().toLowerCase()
+  const { data: existing } = await supabaseAdmin
+    .from('email_events').select('id').eq('order_id', orderId).eq('flow', 'transactional').limit(1)
+  if (existing?.length) return
+  await supabaseAdmin.from('email_events').insert({
+    flow: 'transactional', step: 1, recipient, order_id: orderId,
+    template: 'order-confirmation', scheduled_at: new Date().toISOString(),
   })
 }
 
@@ -144,6 +159,25 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
             customerEmail: ev.recipient,
             orderId: ev.order_id ?? '',
             selectedItems: items,
+          })
+          break
+        }
+        case 'order-confirmation': {
+          // Retry of a confirmation email that failed inside the webhook.
+          const { data: order } = await supabaseAdmin
+            .from('orders').select('customer_name, recipient_name, total_amount, tracking_number').eq('id', ev.order_id).maybeSingle()
+          if (!order) {
+            await supabaseAdmin.from('email_events').update({ canceled_at: new Date().toISOString() }).eq('id', ev.id)
+            skipped++
+            continue
+          }
+          await sendOrderConfirmationEmail({
+            customerName: order.customer_name,
+            customerEmail: ev.recipient,
+            orderId: ev.order_id ?? '',
+            recipientName: order.recipient_name ?? undefined,
+            total: order.total_amount ?? 0,
+            trackingNumber: order.tracking_number ?? undefined,
           })
           break
         }

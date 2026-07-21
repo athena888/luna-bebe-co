@@ -200,7 +200,13 @@ export async function POST(req: NextRequest) {
       ...(shipToRecipient ? {} : { shipping_address_collection: { allowed_countries: market.shipCountries } }),
       allow_promotion_codes: !promoId,
       ...(promoId ? { discounts: [{ promotion_code: promoId }] } : {}),
-      ...(taxEnabled ? { automatic_tax: { enabled: true } } : {}),
+      // Stripe Tax needs a customer address. Gift orders skip shipping-address
+      // collection (recipient address is on our page), so when tax is on we
+      // require the billing address to give the tax engine something to work
+      // with — otherwise gift-order tax can't calculate.
+      ...(taxEnabled
+        ? { automatic_tax: { enabled: true }, billing_address_collection: 'required' as const }
+        : {}),
       success_url: `${baseUrl}/confirmation?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/checkout`,
       metadata: {

@@ -3,7 +3,7 @@
 import { headers } from 'next/headers'
 import { supabaseAdmin } from '@/lib/supabase'
 import { upsertContact, addTouch, createFlag } from '@/lib/outreach'
-import { sendCorporateInquiryEmail } from '@/lib/resend'
+import { sendCorporateInquiryEmail, sendCorporateInquiryReceiptEmail } from '@/lib/resend'
 import { rateLimit } from '@/lib/rate-limit'
 
 export interface B2bLeadInput {
@@ -63,6 +63,11 @@ export async function submitB2bLead(input: B2bLeadInput): Promise<{ ok: true } |
     try {
       await sendCorporateInquiryEmail({ name, email, company, company_size, needs, gifts_per_year })
     } catch (e) { console.error('b2b notify email error:', e) }
+
+    // Auto-acknowledge the submitter so they know we received it. Fail-soft.
+    try {
+      await sendCorporateInquiryReceiptEmail({ name, email })
+    } catch (e) { console.error('b2b receipt email error:', e) }
 
     return { ok: true }
   } catch (e) {

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { getCatalogProduct } from '@/lib/products-db'
+import { getCatalogProduct, getProductStock } from '@/lib/products-db'
 import { CATEGORY_LABELS } from '@/lib/products'
 import { JsonLd } from '@/components/ui/JsonLd'
 import ProductDetailClient from './ProductDetailClient'
@@ -52,6 +52,11 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const p = await getCatalogProduct(id)
   const url = `${BASE}/products/${id}`
 
+  // Availability from live stock, not just the active flag: an active-but-sold-
+  // out product should render OutOfStock. Unknown stock (null) → trust `active`.
+  const stock = p ? await getProductStock(p.id, p.has_variants) : null
+  const inStock = !!p?.active && (stock == null ? true : stock > 0)
+
   // Related cross-links (same category first, topped up from the catalog) —
   // rendered by ProductDetailClient above its footer. Best-effort.
   let related: RelatedItem[] = []
@@ -80,7 +85,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
               '@type': 'Offer',
               price: (p.price / 100).toFixed(2),
               priceCurrency: 'USD',
-              availability: p.active ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+              availability: inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
               url,
             },
             // No aggregateRating until real reviews exist (Google policy)

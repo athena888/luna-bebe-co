@@ -136,6 +136,24 @@ export async function getCatalogProduct(id: string): Promise<DbProduct | null> {
   return data ? rowToProduct(data as ProductRow) : null
 }
 
+/** Live stock for a product. Variant products sum their product_variants rows;
+ *  others read the single-number `inventory` table. Returns null if stock can't
+ *  be determined (missing row/table) so callers can fall back to the active
+ *  flag rather than falsely marking something out of stock. */
+export async function getProductStock(id: string, hasVariants = false): Promise<number | null> {
+  try {
+    if (hasVariants) {
+      const { data } = await supabaseAdmin.from('product_variants').select('quantity').eq('product_id', id)
+      if (!data) return null
+      return (data as Array<{ quantity: number | null }>).reduce((s, r) => s + (r.quantity ?? 0), 0)
+    }
+    const { data } = await supabaseAdmin.from('inventory').select('quantity').eq('product_id', id).maybeSingle()
+    return (data as { quantity: number | null } | null)?.quantity ?? null
+  } catch {
+    return null
+  }
+}
+
 export interface CreateProductInput {
   name: string
   description?: string

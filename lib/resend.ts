@@ -335,6 +335,155 @@ export async function sendGiftCardEmail({
   })
 }
 
+// Distinct "your box has shipped" email — separate from order confirmation so
+// the customer gets a shipped notice, not a second confirmation-looking email.
+export async function sendShippingNotificationEmail({
+  customerName,
+  customerEmail,
+  recipientName,
+  trackingNumber,
+  trackingUrl,
+}: {
+  customerName: string
+  customerEmail: string
+  recipientName?: string
+  trackingNumber?: string
+  trackingUrl?: string
+}) {
+  return resend.emails.send({
+    from: FROM,
+    to: customerEmail,
+    subject: 'Your Petite Lavande box has shipped 📦',
+    html: `
+      <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; color: #3d2c1e;">
+        <div style="text-align: center; padding: 40px 0 24px;">
+          <p style="font-family: sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #c9a84c; margin: 0 0 8px;">Petite Lavande</p>
+          <h1 style="font-size: 28px; font-weight: normal; margin: 0;">On Its Way</h1>
+        </div>
+        <div style="background: #faf7f2; border-radius: 16px; padding: 32px; margin-bottom: 24px;">
+          <p style="font-family: sans-serif; font-size: 14px; line-height: 1.7; color: #5a3e28; margin: 0 0 16px;">
+            Hi ${customerName},
+          </p>
+          <p style="font-family: sans-serif; font-size: 14px; line-height: 1.7; color: #5a3e28; margin: 0 0 8px;">
+            Good news — your Petite Lavande box${recipientName ? ` for ${recipientName}` : ''} is on its way, hand-packed with dried lavender and sealed with wax.
+          </p>
+          ${trackingNumber ? `
+          <div style="border-top: 1px solid #e8ddd0; margin: 24px 0 0; padding-top: 16px;">
+            <p style="font-family: sans-serif; font-size: 12px; color: #9c7c5a; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 1px;">Tracking Number</p>
+            <p style="font-family: monospace; font-size: 14px; color: #3d2c1e; margin: 0 0 16px;">${trackingNumber.slice(-12).toUpperCase()}</p>
+            ${trackingUrl ? `
+            <div style="text-align:center;">
+              <a href="${trackingUrl}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+                Track Your Box
+              </a>
+            </div>` : ''}
+          </div>
+          ` : ''}
+        </div>
+        <p style="font-family: sans-serif; font-size: 11px; text-align: center; color: #9c7c5a; margin: 0;">
+          Questions? Reply to this email — we're always here.
+        </p>
+      </div>
+    `,
+  })
+}
+
+// Auto-acknowledgment to someone who submits the Corporate & Team Gifting form,
+// so they know we received it. Transactional (their own inquiry) — plain footer.
+export async function sendCorporateInquiryReceiptEmail({
+  name,
+  email,
+}: {
+  name?: string | null
+  email: string
+}) {
+  const greeting = name ? `Hi ${name},` : 'Hi there,'
+  return resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: 'We received your corporate gifting inquiry 🌿',
+    html: `
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+        ${brandHeader}
+        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">Thank you for reaching out</h1>
+        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">${greeting}</p>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+            We've received your corporate & team gifting inquiry and someone from our team will be in touch within one business day to help design the right gifting experience for you.
+          </p>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0;">
+            In the meantime, feel free to reply to this email with anything else you'd like us to know.
+          </p>
+        </div>
+        ${brandFooter}
+      </div>
+    `,
+  })
+}
+
+// Refund confirmation to the customer. Transactional — plain footer.
+export async function sendRefundEmail({
+  customerName,
+  customerEmail,
+  amount,
+  orderId,
+}: {
+  customerName: string
+  customerEmail: string
+  amount: number
+  orderId: string
+}) {
+  const formatted = `$${(amount / 100).toFixed(2)}`
+  return resend.emails.send({
+    from: FROM,
+    to: customerEmail,
+    subject: 'Your Petite Lavande refund has been processed',
+    html: `
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+        ${brandHeader}
+        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">Refund Processed</h1>
+        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">Hi ${customerName},</p>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+            We've processed a refund of <strong>${formatted}</strong> for your order. Depending on your bank, it may take 5–10 business days to appear on your statement.
+          </p>
+          <div style="border-top:1px solid #e8ddd0;padding-top:16px;">
+            <p style="font-family:sans-serif;font-size:12px;color:#9c7c5a;margin:0 0 4px;text-transform:uppercase;letter-spacing:1px;">Order Reference</p>
+            <p style="font-family:monospace;font-size:14px;color:#3d2c1e;margin:0;">#${orderId.slice(-8).toUpperCase()}</p>
+          </div>
+        </div>
+        ${brandFooter}
+      </div>
+    `,
+  })
+}
+
+// Internal alert when Stripe opens a dispute/chargeback — respond fast (evidence
+// deadlines are tight). Plain text to the team.
+export async function sendDisputeAlertEmail(dispute: {
+  orderId?: string | null
+  amount: number
+  reason?: string | null
+  customerEmail?: string | null
+}) {
+  const text = [
+    '⚠️  A payment dispute (chargeback) was opened.',
+    '',
+    `Order:     ${dispute.orderId ? `#${dispute.orderId.slice(-8).toUpperCase()}` : '— (not matched to an order)'}`,
+    `Amount:    $${(dispute.amount / 100).toFixed(2)}`,
+    `Reason:    ${dispute.reason || '—'}`,
+    `Customer:  ${dispute.customerEmail || '—'}`,
+    '',
+    'Respond in Stripe Dashboard → Payments → Disputes before the evidence deadline.',
+  ].join('\n')
+  return resend.emails.send({
+    from: FROM,
+    to: process.env.ADMIN_EMAIL || CONTACT_EMAIL,
+    subject: `Payment dispute opened — $${(dispute.amount / 100).toFixed(2)}`,
+    text,
+  })
+}
+
 export async function sendOrderConfirmationEmail({
   customerName,
   customerEmail,

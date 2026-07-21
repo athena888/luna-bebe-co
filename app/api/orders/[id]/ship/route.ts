@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { createShippingLabel } from '@/lib/shippo'
-import { sendOrderConfirmationEmail } from '@/lib/resend'
+import { sendShippingNotificationEmail } from '@/lib/resend'
 import type { Order } from '@/types'
 
 export async function POST(
@@ -64,16 +64,14 @@ export async function POST(
     console.error('Post-purchase scheduling failed (email_events table ready?):', e)
   }
 
-  // Send shipping confirmation email
-  await sendOrderConfirmationEmail({
+  // Send shipping notification email (distinct from order confirmation)
+  await sendShippingNotificationEmail({
     customerName: order.customer_name,
     customerEmail: order.customer_email,
-    orderId: order.id,
     recipientName: order.recipient_name,
-    total: order.total_amount,
     trackingNumber: label.trackingNumber,
     trackingUrl: label.trackingUrl,
-  }).catch(err => console.error('Confirmation email error:', err))
+  }).catch(err => console.error('Shipping notification email error:', err))
 
   return NextResponse.json({
     trackingNumber: label.trackingNumber,

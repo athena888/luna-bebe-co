@@ -4,8 +4,10 @@ import { sendAbandonedCartEmail } from '@/lib/resend'
 import { isOptedOut } from '@/lib/unsubscribe'
 import type { Order } from '@/types'
 
-// Runs every hour via Vercel Cron (see vercel.json)
-// Finds pending orders older than 1 hour with no email sent, sends recovery email
+// Runs once daily via Vercel Cron — 10:00 UTC (see vercel.json). The Hobby plan
+// caps crons at once/day, so recovery emails go out on the next daily run rather
+// than hourly; upgrade the plan and bump the schedule for faster recovery.
+// Finds pending orders older than 1 hour with no email sent, sends recovery email.
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
