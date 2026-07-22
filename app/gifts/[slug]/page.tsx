@@ -131,6 +131,17 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
           })),
         }} />
       )}
+      {(lp.faqs?.length ?? 0) > 0 && (
+        <JsonLd data={{
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: lp.faqs!.map(f => ({
+            '@type': 'Question',
+            name: f.q,
+            acceptedAnswer: { '@type': 'Answer', text: f.a },
+          })),
+        }} />
+      )}
 
       <main className="bg-cream-50">
 
@@ -193,6 +204,56 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
                 </div>
               ))}
 
+            </div>
+          </section>
+        )}
+
+        {/* Why it works for this moment */}
+        {lp.moment && (
+          <section className="border-t border-cream-300 px-6 sm:px-8 py-16 sm:py-20">
+            <div className="max-w-3xl mx-auto">
+              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-2 text-center">For This Moment</p>
+              <h2 className="font-serif text-2xl sm:text-3xl text-espresso text-center mb-8">{lp.moment.heading}</h2>
+              {lp.moment.paragraphs.map((para, i) => (
+                <p key={i} className="font-cormorant text-lg text-espresso-light leading-loose mb-5 last:mb-0">{para}</p>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* FAQ */}
+        {(lp.faqs?.length ?? 0) > 0 && (
+          <section className="border-t border-cream-300 bg-[#FBF7F0] px-6 sm:px-8 py-16 sm:py-20">
+            <div className="max-w-3xl mx-auto">
+              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-2 text-center">Good to Know</p>
+              <h2 className="font-serif text-2xl sm:text-3xl text-espresso text-center mb-10">Questions, Answered</h2>
+              <div className="space-y-4">
+                {lp.faqs!.map(f => (
+                  <details key={f.q} className="group bg-cream-50 border border-cream-300 px-6 py-4">
+                    <summary className="font-serif text-base sm:text-lg text-bark-700 cursor-pointer list-none flex items-start justify-between gap-4">
+                      {f.q}
+                      <span className="font-sans text-bark-400 group-open:rotate-45 transition-transform shrink-0 mt-0.5">+</span>
+                    </summary>
+                    <p className="font-sans text-sm text-bark-500 leading-relaxed mt-3">{f.a}</p>
+                  </details>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* From the journal */}
+        {(lp.journalLinks?.length ?? 0) > 0 && (
+          <section className="border-t border-cream-300 px-6 sm:px-8 py-10">
+            <div className="max-w-3xl mx-auto text-center">
+              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-5">From the Journal</p>
+              <div className="flex flex-wrap justify-center gap-3">
+                {lp.journalLinks!.map(j => (
+                  <Link key={j.href} href={j.href} className="font-sans text-[12px] text-bark-600 hover:text-bark-800 underline underline-offset-4 decoration-gold-300">
+                    {j.label}
+                  </Link>
+                ))}
+              </div>
             </div>
           </section>
         )}

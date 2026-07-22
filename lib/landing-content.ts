@@ -38,6 +38,13 @@ const DEFAULT_TAGS: Record<string, string> = {
   'organic-baby-clothes-gift-set': 'Clothing',
   'french-baby-gifts': 'French',
   'luxury-baby-shower-gift': 'Baby Shower',
+  'baby-shower-gift-for-mom': 'Baby Shower',
+  'new-mom-gift-box': 'For Mama',
+  'newborn-gift-set': 'Newborn',
+  'gift-for-second-baby': 'Second Baby',
+  'twin-baby-gifts': 'Twins',
+  'baby-gift-from-coworkers': 'From the Office',
+  'c-section-care-package': 'For Mama',
 }
 
 function defaultTag(slug: string): string {
