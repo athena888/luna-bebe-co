@@ -1184,4 +1184,19 @@ alter table email_events drop constraint if exists email_events_flow_check;
 alter table email_events add constraint email_events_flow_check
   check (flow in ('welcome','postpurchase','winback','transactional'));
 
+-- 35) The live reviews table predates §30 (created by hand), so it's missing
+--     the products foreign key — add it if absent. Deletes any orphaned rows
+--     first so the constraint can attach.
+do $$
+begin
+  if not exists (
+    select 1 from information_schema.table_constraints
+    where table_name = 'reviews' and constraint_type = 'FOREIGN KEY'
+  ) then
+    delete from reviews where product_id not in (select id from products);
+    alter table reviews add constraint reviews_product_id_fkey
+      foreign key (product_id) references products(id) on delete cascade;
+  end if;
+end $$;
+
 -- Done.

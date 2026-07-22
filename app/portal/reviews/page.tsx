@@ -47,10 +47,16 @@ function ReviewCard({ review }: { review: ReviewRow }) {
 }
 
 export default async function ReviewsPage() {
-  const { data, error } = await supabaseAdmin
-    .from('reviews')
-    .select('id, product_id, customer_name, rating, body, approved, created_at, products(name)')
-    .order('created_at', { ascending: false })
+  // No FK join — the live reviews table may predate §30's foreign key, so we
+  // map product names in code instead of relying on a PostgREST relationship.
+  const [{ data, error }, { data: products }] = await Promise.all([
+    supabaseAdmin
+      .from('reviews')
+      .select('id, product_id, customer_name, rating, body, approved, created_at')
+      .order('created_at', { ascending: false }),
+    supabaseAdmin.from('products').select('id, name'),
+  ])
+  const nameById = new Map((products ?? []).map(p => [p.id as string, p.name as string]))
 
   if (error) {
     return (
@@ -67,7 +73,10 @@ export default async function ReviewsPage() {
     )
   }
 
-  const reviews = (data ?? []) as unknown as ReviewRow[]
+  const reviews = ((data ?? []) as unknown as Omit<ReviewRow, 'products'>[]).map(r => ({
+    ...r,
+    products: nameById.has(r.product_id) ? { name: nameById.get(r.product_id)! } : null,
+  })) as ReviewRow[]
   const pending = reviews.filter(r => !r.approved)
   const approved = reviews.filter(r => r.approved)
 
