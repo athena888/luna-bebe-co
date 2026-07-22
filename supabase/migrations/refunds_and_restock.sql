@@ -24,3 +24,10 @@ begin
   update product_variants set quantity = quantity + 1, updated_at = now()
   where product_id = p_product_id and color = p_color and size = p_size and style = coalesce(p_style,'');
 end; $$ language plpgsql security definer;
+
+-- 4) The confirmation-email retry queues flow='transactional' rows, but §31
+--    created email_events with check (flow in ('welcome','postpurchase','winback'))
+--    — widen it or every retry insert fails the constraint.
+alter table email_events drop constraint if exists email_events_flow_check;
+alter table email_events add constraint email_events_flow_check
+  check (flow in ('welcome','postpurchase','winback','transactional'));

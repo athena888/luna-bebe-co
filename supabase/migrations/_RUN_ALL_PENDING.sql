@@ -1156,4 +1156,32 @@ alter table public.creators enable row level security;
 drop policy if exists creators_service_all on public.creators;
 create policy creators_service_all on public.creators for all to service_role using (true) with check (true);
 
+-- 34) Refund handling + email-retry flow (from the mobile-session audit branch;
+--     also in supabase/migrations/refunds_and_restock.sql).
+--     a) Allow refunded/cancelled order states.
+alter table orders drop constraint if exists orders_status_check;
+alter table orders add constraint orders_status_check
+  check (status in ('pending','processing','shipped','delivered','cancelled','refunded'));
+--     b) Restock RPCs used by the charge.refunded webhook (mirrors of the
+--        decrement functions used when an order is paid).
+create or replace function increment_inventory(p_product_id text)
+returns void as $$
+begin
+  update inventory set quantity = quantity + 1, updated_at = now()
+  where product_id = p_product_id;
+end; $$ language plpgsql security definer;
+
+create or replace function increment_variant(
+  p_product_id text, p_color text, p_size text, p_style text default ''
+) returns void as $$
+begin
+  update product_variants set quantity = quantity + 1, updated_at = now()
+  where product_id = p_product_id and color = p_color and size = p_size and style = coalesce(p_style,'');
+end; $$ language plpgsql security definer;
+--     c) Widen the email_events flow CHECK so the confirmation-email retry
+--        (flow='transactional') can insert — §31's check didn't allow it.
+alter table email_events drop constraint if exists email_events_flow_check;
+alter table email_events add constraint email_events_flow_check
+  check (flow in ('welcome','postpurchase','winback','transactional'));
+
 -- Done.
