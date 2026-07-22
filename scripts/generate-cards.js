@@ -305,7 +305,7 @@ async function markGenerated(ids) {
 }
 
 // ------------------------------------------------------------------ main ----
-(async () => {
+async function main() {
   const args = process.argv.slice(2);
   const csvIdx = args.indexOf('--csv');
 
@@ -358,4 +358,10 @@ async function markGenerated(ids) {
   if (args.includes('--mark') && !args.includes('--demo') && csvIdx < 0) {
     await markGenerated(writable.map((o) => o.id));
   }
-})();
+}
+
+if (require.main === module) main();
+
+// Reused by the portal Cards page (preview + mat downloads) — same geometry,
+// same font, one source of truth.
+module.exports = { CFG, renderCard, buildMatSVG, hasUnrenderable };

@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
     '/api/portal/lookbook/render': ['./assets/**/*'],
     '/api/portal/lookbook/publish': ['./assets/**/*'],
   },
+  // hersheytext (Cricut card writer) reads its font files with __dirname at
+  // runtime — bundling breaks those paths, so load it from node_modules.
+  serverExternalPackages: ['hersheytext'],
   images: {
     remotePatterns: [
       {
