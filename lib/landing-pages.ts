@@ -29,7 +29,7 @@ export const LANDING_PAGES: LandingPage[] = [
     eyebrow: 'For the Newborn',
     h1: 'The Organic Newborn Gift Box',
     intro: [
-      'A new baby deserves the gentlest start — and the people welcoming them deserve a gift that feels as considered as the moment. Our organic newborn gift box is built around soft, breathable pieces made with GOTS-certified organic cotton from GOTS-certified makers, so everything that touches new skin is as pure as it is beautiful.',
+      'A new baby deserves the gentlest start — and the people welcoming them deserve a gift that feels as considered as the moment. Our organic newborn gift box is built around soft, breathable pieces in organic cotton from GOTS-certified makers, so everything that touches new skin is as pure as it is beautiful.',
       'Every box is assembled by hand and finished the way you would for someone you love: a botanical lavender bouquet, a keepsake to remember the first days by, and a personalized card printed just for them. You can build your own box item by item, or choose a ready-made set we have already curated for newborns. Either way it arrives sealed with a wax stamp and tied with a natural linen ribbon — gift-ready the moment it lands on the doorstep.',
     ],
     categories: ['swaddle', 'garment', 'bath', 'keepsake'],
@@ -71,11 +71,11 @@ export const LANDING_PAGES: LandingPage[] = [
     eyebrow: 'Organic Clothing',
     h1: 'The Organic Baby Clothes Gift Set',
     intro: [
-      'Baby clothes are the gift everyone remembers — especially when they are this soft. Our organic baby clothes gift set is made with GOTS-certified organic cotton from GOTS-certified makers: swaddles, rompers, bibs and gentle layers that feel as good as they look and are kind to delicate new skin.',
+      'Baby clothes are the gift everyone remembers — especially when they are this soft. Our organic baby clothes gift set is organic cotton from GOTS-certified makers: swaddles, rompers, bibs and gentle layers that feel as good as they look and are kind to delicate new skin.',
       'Choose the pieces yourself with our build-your-own tool, mixing sizes and soft natural colours, or start from a ready-made clothing edition we have already styled. Each set is folded and packed by hand, then finished with dried lavender, a wax seal and a linen ribbon — with a personalized card printed for the occasion. Whether it is a baby shower, a welcome-home gift, or a first birthday, an organic clothing set is the kind of present parents reach for again and again.',
     ],
     categories: ['garment', 'swaddle'],
-    highlights: ['GOTS-certified organic cotton', 'Swaddles, rompers & layers', 'Soft natural colours', 'Hand-folded & gift-ready'],
+    highlights: ['Organic cotton, GOTS-certified makers', 'Swaddles, rompers & layers', 'Soft natural colours', 'Hand-folded & gift-ready'],
   },
   {
     slug: 'french-baby-gifts',

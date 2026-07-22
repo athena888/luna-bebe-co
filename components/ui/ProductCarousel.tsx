@@ -217,7 +217,7 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
             {certs.some(isGots) && (
               <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
                 <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
-                <span className="font-sans text-xs text-bark-400">Made with <span className="text-bark-600">GOTS-certified organic cotton</span> from a GOTS-certified manufacturer.</span>
+                <span className="font-sans text-xs text-bark-400"><span className="text-bark-600">Organic cotton</span> from a GOTS-certified manufacturer.</span>
               </div>
             )}
 

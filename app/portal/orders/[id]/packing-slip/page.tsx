@@ -34,7 +34,7 @@ export default async function PackingSlipPage({ params }: { params: Promise<{ id
         {/* Brand header */}
         <header className="text-center mb-10">
           <p className="font-sans text-[11px] tracking-[0.35em] uppercase text-gold-500 mb-2">Petite Lavande</p>
-          <p className="font-serif text-lg">Hand-packed in Seattle</p>
+          <p className="font-serif text-lg">Fait avec amour, pour vous</p>
           <p className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 mt-1">Order {ref}</p>
         </header>
 

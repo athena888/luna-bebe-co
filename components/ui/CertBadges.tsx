@@ -134,7 +134,7 @@ export function CertBadges({ certs, organic }: { certs: ResolvedCert[]; organic?
 
               <div className="flex items-center gap-3 mb-2">
                 <CertIcon c={opened} size={22} />
-                <h3 className="font-serif text-lg text-bark-600">{openedGots ? 'Made with GOTS-certified organic cotton' : (opened.full_name || opened.name)}</h3>
+                <h3 className="font-serif text-lg text-bark-600">{openedGots ? 'Organic cotton from a GOTS-certified maker' : (opened.full_name || opened.name)}</h3>
               </div>
               {openedGots && <p className="font-sans text-xs text-bark-500 mb-2">From a GOTS-certified manufacturer. Their scope certificate is shown above.</p>}
               {opened.region && <p className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 mb-3">{opened.region}</p>}

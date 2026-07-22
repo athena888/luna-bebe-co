@@ -125,7 +125,7 @@ export async function sendWelcomeSeries2Email({ customerEmail }: { customerEmail
             Every item in a Petite Lavande box is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender. The printed card in each box tells the story of every item, so the person you're gifting knows exactly what's touching their baby's skin.
           </p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
-            Hand-packed in Seattle, finished with satin ribbon and a wax seal.
+            Hand-packed and finished with satin ribbon and a wax seal.
           </p>
           <div style="text-align:center;">
             <a href="${utm('/boxes', 'welcome')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
