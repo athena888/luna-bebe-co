@@ -27,3 +27,4 @@ npm-debug.log*
 
 # Generated docs / one-off artifacts
 *.pdf
+scripts/out/

@@ -1199,4 +1199,8 @@ begin
   end if;
 end $$;
 
+-- 36) Cricut card batching — flag orders whose gift card has been generated
+--     (scripts/generate-cards.js --mark sets it; the query skips flagged rows).
+alter table orders add column if not exists card_generated boolean not null default false;
+
 -- Done.
