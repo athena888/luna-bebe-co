@@ -167,11 +167,15 @@ export function GiftGuidesEditor() {
           standalone B2B-ish page (also in Portal → Site Images → Press). */}
       {activeSlug === '__corporate' && (
         <section className="bg-white border border-cream-200 rounded-lg p-4">
-          <p className="font-sans text-sm font-medium text-bark-600 mb-0.5">Press page background</p>
-          <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">Behind the header of the public <span className="font-mono text-[10px]">/press</span> kit page.</p>
+          <p className="font-sans text-sm font-medium text-bark-600 mb-0.5">Press page backgrounds</p>
+          <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">One per section of the public <span className="font-mono text-[10px]">/press</span> kit page.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <CorpSlot slotKey="press.hero_bg" label="Press hero — desktop" ratio="21:9" hint="~2000×860 — title and contact sit on top" scrim={{ hex: '#FBF7F0', opacity: 0.70, note: 'tint for text legibility over the photo' }} />
-            <CorpSlot slotKey="press.hero_bg.mobile" label="Press hero — mobile" ratio="4:5" hint="~1000×1250 portrait — shown on phones" />
+            <CorpSlot slotKey="press.hero_bg" label="Hero — desktop" ratio="21:9" hint="~2000×860 — title and contact sit on top" scrim={{ hex: '#FBF7F0', opacity: 0.70, note: 'tint for text legibility over the photo' }} />
+            <CorpSlot slotKey="press.hero_bg.mobile" label="Hero — mobile" ratio="4:5" hint="~1000×1250 portrait — shown on phones" />
+            <CorpSlot slotKey="press.images_bg" label="Image grid — desktop" ratio="21:9" hint="~2000×860, very soft — photo cards sit on top" scrim={{ hex: '#FBF7F0', opacity: 0.88, note: 'keep high so the press photos stay the focus' }} />
+            <CorpSlot slotKey="press.images_bg.mobile" label="Image grid — mobile" ratio="4:5" hint="~1000×1250 portrait — shown on phones" />
+            <CorpSlot slotKey="press.linesheet_bg" label="Line sheet — desktop" ratio="21:9" hint="~2000×860, very soft — white table sits on top" scrim={{ hex: '#FBF7F0', opacity: 0.88, note: 'keep high so prices stay readable' }} />
+            <CorpSlot slotKey="press.linesheet_bg.mobile" label="Line sheet — mobile" ratio="4:5" hint="~1000×1250 portrait — shown on phones" />
           </div>
         </section>
       )}

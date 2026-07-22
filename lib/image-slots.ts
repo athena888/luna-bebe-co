@@ -42,6 +42,8 @@ export const IMAGE_SLOTS: ImageSlot[] = [
 
   // ── Press ───────────────────────────────────────────────────────────────────
   { key: 'press.hero_bg', label: 'Hero background', group: 'Press', where: 'Background behind the Press Kit header (title + one-liner + contact)', ratio: '21:9', hint: 'Wide & soft — text sits on top · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FBF7F0', opacity: 0.70 } },
+  { key: 'press.images_bg', label: 'Image-grid background', group: 'Press', where: 'Behind the downloadable press photo grid', ratio: '21:9', hint: 'Very soft — the photo cards sit on top · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FBF7F0', opacity: 0.88 } },
+  { key: 'press.linesheet_bg', label: 'Line-sheet background', group: 'Press', where: 'Behind the tier/price line sheet at the bottom of /press', ratio: '21:9', hint: 'Very soft — the white table sits on top · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FBF7F0', opacity: 0.88 } },
 
   // ── Legal Pages ─────────────────────────────────────────────────────────────
   { key: 'legal.bg', label: 'Page background', group: 'Legal Pages', where: 'Behind Privacy Policy, Terms of Service and Returns (one shared image)', ratio: '21:9', hint: 'Wide & soft — the text sits on top · ~2000×860', mobile: { ratio: '9:16', hint: 'Taller phone crop · ~1080×1920' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.85 } },

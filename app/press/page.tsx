@@ -49,7 +49,8 @@ export default async function PressPage() {
 
         {images.length > 0 ? (
           <>
-            <section className="max-w-5xl mx-auto px-6 pb-6">
+            <SlotBackground slotKey="press.images_bg" scrim="bg-cream-50/85">
+            <section className="max-w-5xl mx-auto px-6 py-6">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="font-serif text-2xl text-espresso">Images</h2>
                 <a href="/api/press/images.zip"
@@ -69,8 +70,10 @@ export default async function PressPage() {
                 ))}
               </div>
             </section>
+            </SlotBackground>
 
             {tiers.length > 0 && (
+              <SlotBackground slotKey="press.linesheet_bg" scrim="bg-cream-50/85">
               <section className="max-w-3xl mx-auto px-6 py-12">
                 <h2 className="font-serif text-2xl text-espresso mb-5">Line Sheet</h2>
                 <div className="bg-white rounded-2xl border border-cream-300 divide-y divide-cream-200">
@@ -84,6 +87,7 @@ export default async function PressPage() {
                 </div>
                 <p className="font-sans text-xs text-bark-400 mt-4">All boxes ship nationwide. Hand-finished in Seattle: printed card, dried lavender, wax seal, satin ribbon.</p>
               </section>
+              </SlotBackground>
             )}
           </>
         ) : (
