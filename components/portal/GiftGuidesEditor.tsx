@@ -155,9 +155,25 @@ export function GiftGuidesEditor() {
               <CorpSlot slotKey="corporate.hero_bg" label="Hero — desktop" ratio="21:9" hint="~2000×860 (21:9), subject centered" scrim={{ hex: '#FAF9F8', opacity: 0.40, note: 'tint over the hero photo — raise for legibility' }} />
               <CorpSlot slotKey="corporate.hero_bg.mobile" label="Hero — mobile" ratio="9:16" hint="~1080×1920 portrait — shown on phones" />
               <CorpSlot slotKey="corporate.points_bg" label="Three-points band" ratio="21:9" hint="~2000×860, room for white text" scrim={{ hex: '#181716', opacity: 0, note: 'off by default — raise to darken the photo' }} />
+              <CorpSlot slotKey="corporate.points_bg.mobile" label="Three-points — mobile" ratio="4:5" hint="~1000×1250 portrait — shown on phones" />
+              <CorpSlot slotKey="corporate.form_bg" label="Lead form — desktop" ratio="21:9" hint="~2000×860 — the form card sits on top" scrim={{ hex: '#FAF9F8', opacity: 0.55, note: 'tint over the photo behind the form — raise for legibility' }} />
+              <CorpSlot slotKey="corporate.form_bg.mobile" label="Lead form — mobile" ratio="4:5" hint="~1000×1250 portrait — shown on phones" />
             </div>
           </section>
         </div>
+      )}
+
+      {/* Press page backgrounds — managed alongside since it's the other
+          standalone B2B-ish page (also in Portal → Site Images → Press). */}
+      {activeSlug === '__corporate' && (
+        <section className="bg-white border border-cream-200 rounded-lg p-4">
+          <p className="font-sans text-sm font-medium text-bark-600 mb-0.5">Press page background</p>
+          <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">Behind the header of the public <span className="font-mono text-[10px]">/press</span> kit page.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <CorpSlot slotKey="press.hero_bg" label="Press hero — desktop" ratio="21:9" hint="~2000×860 — title and contact sit on top" scrim={{ hex: '#FBF7F0', opacity: 0.70, note: 'tint for text legibility over the photo' }} />
+            <CorpSlot slotKey="press.hero_bg.mobile" label="Press hero — mobile" ratio="4:5" hint="~1000×1250 portrait — shown on phones" />
+          </div>
+        </section>
       )}
 
       {guide && (
