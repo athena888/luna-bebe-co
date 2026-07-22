@@ -175,6 +175,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     recipientName: order.recipient_name,
     total: order.total_amount,
     trackingNumber: order.tracking_number,
+    items: (order.selected_items ?? []).map(i => ({
+      name: i.name, price: i.price, qty: (i as { qty?: number }).qty ?? 1,
+    })),
   }).catch(async err => {
     // Don't lose the confirmation: queue a retry the daily flows cron picks up.
     console.error('Confirmation email error (queuing retry):', err)

@@ -11,6 +11,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { storeCheckoutEnabled } from '@/lib/store-flags'
 import { trackBeginCheckout } from '@/lib/analytics-events'
+import { AddonRow } from '@/components/ui/AddonRow'
 
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
 function boxItemTotal(selection: BoxSelection) { return Object.values(selection).reduce((sum, p) => sum + (p?.price ?? 0) * ((p as { qty?: number })?.qty ?? 1), 0) }
@@ -309,6 +310,21 @@ export default function CheckoutPage() {
                       <div className="bg-white p-8 text-center">
                         <p className="font-sans text-sm text-bark-400 mb-3">Your bag is empty.</p>
                         <Link href="/build" className="font-sans text-[11px] tracking-[0.2em] uppercase text-espresso underline underline-offset-4">Build your box</Link>
+                      </div>
+                    )}
+                    {/* Last-chance add-ons — adds into this page's own selection state */}
+                    {entries.length > 0 && (
+                      <div className="bg-white px-0 sm:px-2">
+                        <AddonRow
+                          inCartIds={entries.map(([, i]) => i.id)}
+                          onAdd={p => {
+                            const item = { ...p, qty: 1, lineKey: p.id }
+                            const next = Array.isArray(selection)
+                              ? ([...(selection as unknown as CartItem[]), item] as unknown as BoxSelection)
+                              : ({ ...(selection as object), [p.id]: item } as unknown as BoxSelection)
+                            updateSelection(next)
+                          }}
+                        />
                       </div>
                     )}
                   </div>

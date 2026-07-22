@@ -165,7 +165,7 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
         case 'order-confirmation': {
           // Retry of a confirmation email that failed inside the webhook.
           const { data: order } = await supabaseAdmin
-            .from('orders').select('customer_name, recipient_name, total_amount, tracking_number').eq('id', ev.order_id).maybeSingle()
+            .from('orders').select('customer_name, recipient_name, total_amount, tracking_number, selected_items').eq('id', ev.order_id).maybeSingle()
           if (!order) {
             await supabaseAdmin.from('email_events').update({ canceled_at: new Date().toISOString() }).eq('id', ev.id)
             skipped++
@@ -178,6 +178,9 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
             recipientName: order.recipient_name ?? undefined,
             total: order.total_amount ?? 0,
             trackingNumber: order.tracking_number ?? undefined,
+            items: ((order.selected_items ?? []) as Array<{ name: string; price?: number; qty?: number }>).map(i => ({
+              name: i.name, price: i.price, qty: i.qty ?? 1,
+            })),
           })
           break
         }
