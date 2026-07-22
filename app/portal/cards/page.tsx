@@ -79,7 +79,7 @@ export default function CardsPage() {
         </div>
       </div>
       <p className="font-sans text-sm text-bark-400 mb-2">
-        Each preview is exactly what the pen will write. Download a mat file, upload to Design Space, set the
+        Cards clear automatically when their order ships, or when you mark a batch done. Each preview is exactly what the pen will write. Download a mat file, upload to Design Space, set the
         <span className="font-mono text-[11px]"> write </span> layer to Pen, place cards on the guides, go.
       </p>
       {flagMissing && (
@@ -94,7 +94,7 @@ export default function CardsPage() {
       ) : writable.length === 0 && handwrite.length === 0 ? (
         <div className="bg-cream-50 rounded-2xl border border-cream-200 p-12 text-center mt-4">
           <PenLine size={20} className="mx-auto text-bark-300 mb-3" />
-          <p className="font-sans text-sm text-bark-400">No cards waiting — every paid order with a gift message will appear here.</p>
+          <p className="font-sans text-sm text-bark-400">No cards waiting — orders in processing with a gift message appear here, and clear when they ship.</p>
         </div>
       ) : (
         <>

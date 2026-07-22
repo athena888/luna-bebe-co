@@ -1,9 +1,11 @@
 import { supabaseAdmin } from './supabase'
 import { CFG, hasUnrenderable } from '@/scripts/generate-cards'
 
-// Orders that still need a pen-written gift card, in the exact order the
-// generator batches them onto mats. Fail-soft when §36 (card_generated) isn't
-// run yet: fall back to "every paid order with a message".
+// Orders in PROCESSING that still need a pen-written gift card, in the exact
+// order the
+// generator batches them onto mats — a card leaves the queue when its order
+// ships (fulfilled) or when a batch is marked done. Fail-soft when §36
+// (card_generated) isn't run yet.
 
 export interface PendingCard {
   id: string
@@ -24,7 +26,7 @@ export async function getPendingCards(): Promise<{ cards: PendingCard[]; flagCol
     const { data, error } = await supabaseAdmin
       .from('orders')
       .select('id, recipient_name, letter_content, created_at')
-      .neq('status', 'pending')
+      .eq('status', 'processing')
       .or('card_generated.is.null,card_generated.eq.false')
       .not('letter_content', 'is', null)
       .order('created_at', { ascending: true })
@@ -35,7 +37,7 @@ export async function getPendingCards(): Promise<{ cards: PendingCard[]; flagCol
     const { data } = await supabaseAdmin
       .from('orders')
       .select('id, recipient_name, letter_content, created_at')
-      .neq('status', 'pending')
+      .eq('status', 'processing')
       .not('letter_content', 'is', null)
       .order('created_at', { ascending: true })
     rows = data ?? []
