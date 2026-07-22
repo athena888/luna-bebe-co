@@ -178,8 +178,8 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
             recipientName: order.recipient_name ?? undefined,
             total: order.total_amount ?? 0,
             trackingNumber: order.tracking_number ?? undefined,
-            items: ((order.selected_items ?? []) as Array<{ name: string; price?: number; qty?: number }>).map(i => ({
-              name: i.name, price: i.price, qty: i.qty ?? 1,
+            items: ((order.selected_items ?? []) as Array<{ id?: string; name: string; price?: number; qty?: number; image?: string | null }>).map(i => ({
+              id: i.id, name: i.name, price: i.price, qty: i.qty ?? 1, image: i.image ?? null,
             })),
           })
           break

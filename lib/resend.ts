@@ -355,25 +355,23 @@ export async function sendShippingNotificationEmail({
     to: customerEmail,
     subject: 'Your Petite Lavande box has shipped 📦',
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#41342A;background:#ffffff;">
-        <div style="text-align:center;padding:44px 0 20px;">
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;">
+        <div style="text-align:center;padding:44px 0 24px;">
           <p style="font-family:sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#c9a84c;margin:0 0 6px;">Petite Lavande</p>
           <p style="font-family:Georgia,serif;font-style:italic;font-size:13px;color:#9c7c5a;margin:0;">Fait avec amour, pour vous</p>
-          <div style="width:36px;height:1px;background:#c9a84c;margin:18px auto 0;"></div>
         </div>
-        <h1 style="font-size:26px;font-weight:normal;text-align:center;margin:0 0 26px;">On its way</h1>
-        <div style="background:#FBF7F0;border-radius:16px;padding:32px;margin:0 4px 24px;">
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 14px;">Hi ${customerName},</p>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 6px;">
-            Your box${recipientName ? ` for ${recipientName}` : ''} left our hands today — wax-sealed, ribbon-tied, lavender inside.
-            ${recipientName ? 'They will smell it before they see it.' : 'You will smell it before you see it.'}
+        <div style="background:#7A8E7C;padding:36px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">On Its Way</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 6px;">Hi ${customerName},</p>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 6px;">
+            Your box${recipientName ? ` for ${recipientName}` : ''} shipped today and is on its way.
           </p>
           ${trackingNumber ? `
-          <div style="background:#ffffff;border:1px dashed #c9a84c;border-radius:12px;padding:18px;text-align:center;margin:22px 0 0;">
-            <p style="font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#9c7c5a;margin:0 0 6px;">Tracking number</p>
-            <p style="font-family:monospace;font-size:15px;letter-spacing:1px;color:#41342A;margin:0;">${trackingNumber}</p>
+          <div style="border:1px dashed rgba(255,255,255,0.6);padding:20px;text-align:center;margin:22px 0 0;">
+            <p style="font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin:0 0 6px;">Tracking number</p>
+            <p style="font-family:monospace;font-size:15px;letter-spacing:1px;color:#ffffff;margin:0;">${trackingNumber}</p>
             ${trackingUrl ? `
-            <a href="${trackingUrl}" style="display:inline-block;background:#c9a84c;color:#41342A;font-family:sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:13px 30px;border-radius:100px;margin-top:16px;">Track Your Box</a>` : ''}
+            <a href="${trackingUrl}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;margin-top:18px;">Track Your Box</a>` : ''}
           </div>` : ''}
         </div>
         ${brandFooter}
@@ -495,53 +493,63 @@ export async function sendOrderConfirmationEmail({
   total: number
   trackingNumber?: string
   trackingUrl?: string
-  items?: Array<{ name: string; price?: number; qty?: number }>
+  items?: Array<{ id?: string; name: string; price?: number; qty?: number; image?: string | null }>
 }) {
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`
   const ref = (trackingNumber ?? orderId).slice(-8).toUpperCase()
-  const itemRows = (items ?? []).map(i => `
+  const supa = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+  const imgOf = (i: { id?: string; image?: string | null }) =>
+    i.image || (i.id && supa ? `${supa}/storage/v1/object/public/product-images/${i.id}.jpg` : null)
+
+  const itemRows = (items ?? []).map(i => {
+    const qty = i.qty ?? 1
+    const img = imgOf(i)
+    return `
     <tr>
-      <td style="font-family:sans-serif;font-size:13px;color:#5a3e28;padding:7px 0;border-bottom:1px solid #efe6d8;">
-        ${i.name}${(i.qty ?? 1) > 1 ? ` <span style="color:#9c7c5a;">× ${i.qty}</span>` : ''}
+      <td style="padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.25);width:52px;vertical-align:middle;">
+        ${img ? `<img src="${img}" width="44" height="44" alt="" style="display:block;width:44px;height:44px;object-fit:cover;border-radius:6px;" />` : ''}
       </td>
-      ${i.price != null ? `<td style="font-family:sans-serif;font-size:13px;color:#41342A;padding:7px 0;border-bottom:1px solid #efe6d8;text-align:right;white-space:nowrap;">${formatPrice(i.price * (i.qty ?? 1))}</td>` : '<td style="border-bottom:1px solid #efe6d8;"></td>'}
-    </tr>`).join('')
+      <td style="padding:9px 0 9px 12px;border-bottom:1px solid rgba(255,255,255,0.25);vertical-align:middle;">
+        <p style="font-family:sans-serif;font-size:13px;color:#ffffff;margin:0 0 2px;">${i.name}</p>
+        <p style="font-family:sans-serif;font-size:11px;color:rgba(255,255,255,0.75);margin:0;">Qty ${qty}${i.price != null ? ` · ${formatPrice(i.price)} each` : ''}</p>
+      </td>
+      ${i.price != null ? `<td style="padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.25);text-align:right;vertical-align:middle;font-family:sans-serif;font-size:13px;color:#ffffff;white-space:nowrap;">${formatPrice(i.price * qty)}</td>` : '<td style="border-bottom:1px solid rgba(255,255,255,0.25);"></td>'}
+    </tr>`
+  }).join('')
 
   return resend.emails.send({
     from: FROM,
     to: customerEmail,
     subject: 'Your Petite Lavande order is confirmed',
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#41342A;background:#ffffff;">
-        <div style="text-align:center;padding:44px 0 20px;">
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;">
+        <div style="text-align:center;padding:44px 0 24px;">
           <p style="font-family:sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#c9a84c;margin:0 0 6px;">Petite Lavande</p>
           <p style="font-family:Georgia,serif;font-style:italic;font-size:13px;color:#9c7c5a;margin:0;">Fait avec amour, pour vous</p>
-          <div style="width:36px;height:1px;background:#c9a84c;margin:18px auto 0;"></div>
         </div>
-        <h1 style="font-size:26px;font-weight:normal;text-align:center;margin:0 0 26px;">Merci — your order is confirmed</h1>
-        <div style="background:#FBF7F0;border-radius:16px;padding:32px;margin:0 4px 24px;">
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 14px;">Hi ${customerName},</p>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 6px;">
-            Thank you${recipientName ? ` — what a lovely thing to send ${recipientName}` : ' for your order'}.
-            We are hand-packing your box now: dried lavender, satin ribbon, a wax seal, and your printed card tucked inside.
+        <div style="background:#7A8E7C;padding:36px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">Order Confirmed</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 6px;">Hi ${customerName},</p>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 6px;">
+            Thank you${recipientName ? ` — what a lovely thing to send ${recipientName}` : ' for your order'}. We are preparing your box by hand now.
           </p>
           ${itemRows ? `
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:20px 0 0;border-top:1px solid #e8ddd0;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0 0;border-top:1px solid rgba(255,255,255,0.25);">
             ${itemRows}
           </table>` : ''}
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:14px 0 0;">
             <tr>
-              <td style="font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#9c7c5a;padding:6px 0;">Order total</td>
-              <td style="font-family:Georgia,serif;font-size:19px;color:#41342A;text-align:right;padding:6px 0;">${formatPrice(total)}</td>
+              <td style="font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.75);padding:6px 0;">Order total</td>
+              <td style="font-family:Georgia,serif;font-size:20px;color:#ffffff;text-align:right;padding:6px 0;">${formatPrice(total)}</td>
             </tr>
             <tr>
-              <td style="font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#9c7c5a;padding:6px 0;">Order reference</td>
-              <td style="font-family:monospace;font-size:13px;color:#41342A;text-align:right;padding:6px 0;">${ref}</td>
+              <td style="font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.75);padding:6px 0;">Order reference</td>
+              <td style="font-family:monospace;font-size:13px;color:#ffffff;text-align:right;padding:6px 0;">${ref}</td>
             </tr>
           </table>
           ${trackingUrl ? `
-          <div style="text-align:center;margin-top:22px;">
-            <a href="${trackingUrl}" style="display:inline-block;background:#c9a84c;color:#41342A;font-family:sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:13px 30px;border-radius:100px;">Track Your Order</a>
+          <div style="text-align:center;margin-top:26px;">
+            <a href="${trackingUrl}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">Track Your Order</a>
           </div>` : ''}
         </div>
         <p style="font-family:sans-serif;font-size:12px;text-align:center;color:#9c7c5a;margin:0 0 4px;">We will email again the moment it ships.</p>

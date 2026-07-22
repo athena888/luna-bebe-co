@@ -176,7 +176,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     total: order.total_amount,
     trackingNumber: order.tracking_number,
     items: (order.selected_items ?? []).map(i => ({
-      name: i.name, price: i.price, qty: (i as { qty?: number }).qty ?? 1,
+      id: i.id, name: i.name, price: i.price, qty: (i as { qty?: number }).qty ?? 1,
+      image: (i as { image?: string | null }).image ?? null,
     })),
   }).catch(async err => {
     // Don't lose the confirmation: queue a retry the daily flows cron picks up.
