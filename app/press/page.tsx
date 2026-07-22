@@ -34,7 +34,7 @@ export default async function PressPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-cream-50">
+      <main className="bg-cream-50">
         {/* Hero — background uploadable via Portal → Site Images → Press */}
         <SlotBackground slotKey="press.hero_bg" scrim="bg-cream-50/70">
           <section className="max-w-4xl mx-auto px-6 pt-16 pb-12 text-center">
