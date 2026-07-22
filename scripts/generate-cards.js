@@ -53,6 +53,11 @@ const CFG = {
 
   strokeMm: 0.35,    // preview stroke width; pen width is set on the machine
   outDir: path.join(__dirname, 'out'),
+
+  // Discreet order reference penned in the bottom-right corner so every
+  // physical card identifies its order (CARD_LABEL=off to disable).
+  label: process.env.CARD_LABEL !== 'off',
+  labelEmMm: 2.6,
 };
 
 // ------------------------------------------------------------- font prep ----
@@ -184,6 +189,17 @@ function renderCard(order, ox, oy) {
     if (line) paths.push(...renderLine(line, cx, baselineY, scale));
     baselineY += lineStep;
   }
+
+  // Order label — small, bottom-right, right-aligned via the centered renderer.
+  if (CFG.label && order.id) {
+    const tag = String(order.id).slice(0, 8).toUpperCase();
+    const lScale = CFG.labelEmMm / UPM;
+    const w = lineWidthUnits(tag) * lScale;
+    const lx = ox + CFG.cardW - CFG.padX / 2 - w / 2;
+    const ly = oy + CFG.cardH - 5;
+    paths.push(...renderLine(tag, lx, ly, lScale));
+  }
+
   return { paths, emMm, lineCount: lines.length };
 }
 
