@@ -177,7 +177,7 @@ function HomepageEditor() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <ImageSlotCard slotKey="newborn" label="Newborn Gifts" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
           <ImageSlotCard slotKey="mama" label="For Mama" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
-          <ImageSlotCard slotKey="bundle" label="Mama & Baby Bundle" description="Fallback only — the tile normally cycles through box cover photos." />
+          <ImageSlotCard slotKey="bundle" label="Mama & Baby Bundle" description="~800×600. This photo IS the tile (the box cover is only a backstop)." />
           <ImageSlotCard slotKey="custom" label="Custom Box" description="~800×600. Keep subject in upper half — desktop crops to tall portrait." />
         </div>
         <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-500 mb-2">Collections — name, subtitle and products behind each tile</p>

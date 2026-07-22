@@ -38,31 +38,22 @@ function BundleTile({ boxes, fallback }: { boxes: BoxItem[]; fallback: Category 
   // The mother-&-baby flagship (slug kept stable through the rename).
   const box = boxes.find(b => b.name === 'Mère et Bébé') ?? boxes.find(b => b.slug === 'petit-ciel') ?? boxes[0]
 
-  // No boxes yet → plain tile linking to the boxes page.
-  if (!box) {
-    return (
-      <Link href="/boxes" className="group relative overflow-hidden bg-cream-200 block">
-        <div className="relative w-full aspect-[3/4] lg:aspect-none lg:h-[clamp(300px,58vh,600px)]">
-          <Image src={fallback.img} alt={fallback.label} fill className="object-cover object-top group-hover:scale-105 transition-transform duration-700" unoptimized />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
-          <div className="absolute bottom-0 inset-x-0 flex justify-center pb-5 px-3">
-            <span className="text-center text-white font-sans text-[11px] tracking-[0.2em] uppercase px-2 py-1 drop-shadow-md">{fallback.label}</span>
-          </div>
-        </div>
-      </Link>
-    )
-  }
+  // Tile photo: the Homepage editor's "Mama & Baby Bundle" upload (the
+  // category fallback image) wins; the prebuilt box's cover is the backstop.
+  const img = fallback.img ?? box?.image ?? null
+  const href = box ? `/boxes#box-${box.slug}` : '/boxes'
+  const name = box?.name ?? 'Mère et Bébé'
 
   return (
-    <Link href={`/boxes#box-${box.slug}`} className="group relative overflow-hidden bg-cream-200 block">
+    <Link href={href} className="group relative overflow-hidden bg-cream-200 block">
       <div className="relative w-full aspect-[3/4] lg:aspect-none lg:h-[clamp(300px,58vh,600px)]">
-        {box.image
-          ? <Image src={box.image} alt={box.name} fill className="object-cover object-top group-hover:scale-105 transition-transform duration-700" unoptimized />
+        {img
+          ? <Image src={img} alt={name} fill className="object-cover object-top group-hover:scale-105 transition-transform duration-700" unoptimized />
           : <div className="absolute inset-0 bg-cream-200" />}
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
         {/* Name + subtitle baked into the photo */}
         <div className="absolute bottom-0 inset-x-0 flex flex-col items-center text-center pb-4 px-3">
-          <span className="text-white font-sans text-[11px] tracking-[0.2em] uppercase px-2 py-1 drop-shadow-md">{box.name}</span>
+          <span className="text-white font-sans text-[11px] tracking-[0.2em] uppercase px-2 py-1 drop-shadow-md">{name}</span>
           <span className="text-white/85 font-serif italic text-[12px] leading-snug drop-shadow-md">{BUNDLE_SUB}</span>
         </div>
       </div>
