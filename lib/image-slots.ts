@@ -38,6 +38,10 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   // ── Corporate ──────────────────────────────────────────────────────────────
   { key: 'corporate.hero_bg', label: 'Hero background', group: 'Corporate', where: 'Background behind the "When your people become parents" hero', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.40 } },
   { key: 'corporate.points_bg', label: 'Three-points background', group: 'Corporate', where: 'Behind the "One less thing / Traceable / Simple to run" band (photo above the olive panel on phones)', ratio: '21:9', hint: 'Shown full width, uncropped on desktop · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250 — phones crop the desktop image to 4:5 otherwise' }, scrimDefault: { hex: '#181716', opacity: 0 } },
+  { key: 'corporate.form_bg', label: 'Lead-form background', group: 'Corporate', where: 'Behind the "Tell us about your team" inquiry form at the bottom of /corporate', ratio: '21:9', hint: 'Wide & soft — the form card sits on top · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.55 } },
+
+  // ── Press ───────────────────────────────────────────────────────────────────
+  { key: 'press.hero_bg', label: 'Hero background', group: 'Press', where: 'Background behind the Press Kit header (title + one-liner + contact)', ratio: '21:9', hint: 'Wide & soft — text sits on top · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FBF7F0', opacity: 0.70 } },
 
   // ── Legal Pages ─────────────────────────────────────────────────────────────
   { key: 'legal.bg', label: 'Page background', group: 'Legal Pages', where: 'Behind Privacy Policy, Terms of Service and Returns (one shared image)', ratio: '21:9', hint: 'Wide & soft — the text sits on top · ~2000×860', mobile: { ratio: '9:16', hint: 'Taller phone crop · ~1080×1920' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.85 } },

@@ -1,5 +1,6 @@
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { SlotBackground } from '@/components/ui/SlotBackground'
 import { listPressImages } from '@/lib/lookbook/images'
 import { getTiers } from '@/lib/lookbook/copy'
 import { getConfig } from '@/lib/pipeline/config'
@@ -34,14 +35,17 @@ export default async function PressPage() {
     <>
       <Header />
       <main className="min-h-screen bg-cream-50">
-        <section className="max-w-4xl mx-auto px-6 pt-16 pb-10 text-center">
-          <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-3">Press Kit</p>
-          <h1 className="font-serif text-4xl text-espresso mb-4">Petite Lavande</h1>
-          <p className="font-cormorant text-xl italic text-espresso-light max-w-2xl mx-auto">{oneLiner}</p>
-          <p className="font-sans text-sm text-bark-500 mt-6">
-            Press inquiries &amp; samples: <a className="underline" href="mailto:hello@petitelavande.com">hello@petitelavande.com</a>
-          </p>
-        </section>
+        {/* Hero — background uploadable via Portal → Site Images → Press */}
+        <SlotBackground slotKey="press.hero_bg" scrim="bg-cream-50/70">
+          <section className="max-w-4xl mx-auto px-6 pt-16 pb-12 text-center">
+            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-3">Press Kit</p>
+            <h1 className="font-serif text-4xl text-espresso mb-4">Petite Lavande</h1>
+            <p className="font-cormorant text-xl italic text-espresso-light max-w-2xl mx-auto">{oneLiner}</p>
+            <p className="font-sans text-sm text-bark-500 mt-6">
+              Press inquiries &amp; samples: <a className="underline" href="mailto:hello@petitelavande.com">hello@petitelavande.com</a>
+            </p>
+          </section>
+        </SlotBackground>
 
         {images.length > 0 ? (
           <>
@@ -83,10 +87,9 @@ export default async function PressPage() {
             )}
           </>
         ) : (
-          <section className="max-w-2xl mx-auto px-6 py-16 text-center">
+          <section className="max-w-2xl mx-auto px-6 pt-2 pb-12 text-center">
             <p className="font-sans text-sm text-bark-500">
-              Press photography is on its way. In the meantime, we're happy to send images and samples directly — write to
-              {' '}<a className="underline" href="mailto:hello@petitelavande.com">hello@petitelavande.com</a>.
+              Press photography is on its way. In the meantime, we're happy to send images and samples directly — just email us above.
             </p>
           </section>
         )}

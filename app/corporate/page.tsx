@@ -131,12 +131,15 @@ export default function CorporatePage() {
 
         {/* Lead form — writes to b2b_leads + the outreach tracker (hot flag,
             team email) via the submitB2bLead server action. The mailto line
-            above stays as the low-friction alternative. */}
-        <section className="px-6 py-16 sm:py-20">
-          <div className="max-w-xl mx-auto">
-            <CorporateForm />
-          </div>
-        </section>
+            above stays as the low-friction alternative. Background uploadable
+            via Portal → Site Images → Corporate (web + mobile crops). */}
+        <SlotBackground slotKey="corporate.form_bg" scrim="bg-cream-50/60">
+          <section className="px-6 py-16 sm:py-20">
+            <div className="max-w-xl mx-auto bg-cream-50/95 border border-cream-300 p-6 sm:p-8">
+              <CorporateForm />
+            </div>
+          </section>
+        </SlotBackground>
 
       </main>
       <Footer />
