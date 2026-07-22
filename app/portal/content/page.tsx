@@ -13,7 +13,7 @@ import BoxesPortal from '@/app/portal/boxes/page'
 import CardStylesPortal from '@/app/portal/card-styles/page'
 import { GiftGuidesEditor } from '@/components/portal/GiftGuidesEditor'
 
-type PageId = 'home' | 'story' | 'build' | 'guides' | 'giftcards' | 'corporate' | 'track' | 'legal' | 'global' | 'social' | 'journal' | 'signin' | 'products' | 'prebuilt' | 'cardstyles'
+type PageId = 'home' | 'story' | 'build' | 'guides' | 'giftcards' | 'corporate' | 'press' | 'track' | 'legal' | 'global' | 'social' | 'journal' | 'signin' | 'products' | 'prebuilt' | 'cardstyles'
 
 const TABS: { id: PageId; label: string }[] = [
   { id: 'home',       label: 'Homepage' },
@@ -25,6 +25,7 @@ const TABS: { id: PageId; label: string }[] = [
   { id: 'guides',     label: 'Gift Guides' },
   { id: 'giftcards',  label: 'Gift Cards' },
   { id: 'corporate',  label: 'Corporate' },
+  { id: 'press',      label: 'Press Kit' },
   { id: 'track',      label: 'Track Order' },
   { id: 'legal',      label: 'Legal' },
   { id: 'global',     label: 'Global' },
@@ -153,11 +154,11 @@ export default function ContentPage() {
 
         {active === 'corporate' && (
           <div className="p-8 max-w-3xl">
-            <SectionHeading title="Corporate" note="The /corporate team-gifting page. Text on this page is edited in code for now — these control the three background photos." />
+            <SectionHeading title="Corporate" note="The /corporate team-gifting page — one background per section, desktop + mobile. Text is edited in code for now." />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <SlotRow
                 slotKey="corporate.hero_bg"
-                label="Hero background"
+                label="Hero — Desktop"
                 context="Background behind the When your people become parents hero on the corporate page"
                 ratio="21:9"
                 hint="Wide & soft · ~2000×860 (21:9)"
@@ -166,7 +167,7 @@ export default function ContentPage() {
               />
               <SlotRow
                 slotKey="corporate.hero_bg.mobile"
-                label="Hero background — Mobile"
+                label="Hero — Mobile"
                 context="Background behind the corporate hero on mobile"
                 ratio="4:5"
                 hint="Taller phone crop · ~1000×1250"
@@ -174,11 +175,103 @@ export default function ContentPage() {
               />
               <SlotRow
                 slotKey="corporate.points_bg"
-                label="Three-points background"
+                label="Three-points band — Desktop"
                 context="Background behind the dark three-points band on the corporate page"
                 ratio="21:9"
                 hint="Shown full width, uncropped — the band height follows the image. Use a wide image with room for text · ~2000×860"
                 where="Behind the dark &ldquo;One less thing / Traceable / Simple to run&rdquo; band (white text)"
+              />
+              <SlotRow
+                slotKey="corporate.points_bg.mobile"
+                label="Three-points band — Mobile"
+                context="Background behind the three-points band on mobile"
+                ratio="4:5"
+                hint="Taller phone crop · ~1000×1250 — phones otherwise crop the wide image"
+                where="The photo above the olive points panel on phones"
+              />
+              <SlotRow
+                slotKey="corporate.form_bg"
+                label="Lead form — Desktop"
+                context="Background behind the corporate inquiry form"
+                ratio="21:9"
+                hint="Wide & soft — the form card sits on top · ~2000×860"
+                where="Behind the &ldquo;Tell us about your team&rdquo; form at the bottom of /corporate"
+                scrim={{ hex: '#FAF9F8', opacity: 0.55, label: 'Colour overlay', note: 'tint behind the form card — raise for legibility' }}
+              />
+              <SlotRow
+                slotKey="corporate.form_bg.mobile"
+                label="Lead form — Mobile"
+                context="Background behind the corporate inquiry form on mobile"
+                ratio="4:5"
+                hint="Taller phone crop · ~1000×1250"
+                where="Behind the inquiry form on phones"
+              />
+              <SlotRow
+                slotKey="gifts.corporate.card"
+                label="Gifting-hub card image"
+                context="Corporate card image on the Gifting Ideas hub"
+                ratio="4:5"
+                hint="Portrait card · ~1000×1250"
+                where="The Corporate shortcut card on the /gift-guides hub"
+              />
+            </div>
+          </div>
+        )}
+
+        {active === 'press' && (
+          <div className="p-8 max-w-3xl">
+            <SectionHeading title="Press Kit" note="The public /press page — one background per section, desktop + mobile. Press photos themselves are tagged in the Lookbook image library." />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <SlotRow
+                slotKey="press.hero_bg"
+                label="Hero — Desktop"
+                context="Background behind the Press Kit header"
+                ratio="21:9"
+                hint="Wide & soft — title and contact sit on top · ~2000×860"
+                where="Behind the Press Kit title, one-liner and contact line"
+                scrim={{ hex: '#FBF7F0', opacity: 0.70, label: 'Colour overlay', note: 'tint for text legibility over the photo' }}
+              />
+              <SlotRow
+                slotKey="press.hero_bg.mobile"
+                label="Hero — Mobile"
+                context="Background behind the press header on mobile"
+                ratio="4:5"
+                hint="Taller phone crop · ~1000×1250"
+                where="Behind the press header on phones"
+              />
+              <SlotRow
+                slotKey="press.images_bg"
+                label="Image grid — Desktop"
+                context="Background behind the downloadable press photo grid"
+                ratio="21:9"
+                hint="Very soft — the photo cards sit on top · ~2000×860"
+                where="Behind the press photo grid and download button"
+                scrim={{ hex: '#FBF7F0', opacity: 0.88, label: 'Colour overlay', note: 'keep high so the press photos stay the focus' }}
+              />
+              <SlotRow
+                slotKey="press.images_bg.mobile"
+                label="Image grid — Mobile"
+                context="Background behind the press photo grid on mobile"
+                ratio="4:5"
+                hint="Taller phone crop · ~1000×1250"
+                where="Behind the photo grid on phones"
+              />
+              <SlotRow
+                slotKey="press.linesheet_bg"
+                label="Line sheet — Desktop"
+                context="Background behind the tier and price line sheet"
+                ratio="21:9"
+                hint="Very soft — the white table sits on top · ~2000×860"
+                where="Behind the line sheet at the bottom of /press"
+                scrim={{ hex: '#FBF7F0', opacity: 0.88, label: 'Colour overlay', note: 'keep high so prices stay readable' }}
+              />
+              <SlotRow
+                slotKey="press.linesheet_bg.mobile"
+                label="Line sheet — Mobile"
+                context="Background behind the line sheet on mobile"
+                ratio="4:5"
+                hint="Taller phone crop · ~1000×1250"
+                where="Behind the line sheet on phones"
               />
             </div>
           </div>

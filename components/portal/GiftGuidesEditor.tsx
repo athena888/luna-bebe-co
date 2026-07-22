@@ -24,22 +24,6 @@ interface Guide {
 
 interface ProductLite { id: string; name: string; category: ProductCategory; image?: string | null; active?: boolean }
 
-// Compact image slot used in the Corporate panel (merged in from the old
-// separate Corporate tab).
-function CorpSlot({ slotKey, label, ratio, hint, scrim }: {
-  slotKey: string; label: string; ratio: string; hint: string
-  scrim?: { hex: string; opacity: number; note?: string }
-}) {
-  return (
-    <div className="bg-cream-50 border border-cream-200 rounded-lg p-3">
-      <p className="font-sans text-[11px] font-medium text-bark-600 mb-1.5">{label}</p>
-      <div className="max-w-[220px]">
-        <SiteImageUploader slotKey={slotKey} context={label} ratio={ratio} hint={hint} compact />
-      </div>
-      {scrim && <ScrimControl scrimKey={slotKey} defaultScrim={{ hex: scrim.hex, opacity: scrim.opacity }} label="Colour overlay" note={scrim.note} />}
-    </div>
-  )
-}
 
 // One area to manage all four search-intent gift guides — background image,
 // colour overlay, words, tag, and exactly which products show. The individual
@@ -115,7 +99,7 @@ export function GiftGuidesEditor() {
         <ScrimControl scrimKey="gifts.shared_bg" defaultScrim={{ hex: '#FAF7F0', opacity: 0.8 }} label="Colour overlay (swatch)" note="cream wash over the photo so the heading stays readable — raise to soften, lower to show more photo" />
       </section>
 
-      {/* Guide selector + Corporate */}
+      {/* Guide selector */}
       <div className="flex flex-wrap gap-2 mb-8">
         {guides.map(g => (
           <button
@@ -128,57 +112,7 @@ export function GiftGuidesEditor() {
             {g.h1.replace(/^The /, '')}
           </button>
         ))}
-        <button
-          onClick={() => setActiveSlug('__corporate')}
-          className={`font-sans text-[11px] tracking-[0.1em] px-4 py-2.5 rounded-lg border transition-colors ${
-            activeSlug === '__corporate' ? 'bg-bark-600 text-cream-50 border-bark-600' : 'bg-white text-bark-500 border-cream-300 hover:border-bark-400'
-          }`}
-        >
-          Corporate
-        </button>
       </div>
-
-      {/* Corporate — managed here now (the separate Corporate tab is gone) */}
-      {activeSlug === '__corporate' && (
-        <div className="space-y-6">
-          <section className="bg-white border border-cream-200 rounded-lg p-4">
-            <p className="font-sans text-sm font-medium text-bark-600 mb-0.5">Hub card image</p>
-            <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">The shortcut image for the Corporate card on the Gifting Ideas hub. Portrait · ~1000×1250.</p>
-            <div className="max-w-[200px]">
-              <SiteImageUploader slotKey="gifts.corporate.card" context="Corporate card image on the Gifting Ideas hub" ratio="4:5" hint="Portrait card · ~1000×1250" compact />
-            </div>
-          </section>
-          <section className="bg-white border border-cream-200 rounded-lg p-4">
-            <p className="font-sans text-sm font-medium text-bark-600 mb-0.5">Corporate page backgrounds</p>
-            <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">The images on the <span className="font-mono text-[10px]">/corporate</span> page itself.</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <CorpSlot slotKey="corporate.hero_bg" label="Hero — desktop" ratio="21:9" hint="~2000×860 (21:9), subject centered" scrim={{ hex: '#FAF9F8', opacity: 0.40, note: 'tint over the hero photo — raise for legibility' }} />
-              <CorpSlot slotKey="corporate.hero_bg.mobile" label="Hero — mobile" ratio="9:16" hint="~1080×1920 portrait — shown on phones" />
-              <CorpSlot slotKey="corporate.points_bg" label="Three-points band" ratio="21:9" hint="~2000×860, room for white text" scrim={{ hex: '#181716', opacity: 0, note: 'off by default — raise to darken the photo' }} />
-              <CorpSlot slotKey="corporate.points_bg.mobile" label="Three-points — mobile" ratio="4:5" hint="~1000×1250 portrait — shown on phones" />
-              <CorpSlot slotKey="corporate.form_bg" label="Lead form — desktop" ratio="21:9" hint="~2000×860 — the form card sits on top" scrim={{ hex: '#FAF9F8', opacity: 0.55, note: 'tint over the photo behind the form — raise for legibility' }} />
-              <CorpSlot slotKey="corporate.form_bg.mobile" label="Lead form — mobile" ratio="4:5" hint="~1000×1250 portrait — shown on phones" />
-            </div>
-          </section>
-        </div>
-      )}
-
-      {/* Press page backgrounds — managed alongside since it's the other
-          standalone B2B-ish page (also in Portal → Site Images → Press). */}
-      {activeSlug === '__corporate' && (
-        <section className="bg-white border border-cream-200 rounded-lg p-4">
-          <p className="font-sans text-sm font-medium text-bark-600 mb-0.5">Press page backgrounds</p>
-          <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">One per section of the public <span className="font-mono text-[10px]">/press</span> kit page.</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <CorpSlot slotKey="press.hero_bg" label="Hero — desktop" ratio="21:9" hint="~2000×860 — title and contact sit on top" scrim={{ hex: '#FBF7F0', opacity: 0.70, note: 'tint for text legibility over the photo' }} />
-            <CorpSlot slotKey="press.hero_bg.mobile" label="Hero — mobile" ratio="4:5" hint="~1000×1250 portrait — shown on phones" />
-            <CorpSlot slotKey="press.images_bg" label="Image grid — desktop" ratio="21:9" hint="~2000×860, very soft — photo cards sit on top" scrim={{ hex: '#FBF7F0', opacity: 0.88, note: 'keep high so the press photos stay the focus' }} />
-            <CorpSlot slotKey="press.images_bg.mobile" label="Image grid — mobile" ratio="4:5" hint="~1000×1250 portrait — shown on phones" />
-            <CorpSlot slotKey="press.linesheet_bg" label="Line sheet — desktop" ratio="21:9" hint="~2000×860, very soft — white table sits on top" scrim={{ hex: '#FBF7F0', opacity: 0.88, note: 'keep high so prices stay readable' }} />
-            <CorpSlot slotKey="press.linesheet_bg.mobile" label="Line sheet — mobile" ratio="4:5" hint="~1000×1250 portrait — shown on phones" />
-          </div>
-        </section>
-      )}
 
       {guide && (
         <div className="space-y-8">
