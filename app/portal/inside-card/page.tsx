@@ -271,18 +271,13 @@ function InsideCardContent() {
         </div>
         {order && (
           <p className="font-sans text-xs text-bark-400 mt-2 max-w-2xl">
-            Front uses the <strong>{order.letter_content ? "customer's personal letter" : "standard note"}</strong>.
-            Back shows only the {displayProducts.length} item{displayProducts.length !== 1 ? 's' : ''} in this order.
-            Prints at the card&rsquo;s actual size (<strong>{cardW} × {cardH} in</strong>){cardStyle ? ', with the chosen card design as the background' : ''}.
-            {folded
-              ? ' It’s a folded card — print the front (outside) and the inside (message + items) as the two pages and fold along the centre.'
-              : ' Front and back print as two separate pages.'}
+            Uses the <strong>{order.letter_content ? "customer's personal letter" : "standard note"}</strong>.
+            Prints one portrait card at <strong>{cardW} × {cardH} in</strong>{cardStyle ? ', with the chosen card design as the background' : ''}.
           </p>
         )}
         {!order && (
           <p className="font-sans text-xs text-bark-400 mt-2 max-w-2xl">
-            Front and back print on separate pages — recommended <strong>{sizeLabel}</strong> each.
-            Click ✨ on any item below to generate AI content, or Edit to write your own.
+            Prints one portrait card — recommended <strong>{sizeLabel}</strong>.
           </p>
         )}
       </div>
@@ -291,7 +286,7 @@ function InsideCardContent() {
         {/* ── FRONT ── */}
         <div>
           <p className="print:hidden font-sans text-[9px] tracking-[0.35em] uppercase text-bark-400 mb-2">
-            Front — {sizeLabel}
+            Card — {sizeLabel}
           </p>
           <article
             className={`card-face relative rounded-lg border border-[#d8c7a8] p-8 sm:p-12 overflow-hidden flex flex-col justify-center ${faceClass}`}
@@ -344,137 +339,9 @@ function InsideCardContent() {
           </article>
         </div>
 
-        {/* ── BACK ── */}
-        <div>
-          <p className="print:hidden font-sans text-[9px] tracking-[0.35em] uppercase text-bark-400 mb-2">
-            Back — {sizeLabel}
-          </p>
-          <article
-            className={`card-face relative rounded-lg border border-[#d8c7a8] p-8 sm:p-12 overflow-hidden flex flex-col justify-center ${faceClass}`}
-            style={{ backgroundColor: '#f3ecdc', ...faceStyle }}
-          >
-            {cardStyle && (
-              <div className="absolute inset-0 bg-[#f5efe1]/55 pointer-events-none" style={{ WebkitPrintColorAdjust: 'exact' } as React.CSSProperties} />
-            )}
-            <div className="relative">
-              <h2 className="font-serif text-2xl text-espresso text-center mb-1">What&rsquo;s in Your Box</h2>
-              <p className="font-serif italic text-bark-400 text-center text-sm mb-8">Each item chosen with care. Each ingredient traced to its source.</p>
-
-              {order ? (
-                /* Order-specific items */
-                displayProducts.length === 0 ? (
-                  <p className="text-center font-sans text-sm text-bark-400 py-8 print:hidden">No items found in this order.</p>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6 max-w-2xl mx-auto font-sans text-[13px] text-bark-700 leading-snug">
-                    {displayProducts.map(product => {
-                      const content = getContent(product)
-                      if (editingId === product.id && editDraft) {
-                        return (
-                          <ItemEditor
-                            key={product.id}
-                            content={editDraft}
-                            onChange={setEditDraft}
-                            onSave={() => saveEdit(product.id)}
-                            onCancel={() => { setEditingId(null); setEditDraft(null) }}
-                          />
-                        )
-                      }
-                      return (
-                        <CardItem
-                          key={product.id}
-                          content={content}
-                          onEdit={() => { setEditingId(product.id); setEditDraft(content) }}
-                          onGenerate={() => generateContent(product, content)}
-                          generating={generating === product.id}
-                        />
-                      )
-                    })}
-                  </div>
-                )
-              ) : (
-                /* Default — prompt to use with an order */
-                <div className="text-center py-8 print:hidden">
-                  <p className="font-sans text-sm text-bark-400 mb-1">Open this page from an order to see personalized item content.</p>
-                  <p className="font-sans text-[11px] text-bark-400/60">Manage per-product card content in the library below.</p>
-                </div>
-              )}
-
-              <p className="font-serif italic text-gold-500 text-center mt-8 text-sm max-w-xl mx-auto">
-                Everything in your box is made to be used, loved, and — when its time comes — returned gently to the earth.
-              </p>
-            </div>
-          </article>
-        </div>
       </div>
 
       {/* ── Item Content Library (screen only, no order needed) ── */}
-      {!orderId && (
-        <div className="print:hidden mt-16">
-          <div className="mb-6 pb-3 border-b border-cream-300">
-            <h2 className="font-serif text-xl text-bark-600">Item Content Library</h2>
-            <p className="font-sans text-xs text-bark-400 mt-1">
-              The back of every card uses these descriptions — one per product. Click ✨ to generate with AI, or Edit to write your own.
-              Every customer who receives that item will see the same text.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {allProducts.map(product => {
-              const content = getContent(product)
-              if (editingId === product.id && editDraft) {
-                return (
-                  <div key={product.id} className="bg-white border border-cream-300 rounded-xl p-4">
-                    <ItemEditor
-                      content={editDraft}
-                      onChange={setEditDraft}
-                      onSave={() => saveEdit(product.id)}
-                      onCancel={() => { setEditingId(null); setEditDraft(null) }}
-                    />
-                  </div>
-                )
-              }
-              return (
-                <div key={product.id} className="bg-white border border-cream-200 rounded-xl p-4">
-                  <div className="flex items-start gap-3 mb-2">
-                    {productImg(product) && (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img src={productImg(product)!} alt={product.name} className="w-14 h-14 rounded-lg object-cover border border-cream-200 shrink-0 bg-cream-100" onError={e => { e.currentTarget.style.visibility = 'hidden' }} />
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-bark-400">{product.category}</p>
-                      <h3 className="font-serif text-base text-bark-600 truncate">{product.name}</h3>
-                    </div>
-                    <div className="flex gap-1.5 shrink-0">
-                      <button
-                        onClick={() => { setEditingId(product.id); setEditDraft(content) }}
-                        className="inline-flex items-center gap-1 text-[9px] tracking-[0.1em] uppercase text-bark-400 hover:text-bark-600 border border-cream-300 hover:border-bark-400 rounded px-2 py-1"
-                      >
-                        <Edit2 size={9} /> Edit
-                      </button>
-                      <button
-                        onClick={() => generateContent(product)}
-                        disabled={generating === product.id}
-                        className="inline-flex items-center gap-1 text-[9px] tracking-[0.1em] uppercase text-gold-500 hover:text-gold-600 border border-gold-200 hover:border-gold-400 rounded px-2 py-1 disabled:opacity-40"
-                      >
-                        {generating === product.id ? <Loader size={9} className="animate-spin" /> : <Sparkles size={9} />} AI
-                      </button>
-                    </div>
-                  </div>
-                  {content.lines.length > 0 ? (
-                    <div className="font-sans text-xs text-bark-700 space-y-0.5">
-                      {content.lines.map((l, i) => (
-                        <p key={i}><span className="font-semibold">{l.k}</span> {l.v}</p>
-                      ))}
-                      {content.note && <p className="text-bark-500 mt-1">{content.note}</p>}
-                    </div>
-                  ) : (
-                    <p className="font-sans text-xs text-bark-400/60 italic">No content yet — click ✨ to generate.</p>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
 
       <style jsx global>{`
         @media print {
@@ -483,10 +350,12 @@ function InsideCardContent() {
           aside, header, .print\\:hidden { display: none !important; }
           main { padding: 0 !important; }
           .card-face {
-            width: 100% !important;
+            /* Fixed portrait card — exact inches on any paper size. */
+            width: ${cardW - 0.5}in !important;
+            height: ${cardH - 0.5}in !important;
             aspect-ratio: auto !important;
+            margin: 0 auto !important;
             break-inside: avoid;
-            page-break-after: always;
             border: none !important;
             border-radius: 0 !important;
             -webkit-print-color-adjust: exact;
