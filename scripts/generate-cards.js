@@ -33,10 +33,10 @@ const CFG = {
   // Font: single-line script. Alternatives: 'hershey_script_med', 'scriptc'
   font: process.env.CARD_FONT || 'ems_allure',
 
-  // Card geometry (mm) — cream laser-cut lace card 11.7 x 7.5 cm
-  cardW: 117,
-  cardH: 75,
-  padX: 14,          // text box side padding
+  // Card geometry (mm) — cream laser-cut lace card, PORTRAIT 7.5 x 11.7 cm
+  cardW: 75,
+  cardH: 117,
+  padX: 10,          // text box side padding
   padTop: 12,
   padBottom: 12,
 
@@ -46,10 +46,10 @@ const CFG = {
   lineHeight: 1.25,  // x em
   greeting: true,    // prepend "Dear {recipient}," when recipient present
 
-  // Mat: 12 x 12 in
+  // Mat: 12 x 12 in — portrait cards pack 3 across x 2 down
   matMm: 304.8,
-  cols: 2,
-  rows: 3,
+  cols: 3,
+  rows: 2,
 
   strokeMm: 0.35,    // preview stroke width; pen width is set on the machine
   outDir: path.join(__dirname, 'out'),
