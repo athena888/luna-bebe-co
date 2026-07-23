@@ -53,6 +53,16 @@ export function SlotBackground({
   const [dbScrim, setDbScrim] = useState<DbScrim | null>(null)
 
   useEffect(() => {
+    // Server-preloaded slots (see e.g. app/build/layout.tsx) resolve instantly —
+    // no API round-trip, and the <link rel="preload"> has the image in flight.
+    const pre = (window as unknown as { __plSlotPreload?: Record<string, { images?: Record<string, Img>; scrims?: Record<string, DbScrim> }> }).__plSlotPreload?.[slotKey]
+    if (pre) {
+      setWeb(pre.images?.[slotKey] ?? null)
+      setMobile(pre.images?.[`${slotKey}.mobile`] ?? null)
+      const ps = pre.scrims?.[slotKey]
+      if (ps?.hex && ps?.opacity != null) setDbScrim(ps)
+      return
+    }
     let alive = true
     fetch(`/api/site-images?keys=${encodeURIComponent(slotKey)},${encodeURIComponent(slotKey + '.mobile')}&scrims=1`)
       .then(r => r.json())
