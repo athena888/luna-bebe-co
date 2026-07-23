@@ -54,8 +54,10 @@ export default function CardPage() {
     setZone(z ? { x: z.x, y: z.y, w: z.w, align: (z.align ?? 'center') as Align } : FALLBACK_ZONE)
   }, [styleId]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Generous room — at least 160 words regardless of the card's stored limit.
-  const wordLimit = Math.max(selectedStyle?.word_limit ?? 160, 160)
+  // With a printed-card style: honor its stored limit (min 160). With no
+  // styles active (plain pen-written card), ~80 words is what the Cricut can
+  // write at a readable size on the 11.7×7.5cm card.
+  const wordLimit = selectedStyle ? Math.max(selectedStyle.word_limit ?? 160, 160) : 80
   const words = countWords(editedContent)
   const overLimit = words > wordLimit
 
@@ -228,7 +230,9 @@ export default function CardPage() {
                 />
                 {overLimit
                   ? <p className="font-sans text-xs text-red-500 mt-3">Your message is {words - wordLimit} word{words - wordLimit === 1 ? '' : 's'} over the limit for this card. Please shorten it.</p>
-                  : <p className="font-sans text-xs text-bark-400 mt-3">We&rsquo;ll print exactly what you see here{selectedStyle ? ` on the ${selectedStyle.name} card${selectedStyle.size_label ? ` (${selectedStyle.size_label})` : ''}` : ''}.</p>}
+                  : <p className="font-sans text-xs text-bark-400 mt-3">{selectedStyle
+                      ? <>We&rsquo;ll print exactly what you see here on the {selectedStyle.name} card{selectedStyle.size_label ? ` (${selectedStyle.size_label})` : ''}.</>
+                      : <>Your words will be written in pen, in a flowing script, on the card inside the box.</>}</p>}
               </div>
 
               {/* Live preview — the message set on the chosen card, positioned
