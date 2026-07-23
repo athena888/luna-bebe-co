@@ -7,7 +7,7 @@ import { InsightsTabs } from '@/components/portal/InsightsTabs'
 // breakeven ROAS and CAC ceiling. Site channel = Stripe fee (2.9% + 30¢);
 // Etsy channel = 9.5% flat (transaction + processing).
 
-type CatalogProduct = { id: string; name: string; price: number; category: string }
+type CatalogProduct = { id: string; name: string; price: number; category: string; active?: boolean }
 type EconRow = {
   sku_id: string
   channel: 'site' | 'etsy'
@@ -154,6 +154,7 @@ export default function EconomicsPage() {
                   <tr key={p.id} className={`border-b border-cream-100 ${i % 2 === 1 ? 'bg-cream-50/50' : ''}`}>
                     <td className="px-6 py-2">
                       <span className="font-sans text-sm text-bark-600">{p.name}</span>
+                      {p.active === false && <span className="ml-2 font-sans text-[9px] tracking-[0.1em] uppercase px-1.5 py-0.5 rounded bg-cream-200 text-bark-400">draft</span>}
                       {r.landed_cost === 0 && suggested[p.id] != null && (
                         <button
                           onClick={() => saveRow({ ...r, landed_cost: suggested[p.id] })}

@@ -8,8 +8,9 @@ import { getCatalog } from '@/lib/products-db'
 
 export async function GET() {
   try {
-    const products = (await getCatalog({ activeOnly: true })).map(p => ({
-      id: p.id, name: p.name, price: p.price, category: p.category,
+    // Published AND unpublished — costs get planned before a product goes live.
+    const products = (await getCatalog({ activeOnly: false })).map(p => ({
+      id: p.id, name: p.name, price: p.price, category: p.category, active: p.active,
     }))
 
     let econ: unknown[] = []
