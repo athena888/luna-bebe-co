@@ -2,6 +2,9 @@ import { supabaseAdmin } from '@/lib/supabase'
 import type { Order } from '@/types'
 import { OrdersTable } from './OrdersTable'
 
+// Live data on every load — never serve the build-time snapshot.
+export const dynamic = 'force-dynamic'
+
 export default async function OrdersPage() {
   const { data: orders } = await supabaseAdmin
     .from('orders')

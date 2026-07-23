@@ -1,6 +1,9 @@
 import { supabaseAdmin } from '@/lib/supabase'
 import { ReplayButton } from './ReplayButton'
 
+// Live data on every load — never serve the build-time snapshot.
+export const dynamic = 'force-dynamic'
+
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
 }

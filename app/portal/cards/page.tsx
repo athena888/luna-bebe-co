@@ -98,19 +98,16 @@ export default function CardsPage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-4">
             {writable.map(c => (
-              <div key={c.id} className="bg-cream-50 rounded-2xl border border-cream-200 p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-sans text-[10px] tracking-[0.15em] uppercase px-2 py-0.5 rounded bg-gold-100 text-gold-600 font-semibold">
-                    Mat {c.mat} · Slot {c.slot} (r{c.row}c{c.col})
-                  </span>
-                  <span className="font-sans text-[11px] text-bark-400">{c.recipient ? `Dear ${c.recipient}` : '(no name)'} · {fmtDate(c.created_at)}</span>
-                </div>
+              <div key={c.id} className="bg-cream-50 rounded-xl border border-cream-200 p-2.5">
+                <span className="block font-sans text-[9px] tracking-[0.12em] uppercase px-1.5 py-0.5 rounded bg-gold-100 text-gold-600 font-semibold w-fit mb-1.5">
+                  Mat {c.mat} · Slot {c.slot}
+                </span>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/api/portal/cards/svg?order=${c.id}`} alt={`Card for order ${c.id.slice(0, 8)}`} className="w-full rounded-lg border border-cream-200 bg-white" />
-                <p className="font-sans text-[11px] text-bark-400 mt-2 line-clamp-2">{c.message}</p>
-                <p className="font-mono text-[10px] text-bark-300 mt-1">#{c.id.slice(0, 8)}</p>
+                <img src={`/api/portal/cards/svg?order=${c.id}`} alt={`Card for order ${c.id.slice(0, 8)}`} className="w-full rounded border border-cream-200 bg-white" />
+                <p className="font-sans text-[10px] text-bark-500 mt-1.5 truncate">{c.recipient ? `Dear ${c.recipient}` : '(no name)'} · {fmtDate(c.created_at)}</p>
+                <p className="font-mono text-[9px] text-bark-300">#{c.id.slice(0, 8)}</p>
               </div>
             ))}
           </div>

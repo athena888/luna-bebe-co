@@ -2,6 +2,9 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { DollarSign, ShoppingBag, Clock, AlertCircle } from 'lucide-react'
 import { RealtimeTraffic } from '@/components/portal/RealtimeTraffic'
 
+// Live data on every load — never serve the build-time snapshot.
+export const dynamic = 'force-dynamic'
+
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
 
 async function getStats() {

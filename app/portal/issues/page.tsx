@@ -2,6 +2,9 @@ import { supabaseAdmin } from '@/lib/supabase'
 import type { CustomerIssue } from '@/types'
 import { IssueActions } from './IssueActions'
 
+// Live data on every load — never serve the build-time snapshot.
+export const dynamic = 'force-dynamic'
+
 function formatDate(iso: string) { return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }
 
 const STATUS_STYLES: Record<string, string> = {

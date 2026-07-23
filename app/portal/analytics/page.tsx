@@ -5,6 +5,9 @@ import { InsightsTabs } from '@/components/portal/InsightsTabs'
 import { ScorecardNote } from '@/components/portal/ScorecardNote'
 import { computeWeeklyScorecard, type WeekMetrics } from '@/lib/scorecard'
 
+// Live data on every load — never serve the build-time snapshot.
+export const dynamic = 'force-dynamic'
+
 function fmt(cents: number) { return `$${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })}` }
 function pct(n: number, total: number) { return total === 0 ? '0%' : `${Math.round((n / total) * 100)}%` }
 
