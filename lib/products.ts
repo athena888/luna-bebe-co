@@ -49,7 +49,7 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
 }
 
 export const CATEGORY_ORDER: ProductCategory[] = ['swaddle', 'garment', 'bath', 'keepsake', 'mom']
-export const BOX_BASE_PRICE = 3000
+export const BOX_BASE_PRICE = 1500
 
 export const SHIPPING = {
   standard: { label: 'Standard Shipping', price: 1200, days: '5–7 business days' },
