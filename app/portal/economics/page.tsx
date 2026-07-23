@@ -17,7 +17,6 @@ type EconRow = {
   fulfillment_cost: number
 }
 
-const CHANNELS: Array<'site' | 'etsy'> = ['site', 'etsy']
 const emptyRow = (sku_id: string, channel: 'site' | 'etsy'): EconRow =>
   ({ sku_id, channel, retail_price: null, landed_cost: 0, packaging_cost: 0, fulfillment_cost: 0 })
 
@@ -51,7 +50,7 @@ export default function EconomicsPage() {
   const [products, setProducts] = useState<CatalogProduct[]>([])
   const [rows, setRows] = useState<Map<string, EconRow>>(new Map())
   const [suggested, setSuggested] = useState<Record<string, number>>({})
-  const [channel, setChannel] = useState<'site' | 'etsy'>('site')
+  const channel = 'site' as const
   const [loading, setLoading] = useState(true)
   const [notice, setNotice] = useState('')
 
@@ -117,24 +116,9 @@ export default function EconomicsPage() {
       <div className="mb-8">
         <h1 className="font-serif text-3xl text-bark-600">Unit Economics</h1>
         <p className="font-sans text-sm text-bark-400 mt-1">
-          Change a cost, watch margin, breakeven ROAS and the CAC ceiling move. Site = Stripe fee (2.9% + 30¢); Etsy = 9.5% flat.
+          Change a cost, watch margin, breakeven ROAS and the CAC ceiling move. Fees: Stripe 2.9% + 30¢.
         </p>
         {notice && <p className="font-sans text-xs text-rose-400 mt-2">{notice}</p>}
-      </div>
-
-      {/* Channel switch */}
-      <div className="flex gap-1 mb-6">
-        {CHANNELS.map(c => (
-          <button
-            key={c}
-            onClick={() => setChannel(c)}
-            className={`px-4 py-2 font-sans text-xs tracking-[0.15em] uppercase border transition-colors ${
-              channel === c ? 'border-bark-600 bg-bark-600 text-cream-50' : 'border-cream-300 text-bark-400 hover:text-bark-600'
-            }`}
-          >
-            {c === 'site' ? 'Site (Stripe)' : 'Etsy'}
-          </button>
-        ))}
       </div>
 
       {/* Summary cards */}
