@@ -82,8 +82,8 @@ export function BagDrawer() {
                 : <><span className="text-bark-600 font-medium">{formatPrice(threshold - towardFree)}</span> away from free shipping</>
               }
             </p>
-            <div className="relative h-px bg-cream-300 mx-1">
-              <div className="absolute left-0 top-0 h-full bg-gold-400 transition-all duration-500" style={{ width: `${pct * 100}%` }} />
+            <div className="relative h-1.5 rounded-full bg-cream-200 border border-cream-300 mx-1">
+              <div className="absolute left-0 top-0 h-full rounded-full bg-gold-400 transition-all duration-500" style={{ width: `${pct * 100}%` }} />
               <div className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-7 h-7 rounded-full pl-round-full border flex items-center justify-center text-sm transition-colors duration-300 ${earned ? 'bg-gold-400 border-gold-400' : 'bg-white border-cream-300'}`}>
                 📦
               </div>

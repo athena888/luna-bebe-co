@@ -59,7 +59,7 @@ export const SHIPPING = {
 // Free STANDARD shipping once the merchandise total (box base + items) reaches
 // this many USD cents. NEXT_PUBLIC_ so the cart drawer, checkout page, and the
 // checkout session API all read the same number. Premium rush stays paid.
-export const FREE_SHIPPING_THRESHOLD = Number(process.env.NEXT_PUBLIC_FREE_SHIPPING_THRESHOLD || 15000)
+export const FREE_SHIPPING_THRESHOLD = Number(process.env.NEXT_PUBLIC_FREE_SHIPPING_THRESHOLD || 10000)
 
 // USD-only for now: the threshold is a USD amount and non-USD markets have
 // their own per-currency shipping prices in lib/pricing.ts.
