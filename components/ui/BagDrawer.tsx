@@ -5,7 +5,6 @@ import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { X, Minus, Plus } from 'lucide-react'
 import { readCart, writeCart, type CartItem } from '@/lib/cart'
-import { AddonRow } from '@/components/ui/AddonRow'
 import { BOX_BASE_PRICE, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
@@ -147,8 +146,6 @@ export function BagDrawer() {
           )}
         </div>
 
-        {/* "Complete the gift" one-click add-ons (hidden once they're in the bag) */}
-        {hasItems && <AddonRow inCartIds={items.map(i => i.id)} />}
 
         {/* Footer */}
         <div className="shrink-0 border-t border-cream-300 px-6 py-5">
