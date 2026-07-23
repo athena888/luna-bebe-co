@@ -18,7 +18,7 @@ export const revalidate = 60
 
 // One-time donation mention on the story page. Leave empty ('') to hide the
 // whole "A note on giving" section.
-const GIVING_ORG_NAME = 'WestSide Baby'
+const GIVING_ORG_NAME = ''
 
 export default async function StoryPage() {
   const [imgs, content, igPosts] = await Promise.all([
