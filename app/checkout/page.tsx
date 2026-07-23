@@ -447,19 +447,13 @@ export default function CheckoutPage() {
                       <span className="text-espresso">{formatPrice(itemTotal)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-bark-600">Box &amp; Experience</span>
+                      <span className="text-bark-600">Keepsake Box, Wax Seal &amp; Card</span>
                       <span className="text-espresso">{formatPrice(BOX_BASE_PRICE)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-bark-600">Shipping · {SHIPPING[shippingType].label}</span>
                       <span className="text-espresso">{shipFree ? 'Free' : formatPrice(shippingCost)}</span>
                     </div>
-                    {letter && (
-                      <div className="flex justify-between">
-                        <span className="text-bark-600">{cardStyle ? `Card — ${cardStyle}` : 'Personalized Card'}</span>
-                        <span className="text-bark-400">Included</span>
-                      </div>
-                    )}
                     <div className="flex justify-between">
                       <span className="text-bark-600">Taxes (estimated)</span>
                       <span className="text-bark-400">Calculated at payment</span>
