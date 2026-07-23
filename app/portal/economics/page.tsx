@@ -7,7 +7,9 @@ import { InsightsTabs } from '@/components/portal/InsightsTabs'
 // breakeven ROAS and CAC ceiling. Site channel = Stripe fee (2.9% + 30¢);
 // Etsy channel = 9.5% flat (transaction + processing).
 
-type CatalogProduct = { id: string; name: string; price: number; category: string; active?: boolean }
+type CatalogProduct = { id: string; name: string; price: number; category: string; active?: boolean; image?: string | null }
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+const thumbOf = (p: CatalogProduct) => p.image || (SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${p.id}.jpg` : null)
 type EconRow = {
   sku_id: string
   channel: 'site' | 'etsy'
@@ -88,7 +90,7 @@ export default function EconomicsPage() {
   const computed = useMemo(() => products.map(p => {
     const r = rowFor(p)
     const retail = r.retail_price ?? p.price
-    const costs = r.landed_cost + r.packaging_cost + r.fulfillment_cost
+    const costs = r.landed_cost
     const f = retail > 0 ? fee(retail, channel) : 0
     const contribution = retail - costs - f
     const hasCosts = costs > 0
@@ -144,7 +146,7 @@ export default function EconomicsPage() {
               <thead>
                 <tr className="border-b border-cream-200">
                   <th className="text-left px-6 py-3 font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400">Product</th>
-                  {['Retail', 'Landed', 'Packaging', 'Fulfillment', 'Fee', 'Contribution', 'Margin', 'B/E ROAS', 'CAC ceiling'].map(h => (
+                  {['Retail', 'Landed', 'Fee', 'Contribution', 'Margin', 'B/E ROAS', 'CAC ceiling'].map(h => (
                     <th key={h} className="text-right px-3 py-3 font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -153,7 +155,13 @@ export default function EconomicsPage() {
                 {computed.map(({ p, r, retail, fee: f, contribution, margin, breakevenRoas, cacCeiling, hasCosts }, i) => (
                   <tr key={p.id} className={`border-b border-cream-100 ${i % 2 === 1 ? 'bg-cream-50/50' : ''}`}>
                     <td className="px-6 py-2">
-                      <span className="font-sans text-sm text-bark-600">{p.name}</span>
+                      <span className="inline-flex items-center gap-2.5">
+                        {thumbOf(p)
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          ? <img src={thumbOf(p)!} alt="" className="w-8 h-8 rounded object-cover border border-cream-200 shrink-0" onError={e => { e.currentTarget.style.display = 'none' }} />
+                          : <span className="w-8 h-8 rounded bg-cream-200 shrink-0" />}
+                        <span className="font-sans text-sm text-bark-600">{p.name}</span>
+                      </span>
                       {p.active === false && <span className="ml-2 font-sans text-[9px] tracking-[0.1em] uppercase px-1.5 py-0.5 rounded bg-cream-200 text-bark-400">draft</span>}
                       {r.landed_cost === 0 && suggested[p.id] != null && (
                         <button
@@ -169,8 +177,6 @@ export default function EconomicsPage() {
                       <MoneyCell cents={r.retail_price} placeholder={(p.price / 100).toFixed(2)} onCommit={v => saveRow({ ...r, retail_price: v })} />
                     </td>
                     <td className="px-3 py-2 text-right"><MoneyCell cents={r.landed_cost} onCommit={v => saveRow({ ...r, landed_cost: v ?? 0 })} /></td>
-                    <td className="px-3 py-2 text-right"><MoneyCell cents={r.packaging_cost} onCommit={v => saveRow({ ...r, packaging_cost: v ?? 0 })} /></td>
-                    <td className="px-3 py-2 text-right"><MoneyCell cents={r.fulfillment_cost} onCommit={v => saveRow({ ...r, fulfillment_cost: v ?? 0 })} /></td>
                     <td className="px-3 py-2 text-right font-sans text-xs text-bark-400">{retail > 0 ? fmt(f) : '—'}</td>
                     <td className={`px-3 py-2 text-right font-serif text-sm ${contribution < 0 ? 'text-rose-400' : 'text-bark-600'}`}>
                       {hasCosts ? fmt(contribution) : '—'}
@@ -187,8 +193,8 @@ export default function EconomicsPage() {
           </div>
           <div className="px-6 py-3 border-t border-cream-200">
             <p className="font-sans text-[11px] text-bark-400">
-              Retail defaults to the live product price — override it here without touching the store. Costs save automatically on blur, per channel.
-              Contribution = retail − costs − fee. Breakeven ROAS = retail ÷ contribution. CAC ceiling = 35% of contribution.
+              Retail defaults to the live product price — override it here without touching the store. Costs save automatically on blur.
+              Contribution = retail − landed cost − fee. Breakeven ROAS = retail ÷ contribution. CAC ceiling = 35% of contribution.
             </p>
           </div>
         </div>
