@@ -16,6 +16,10 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
+// One-time donation mention on the story page. Leave empty ('') to hide the
+// whole "A note on giving" section.
+const GIVING_ORG_NAME = 'WestSide Baby'
+
 export default async function StoryPage() {
   const [imgs, content, igPosts] = await Promise.all([
     getSiteImages(['story.founder', 'story.values', 'story.value.2']),
@@ -55,6 +59,21 @@ export default async function StoryPage() {
             </div>
           </div>
         </SlotBackground>
+
+        {/* A note on giving — one-time donation mention, text only. Renders
+            nothing while GIVING_ORG_NAME is empty. */}
+        {GIVING_ORG_NAME && (
+          <section className="border-b border-cream-300 bg-[#FBF7F0]">
+            <div className="max-w-2xl mx-auto px-6 py-10 text-center">
+              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-bark-400 mb-3">A note on giving</p>
+              <p className="font-playfair text-[15px] text-espresso-light leading-relaxed">
+                Every piece we make is meant to be used and loved. This season, we donated our sample
+                collection to {GIVING_ORG_NAME}, supporting local families welcoming new babies. It felt
+                like the right home for them.
+              </p>
+            </div>
+          </section>
+        )}
 
         {/* What We Stand For — three points on white, framed by mirrored
             lavender dividers (top one flipped), each point rising in. */}
