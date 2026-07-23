@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { BOX_PACKAGING_COST } from '@/lib/products'
 import { ArrowLeft, Loader, Check, Plus, Trash2, Upload, Star, Package, ChevronDown } from 'lucide-react'
 import Image from 'next/image'
 import type { ResolvedBox, SlotRef, Audience } from '@/lib/prebuilt-boxes-db'
@@ -113,6 +114,17 @@ export default function BoxEditorPage({ slugProp, onBack }: { slugProp?: string;
   const [saveMsg, setSaveMsg] = useState('')
   const [categoryWarning, setCategoryWarning] = useState<string | null>(null)
   const [colorsByProduct, setColorsByProduct] = useState<Record<string, ColorOpt[]>>({})
+  // Landed costs from Unit Economics — powers the live "Cost per box" panel.
+  const [landedById, setLandedById] = useState<Record<string, number>>({})
+  useEffect(() => {
+    fetch('/api/portal/economics').then(r => r.json()).then(d => {
+      const m: Record<string, number> = {}
+      for (const row of (d.econ ?? []) as Array<{ sku_id: string; landed_cost: number }>) {
+        if (row.landed_cost > 0) m[row.sku_id] = row.landed_cost
+      }
+      setLandedById(m)
+    }).catch(() => {})
+  }, [])
 
   // Fetch each slot product's available colours (from its variants) for the picker.
   useEffect(() => {
@@ -404,6 +416,36 @@ export default function BoxEditorPage({ slugProp, onBack }: { slugProp?: string;
                   </div>
                 </div>
               )}
+
+              {/* Live cost-per-box — landed costs from Unit Economics + real
+                  per-box packaging. Items without a cost are listed so the
+                  total is never silently wrong. */}
+              {(() => {
+                const picked = slots.filter(s => s.product_id)
+                const costed = picked.filter(s => landedById[s.product_id!] != null)
+                const missing = picked.filter(s => landedById[s.product_id!] == null)
+                const itemsCost = costed.reduce((sum, s) => sum + landedById[s.product_id!], 0)
+                const total = itemsCost + BOX_PACKAGING_COST
+                const priceCents = customPrice ? Math.round(parseFloat(customPrice) * 100) : null
+                const margin = priceCents && total > 0 ? (priceCents - total) / priceCents : null
+                if (picked.length === 0) return null
+                return (
+                  <div className="mt-3 bg-sage-100/40 p-3 rounded border border-sage-200">
+                    <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">Cost per box</p>
+                    <div className="space-y-1 font-sans text-sm">
+                      <div className="flex justify-between"><span className="text-bark-500">Items ({costed.length}/{picked.length} costed)</span><span className="text-bark-600">${(itemsCost / 100).toFixed(2)}</span></div>
+                      <div className="flex justify-between"><span className="text-bark-500">Packaging (basket, mailer, kraft)</span><span className="text-bark-600">$8.50</span></div>
+                      <div className="flex justify-between border-t border-sage-200 pt-1"><span className="text-bark-600 font-medium">Total (before ~$6–12 label)</span><span className="text-bark-700 font-semibold">${(total / 100).toFixed(2)}</span></div>
+                      {margin != null && (
+                        <div className="flex justify-between"><span className="text-bark-500">Margin vs your price</span><span className={margin < 0.5 ? 'text-rose-500 font-medium' : 'text-sage-600 font-medium'}>{(margin * 100).toFixed(0)}%</span></div>
+                      )}
+                    </div>
+                    {missing.length > 0 && (
+                      <p className="font-sans text-[11px] text-rose-400 mt-2">No landed cost yet: {missing.map(s => products.find(p => p.id === s.product_id)?.name ?? s.product_id).join(', ')} — add it in Unit Economics.</p>
+                    )}
+                  </div>
+                )
+              })()}
             </div>
           </div>
 

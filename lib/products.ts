@@ -51,6 +51,10 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
 export const CATEGORY_ORDER: ProductCategory[] = ['swaddle', 'garment', 'bath', 'keepsake', 'mom']
 export const BOX_BASE_PRICE = 1500
 
+// Real per-box packaging cost (owner-stated): seagrass basket $5 + mailer $3
+// + shredded kraft $0.50. Used by the portal box editor's cost panel.
+export const BOX_PACKAGING_COST = 850
+
 export const SHIPPING = {
   standard: { label: 'Standard Shipping', price: 1200, days: '5–7 business days' },
   premium: { label: 'Premium Rush Shipping', price: 2800, days: '1–2 business days', badge: 'Arrives Fast' },
