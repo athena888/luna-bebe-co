@@ -60,7 +60,7 @@ export async function ensureReferralForOrder(orderId: string, referrerEmail: str
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const promo = await (stripe.promotionCodes.create as any)(
     {
-      coupon: couponId,
+      promotion: { type: 'coupon', coupon: couponId },
       code: code.replace('-', ''), // Stripe codes are alphanumeric; insert shows PL-XXXXXX
       max_redemptions: 1,
       restrictions: { minimum_amount: MINIMUM_ORDER_CENTS, minimum_amount_currency: 'usd' },
@@ -130,7 +130,7 @@ export async function recordRedemptionIfAny(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const promo = await (stripe.promotionCodes.create as any)(
       {
-        coupon: couponId,
+        promotion: { type: 'coupon', coupon: couponId },
         code: code.replace('-', ''),
         max_redemptions: 1,
         restrictions: { minimum_amount: MINIMUM_ORDER_CENTS, minimum_amount_currency: 'usd' },
