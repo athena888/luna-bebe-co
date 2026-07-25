@@ -41,7 +41,7 @@ Green panel, tracking card + button.
 
 ## Pending builds (copy drafted per build, inactive until approved)
 
-### Build 6 — Referral loop (INACTIVE — flips on via REFERRALS_ACTIVE=true after your approval)
+### Build 6 — Referral loop (LIVE — REFERRALS_ACTIVE=true since 2026-07-25)
 
 **Mechanics:** every paid order mints one personal code `PL-XXXXXX`. Friend gets
 **$15 off** (min order $90, one use). When redeemed, the original buyer gets a
@@ -67,7 +67,7 @@ Green panel, tracking card + button.
 **Order-confirmation add-on block (shown only while referrals active):**
 > **Give $15, get $15** — your personal code **{{CODE}}** gives a friend $15 off their first box; when they use it, you get $15 off your next one.
 
-### Build 3 — Occasion dates (INACTIVE — flips on via OCCASIONS_ACTIVE=true after your approval)
+### Build 3 — Occasion dates (LIVE — OCCASIONS_ACTIVE=true since 2026-07-25)
 
 **Mechanics:** a customer saves a due date or a baby's birthday. One email goes
 out **30 days before a due date**; one **21 days before each birthday** (repeats
@@ -86,9 +86,31 @@ Saving a date through the form counts as opt-in (the form says we'll remind them
 > Hand-packed, finished with satin ribbon and a wax seal, with your message inside.
 > CTA: See the Boxes → /boxes
 
-**Capture card (mockup awaiting approval — proposed for the order-confirmation page):**
+**Capture card (approved & live — after newsletter signup in the footer):**
 > **Is there a big day coming?**
 > Tell us the due date or birthday and we'll send one perfectly-timed reminder — nothing else.
 > fields: date + "due date / birthday" toggle + optional name · button: Remember It
 
-### Build 7 / 8 — drafts land here with each build.
+### Build 7 — Segmentation (INACTIVE — flips on via SEGMENTS_ACTIVE=true after your approval)
+
+**Mechanics:** contacts carry a segment (parent-to-be / grandparent / friend-or-coworker /
+corporate). Corporate is auto-set by the corporate inquiry form; everyone else can tell us
+via one optional tap after newsletter signup (mockup awaiting approval). When active,
+welcome-2 and win-back swap their opening paragraph to match the reader; unknown segments
+always get today's copy unchanged.
+
+**Welcome-2 opener variants:**
+> _parent-to-be:_ Every item that will touch your baby's skin is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender. The printed card in each box tells the story of every piece.
+> _grandparent:_ A grandbaby changes everything. Every item in the box you send is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender — and the printed card inside tells the story of every piece.
+> _friend/coworker:_ The best gift for a new parent is the one they'd never think to buy themselves. Every item is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender — and the printed card inside tells its story.
+
+**Win-back opener variants:**
+> _parent-to-be:_ The newborn days go quickly. Whether the next moment is a sibling on the way, a friend's arrival, or a first birthday, we're still here hand-packing organic gift boxes that care for the new parent as much as the baby.
+> _grandparent:_ Grandbabies have a way of multiplying — a cousin on the way, a first birthday coming up. When the next moment arrives, we're still here hand-packing organic gift boxes that care for the new parent as much as the baby.
+> _friend/coworker & unknown:_ (unchanged current copy)
+
+**Segment chips (mockup awaiting approval — after newsletter signup, next to the occasion card):**
+> **Who are you shopping for?** (optional, one tap)
+> chips: My own baby · A grandbaby · A friend or coworker
+
+### Build 8 — drafts land here with the build.

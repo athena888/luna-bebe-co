@@ -122,7 +122,34 @@ export async function sendWelcomeEmail({
 }
 
 // Welcome series step 2 (D+2) — the story and what makes the boxes different.
-export async function sendWelcomeSeries2Email({ customerEmail }: { customerEmail: string }) {
+// Build 7 — segment-aware copy. Variants apply only while SEGMENTS_ACTIVE
+// (copy approval pending in MARKETING_COPY.md); otherwise everyone gets the
+// default paragraph. 'unknown' and 'corporate' always get the default.
+const SEGMENTS_ACTIVE = process.env.SEGMENTS_ACTIVE === 'true'
+type CopySegment = 'parent_to_be' | 'grandparent' | 'friend_coworker' | 'corporate' | 'unknown'
+
+const WELCOME2_OPENERS: Partial<Record<CopySegment, string>> = {
+  parent_to_be: `Every item that will touch your baby's skin is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender. The printed card in each box tells the story of every piece.`,
+  grandparent: `A grandbaby changes everything. Every item in the box you send is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender — and the printed card inside tells the story of every piece.`,
+  friend_coworker: `The best gift for a new parent is the one they'd never think to buy themselves. Every item is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender — and the printed card inside tells its story.`,
+}
+
+const WINBACK_OPENERS: Partial<Record<CopySegment, string>> = {
+  parent_to_be: `The newborn days go quickly. Whether the next moment is a sibling on the way, a friend's arrival, or a first birthday, we're still here hand-packing organic gift boxes that care for the new parent as much as the baby.`,
+  grandparent: `Grandbabies have a way of multiplying — a cousin on the way, a first birthday coming up. When the next moment arrives, we're still here hand-packing organic gift boxes that care for the new parent as much as the baby.`,
+}
+
+function pickOpener(variants: Partial<Record<CopySegment, string>>, fallback: string, segment?: CopySegment): string {
+  if (!SEGMENTS_ACTIVE || !segment) return fallback
+  return variants[segment] ?? fallback
+}
+
+export async function sendWelcomeSeries2Email({ customerEmail, segment }: { customerEmail: string; segment?: CopySegment }) {
+  const opener = pickOpener(
+    WELCOME2_OPENERS,
+    `Every item in a Petite Lavande box is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender. The printed card in each box tells the story of every item, so the person you're gifting knows exactly what's touching their baby's skin.`,
+    segment
+  )
   return resend.emails.send({
     from: FROM,
     to: customerEmail,
@@ -134,7 +161,7 @@ export async function sendWelcomeSeries2Email({ customerEmail }: { customerEmail
         <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">We don't curate. We trace.</h1>
         <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
-            Every item in a Petite Lavande box is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender. The printed card in each box tells the story of every item, so the person you're gifting knows exactly what's touching their baby's skin.
+            ${opener}
           </p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
             Hand-packed and finished with satin ribbon and a wax seal.
@@ -182,8 +209,13 @@ export async function sendWelcomeSeries3Email({ customerEmail }: { customerEmail
 }
 
 // Win-back — one email when a customer's last order is 75+ days old.
-export async function sendWinBackEmail({ customerName, customerEmail }: { customerName?: string; customerEmail: string }) {
+export async function sendWinBackEmail({ customerName, customerEmail, segment }: { customerName?: string; customerEmail: string; segment?: CopySegment }) {
   const greeting = customerName ? `Hi ${customerName},` : 'Hi,'
+  const opener = pickOpener(
+    WINBACK_OPENERS,
+    `Chances are someone around you is expecting — a friend, a colleague, a sister. When the moment comes, we're still here hand-packing organic gift boxes that care for the new parent as much as the baby.`,
+    segment
+  )
   return resend.emails.send({
     from: FROM,
     to: customerEmail,
@@ -198,7 +230,7 @@ export async function sendWinBackEmail({ customerName, customerEmail }: { custom
             ${greeting}
           </p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
-            Chances are someone around you is expecting — a friend, a colleague, a sister. When the moment comes, we're still here hand-packing organic gift boxes that care for the new parent as much as the baby.
+            ${opener}
           </p>
           <div style="text-align:center;">
             <a href="${utm('/boxes', 'winback')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">

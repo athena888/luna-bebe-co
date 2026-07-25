@@ -59,6 +59,14 @@ export async function submitB2bLead(input: B2bLeadInput): Promise<{ ok: true } |
       }
     } catch (e) { console.error('b2b tracker wiring error:', e) }
 
+    // Marketing contacts (Build 7): record the corporate segment — the one
+    // segment we can infer with certainty. Inquiry ≠ marketing consent, so
+    // opt-in stays false. Fail-soft.
+    try {
+      const { upsertContact: upsertMarketingContact } = await import('@/lib/contacts')
+      await upsertMarketingContact({ email, name, source: 'corporate_form', segment: 'corporate' })
+    } catch (e) { console.error('b2b marketing-contact capture error:', e) }
+
     // Notify the team. Fail-soft.
     try {
       await sendCorporateInquiryEmail({ name, email, company, company_size, needs, gifts_per_year })

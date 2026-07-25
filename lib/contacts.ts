@@ -12,6 +12,18 @@ import { supabaseAdmin } from './supabase'
 
 export type ContactSegment = 'parent_to_be' | 'grandparent' | 'friend_coworker' | 'corporate' | 'unknown'
 
+/** Segment lookup for send-time copy variants (Build 7). Fail-soft: any
+ *  error or missing row reads as 'unknown', which sends the default copy. */
+export async function segmentOf(email: string): Promise<ContactSegment> {
+  try {
+    const { data } = await supabaseAdmin
+      .from('marketing_contacts').select('segment').eq('email', email.trim().toLowerCase()).maybeSingle()
+    return (data?.segment as ContactSegment) ?? 'unknown'
+  } catch {
+    return 'unknown'
+  }
+}
+
 export async function upsertContact(input: {
   email: string
   name?: string | null
