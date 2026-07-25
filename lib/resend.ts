@@ -31,6 +31,16 @@ const brandFooter = `
   </div>
 `
 
+// RFC 8058 one-click unsubscribe headers for marketing sends — mailbox
+// providers (Gmail/Yahoo bulk-sender rules) require these alongside the
+// footer link. The unsubscribe endpoint accepts the RFC's POST.
+function unsubHeaders(email: string) {
+  return {
+    'List-Unsubscribe': `<${unsubscribeUrl(email)}>`,
+    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+  }
+}
+
 // Footer for marketing/flow emails — brandFooter plus the required
 // unsubscribe link (CAN-SPAM). Transactional emails keep the plain footer.
 function flowFooter(email: string) {
@@ -86,6 +96,7 @@ export async function sendWelcomeEmail({
   return resend.emails.send({
     from: FROM,
     to: customerEmail,
+    headers: unsubHeaders(customerEmail),
     subject: 'Welcome to Petite Lavande ✨',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
@@ -115,6 +126,7 @@ export async function sendWelcomeSeries2Email({ customerEmail }: { customerEmail
   return resend.emails.send({
     from: FROM,
     to: customerEmail,
+    headers: unsubHeaders(customerEmail),
     subject: 'The story behind every box 🌿',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
@@ -144,6 +156,7 @@ export async function sendWelcomeSeries3Email({ customerEmail }: { customerEmail
   return resend.emails.send({
     from: FROM,
     to: customerEmail,
+    headers: unsubHeaders(customerEmail),
     subject: 'Still deciding? Your 10% is waiting ✨',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
@@ -174,6 +187,7 @@ export async function sendWinBackEmail({ customerName, customerEmail }: { custom
   return resend.emails.send({
     from: FROM,
     to: customerEmail,
+    headers: unsubHeaders(customerEmail),
     subject: 'A little lavender, from us to you 💛',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
@@ -220,6 +234,7 @@ export async function sendReviewRequestEmail({
   return resend.emails.send({
     from: FROM,
     to: customerEmail,
+    headers: unsubHeaders(customerEmail),
     subject: 'How was your Petite Lavande box? 🌿',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
@@ -254,6 +269,7 @@ export async function sendAbandonedCartEmail({
   return resend.emails.send({
     from: FROM,
     to: customerEmail,
+    headers: unsubHeaders(customerEmail),
     subject: 'Your Petite Lavande box is waiting ✨',
     html: `
       <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; color: #3d2c1e;">

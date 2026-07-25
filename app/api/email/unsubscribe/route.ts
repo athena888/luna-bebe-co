@@ -3,7 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { verifyUnsubscribeToken } from '@/lib/unsubscribe'
 
 // One-click unsubscribe from customer flow emails (linked in every flow email
-// footer). Signed link — see lib/unsubscribe.ts.
+// footer + RFC 8058 List-Unsubscribe headers). Signed link — see lib/unsubscribe.ts.
 export async function GET(req: NextRequest) {
   const email = (req.nextUrl.searchParams.get('e') || '').trim().toLowerCase()
   const token = req.nextUrl.searchParams.get('t') || ''
@@ -34,4 +34,19 @@ export async function GET(req: NextRequest) {
   }
 
   return page('You’re unsubscribed', 'You won’t receive any more marketing emails from us. Order and shipping confirmations still arrive as usual.')
+}
+
+// RFC 8058 one-click: mailbox providers POST to the same signed URL. No body
+// needed — same validation as GET, plain 200 on success.
+export async function POST(req: NextRequest) {
+  const email = (req.nextUrl.searchParams.get('e') || '').trim().toLowerCase()
+  const token = req.nextUrl.searchParams.get('t') || ''
+  if (!email || !token || !verifyUnsubscribeToken(email, token)) {
+    return NextResponse.json({ error: 'Invalid link' }, { status: 400 })
+  }
+  const { error } = await supabaseAdmin
+    .from('email_optouts')
+    .upsert({ email, source: 'one-click' }, { onConflict: 'email' })
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ ok: true })
 }

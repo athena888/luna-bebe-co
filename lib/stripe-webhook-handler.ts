@@ -190,6 +190,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     }
   })
 
+  // Contact capture (source of truth, §37): buyers get transactional mail only
+  // until they opt in — marketing_opt_in stays false here. Fail-soft.
+  try {
+    const { upsertContact } = await import('@/lib/contacts')
+    await upsertContact({ email: order.customer_email, name: order.customer_name, source: 'checkout' })
+  } catch (e) {
+    console.warn('checkout contact capture skipped:', e)
+  }
+
   const currency = (session.currency ?? 'usd').toUpperCase()
   const items = (order.selected_items ?? []).map(i => ({
     id: i.id, name: i.name, price: i.price, qty: (i as { qty?: number }).qty ?? 1, category: i.category,
