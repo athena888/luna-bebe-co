@@ -94,6 +94,32 @@ export default function CheckoutPage() {
     if (storedCardStyle) setCardStyle(storedCardStyle)
     const storedZone = sessionStorage.getItem('pl_letter_zone')
     if (storedZone) { try { setLetterZone(JSON.parse(storedZone)) } catch { /* ignore */ } }
+
+    // Referral redeem page stashed a code — prefill and validate it once.
+    // Invalid/spent codes fall back to an empty idle input, never an error.
+    const referral = localStorage.getItem('pl_referral_code')
+    if (referral) {
+      setPromoCode(referral)
+      setPromoState('checking')
+      fetch('/api/checkout/validate-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: referral }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.valid) {
+            setPromoId(data.promoId)
+            setPromoLabel(data.discount)
+            setPromoState('valid')
+          } else {
+            localStorage.removeItem('pl_referral_code')
+            setPromoCode('')
+            setPromoState('idle')
+          }
+        })
+        .catch(() => setPromoState('idle'))
+    }
   }, [router])
 
   async function applyPromo() {

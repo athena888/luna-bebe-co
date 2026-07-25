@@ -18,6 +18,11 @@ export async function POST(req: NextRequest) {
     if (!promos.data[0]) {
       promos = await stripe.promotionCodes.list({ code: trimmed.toUpperCase(), limit: 1, expand: ['data.promotion.coupon'] })
     }
+    // Referral codes print as PL-XXXXXX but live in Stripe without the dash
+    const stripped = trimmed.toUpperCase().replace(/[^A-Z0-9]/g, '')
+    if (!promos.data[0] && stripped && stripped !== trimmed.toUpperCase()) {
+      promos = await stripe.promotionCodes.list({ code: stripped, limit: 1, expand: ['data.promotion.coupon'] })
+    }
     const promo = promos.data[0]
 
     if (!promo) return NextResponse.json({ valid: false, error: 'Invalid or expired code' })

@@ -44,7 +44,7 @@ Green panel, tracking card + button.
 ### Build 6 — Referral loop (INACTIVE — flips on via REFERRALS_ACTIVE=true after your approval)
 
 **Mechanics:** every paid order mints one personal code `PL-XXXXXX`. Friend gets
-**$15 off** (min order $75, one use). When redeemed, the original buyer gets a
+**$15 off** (min order $90, one use). When redeemed, the original buyer gets a
 **$15 thank-you code** by email (same min, one use, self-referral gets nothing).
 
 **Printed insert card (goes in the box, next to the QR):**
@@ -57,12 +57,12 @@ Green panel, tracking card + button.
 > Someone you shared Petite Lavande with just sent a box of their own. As a thank-you, here's $15 off your next order: **{{CODE}}**
 > CTA: Build Your Next Box → /build
 
-**Redeem page /r/{{CODE}} (mockup awaiting approval — not built):**
+**Redeem page /r/{{CODE}} (approved & built):**
 > eyebrow: A GIFT FROM A FRIEND
 > **$15 toward a Petite Lavande box**
-> Someone who loves our boxes wants you to have one too. Your $15 is ready — it applies automatically at checkout on orders of $75 or more.
+> Someone who loves our boxes wants you to have one too. Your $15 is ready — it applies automatically at checkout on orders of $90 or more.
 > CTA: Start Building — $15 applied → /build
-> fine print: One use per code. Minimum order $75. Can't be combined with other codes.
+> fine print: One use per code. Minimum order $90. Can't be combined with other codes.
 
 **Order-confirmation add-on block (shown only while referrals active):**
 > **Give $15, get $15** — your personal code **{{CODE}}** gives a friend $15 off their first box; when they use it, you get $15 off your next one.

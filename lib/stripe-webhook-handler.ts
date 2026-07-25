@@ -168,6 +168,19 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     )
   }
 
+  // Referral loop (Build 6): mint this order's personal code FIRST so the
+  // confirmation email can carry it. Everything is gated + fail-soft.
+  let referralCode: string | null = null
+  try {
+    const { REFERRALS_ACTIVE, ensureReferralForOrder } = await import('@/lib/referrals')
+    if (REFERRALS_ACTIVE) {
+      const ref = await ensureReferralForOrder(order.id, order.customer_email)
+      referralCode = ref?.code ?? null
+    }
+  } catch (e) {
+    console.warn('referral mint skipped:', e)
+  }
+
   await sendOrderConfirmationEmail({
     customerName: order.customer_name,
     customerEmail: order.customer_email,
@@ -175,6 +188,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     recipientName: order.recipient_name,
     total: order.total_amount,
     trackingNumber: order.tracking_number,
+    referralCode,
     items: (order.selected_items ?? []).map(i => ({
       id: i.id, name: i.name, price: i.price, qty: (i as { qty?: number }).qty ?? 1,
       image: (i as { image?: string | null }).image ?? null,
@@ -199,13 +213,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     console.warn('checkout contact capture skipped:', e)
   }
 
-  // Referral loop (Build 6, gated off until copy + UI approved): mint this
-  // order's personal code, and if THIS order paid with someone's code, record
-  // the redemption and thank the referrer with their $15 code. Fail-soft.
+  // Referral redemption: if THIS order paid with someone's code, record it
+  // and thank the referrer with their $15 code. Fail-soft.
   try {
-    const { REFERRALS_ACTIVE, ensureReferralForOrder, recordRedemptionIfAny, markRewardSent } = await import('@/lib/referrals')
+    const { REFERRALS_ACTIVE, recordRedemptionIfAny, markRewardSent } = await import('@/lib/referrals')
     if (REFERRALS_ACTIVE) {
-      await ensureReferralForOrder(order.id, order.customer_email)
       const reward = await recordRedemptionIfAny(session.id, order.id, order.customer_email)
       if (reward) {
         const { sendReferralRewardEmail } = await import('@/lib/resend')
@@ -214,7 +226,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       }
     }
   } catch (e) {
-    console.warn('referral processing skipped:', e)
+    console.warn('referral redemption skipped:', e)
   }
 
   const currency = (session.currency ?? 'usd').toUpperCase()

@@ -151,6 +151,14 @@ export function OrdersTable({ orders: initial }: { orders: ExtendedOrder[] }) {
                     >
                       <Printer size={12} /> Packing slip
                     </Link>
+                    <Link
+                      href={`/portal/orders/${order.id}/referral-insert`}
+                      target="_blank"
+                      className="mt-1.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cream-100 text-bark-600 font-sans text-xs font-semibold hover:bg-cream-200 transition-colors"
+                      title="Print the give-15/get-15 insert card with this order's personal code + QR"
+                    >
+                      <Printer size={12} /> Referral insert
+                    </Link>
                   </td>
                 </tr>
 

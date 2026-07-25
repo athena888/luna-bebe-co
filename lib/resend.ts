@@ -533,6 +533,7 @@ export async function sendOrderConfirmationEmail({
   trackingNumber,
   trackingUrl,
   items,
+  referralCode,
 }: {
   customerName: string
   customerEmail: string
@@ -542,6 +543,7 @@ export async function sendOrderConfirmationEmail({
   trackingNumber?: string
   trackingUrl?: string
   items?: Array<{ id?: string; name: string; price?: number; qty?: number; image?: string | null }>
+  referralCode?: string | null
 }) {
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`
   const ref = (trackingNumber ?? orderId).slice(-8).toUpperCase()
@@ -600,6 +602,13 @@ export async function sendOrderConfirmationEmail({
             <a href="${trackingUrl}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">Track Your Order</a>
           </div>` : ''}
         </div>
+        ${referralCode ? `
+        <div style="background:#7A8E7C;padding:24px 30px;margin:0 4px 24px;">
+          <h2 style="font-family:Georgia,serif;font-size:19px;font-weight:normal;color:#ffffff;margin:0 0 8px;">Give $15, get $15</h2>
+          <p style="font-family:sans-serif;font-size:13px;line-height:1.7;color:rgba(255,255,255,0.92);margin:0;">
+            Your personal code <span style="font-family:monospace;letter-spacing:2px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.5);border-radius:6px;padding:2px 8px;color:#ffffff;">${referralCode}</span> gives a friend $15 off their first box — and when they use it, you get $15 off your next one.
+          </p>
+        </div>` : ''}
         <p style="font-family:sans-serif;font-size:12px;text-align:center;color:#9c7c5a;margin:0 0 4px;">We will email again the moment it ships.</p>
         ${brandFooter}
       </div>

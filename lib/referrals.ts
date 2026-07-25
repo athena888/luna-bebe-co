@@ -3,7 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 // Build 6 — referral loop (give 15 / get 15).
 // Every paid order mints ONE personal code (PL-XXXXXX): the friend gets $15
-// off their first box ($75 minimum), and when it's redeemed the original
+// off their first box ($90 minimum), and when it's redeemed the original
 // buyer gets a $15 thank-you code by email. Everything here is gated behind
 // REFERRALS_ACTIVE so nothing runs until the copy + UI are approved.
 
@@ -12,7 +12,7 @@ export const REFERRALS_ACTIVE = process.env.REFERRALS_ACTIVE === 'true'
 const FRIEND_COUPON_ID = 'REFERRAL15-FRIEND'
 const REWARD_COUPON_ID = 'REFERRAL15-REWARD'
 const AMOUNT_OFF_CENTS = 1500
-const MINIMUM_ORDER_CENTS = 7500
+const MINIMUM_ORDER_CENTS = 9000
 
 // No 0/O/1/I — these get read off a printed card.
 const ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
