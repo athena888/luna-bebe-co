@@ -1203,10 +1203,12 @@ end $$;
 --     (scripts/generate-cards.js --mark sets it; the query skips flagged rows).
 alter table orders add column if not exists card_generated boolean not null default false;
 
--- 37) Marketing machine shared infrastructure — contacts (our source of truth,
---     opt-in gated) + campaign attribution on the email log.
+-- 37) Marketing machine shared infrastructure — marketing_contacts (our
+--     customer-marketing source of truth, opt-in gated) + campaign attribution
+--     on the email log. NOTE: named marketing_contacts because the plain
+--     `contacts` table already exists and belongs to the B2B outreach pipeline.
 --     (Also in supabase/migrations/marketing_contacts.sql)
-create table if not exists public.contacts (
+create table if not exists public.marketing_contacts (
   id                 uuid primary key default gen_random_uuid(),
   email              text not null unique,
   name               text,
@@ -1219,10 +1221,10 @@ create table if not exists public.contacts (
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now()
 );
-create index if not exists contacts_segment_idx on public.contacts (segment);
-alter table public.contacts enable row level security;
-drop policy if exists contacts_service_all on public.contacts;
-create policy contacts_service_all on public.contacts for all to service_role using (true) with check (true);
+create index if not exists marketing_contacts_segment_idx on public.marketing_contacts (segment);
+alter table public.marketing_contacts enable row level security;
+drop policy if exists marketing_contacts_service_all on public.marketing_contacts;
+create policy marketing_contacts_service_all on public.marketing_contacts for all to service_role using (true) with check (true);
 
 alter table email_events add column if not exists campaign text;
 

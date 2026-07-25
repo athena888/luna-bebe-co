@@ -1,7 +1,9 @@
 import { supabaseAdmin } from './supabase'
 
 // Marketing contacts — OUR source of truth (§37). Captured only via checkout,
-// newsletter signup, or landing pages. Non-destructive upsert rules:
+// newsletter signup, or landing pages. Lives in marketing_contacts — the plain
+// `contacts` table belongs to the B2B outreach pipeline and predates this.
+// Non-destructive upsert rules:
 //   - opt-in is one-way here: we never flip marketing_opt_in true → false
 //     (only the unsubscribe flow, via email_optouts, ends marketing sends)
 //   - name fills in when missing, never overwrites
@@ -23,10 +25,10 @@ export async function upsertContact(input: {
 
   try {
     const { data: existing } = await supabaseAdmin
-      .from('contacts').select('id, name, segment, marketing_opt_in, zip').eq('email', email).maybeSingle()
+      .from('marketing_contacts').select('id, name, segment, marketing_opt_in, zip').eq('email', email).maybeSingle()
 
     if (!existing) {
-      await supabaseAdmin.from('contacts').insert({
+      await supabaseAdmin.from('marketing_contacts').insert({
         email,
         name: input.name?.trim() || null,
         segment: input.segment ?? 'unknown',
@@ -47,7 +49,7 @@ export async function upsertContact(input: {
       patch.opt_in_at = new Date().toISOString()
     }
     if (Object.keys(patch).length > 1) {
-      await supabaseAdmin.from('contacts').update(patch).eq('id', existing.id)
+      await supabaseAdmin.from('marketing_contacts').update(patch).eq('id', existing.id)
     }
   } catch (e) {
     console.warn('contacts upsert skipped (run §37?):', e instanceof Error ? e.message : e)
