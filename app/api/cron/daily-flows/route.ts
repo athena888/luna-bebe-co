@@ -21,6 +21,16 @@ export async function GET(req: NextRequest) {
     result.winbacksEnrolled = 'error'
   }
 
+  // Occasion sends (Build 3) — no-op until OCCASIONS_ACTIVE=true. Runs before
+  // the drain so a just-due occasion email goes out the same day.
+  try {
+    const { scheduleOccasionSends } = await import('@/lib/occasions')
+    result.occasionsQueued = await scheduleOccasionSends()
+  } catch (e) {
+    console.error('Occasion scheduling failed (run §39?):', e)
+    result.occasionsQueued = 'error'
+  }
+
   try {
     result.flows = await processDueEmails()
   } catch (e) {

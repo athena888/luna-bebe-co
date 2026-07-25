@@ -67,4 +67,28 @@ Green panel, tracking card + button.
 **Order-confirmation add-on block (shown only while referrals active):**
 > **Give $15, get $15** — your personal code **{{CODE}}** gives a friend $15 off their first box; when they use it, you get $15 off your next one.
 
-### Build 3 / 7 / 8 — drafts land here with each build.
+### Build 3 — Occasion dates (INACTIVE — flips on via OCCASIONS_ACTIVE=true after your approval)
+
+**Mechanics:** a customer saves a due date or a baby's birthday. One email goes
+out **30 days before a due date**; one **21 days before each birthday** (repeats
+yearly). Only opted-in contacts, unsubscribes honored, held while store closed.
+Saving a date through the form counts as opt-in (the form says we'll remind them).
+
+**Due-date email** — subject: `The big day is getting close 🌿`
+> **Almost time**
+> The arrival you asked us to remember is only a few weeks away now. If a gift is part of the plan, this is the window — every box is packed by hand and ships with time to spare.
+> Organic keepsakes, chosen piece by piece, sealed with wax and ribbon.
+> CTA: Build Their Box → /build
+
+**Birthday email** — subject: `A little birthday is coming up 💛`
+> **A day worth celebrating**
+> A birthday you asked us to remember is a few weeks out. A box of organic keepsakes — soft things to grow into, gentle things for the bath — is a lovely way to mark the day.
+> Hand-packed, finished with satin ribbon and a wax seal, with your message inside.
+> CTA: See the Boxes → /boxes
+
+**Capture card (mockup awaiting approval — proposed for the order-confirmation page):**
+> **Is there a big day coming?**
+> Tell us the due date or birthday and we'll send one perfectly-timed reminder — nothing else.
+> fields: date + "due date / birthday" toggle + optional name · button: Remember It
+
+### Build 7 / 8 — drafts land here with each build.

@@ -7,6 +7,8 @@ import {
   sendWinBackEmail,
   sendReviewRequestEmail,
   sendOrderConfirmationEmail,
+  sendOccasionDueEmail,
+  sendOccasionBirthdayEmail,
 } from './resend'
 
 // Customer email flows on top of the `email_events` table (§31). Triggers
@@ -19,7 +21,7 @@ const DAY = 24 * 60 * 60 * 1000
 // (NEXT_PUBLIC_STORE_OPEN != true) these are HELD, not canceled — they stay
 // queued in email_events and the first daily cron after reopening sends them.
 // Review asks are not marketing and always flow.
-const MARKETING_TEMPLATES = new Set(['welcome-2', 'welcome-3', 'winback'])
+const MARKETING_TEMPLATES = new Set(['welcome-2', 'welcome-3', 'winback', 'occasion-due', 'occasion-birthday'])
 
 /** Newsletter signup → welcome steps 2 (D+2) and 3 (D+4). Step 1 is the
  *  immediate welcome email the subscribe route already sends. */
@@ -149,6 +151,12 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
           break
         case 'winback':
           await sendWinBackEmail({ customerEmail: ev.recipient })
+          break
+        case 'occasion-due':
+          await sendOccasionDueEmail({ customerEmail: ev.recipient })
+          break
+        case 'occasion-birthday':
+          await sendOccasionBirthdayEmail({ customerEmail: ev.recipient })
           break
         case 'postpurchase-review': {
           const { data: order } = await supabaseAdmin

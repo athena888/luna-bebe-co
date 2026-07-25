@@ -212,6 +212,68 @@ export async function sendWinBackEmail({ customerName, customerEmail }: { custom
   })
 }
 
+// Build 3 occasion flow — one email ~30 days before a due date the customer
+// asked us to remember. Gated by OCCASIONS_ACTIVE via the scheduler; copy in
+// MARKETING_COPY.md, inactive until approved.
+export async function sendOccasionDueEmail({ customerEmail }: { customerEmail: string }) {
+  return resend.emails.send({
+    from: FROM,
+    to: customerEmail,
+    headers: unsubHeaders(customerEmail),
+    subject: 'The big day is getting close 🌿',
+    html: `
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+        ${brandHeader}
+        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">Almost time</h1>
+        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+            The arrival you asked us to remember is only a few weeks away now. If a gift is part of the plan, this is the window — every box is packed by hand and ships with time to spare.
+          </p>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
+            Organic keepsakes, chosen piece by piece, sealed with wax and ribbon.
+          </p>
+          <div style="text-align:center;">
+            <a href="${utm('/build', 'occasion')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+              Build Their Box
+            </a>
+          </div>
+        </div>
+        ${flowFooter(customerEmail)}
+      </div>
+    `,
+  })
+}
+
+// Build 3 — ~21 days before a remembered baby birthday, every year.
+export async function sendOccasionBirthdayEmail({ customerEmail }: { customerEmail: string }) {
+  return resend.emails.send({
+    from: FROM,
+    to: customerEmail,
+    headers: unsubHeaders(customerEmail),
+    subject: 'A little birthday is coming up 💛',
+    html: `
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+        ${brandHeader}
+        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">A day worth celebrating</h1>
+        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+            A birthday you asked us to remember is a few weeks out. A box of organic keepsakes — soft things to grow into, gentle things for the bath — is a lovely way to mark the day.
+          </p>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
+            Hand-packed, finished with satin ribbon and a wax seal, with your message inside.
+          </p>
+          <div style="text-align:center;">
+            <a href="${utm('/boxes', 'occasion')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+              See the Boxes
+            </a>
+          </div>
+        </div>
+        ${flowFooter(customerEmail)}
+      </div>
+    `,
+  })
+}
+
 // Build 6 referral loop — sent to the ORIGINAL buyer when a friend redeems
 // their code. Fires only while REFERRALS_ACTIVE (webhook gates the call);
 // copy lives in MARKETING_COPY.md and ships inactive until approved.
