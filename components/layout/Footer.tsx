@@ -7,6 +7,74 @@ import { CONTACT_EMAIL } from '@/lib/site-config'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { RegionSwitcher } from '@/components/ui/RegionSwitcher'
 
+// Occasion capture (Build 3) — offered right after a newsletter signup, when
+// we already have the email. One well-timed reminder per saved date.
+function OccasionCapture({ email }: { email: string }) {
+  const [kind, setKind] = useState<'due_date' | 'baby_birthday'>('due_date')
+  const [date, setDate] = useState('')
+  const [label, setLabel] = useState('')
+  const [state, setState] = useState<'idle' | 'saving' | 'done'>('idle')
+
+  async function save(e: React.FormEvent) {
+    e.preventDefault()
+    if (!date || state === 'saving') return
+    setState('saving')
+    try {
+      await fetch('/api/occasions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, kind, date, label: label.trim() || undefined }),
+      })
+    } finally {
+      setState('done')
+    }
+  }
+
+  if (state === 'done') {
+    return <p className="font-sans text-[13px] text-espresso leading-relaxed text-center mt-3">We&rsquo;ll remember — one reminder at just the right time. 💛</p>
+  }
+
+  return (
+    <form onSubmit={save} className="mt-4 bg-white border border-cream-300 p-4 text-left">
+      <p className="font-playfair text-[15px] text-espresso mb-1">Is there a big day coming?</p>
+      <p className="font-sans text-[12px] text-espresso-light leading-relaxed mb-3">Tell us the due date or birthday and we&rsquo;ll send one perfectly-timed reminder — nothing else.</p>
+      <div className="flex gap-2 mb-2">
+        <div className="flex border border-cream-300 shrink-0">
+          <button type="button" onClick={() => setKind('due_date')}
+            className={`px-3 py-2 font-sans text-[10px] tracking-[0.1em] uppercase font-semibold transition-colors ${kind === 'due_date' ? 'bg-[#7A8E7C] text-white' : 'bg-white text-espresso-light'}`}>
+            Due date
+          </button>
+          <button type="button" onClick={() => setKind('baby_birthday')}
+            className={`px-3 py-2 font-sans text-[10px] tracking-[0.1em] uppercase font-semibold transition-colors ${kind === 'baby_birthday' ? 'bg-[#7A8E7C] text-white' : 'bg-white text-espresso-light'}`}>
+            Birthday
+          </button>
+        </div>
+        <input
+          type="date"
+          required
+          value={date}
+          onChange={e => setDate(e.target.value)}
+          className="flex-1 min-w-0 px-3 py-2 font-sans text-[13px] text-espresso bg-cream-50 border border-cream-300 focus:outline-none"
+        />
+      </div>
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={label}
+          onChange={e => setLabel(e.target.value)}
+          placeholder="Baby's name (optional)"
+          className="flex-1 min-w-0 px-3 py-2 font-sans text-[13px] text-espresso placeholder:font-light placeholder:text-[#B8B0A6] bg-cream-50 border border-cream-300 focus:outline-none"
+        />
+        <button type="submit" disabled={state === 'saving'}
+          className="px-4 py-2 bg-[#7A8E7C] text-white font-sans text-[10px] tracking-[0.15em] uppercase font-semibold hover:bg-[#6b7d6d] transition-colors disabled:opacity-50">
+          {state === 'saving' ? '…' : 'Remember It'}
+        </button>
+      </div>
+      <p className="font-sans text-[10px] text-espresso-light mt-2">One reminder ~30 days before a due date, ~21 before a birthday. Unsubscribe anytime.</p>
+    </form>
+  )
+}
+
 function EmailSignup() {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
@@ -30,7 +98,12 @@ function EmailSignup() {
   }
 
   if (done) {
-    return <p className="font-sans text-sm text-espresso leading-loose text-center">Thank you — you&rsquo;re on the list.</p>
+    return (
+      <div>
+        <p className="font-sans text-sm text-espresso leading-loose text-center">Thank you — you&rsquo;re on the list.</p>
+        <OccasionCapture email={email} />
+      </div>
+    )
   }
 
   return (
