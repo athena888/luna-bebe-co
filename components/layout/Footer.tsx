@@ -7,6 +7,46 @@ import { CONTACT_EMAIL } from '@/lib/site-config'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { RegionSwitcher } from '@/components/ui/RegionSwitcher'
 
+// Segment chips (Build 7) — one optional tap after signup so flow emails can
+// speak to the right reader. Fire-and-forget; disappears once tapped.
+function SegmentChips({ email }: { email: string }) {
+  const [picked, setPicked] = useState<string | null>(null)
+  const OPTIONS = [
+    { key: 'parent_to_be', label: 'My own baby' },
+    { key: 'grandparent', label: 'A grandbaby' },
+    { key: 'friend_coworker', label: 'A friend or coworker' },
+  ]
+
+  function pick(key: string) {
+    if (picked) return
+    setPicked(key)
+    fetch('/api/segment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, segment: key }),
+    }).catch(() => { /* best-effort */ })
+  }
+
+  if (picked) {
+    return <p className="font-sans text-[12px] text-espresso-light text-center mt-3">Noted — we&rsquo;ll keep it relevant.</p>
+  }
+
+  return (
+    <div className="mt-4 bg-white border border-cream-300 p-4 text-left">
+      <p className="font-playfair text-[15px] text-espresso mb-0.5">Who are you shopping for?</p>
+      <p className="font-sans text-[11px] text-espresso-light mb-2.5">Optional — helps us send you the right ideas.</p>
+      <div className="flex gap-2 flex-wrap">
+        {OPTIONS.map(o => (
+          <button key={o.key} type="button" onClick={() => pick(o.key)}
+            className="px-3 py-2 font-sans text-[10px] tracking-[0.08em] uppercase font-semibold border border-cream-300 bg-cream-50 text-espresso-light hover:bg-[#7A8E7C] hover:border-[#7A8E7C] hover:text-white transition-colors">
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // Occasion capture (Build 3) — offered right after a newsletter signup, when
 // we already have the email. One well-timed reminder per saved date.
 function OccasionCapture({ email }: { email: string }) {
@@ -101,6 +141,7 @@ function EmailSignup() {
     return (
       <div>
         <p className="font-sans text-sm text-espresso leading-loose text-center">Thank you — you&rsquo;re on the list.</p>
+        <SegmentChips email={email} />
         <OccasionCapture email={email} />
       </div>
     )
