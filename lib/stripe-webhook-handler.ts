@@ -199,6 +199,24 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     console.warn('checkout contact capture skipped:', e)
   }
 
+  // Referral loop (Build 6, gated off until copy + UI approved): mint this
+  // order's personal code, and if THIS order paid with someone's code, record
+  // the redemption and thank the referrer with their $15 code. Fail-soft.
+  try {
+    const { REFERRALS_ACTIVE, ensureReferralForOrder, recordRedemptionIfAny, markRewardSent } = await import('@/lib/referrals')
+    if (REFERRALS_ACTIVE) {
+      await ensureReferralForOrder(order.id, order.customer_email)
+      const reward = await recordRedemptionIfAny(session.id, order.id, order.customer_email)
+      if (reward) {
+        const { sendReferralRewardEmail } = await import('@/lib/resend')
+        await sendReferralRewardEmail({ customerEmail: reward.referrerEmail, code: reward.rewardCode })
+        await markRewardSent(reward.referrerEmail, reward.rewardCode)
+      }
+    }
+  } catch (e) {
+    console.warn('referral processing skipped:', e)
+  }
+
   const currency = (session.currency ?? 'usd').toUpperCase()
   const items = (order.selected_items ?? []).map(i => ({
     id: i.id, name: i.name, price: i.price, qty: (i as { qty?: number }).qty ?? 1, category: i.category,

@@ -212,6 +212,38 @@ export async function sendWinBackEmail({ customerName, customerEmail }: { custom
   })
 }
 
+// Build 6 referral loop — sent to the ORIGINAL buyer when a friend redeems
+// their code. Fires only while REFERRALS_ACTIVE (webhook gates the call);
+// copy lives in MARKETING_COPY.md and ships inactive until approved.
+export async function sendReferralRewardEmail({ customerEmail, code }: { customerEmail: string; code: string }) {
+  return resend.emails.send({
+    from: FROM,
+    to: customerEmail,
+    headers: unsubHeaders(customerEmail),
+    subject: 'A friend used your code — here\'s $15, from us 💛',
+    html: `
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+        ${brandHeader}
+        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">Your gift inspired another</h1>
+        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+            Someone you shared Petite Lavande with just sent a box of their own. As a thank-you, here's $15 off your next order:
+          </p>
+          <p style="text-align:center;margin:0 0 24px;">
+            <span style="display:inline-block;font-family:monospace;font-size:20px;letter-spacing:2px;background:#fff;border:1px dashed #c9a84c;border-radius:8px;padding:12px 24px;color:#3d2c1e;">${code}</span>
+          </p>
+          <div style="text-align:center;">
+            <a href="${utm('/build', 'referral')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+              Build Your Next Box
+            </a>
+          </div>
+        </div>
+        ${flowFooter(customerEmail)}
+      </div>
+    `,
+  })
+}
+
 export async function sendReviewRequestEmail({
   customerName,
   customerEmail,
