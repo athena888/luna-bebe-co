@@ -30,7 +30,7 @@ export interface ResolvedCollection extends CollectionRow {
 
 async function resolveProducts(c: CollectionRow, catalog: DbProduct[]): Promise<DbProduct[]> {
   const { data: pins } = await supabaseAdmin
-    .from('product_collections').select('product_id, sort_order').eq('collection_id', c.id).order('sort_order')
+    .from('shop_collection_products').select('product_id, sort_order').eq('collection_id', c.id).order('sort_order')
   const pinned = (pins ?? [])
     .map(p => catalog.find(x => x.id === p.product_id))
     .filter((x): x is DbProduct => Boolean(x))
@@ -47,7 +47,7 @@ async function resolveProducts(c: CollectionRow, catalog: DbProduct[]): Promise<
  *  that exist publicly (pages, sitemap, nav). */
 export async function getLiveCollections(): Promise<ResolvedCollection[]> {
   const { data } = await supabaseAdmin
-    .from('collections').select('*').eq('active', true).order('sort_order')
+    .from('shop_collections').select('*').eq('active', true).order('sort_order')
   if (!data?.length) return []
   const catalog = await getCatalog({ activeOnly: true })
   const out: ResolvedCollection[] = []
@@ -65,7 +65,7 @@ export async function getLiveCollection(slug: string): Promise<ResolvedCollectio
 
 /** For the portal: every collection with its resolved count and publish state. */
 export async function getCollectionStates(): Promise<Array<CollectionRow & { productCount: number; published: boolean }>> {
-  const { data } = await supabaseAdmin.from('collections').select('*').order('sort_order')
+  const { data } = await supabaseAdmin.from('shop_collections').select('*').order('sort_order')
   const catalog = await getCatalog({ activeOnly: true })
   const out = []
   for (const row of (data ?? []) as CollectionRow[]) {

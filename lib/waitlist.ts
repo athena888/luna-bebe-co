@@ -11,7 +11,7 @@ export const WAITLIST_ACTIVE = process.env.WAITLIST_ACTIVE === 'true'
 export async function joinWaitlist(input: { email: string; productId: string; segment?: string }): Promise<{ ok: boolean; error?: string }> {
   const email = input.email.trim().toLowerCase()
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, error: 'Invalid email' }
-  const { error } = await supabaseAdmin.from('waitlist').upsert(
+  const { error } = await supabaseAdmin.from('product_waitlist').upsert(
     { email, product_id: input.productId, segment: input.segment ?? null },
     { onConflict: 'email,product_id' }
   )
@@ -38,7 +38,7 @@ export async function joinWaitlist(input: { email: string; productId: string; se
 export async function processRestocks(): Promise<number> {
   if (!WAITLIST_ACTIVE) return 0
   const { data: waiting } = await supabaseAdmin
-    .from('waitlist').select('*').is('notified_at', null).order('created_at')
+    .from('product_waitlist').select('*').is('notified_at', null).order('created_at')
   if (!waiting?.length) return 0
 
   const productIds = [...new Set(waiting.map(w => w.product_id as string))]
@@ -64,7 +64,7 @@ export async function processRestocks(): Promise<number> {
         if (error) continue
         queued++
       }
-      await supabaseAdmin.from('waitlist').update({ notified_at: new Date().toISOString() }).eq('id', w.id)
+      await supabaseAdmin.from('product_waitlist').update({ notified_at: new Date().toISOString() }).eq('id', w.id)
     }
   }
   return queued
