@@ -23,7 +23,11 @@ export default function ReturnsPage() {
       </Section>
 
       <Section title="Change of Mind Returns">
-        Because each box is assembled to order, we are unable to accept returns for change of mind once your box has been shipped. If you need to cancel, please contact us within <strong>2 hours</strong> of placing your order.
+        Because each box is assembled to order, we are unable to accept returns for change of mind once your box has been shipped. If you need to cancel, please contact us within <strong>24 hours</strong> of placing your order.
+      </Section>
+
+      <Section title="Return Shipping">
+        For damaged or incorrect items, we cover return shipping. For any other approved return, return shipping is the customer&apos;s responsibility.
       </Section>
 
       <Section title="Gift Orders">

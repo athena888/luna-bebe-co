@@ -131,7 +131,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
 type Perk = { label: string; sub: string }
 const DEFAULT_PERKS: Perk[] = [
   { label: 'Free Shipping', sub: `On orders over $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}` },
-  { label: 'Personalized Card', sub: 'Printed for every box' },
+  { label: 'Personalized Card', sub: 'Hand-finished for every box' },
   { label: 'Organic Cotton', sub: 'From GOTS-certified makers' },
   { label: 'Gift-Ready', sub: 'Ships within 3 days' },
 ]
