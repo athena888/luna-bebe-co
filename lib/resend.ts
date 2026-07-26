@@ -13,11 +13,35 @@ function utm(path: string, campaign: string) {
   return `${BASE_URL}${path}${path.includes('?') ? '&' : '?'}utm_source=email&utm_medium=email&utm_campaign=${campaign}`
 }
 
+// One shared header for every email: brand, tagline, lavender divider.
 const brandHeader = `
-  <div style="text-align:center;padding:40px 0 24px;">
-    <p style="font-family:sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c9a84c;margin:0 0 8px;">Petite Lavande</p>
+  <div style="text-align:center;padding:40px 0 20px;">
+    <p style="font-family:sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#c9a84c;margin:0 0 6px;">Petite Lavande</p>
+    <p style="font-family:Georgia,serif;font-style:italic;font-size:13px;color:#9c7c5a;margin:0;">Fait avec amour, pour vous</p>
+    <img src="${BASE_URL}/decor/lavender-divider.png" width="150" alt="" style="display:block;margin:12px auto 0;width:150px;max-width:150px;height:auto;" />
   </div>
 `
+
+// ——— The house email family: green panel, white text, square outline button ———
+const P = (text: string) =>
+  `<p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">${text}</p>`
+const BTN = (href: string, label: string) =>
+  `<div style="text-align:center;margin-top:24px;">
+     <a href="${href}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">${label}</a>
+   </div>`
+const CODE = (code: string) =>
+  `<p style="text-align:center;margin:20px 0;">
+     <span style="display:inline-block;font-family:monospace;font-size:18px;letter-spacing:3px;background:rgba(255,255,255,0.14);border:1px dashed rgba(255,255,255,0.6);padding:12px 26px;color:#ffffff;">${code}</span>
+   </p>`
+const shell = (heading: string, inner: string, footer: string) => `
+  <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
+    ${brandHeader}
+    <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
+      <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${heading}</h1>
+      ${inner}
+    </div>
+    ${footer}
+  </div>`
 const brandFooter = `
   <div style="text-align:center;padding:24px 0 40px;">
     <p style="font-family:sans-serif;font-size:11px;color:#9c7c5a;margin:0 0 6px;">
@@ -99,18 +123,18 @@ export async function sendWelcomeEmail({
     headers: unsubHeaders(customerEmail),
     subject: 'Welcome to Petite Lavande ✨',
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
-        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">${greeting}</h1>
-        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+        <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${greeting}</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             We're so glad you're here. Petite Lavande was born out of a love for new life — every box we create is handcrafted with organic materials, curated with intention, and packed with dried lavender and sealed by hand because every detail matters.
           </p>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 24px;">
             Use code <strong>WELCOME10</strong> for 10% off your first order.
           </p>
           <div style="text-align:center;">
-            <a href="${utm('/build', 'welcome')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+            <a href="${utm('/build', 'welcome')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
               Build Your Box
             </a>
           </div>
@@ -156,18 +180,18 @@ export async function sendWelcomeSeries2Email({ customerEmail, segment }: { cust
     headers: unsubHeaders(customerEmail),
     subject: 'The story behind every box 🌿',
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
-        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">We don't curate. We trace.</h1>
-        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+        <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">We don't curate. We trace.</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             ${opener}
           </p>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 24px;">
             Hand-packed and finished with satin ribbon, sealed by hand.
           </p>
           <div style="text-align:center;">
-            <a href="${utm('/boxes', 'welcome')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+            <a href="${utm('/boxes', 'welcome')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
               See the Boxes
             </a>
           </div>
@@ -186,18 +210,18 @@ export async function sendWelcomeSeries3Email({ customerEmail }: { customerEmail
     headers: unsubHeaders(customerEmail),
     subject: 'Still deciding? Your 10% is waiting ✨',
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
-        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">Not sure which box?</h1>
-        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+        <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">Not sure which box?</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             Tell us who you're gifting and our gift guide will point you to the right box — for a new mama, a newborn, or both. Or build your own from scratch, item by item.
           </p>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 24px;">
             Your <strong>WELCOME10</strong> code still takes 10% off your first order.
           </p>
           <div style="text-align:center;">
-            <a href="${utm('/guide', 'welcome')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+            <a href="${utm('/guide', 'welcome')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
               Find the Right Box
             </a>
           </div>
@@ -222,18 +246,18 @@ export async function sendWinBackEmail({ customerName, customerEmail, segment }:
     headers: unsubHeaders(customerEmail),
     subject: 'A little lavender, from us to you 💛',
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
-        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">It's been a while</h1>
-        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+        <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">It's been a while</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             ${greeting}
           </p>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 24px;">
             ${opener}
           </p>
           <div style="text-align:center;">
-            <a href="${utm('/boxes', 'winback')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+            <a href="${utm('/boxes', 'winback')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
               See What's New
             </a>
           </div>
@@ -257,11 +281,11 @@ export async function sendCampaignEmail({ customerEmail, subject, heading, parag
 }) {
   const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   const body = paragraphs.map(p =>
-    `<p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">${esc(p)}</p>`
+    `<p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">${esc(p)}</p>`
   ).join('')
   const cta = ctaLabel && ctaHref ? `
           <div style="text-align:center;margin-top:8px;">
-            <a href="${utm(ctaHref, `campaign-${campaign}`)}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+            <a href="${utm(ctaHref, `campaign-${campaign}`)}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
               ${esc(ctaLabel)}
             </a>
           </div>` : ''
@@ -271,10 +295,10 @@ export async function sendCampaignEmail({ customerEmail, subject, heading, parag
     headers: unsubHeaders(customerEmail),
     subject,
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
-        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">${esc(heading)}</h1>
-        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
+        <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${esc(heading)}</h1>
           ${body}
           ${cta}
         </div>
@@ -294,18 +318,18 @@ export async function sendCartReminder2Email({ customerEmail }: { customerEmail:
     headers: unsubHeaders(customerEmail),
     subject: 'Your box is still saved 🌿',
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
-        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">Right where you left it</h1>
-        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+        <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">Right where you left it</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             The box you built is still saved, exactly as you left it. If the moment passed, no worries at all — but if that gift is still on your mind, everything is ready to finish in a minute or two.
           </p>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 24px;">
             Hand-packed within 24 hours of your order, finished with satin ribbon and sealed by hand.
           </p>
           <div style="text-align:center;">
-            <a href="${utm('/checkout', 'cart')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+            <a href="${utm('/checkout', 'cart')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
               Pick Up Where You Left Off
             </a>
           </div>
@@ -326,18 +350,18 @@ export async function sendOccasionDueEmail({ customerEmail }: { customerEmail: s
     headers: unsubHeaders(customerEmail),
     subject: 'The big day is getting close 🌿',
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
-        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">Almost time</h1>
-        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+        <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">Almost time</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             The arrival you asked us to remember is only a few weeks away now. If a gift is part of the plan, this is the window — every box is packed by hand and ships with time to spare.
           </p>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 24px;">
             Organic keepsakes, chosen piece by piece, ribbon-tied and sealed by hand.
           </p>
           <div style="text-align:center;">
-            <a href="${utm('/build', 'occasion')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+            <a href="${utm('/build', 'occasion')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
               Build Their Box
             </a>
           </div>
@@ -356,18 +380,18 @@ export async function sendOccasionBirthdayEmail({ customerEmail }: { customerEma
     headers: unsubHeaders(customerEmail),
     subject: 'A little birthday is coming up 💛',
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
-        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">A day worth celebrating</h1>
-        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+        <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">A day worth celebrating</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             A birthday you asked us to remember is a few weeks out. A box of organic keepsakes — soft things to grow into, gentle things for the bath — is a lovely way to mark the day.
           </p>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 24px;">
             Hand-packed, finished with satin ribbon and sealed by hand, with your message inside.
           </p>
           <div style="text-align:center;">
-            <a href="${utm('/boxes', 'occasion')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+            <a href="${utm('/boxes', 'occasion')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
               See the Boxes
             </a>
           </div>
@@ -388,18 +412,18 @@ export async function sendReferralRewardEmail({ customerEmail, code }: { custome
     headers: unsubHeaders(customerEmail),
     subject: 'A friend used your code — here\'s $15, from us 💛',
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
-        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">Your gift inspired another</h1>
-        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+        <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">Your gift inspired another</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             Someone you shared Petite Lavande with just sent a box of their own. As a thank-you, here's $15 off your next order:
           </p>
           <p style="text-align:center;margin:0 0 24px;">
-            <span style="display:inline-block;font-family:monospace;font-size:20px;letter-spacing:2px;background:#fff;border:1px dashed #c9a84c;border-radius:8px;padding:12px 24px;color:#3d2c1e;">${code}</span>
+            <span style="display:inline-block;font-family:monospace;font-size:20px;letter-spacing:3px;background:rgba(255,255,255,0.14);border:1px dashed rgba(255,255,255,0.6);padding:12px 26px;color:#ffffff;">${code}</span>
           </p>
           <div style="text-align:center;">
-            <a href="${utm('/build', 'referral')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+            <a href="${utm('/build', 'referral')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
               Build Your Next Box
             </a>
           </div>
@@ -422,7 +446,7 @@ export async function sendReviewRequestEmail({
   selectedItems: Array<{ id: string; name: string }>
 }) {
   const itemLinks = selectedItems.slice(0, 3).map(item =>
-    `<li style="margin-bottom:8px;"><a href="${utm(`/products/${item.id}`, 'postpurchase')}" style="font-family:sans-serif;font-size:14px;color:#c9a84c;text-decoration:none;">${item.name}</a></li>`
+    `<li style="margin-bottom:8px;"><a href="${utm(`/products/${item.id}`, 'postpurchase')}" style="font-family:sans-serif;font-size:14px;color:#ffffff;text-decoration:underline;">${item.name}</a></li>`
   ).join('')
   // CTA goes to the first item's product page — the review form lives there.
   const reviewHref = selectedItems[0]
@@ -435,16 +459,16 @@ export async function sendReviewRequestEmail({
     headers: unsubHeaders(customerEmail),
     subject: 'How was your Petite Lavande box? 🌿',
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
-        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">We'd love your thoughts</h1>
-        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+        <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">We'd love your thoughts</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             Hi ${customerName}, we hope your Petite Lavande box arrived beautifully and brought a little joy. Your review helps other families discover these products — it would mean the world to us.
           </p>
           ${selectedItems.length > 0 ? `<ul style="padding-left:20px;margin:0 0 24px;">${itemLinks}</ul>` : ''}
           <div style="text-align:center;">
-            <a href="${reviewHref}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+            <a href="${reviewHref}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
               Leave a Review
             </a>
           </div>
@@ -470,20 +494,18 @@ export async function sendAbandonedCartEmail({
     headers: unsubHeaders(customerEmail),
     subject: 'Your Petite Lavande box is waiting ✨',
     html: `
-      <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; color: #3d2c1e;">
-        <div style="text-align: center; padding: 40px 0 24px;">
-          <p style="font-family: sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #c9a84c; margin: 0 0 8px;">Petite Lavande</p>
-          <h1 style="font-size: 28px; font-weight: normal; margin: 0;">Your box is waiting</h1>
-        </div>
-        <div style="background: #faf7f2; border-radius: 16px; padding: 32px; margin-bottom: 24px;">
-          <p style="font-family: sans-serif; font-size: 14px; line-height: 1.7; color: #5a3e28; margin: 0 0 16px;">
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
+        ${brandHeader}
+        <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">Your box is waiting</h1>
+          <p style="font-family: sans-serif; font-size: 14px; line-height: 1.7; color: #ffffff; margin: 0 0 16px;">
             Hi ${customerName},
           </p>
-          <p style="font-family: sans-serif; font-size: 14px; line-height: 1.7; color: #5a3e28; margin: 0 0 24px;">
+          <p style="font-family: sans-serif; font-size: 14px; line-height: 1.7; color: #ffffff; margin: 0 0 24px;">
             You started building a beautiful gift box but didn't quite finish. Your selections are saved — all you need to do is complete checkout.
           </p>
           <div style="text-align: center;">
-            <a href="${utm('/build', 'abandonedcart')}" style="display: inline-block; background: #c9a84c; color: #3d2c1e; font-family: sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; padding: 14px 32px; border-radius: 100px;">
+            <a href="${utm('/build', 'abandonedcart')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
               Complete My Box
             </a>
           </div>
@@ -515,29 +537,29 @@ export async function sendGiftCardEmail({
     to: recipientEmail,
     subject: `${senderName} sent you a Petite Lavande gift card 🎀`,
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
-        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 8px;">You've received a gift</h1>
-        <p style="font-family:sans-serif;font-size:14px;text-align:center;color:#9c7c5a;margin:0 0 32px;">From ${senderName}, with love</p>
-        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+        <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 6px;">You've received a gift</h1>
+          <p style="font-family:sans-serif;font-size:13px;text-align:center;color:rgba(255,255,255,0.85);margin:0 0 24px;">From ${senderName}, with love</p>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             Hi ${recipientName},
           </p>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 24px;">
             ${senderName} has gifted you a <strong>${formatted} Petite Lavande gift card</strong>. Use the code below to build your own luxury baby gift box.
           </p>
           ${message ? `
-          <div style="border-left:3px solid #c9a84c;padding:12px 16px;margin-bottom:24px;">
-            <p style="font-family:Georgia,serif;font-size:15px;font-style:italic;color:#5a3e28;margin:0;">"${message}"</p>
+          <div style="border-left:3px solid rgba(255,255,255,0.6);padding:12px 16px;margin-bottom:24px;">
+            <p style="font-family:Georgia,serif;font-size:15px;font-style:italic;color:#ffffff;margin:0;">"${message}"</p>
           </div>
           ` : ''}
-          <div style="background:#fff;border:2px dashed #c9a84c;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
-            <p style="font-family:sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#9c7c5a;margin:0 0 8px;">Your Gift Code</p>
-            <p style="font-family:monospace;font-size:28px;font-weight:bold;color:#3d2c1e;letter-spacing:4px;margin:0;">${code}</p>
-            <p style="font-family:sans-serif;font-size:12px;color:#9c7c5a;margin:8px 0 0;">Worth ${formatted} · Valid forever</p>
+          <div style="background:rgba(255,255,255,0.14);border:1px dashed rgba(255,255,255,0.6);padding:24px;text-align:center;margin-bottom:24px;">
+            <p style="font-family:sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin:0 0 8px;">Your Gift Code</p>
+            <p style="font-family:monospace;font-size:28px;font-weight:bold;color:#ffffff;letter-spacing:4px;margin:0;">${code}</p>
+            <p style="font-family:sans-serif;font-size:12px;color:rgba(255,255,255,0.75);margin:8px 0 0;">Worth ${formatted} · Valid forever</p>
           </div>
           <div style="text-align:center;">
-            <a href="${BASE_URL}/build" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+            <a href="${BASE_URL}/build" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
               Build Your Box
             </a>
           </div>
@@ -570,10 +592,7 @@ export async function sendShippingNotificationEmail({
     subject: 'Your Petite Lavande box has shipped 📦',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;">
-        <div style="text-align:center;padding:44px 0 24px;">
-          <p style="font-family:sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#c9a84c;margin:0 0 6px;">Petite Lavande</p>
-          <p style="font-family:Georgia,serif;font-style:italic;font-size:13px;color:#9c7c5a;margin:0;">Fait avec amour, pour vous</p>
-        </div>
+        ${brandHeader}
         <div style="background:#7A8E7C;padding:36px 32px;margin:0 4px 24px;">
           <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">On Its Way</h1>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 6px;">Hi ${customerName},</p>
@@ -609,15 +628,15 @@ export async function sendCorporateInquiryReceiptEmail({
     to: email,
     subject: 'We received your corporate gifting inquiry 🌿',
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
-        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">Thank you for reaching out</h1>
-        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">${greeting}</p>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+        <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">Thank you for reaching out</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">${greeting}</p>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             We've received your corporate & team gifting inquiry and someone from our team will be in touch within one business day to help design the right gifting experience for you.
           </p>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0;">
             In the meantime, feel free to reply to this email with anything else you'd like us to know.
           </p>
         </div>
@@ -645,17 +664,17 @@ export async function sendRefundEmail({
     to: customerEmail,
     subject: 'Your Petite Lavande refund has been processed',
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
-        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">Refund Processed</h1>
-        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">Hi ${customerName},</p>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+        <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">Refund Processed</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">Hi ${customerName},</p>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             We've processed a refund of <strong>${formatted}</strong> for your order. Depending on your bank, it may take 5–10 business days to appear on your statement.
           </p>
-          <div style="border-top:1px solid #e8ddd0;padding-top:16px;">
-            <p style="font-family:sans-serif;font-size:12px;color:#9c7c5a;margin:0 0 4px;text-transform:uppercase;letter-spacing:1px;">Order Reference</p>
-            <p style="font-family:monospace;font-size:14px;color:#3d2c1e;margin:0;">#${orderId.slice(-8).toUpperCase()}</p>
+          <div style="border-top:1px solid rgba(255,255,255,0.25);padding-top:16px;">
+            <p style="font-family:sans-serif;font-size:12px;color:rgba(255,255,255,0.75);margin:0 0 4px;text-transform:uppercase;letter-spacing:1px;">Order Reference</p>
+            <p style="font-family:monospace;font-size:14px;color:#ffffff;margin:0;">#${orderId.slice(-8).toUpperCase()}</p>
           </div>
         </div>
         ${brandFooter}
@@ -713,9 +732,9 @@ export async function sendOrderConfirmationEmail({
 }) {
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`
   const ref = (trackingNumber ?? orderId).slice(-8).toUpperCase()
-  const supa = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
-  const imgOf = (i: { id?: string; image?: string | null }) =>
-    i.image || (i.id && supa ? `${supa}/storage/v1/object/public/product-images/${i.id}.jpg` : null)
+  // Only render images the caller resolved (guessed storage URLs 404 — real
+  // files carry timestamp suffixes; the webhook looks them up from products).
+  const imgOf = (i: { id?: string; image?: string | null }) => i.image || null
 
   const itemRows = (items ?? []).map(i => {
     const qty = i.qty ?? 1
@@ -739,10 +758,7 @@ export async function sendOrderConfirmationEmail({
     subject: 'Your Petite Lavande order is confirmed',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;">
-        <div style="text-align:center;padding:44px 0 24px;">
-          <p style="font-family:sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#c9a84c;margin:0 0 6px;">Petite Lavande</p>
-          <p style="font-family:Georgia,serif;font-style:italic;font-size:13px;color:#9c7c5a;margin:0;">Fait avec amour, pour vous</p>
-        </div>
+        ${brandHeader}
         <div style="background:#7A8E7C;padding:36px 32px;margin:0 4px 24px;">
           <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">Order Confirmed</h1>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 6px;">Hi ${customerName},</p>

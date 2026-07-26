@@ -182,6 +182,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     console.warn('referral mint skipped:', e)
   }
 
+  const { resolveOrderItemImages } = await import('@/lib/order-item-images')
   await sendOrderConfirmationEmail({
     customerName: order.customer_name,
     customerEmail: order.customer_email,
@@ -190,10 +191,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     total: order.total_amount,
     trackingNumber: order.tracking_number,
     referralCode,
-    items: (order.selected_items ?? []).map(i => ({
+    items: await resolveOrderItemImages((order.selected_items ?? []).map(i => ({
       id: i.id, name: i.name, price: i.price, qty: (i as { qty?: number }).qty ?? 1,
       image: (i as { image?: string | null }).image ?? null,
-    })),
+    }))),
   }).catch(async err => {
     // Don't lose the confirmation: queue a retry the daily flows cron picks up.
     console.error('Confirmation email error (queuing retry):', err)
