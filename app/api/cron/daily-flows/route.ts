@@ -24,8 +24,9 @@ export async function GET(req: NextRequest) {
   // Occasion sends (Build 3) — no-op until OCCASIONS_ACTIVE=true. Runs before
   // the drain so a just-due occasion email goes out the same day.
   try {
-    const { scheduleOccasionSends } = await import('@/lib/occasions')
+    const { scheduleOccasionSends, scheduleAnniversaryPrompts } = await import('@/lib/occasions')
     result.occasionsQueued = await scheduleOccasionSends()
+    result.anniversariesQueued = await scheduleAnniversaryPrompts()
   } catch (e) {
     console.error('Occasion scheduling failed (run §39?):', e)
     result.occasionsQueued = 'error'

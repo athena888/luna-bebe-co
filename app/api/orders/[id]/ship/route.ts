@@ -65,6 +65,15 @@ export async function POST(
   }
 
   // Send shipping notification email (distinct from order confirmation)
+  // Build 17: recipient's one-time digital gift note (GIFTNOTE_ACTIVE-gated,
+  // no-op without a recipient email). Fail-soft.
+  try {
+    const { sendGiftNoteIfDue } = await import('@/lib/gift-note')
+    await sendGiftNoteIfDue(id)
+  } catch (e) {
+    console.warn('gift note skipped:', e)
+  }
+
   await sendShippingNotificationEmail({
     customerName: order.customer_name,
     customerEmail: order.customer_email,

@@ -167,3 +167,22 @@ _Say "apply collection copy" and I'll write approved copy into the rows and flip
 > **Back in the studio**
 > Good news — {{product}} is back. You asked us to let you know, and waitlist members hear first, so the quietest window to order is right now.
 > CTA: See It Now → /products/{{id}}
+
+## Post-launch quartet (backends live, all INACTIVE)
+
+### Build 10 — Anniversary prompt (flips on via ANNIVERSARY_ACTIVE=true) — subject: `The season comes around again 💛`
+> **A year already**
+> Around this time last year, you sent someone a Petite Lavande box. Babies have a way of multiplying the occasions — a first birthday here, a new arrival there — and we're still hand-packing boxes for every one of them.
+> If someone around you is celebrating soon, we'd love to help you say it beautifully.
+> CTA: See the Boxes → /boxes
+> Rules: yearly on the anniversary of their first order, opted-in only, hard cap 3 repeat-occasion emails per rolling year.
+
+### Build 17 — Recipient gift note (flips on via GIFTNOTE_ACTIVE=true) — subject: `{{sender}} sent you something 🌿`
+> **A gift is on its way to you**
+> **{{sender}}** has sent you a Petite Lavande box — hand-packed organic keepsakes, on their way to your door. They wrote you a note to go with it.
+> CTA: Read Your Note → /note/{{token}}
+> fine print in email: "We're Petite Lavande, a small studio making organic baby & new-mama gift boxes. This is the only email we'll send you unless you ask to hear from us."
+> Rules: ONE email per recipient ever (enforced in code), suppression honored, needs the checkout recipient-email field + note page (mocked, awaiting approval).
+
+### Build 9 — UGC rights checkbox text (stored verbatim per upload)
+> "I give Petite Lavande permission to use this photo in marketing, on the website, in ads, and on marketplace listings. I can withdraw consent anytime by emailing us."

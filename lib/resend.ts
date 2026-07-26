@@ -292,6 +292,49 @@ export async function sendWinBackEmail({ customerName, customerEmail, segment }:
   })
 }
 
+// Build 17 — the recipient's digital gift note, sent once when their box
+// ships. Transactional in nature but carries unsubscribe anyway. Gated by
+// GIFTNOTE_ACTIVE via lib/gift-note.ts.
+export async function sendGiftNoteEmail({ recipientEmail, recipientName, senderName, noteUrl }: {
+  recipientEmail: string
+  recipientName?: string
+  senderName: string
+  noteUrl: string
+}) {
+  const greeting = recipientName ? `${recipientName}, a` : 'A'
+  return sendEmail({
+    from: FROM,
+    to: recipientEmail,
+    headers: unsubHeaders(recipientEmail),
+    subject: `${senderName} sent you something 🌿`,
+    html: shell(
+      `${greeting} gift is on its way to you`,
+      P(`<strong>${senderName}</strong> has sent you a Petite Lavande box — hand-packed organic keepsakes, on their way to your door. They wrote you a note to go with it.`) +
+      BTN(noteUrl, 'Read Your Note') +
+      P(`<span style="font-size:12px;color:rgba(255,255,255,0.8);">We're Petite Lavande, a small studio making organic baby & new-mama gift boxes. This is the only email we'll send you unless you ask to hear from us.</span>`),
+      flowFooter(recipientEmail)
+    ),
+  })
+}
+
+// Build 10 — first-purchase anniversary prompt (yearly, ANNIVERSARY_ACTIVE-
+// gated via the scheduler; copy in MARKETING_COPY.md).
+export async function sendAnniversaryEmail({ customerEmail }: { customerEmail: string }) {
+  return sendEmail({
+    from: FROM,
+    to: customerEmail,
+    headers: unsubHeaders(customerEmail),
+    subject: 'The season comes around again 💛',
+    html: shell(
+      'A year already',
+      P(`Around this time last year, you sent someone a Petite Lavande box. Babies have a way of multiplying the occasions — a first birthday here, a new arrival there — and we're still hand-packing boxes for every one of them.`) +
+      P(`If someone around you is celebrating soon, we'd love to help you say it beautifully.`) +
+      BTN(utm('/boxes', 'anniversary'), 'See the Boxes'),
+      flowFooter(customerEmail)
+    ),
+  })
+}
+
 // Build 12 — restock notification, sent in waitlist signup order when a
 // product comes back. Copy in MARKETING_COPY.md; WAITLIST_ACTIVE-gated.
 export async function sendRestockEmail({ customerEmail, productName, productId }: {

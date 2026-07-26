@@ -57,6 +57,32 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const stock = p ? await getProductStock(p.id, p.has_variants) : null
   const inStock = !!p?.active && (stock == null ? true : stock > 0)
 
+  // Approved reviews → aggregateRating + review structured data (Build 20).
+  // Emitted ONLY when real reviews exist (Google policy); fails soft.
+  let reviewStats: { avg: number; count: number; latest: Array<{ author: string; rating: number; body: string; date: string }> } | null = null
+  if (p) {
+    try {
+      const { supabaseAdmin } = await import('@/lib/supabase')
+      const { data: reviews } = await supabaseAdmin
+        .from('reviews')
+        .select('customer_name, rating, body, created_at')
+        .eq('product_id', p.id).eq('approved', true)
+        .order('created_at', { ascending: false })
+      if (reviews?.length) {
+        reviewStats = {
+          avg: Math.round((reviews.reduce((s, r) => s + (r.rating ?? 0), 0) / reviews.length) * 10) / 10,
+          count: reviews.length,
+          latest: reviews.slice(0, 5).map(r => ({
+            author: r.customer_name || 'Verified customer',
+            rating: r.rating ?? 5,
+            body: (r.body || '').slice(0, 500),
+            date: (r.created_at || '').slice(0, 10),
+          })),
+        }
+      }
+    } catch { /* schema simply omits ratings */ }
+  }
+
   // Related cross-links (same category first, topped up from the catalog) —
   // rendered by ProductDetailClient above its footer. Best-effort.
   let related: RelatedItem[] = []
@@ -88,7 +114,24 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
               availability: inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
               url,
             },
-            // No aggregateRating until real reviews exist (Google policy)
+            // aggregateRating/review appear only once real approved
+            // reviews exist (Google policy — never emit empty ratings).
+            ...(reviewStats ? {
+              aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: reviewStats.avg,
+                reviewCount: reviewStats.count,
+                bestRating: 5,
+                worstRating: 1,
+              },
+              review: reviewStats.latest.map(r => ({
+                '@type': 'Review',
+                author: { '@type': 'Person', name: r.author },
+                reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5, worstRating: 1 },
+                reviewBody: r.body,
+                datePublished: r.date,
+              })),
+            } : {}),
           }} />
           <JsonLd data={{
             '@context': 'https://schema.org',

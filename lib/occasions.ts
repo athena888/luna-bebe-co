@@ -13,6 +13,9 @@ import { supabaseAdmin } from './supabase'
 // copy + capture UI are approved.
 
 export const OCCASIONS_ACTIVE = process.env.OCCASIONS_ACTIVE === 'true'
+// Build 10 — gifter repeat-occasion prompts (anniversary of first purchase).
+// Separate flag so it stays off until Emily approves the copy.
+export const ANNIVERSARY_ACTIVE = process.env.ANNIVERSARY_ACTIVE === 'true'
 
 export type OccasionKind = 'due_date' | 'baby_birthday'
 
@@ -103,6 +106,65 @@ export async function scheduleOccasionSends(): Promise<number> {
     const { error } = await supabaseAdmin.from('email_events').insert({
       flow: 'occasion', step: 1, recipient: occ.email, template, campaign,
       scheduled_at: new Date(sendAt).toISOString(),
+    })
+    if (!error) queued++
+  }
+  return queued
+}
+
+const ANNIVERSARY_LEAD_DAYS = 0    // send on the day itself
+const BUILD10_CAP_PER_YEAR = 3     // hard cap across all repeat-occasion sends
+
+/**
+ * Build 10 — once a year, on the anniversary of a customer's FIRST paid
+ * order, one gentle "the season comes around again" prompt. Opted-in
+ * contacts only; campaign key caps it at one per contact per year; a rolling
+ * 12-month cap of 3 guards against future Build-10 additions stacking up.
+ */
+export async function scheduleAnniversaryPrompts(): Promise<number> {
+  if (!ANNIVERSARY_ACTIVE) return 0
+
+  const { data: orders } = await supabaseAdmin
+    .from('orders').select('customer_email, created_at, status').neq('status', 'pending')
+  if (!orders?.length) return 0
+
+  const firstOrder = new Map<string, string>()
+  for (const o of orders) {
+    const email = o.customer_email?.trim().toLowerCase()
+    if (!email) continue
+    const prev = firstOrder.get(email)
+    if (!prev || o.created_at < prev) firstOrder.set(email, o.created_at)
+  }
+
+  const { data: optedIn } = await supabaseAdmin
+    .from('marketing_contacts').select('email').eq('marketing_opt_in', true).in('email', [...firstOrder.keys()])
+  const allowed = new Set((optedIn ?? []).map(c => c.email as string))
+
+  const now = new Date()
+  const yearAgo = new Date(now.getTime() - 365 * DAY).toISOString()
+  let queued = 0
+  for (const [email, firstAt] of firstOrder) {
+    if (!allowed.has(email)) continue
+    const anniv = nextAnniversary(firstAt.slice(0, 10))
+    // First anniversary at the earliest — no prompt in the purchase year.
+    if (anniv.getUTCFullYear() <= new Date(firstAt).getUTCFullYear()) continue
+    const sendAt = anniv.getTime() - ANNIVERSARY_LEAD_DAYS * DAY
+    if (sendAt > now.getTime() + 30 * DAY || sendAt < now.getTime() - 7 * DAY) continue
+
+    const campaign = `occ:anniv:${anniv.getUTCFullYear()}`
+    const { data: existing } = await supabaseAdmin
+      .from('email_events').select('id').eq('recipient', email).eq('campaign', campaign).limit(1)
+    if (existing?.length) continue
+
+    // Rolling-12-month Build 10 cap
+    const { count } = await supabaseAdmin
+      .from('email_events').select('id', { count: 'exact', head: true })
+      .eq('recipient', email).like('campaign', 'occ:anniv%').gte('scheduled_at', yearAgo)
+    if ((count ?? 0) >= BUILD10_CAP_PER_YEAR) continue
+
+    const { error } = await supabaseAdmin.from('email_events').insert({
+      flow: 'occasion', step: 1, recipient: email, template: 'occasion-anniversary',
+      campaign, scheduled_at: new Date(Math.max(sendAt, now.getTime())).toISOString(),
     })
     if (!error) queued++
   }

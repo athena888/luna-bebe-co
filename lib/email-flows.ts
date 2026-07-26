@@ -22,7 +22,7 @@ const DAY = 24 * 60 * 60 * 1000
 // (NEXT_PUBLIC_STORE_OPEN != true) these are HELD, not canceled — they stay
 // queued in email_events and the first daily cron after reopening sends them.
 // Review asks are not marketing and always flow.
-const MARKETING_TEMPLATES = new Set(['welcome-2', 'welcome-3', 'winback', 'occasion-due', 'occasion-birthday', 'cart-2', 'restock'])
+const MARKETING_TEMPLATES = new Set(['welcome-2', 'welcome-3', 'winback', 'occasion-due', 'occasion-birthday', 'occasion-anniversary', 'cart-2', 'restock'])
 
 /** Newsletter signup → welcome steps 2 (D+2) and 3 (D+4). Step 1 is the
  *  immediate welcome email the subscribe route already sends. */
@@ -165,6 +165,11 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
         case 'occasion-birthday':
           await sendOccasionBirthdayEmail({ customerEmail: ev.recipient })
           break
+        case 'occasion-anniversary': {
+          const { sendAnniversaryEmail } = await import('./resend')
+          await sendAnniversaryEmail({ customerEmail: ev.recipient })
+          break
+        }
         case 'restock': {
           // Re-check stock at send time — never announce a restock that
           // already sold out again.
