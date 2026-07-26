@@ -33,6 +33,24 @@ const CODE = (code: string) =>
   `<p style="text-align:center;margin:20px 0;">
      <span style="display:inline-block;font-family:monospace;font-size:18px;letter-spacing:3px;background:rgba(255,255,255,0.14);border:1px dashed rgba(255,255,255,0.6);padding:12px 26px;color:#ffffff;">${code}</span>
    </p>`
+// Every customer email sends a plain-text part alongside the HTML — real
+// correspondence is multipart, and HTML-only is a classic promotions signal
+// to Gmail. Derived automatically so templates can't forget it.
+function htmlToText(html: string): string {
+  return html
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/(p|h1|h2|div|tr|li)>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&rsquo;|&#8217;/g, '’')
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&middot;|·/g, '·')
+    .split('\n').map(l => l.replace(/\s+/g, ' ').trim()).filter(Boolean).join('\n')
+}
+
+function sendEmail(opts: { from: string; to: string; subject: string; html: string; headers?: Record<string, string>; replyTo?: string }) {
+  return resend.emails.send({ ...opts, text: htmlToText(opts.html) })
+}
+
 const shell = (heading: string, inner: string, footer: string) => `
   <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
     ${brandHeader}
@@ -117,7 +135,7 @@ export async function sendWelcomeEmail({
   customerEmail: string
 }) {
   const greeting = customerName ? `Welcome, ${customerName}` : 'Welcome'
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
@@ -174,7 +192,7 @@ export async function sendWelcomeSeries2Email({ customerEmail, segment }: { cust
     `Every item in a Petite Lavande box is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender. The printed card in each box tells the story of every item, so the person you're gifting knows exactly what's touching their baby's skin.`,
     segment
   )
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
@@ -204,7 +222,7 @@ export async function sendWelcomeSeries2Email({ customerEmail, segment }: { cust
 
 // Welcome series step 3 (D+4) — gentle nudge with the code reminder.
 export async function sendWelcomeSeries3Email({ customerEmail }: { customerEmail: string }) {
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
@@ -240,7 +258,7 @@ export async function sendWinBackEmail({ customerName, customerEmail, segment }:
     `Chances are someone around you is expecting — a friend, a colleague, a sister. When the moment comes, we're still here hand-packing organic gift boxes that care for the new parent as much as the baby.`,
     segment
   )
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
@@ -289,7 +307,7 @@ export async function sendCampaignEmail({ customerEmail, subject, heading, parag
               ${esc(ctaLabel)}
             </a>
           </div>` : ''
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
@@ -312,7 +330,7 @@ export async function sendCampaignEmail({ customerEmail, subject, heading, parag
 // discount on purpose (a rescue code would train cart-abandoning). Gated by
 // CART_SEQUENCE_ACTIVE via the cron; copy in MARKETING_COPY.md.
 export async function sendCartReminder2Email({ customerEmail }: { customerEmail: string }) {
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
@@ -344,7 +362,7 @@ export async function sendCartReminder2Email({ customerEmail }: { customerEmail:
 // asked us to remember. Gated by OCCASIONS_ACTIVE via the scheduler; copy in
 // MARKETING_COPY.md, inactive until approved.
 export async function sendOccasionDueEmail({ customerEmail }: { customerEmail: string }) {
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
@@ -374,7 +392,7 @@ export async function sendOccasionDueEmail({ customerEmail }: { customerEmail: s
 
 // Build 3 — ~21 days before a remembered baby birthday, every year.
 export async function sendOccasionBirthdayEmail({ customerEmail }: { customerEmail: string }) {
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
@@ -406,7 +424,7 @@ export async function sendOccasionBirthdayEmail({ customerEmail }: { customerEma
 // their code. Fires only while REFERRALS_ACTIVE (webhook gates the call);
 // copy lives in MARKETING_COPY.md and ships inactive until approved.
 export async function sendReferralRewardEmail({ customerEmail, code }: { customerEmail: string; code: string }) {
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
@@ -453,7 +471,7 @@ export async function sendReviewRequestEmail({
     ? utm(`/products/${selectedItems[0].id}`, 'postpurchase')
     : utm(`/track?ref=${orderId.slice(-8).toUpperCase()}`, 'postpurchase')
 
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
@@ -488,7 +506,7 @@ export async function sendAbandonedCartEmail({
   customerEmail: string
   orderId: string
 }) {
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
@@ -532,10 +550,10 @@ export async function sendGiftCardEmail({
   code: string
 }) {
   const formatted = `$${(amount / 100).toFixed(0)}`
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: recipientEmail,
-    subject: `${senderName} sent you a Petite Lavande gift card 🎀`,
+    subject: `A gift for you, from ${senderName}`,
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
@@ -586,7 +604,7 @@ export async function sendShippingNotificationEmail({
   trackingNumber?: string
   trackingUrl?: string
 }) {
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: customerEmail,
     subject: 'Your Petite Lavande box has shipped 📦',
@@ -623,7 +641,7 @@ export async function sendCorporateInquiryReceiptEmail({
   email: string
 }) {
   const greeting = name ? `Hi ${name},` : 'Hi there,'
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: email,
     subject: 'We received your corporate gifting inquiry 🌿',
@@ -659,7 +677,7 @@ export async function sendRefundEmail({
   orderId: string
 }) {
   const formatted = `$${(amount / 100).toFixed(2)}`
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: customerEmail,
     subject: 'Your Petite Lavande refund has been processed',
@@ -752,7 +770,7 @@ export async function sendOrderConfirmationEmail({
     </tr>`
   }).join('')
 
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: customerEmail,
     subject: 'Your Petite Lavande order is confirmed',
