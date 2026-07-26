@@ -69,6 +69,9 @@ export default function ProductDetailClient({ related }: { related?: RelatedItem
   const [loading, setLoading] = useState(true)
   const [imgFailed, setImgFailed] = useState<Record<number, boolean>>({})
   const [inBox, setInBox] = useState(false)
+  const [stock, setStock] = useState<number | null>(null)
+  const [wlEmail, setWlEmail] = useState('')
+  const [wlState, setWlState] = useState<'idle' | 'saving' | 'done'>('idle')
   const [descOpen, setDescOpen] = useState(false)
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
 
@@ -90,8 +93,9 @@ export default function ProductDetailClient({ related }: { related?: RelatedItem
   useEffect(() => {
     fetch(`/api/products/${id}`)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
-      .then(({ product: p, gallery: g }: { product: Product; gallery: GalleryImage[] }) => {
+      .then(({ product: p, gallery: g, stock: st }: { product: Product; gallery: GalleryImage[]; stock: number | null }) => {
         setProduct(p)
+        setStock(st ?? null)
         trackViewItem({ id: p.id, name: p.name, price: p.price, category: p.category })
         const sorted = [...g].sort((a, b) => {
           if (a.is_primary && !b.is_primary) return -1
@@ -124,6 +128,21 @@ export default function ProductDetailClient({ related }: { related?: RelatedItem
   const handleImgError = useCallback((idx: number) => {
     setImgFailed(prev => ({ ...prev, [idx]: true }))
   }, [])
+
+  async function joinWaitlist(e: React.FormEvent) {
+    e.preventDefault()
+    if (!wlEmail || wlState === 'saving') return
+    setWlState('saving')
+    try {
+      await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: wlEmail, productId: id }),
+      })
+    } finally {
+      setWlState('done')
+    }
+  }
 
   function handleAddToBox() {
     if (!product) return
@@ -225,8 +244,50 @@ export default function ProductDetailClient({ related }: { related?: RelatedItem
                   </div>
                 )}
 
-                {/* Add to Box */}
-                {inBox ? (
+                {/* Preorder state (portal toggle) */}
+                {(product as Product & { preorder?: boolean; preorder_note?: string | null }).preorder && (
+                  <div className="mb-3">
+                    <span className="inline-block bg-sage-100 text-sage-500 font-sans text-[10px] tracking-[0.15em] uppercase font-bold px-2.5 py-1">
+                      Preorder{(product as Product & { preorder_note?: string | null }).preorder_note ? ` · ${(product as Product & { preorder_note?: string | null }).preorder_note}` : ''}
+                    </span>
+                    <p className="font-sans text-[13px] text-bark-500 leading-relaxed mt-2">
+                      Reserve yours from the first batch — charged now, shipped the moment the batch lands.
+                    </p>
+                  </div>
+                )}
+
+                {/* Sold out → waitlist capture (Build 12) */}
+                {stock !== null && stock <= 0 && !(product as Product & { preorder?: boolean }).preorder ? (
+                  <div className="mb-4">
+                    <span className="inline-block bg-cream-200 text-bark-400 font-sans text-[10px] tracking-[0.15em] uppercase font-bold px-2.5 py-1 mb-3">
+                      Sold out
+                    </span>
+                    {wlState === 'done' ? (
+                      <p className="font-sans text-[13px] text-espresso leading-relaxed border border-cream-300 bg-cream-50 p-4">
+                        You&rsquo;re on the list — we&rsquo;ll email you the moment it returns. 💛
+                      </p>
+                    ) : (
+                      <form onSubmit={joinWaitlist} className="border border-cream-300 bg-cream-50 p-4">
+                        <p className="font-playfair text-[15px] text-espresso mb-0.5">Be first when it returns</p>
+                        <p className="font-sans text-[11.5px] text-bark-400 mb-2.5">Waitlist members are emailed in order, before it goes public.</p>
+                        <div className="flex gap-2">
+                          <input
+                            type="email"
+                            required
+                            value={wlEmail}
+                            onChange={e => setWlEmail(e.target.value)}
+                            placeholder="Email address"
+                            className="flex-1 min-w-0 px-3 py-2.5 font-sans text-[13px] text-espresso placeholder:text-bark-400/50 bg-white border border-cream-300 focus:outline-none focus:border-bark-400"
+                          />
+                          <button type="submit" disabled={wlState === 'saving'}
+                            className="px-4 bg-[#7A8E7C] text-white font-sans text-[10px] tracking-[0.15em] uppercase font-semibold hover:bg-[#6d8070] transition-colors disabled:opacity-50">
+                            {wlState === 'saving' ? '…' : 'Notify Me'}
+                          </button>
+                        </div>
+                      </form>
+                    )}
+                  </div>
+                ) : inBox ? (
                   <div className="space-y-2 mb-4">
                     <div className="w-full border border-gold-400 text-gold-400 font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 text-center">
                       Added to Box
@@ -243,7 +304,7 @@ export default function ProductDetailClient({ related }: { related?: RelatedItem
                     onClick={handleAddToBox}
                     className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-[#6d8070] transition-colors mb-4"
                   >
-                    Add to Box
+                    {(product as Product & { preorder?: boolean }).preorder ? 'Preorder Now' : 'Add to Box'}
                   </button>
                 )}
 

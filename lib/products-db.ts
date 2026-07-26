@@ -20,6 +20,8 @@ export interface DbProduct extends Product {
   seo_title?: string | null
   seo_description?: string | null
   faqs?: ProductFaq[] | null
+  preorder?: boolean
+  preorder_note?: string | null
 }
 
 interface ProductRow {
@@ -36,6 +38,8 @@ interface ProductRow {
   is_custom: boolean
   sort_order: number
   has_variants: boolean | null
+  preorder?: boolean | null
+  preorder_note?: string | null
   certifications: ProductCert[] | null
   needs_review?: boolean | null
   featured?: boolean | null
@@ -71,6 +75,8 @@ function rowToProduct(r: ProductRow): DbProduct {
     seo_title: r.seo_title ?? null,
     seo_description: r.seo_description ?? null,
     faqs: r.faqs ?? null,
+    preorder: r.preorder ?? false,
+    preorder_note: r.preorder_note ?? null,
   }
 }
 
@@ -228,6 +234,8 @@ export interface UpdateProductInput {
   organic?: boolean
   isAddon?: boolean
   addonRank?: number
+  preorder?: boolean
+  preorderNote?: string | null
   seoTitle?: string | null
   seoDescription?: string | null
   faqs?: ProductFaq[] | null
@@ -249,6 +257,8 @@ export async function updateProduct(id: string, input: UpdateProductInput): Prom
   if (input.certifications !== undefined) patch.certifications = input.certifications
   if (input.needsReview !== undefined) patch.needs_review = input.needsReview
   if (input.featured !== undefined) patch.featured = input.featured
+  if (input.preorder !== undefined) patch.preorder = input.preorder
+  if (input.preorderNote !== undefined) patch.preorder_note = input.preorderNote
   if (input.organic !== undefined) patch.organic = input.organic
   if (input.isAddon !== undefined) patch.is_addon = input.isAddon
   if (input.addonRank !== undefined) patch.addon_rank = input.addonRank

@@ -94,6 +94,8 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
   const [published, setPublished] = useState(true)
   const [needsReview, setNeedsReview] = useState(false)
   const [featured, setFeatured] = useState(false)
+  const [preorder, setPreorder] = useState(false)
+  const [preorderNote, setPreorderNote] = useState('')
   const [organic, setOrganic] = useState(false)
   const [isAddon, setIsAddon] = useState(false)
   const [addonRank, setAddonRank] = useState(0)
@@ -194,6 +196,8 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
       setSeoDescription(data.product.seo_description ?? '')
       setFaqs(Array.isArray(data.product.faqs) ? data.product.faqs : [])
       setFeatured(!!data.product.featured)
+      setPreorder(!!data.product.preorder)
+      setPreorderNote(data.product.preorder_note ?? '')
       setOrganic(!!data.product.organic)
       setIsAddon(!!data.product.is_addon)
       setAddonRank(data.product.addon_rank ?? 0)
@@ -241,6 +245,8 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
         seoDescription: seoDescription || null,
         faqs: faqs.filter(f => f.q.trim() && f.a.trim()),
         featured,
+        preorder,
+        preorderNote: preorderNote.trim() || null,
         organic,
         isAddon,
         addonRank,
@@ -950,6 +956,22 @@ export default function ProductDetailPage({ idProp, onBack }: { idProp?: string;
                   <input type="checkbox" checked={isAddon} onChange={e => setIsAddon(e.target.checked)} className="accent-gold-500 w-4 h-4" />
                   <span className="font-sans text-xs text-bark-600">🎀 &ldquo;Complete the gift&rdquo; add-on (shown in the bag drawer)</span>
                 </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={preorder} onChange={e => setPreorder(e.target.checked)} className="accent-sage-500 w-4 h-4" />
+                  <span className="font-sans text-xs text-bark-600">📅 Preorder mode (buy button becomes &ldquo;Preorder Now&rdquo;)</span>
+                </label>
+                {preorder && (
+                  <label className="flex items-center gap-2">
+                    <span className="font-sans text-xs text-bark-400">Ships</span>
+                    <input
+                      type="text"
+                      value={preorderNote}
+                      onChange={e => setPreorderNote(e.target.value)}
+                      placeholder="ships early September"
+                      className="w-44 px-2 py-1 border border-cream-300 bg-cream-50 font-sans text-xs text-bark-600 focus:outline-none focus:border-bark-400"
+                    />
+                  </label>
+                )}
                 {isAddon && (
                   <label className="flex items-center gap-2">
                     <span className="font-sans text-xs text-bark-400">Add-on rank</span>

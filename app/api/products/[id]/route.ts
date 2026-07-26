@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
-import { getCatalogProduct } from '@/lib/products-db'
+import { getCatalogProduct, getProductStock } from '@/lib/products-db'
 import { resolveCerts } from '@/lib/certifications'
 import type { ProductCert } from '@/lib/certifications'
 
@@ -22,9 +22,11 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   ])
 
   const certs = await resolveCerts((product.certifications ?? []) as ProductCert[])
+  const stock = await getProductStock(id, product.has_variants)
 
   return NextResponse.json({
     product: { ...product, certifications: certs },
+    stock,
     gallery: galleryRes.data ?? [],
     variants: variantsRes.data ?? [],
   })

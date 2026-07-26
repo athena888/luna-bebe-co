@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
-import { Menu, X, User, ShoppingBag, Mail } from 'lucide-react'
+import { Menu, X, User, ShoppingBag, Mail, ChevronDown } from 'lucide-react'
 import { cartCount } from '@/lib/cart'
 import { FREE_SHIPPING_THRESHOLD } from '@/lib/products'
 import { CONTACT_EMAIL } from '@/lib/site-config'
@@ -102,13 +102,85 @@ function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
   )
 }
 
+// Collection links shown in the Boxes dropdown. Mirrors the six live
+// shop_collections rows — update together with any activation change so the
+// nav never links to a 404 (the collection page guard 404s under-threshold).
+const COLLECTION_GROUPS: Array<{ heading: string; links: Array<{ href: string; label: string }> }> = [
+  {
+    heading: 'By recipient',
+    links: [
+      { href: '/collections/for-mama', label: 'For Mama' },
+      { href: '/collections/for-baby', label: 'For Baby' },
+      { href: '/collections/for-both', label: 'For Mama & Baby' },
+    ],
+  },
+  {
+    heading: 'By occasion',
+    links: [
+      { href: '/collections/baby-shower', label: 'Baby Shower' },
+      { href: '/collections/new-arrival', label: 'New Arrival' },
+      { href: '/collections/corporate-gifting', label: 'Corporate Gifting' },
+    ],
+  },
+]
+
+// "Gift Boxes" with the collections dropdown. Every link renders in the
+// initial HTML (hidden with CSS, never conditionally omitted) so crawlers see
+// the full list; the trigger itself links to /boxes so it works without JS.
+function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
+  const [open, setOpen] = useState(false)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const enter = () => { if (timer.current) clearTimeout(timer.current); timer.current = setTimeout(() => setOpen(true), 150) }
+  const leave = () => { if (timer.current) clearTimeout(timer.current); timer.current = setTimeout(() => setOpen(false), 150) }
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+  return (
+    <div className="relative" onMouseEnter={enter} onMouseLeave={leave} onFocus={enter} onBlur={leave}>
+      <Link
+        href="/boxes"
+        className={cls}
+        aria-expanded={open}
+        aria-controls="boxes-dropdown"
+        onClick={() => setOpen(false)}
+      >
+        Gift Boxes
+      </Link>
+      <div
+        id="boxes-dropdown"
+        className={`absolute left-1/2 -translate-x-1/2 top-full pt-3 z-50 transition-opacity duration-150 ${open ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}
+      >
+        <div className="bg-cream-white border border-cream-300 shadow-lg px-7 py-6 flex gap-10 whitespace-nowrap">
+          {COLLECTION_GROUPS.map(g => (
+            <div key={g.heading}>
+              <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-400 font-bold mb-2.5">{g.heading}</p>
+              {g.links.map(l => (
+                <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
+                  className="block font-sans text-[13px] normal-case tracking-normal text-espresso hover:text-gold-500 transition-colors py-1">
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+          ))}
+          <Link href="/boxes" onClick={() => setOpen(false)}
+            className="self-end font-sans text-[12px] normal-case tracking-normal text-[#7A8E7C] underline underline-offset-2 hover:text-espresso transition-colors">
+            View all boxes →
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) {
   const base = light ? 'text-cream-50/90 hover:text-white' : 'text-espresso hover:text-gold-500'
   const cls = `uppercase font-medium ${base} transition-colors whitespace-nowrap`
   return (
     <>
       {/* Curated first, custom second */}
-      <Link href="/boxes" className={cls} onClick={onClick}>Gift Boxes</Link>
+      <BoxesDropdown light={light} cls={cls} />
       <Link href="/build" className={cls} onClick={onClick}>Build Your Own Box</Link>
       <Link href="/gift-cards" className={cls} onClick={onClick}>Gift Cards</Link>
       <Link href="/story" className={cls} onClick={onClick}>Stories</Link>
@@ -117,9 +189,30 @@ function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) 
 }
 
 function MobileMenu({ onClose }: { onClose: () => void }) {
+  const [boxesOpen, setBoxesOpen] = useState(false)
+  const linkCls = 'uppercase text-espresso hover:text-gold-500 transition-colors'
   return (
     <div className="md:hidden bg-cream-white border-b border-cream-300 px-6 py-8 flex flex-col gap-6 font-playfair text-[15px] tracking-[0.14em]">
-      <NavLinks light={false} onClick={onClose} />
+      {/* Boxes accordion — same links as the desktop dropdown, tap to expand */}
+      <div>
+        <div className="flex items-center justify-between">
+          <Link href="/boxes" className={linkCls} onClick={onClose}>Gift Boxes</Link>
+          <button onClick={() => setBoxesOpen(o => !o)} aria-expanded={boxesOpen} aria-label="Show collections"
+            className="w-9 h-9 flex items-center justify-center text-bark-400">
+            <ChevronDown size={16} className={`transition-transform ${boxesOpen ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
+        {boxesOpen && (
+          <div className="mt-3 pl-3 flex flex-col gap-2.5 font-sans text-[13px] tracking-normal normal-case">
+            {COLLECTION_GROUPS.flatMap(g => g.links).map(l => (
+              <Link key={l.href} href={l.href} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{l.label}</Link>
+            ))}
+          </div>
+        )}
+      </div>
+      <Link href="/build" className={linkCls} onClick={onClose}>Build Your Own Box</Link>
+      <Link href="/gift-cards" className={linkCls} onClick={onClose}>Gift Cards</Link>
+      <Link href="/story" className={linkCls} onClick={onClose}>Stories</Link>
       <Link href="/account" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors" onClick={onClose}>My Account</Link>
     </div>
   )
