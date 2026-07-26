@@ -42,6 +42,15 @@ export function ReviewSection({ productId }: { productId: string }) {
   const [name, setName] = useState('')
   const [body, setBody] = useState('')
   const [submitState, setSubmitState] = useState<'idle' | 'submitting' | 'done' | 'error'>('idle')
+  // Build 9 — optional photo + explicit rights consent (verbatim text stored server-side)
+  const [photo, setPhoto] = useState<File | null>(null)
+  const [photoEmail, setPhotoEmail] = useState('')
+  const [consent, setConsent] = useState(false)
+  const [consentText, setConsentText] = useState('')
+
+  useEffect(() => {
+    fetch('/api/ugc').then(r => r.json()).then(d => setConsentText(d.consentText || '')).catch(() => {})
+  }, [])
 
   useEffect(() => {
     fetch(`/api/reviews?product_id=${productId}`)
@@ -61,6 +70,29 @@ export function ReviewSection({ productId }: { productId: string }) {
       })
       const data = await res.json()
       if (data.success) {
+        // Photo is best-effort: the review stands even if the upload fails.
+        if (photo && photoEmail) {
+          try {
+            const sign = await fetch('/api/ugc', {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ mode: 'sign', filename: photo.name }),
+            }).then(r => r.json())
+            if (sign.path && sign.token) {
+              const supa = process.env.NEXT_PUBLIC_SUPABASE_URL
+              await fetch(`${supa}/storage/v1/object/upload/sign/ugc/${sign.path}?token=${sign.token}`, {
+                method: 'PUT', headers: { 'Content-Type': photo.type }, body: photo,
+              })
+              await fetch('/api/ugc', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  mode: 'record', email: photoEmail, storagePath: sign.path,
+                  mediaType: photo.type.startsWith('video') ? 'video' : 'image',
+                  consentMarketing: consent,
+                }),
+              })
+            }
+          } catch { /* review already saved */ }
+        }
         setSubmitState('done')
         setShowForm(false)
       } else {
@@ -110,6 +142,35 @@ export function ReviewSection({ productId }: { productId: string }) {
           <div>
             <label className="block font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">Your Review</label>
             <textarea required rows={4} value={body} onChange={e => setBody(e.target.value)} placeholder="Tell others what you loved about this product..." className={`${inputClass} resize-none`} />
+          </div>
+          <div>
+            <label className="block font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">Add a Photo (optional)</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={e => {
+                const f = e.target.files?.[0] ?? null
+                if (f && f.size > 8 * 1024 * 1024) { alert('Please choose a photo under 8MB.'); e.target.value = ''; return }
+                setPhoto(f)
+              }}
+              className="font-sans text-xs text-bark-500"
+            />
+            {photo && (
+              <div className="mt-3 space-y-2.5">
+                <input
+                  required
+                  type="email"
+                  value={photoEmail}
+                  onChange={e => setPhotoEmail(e.target.value)}
+                  placeholder="Your email (so we can reach you about the photo)"
+                  className={inputClass}
+                />
+                <label className="flex items-start gap-2.5 cursor-pointer">
+                  <input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} className="accent-sage-500 w-4 h-4 mt-0.5" />
+                  <span className="font-sans text-xs text-bark-500 leading-relaxed">{consentText || 'I give Petite Lavande permission to use this photo.'}</span>
+                </label>
+              </div>
+            )}
           </div>
           <div className="flex gap-3">
             <button

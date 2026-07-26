@@ -24,6 +24,8 @@ export async function POST(req: NextRequest) {
       recipientName,
       specialNote,
       shipToRecipient,
+      recipientEmail,
+      occasionLabel,
       totalAmount,
       promoId,
       preferredAssemblyImage,
@@ -52,6 +54,8 @@ export async function POST(req: NextRequest) {
       recipientName: string
       specialNote?: string
       shipToRecipient?: boolean
+      recipientEmail?: string
+      occasionLabel?: string
       totalAmount: number
       promoId?: string
       preferredAssemblyImage?: string
@@ -144,6 +148,7 @@ export async function POST(req: NextRequest) {
         recipient_name: recipientName || null,
         special_note: specialNote || null,
         ship_to_recipient: !!shipToRecipient,
+        recipient_email: recipientEmail?.trim() || null,
         selected_items: selectedItems,
         letter_content: letterContent || null,
         letter_version: letterVersion || null,
@@ -171,6 +176,20 @@ export async function POST(req: NextRequest) {
     if (orderError) {
       console.error('Order creation error:', orderError)
       return NextResponse.json({ error: 'Failed to create order' }, { status: 500 })
+    }
+
+    // Build 10 capture — the gifter's stated occasion, tied to this order.
+    // Best-effort; pending orders are filtered out downstream via the join.
+    if (occasionLabel?.trim()) {
+      try {
+        await supabaseAdmin.from('gift_occasions').insert({
+          email: shippingAddress.email.trim().toLowerCase(),
+          recipient_label: occasionLabel.trim().slice(0, 120),
+          source_order: order.id,
+        })
+      } catch (e) {
+        console.warn('gift occasion capture skipped:', e)
+      }
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'

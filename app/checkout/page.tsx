@@ -41,6 +41,8 @@ export default function CheckoutPage() {
   const [recipientName, setRecipientName] = useState('')
   const [specialNote, setSpecialNote] = useState('')
   const [shipToRecipient, setShipToRecipient] = useState(false)
+  const [recipientEmail, setRecipientEmail] = useState('')
+  const [occasionLabel, setOccasionLabel] = useState('')
   const [letterVersion, setLetterVersion] = useState<1 | 2>(1)
   const [cardStyle, setCardStyle] = useState('')
   const [letterZone, setLetterZone] = useState<{ x: number; y: number; w: number; align: string } | null>(null)
@@ -220,6 +222,8 @@ export default function CheckoutPage() {
           recipientName: recipientName || undefined,
           specialNote: specialNote || undefined,
           shipToRecipient,
+          recipientEmail: recipientEmail.trim() || undefined,
+          occasionLabel: occasionLabel.trim() || undefined,
           shippingAddress: {
             // Gift mode: the label carries the recipient's name; the buyer
             // stays on the order as customer_* via the session route.
@@ -402,6 +406,21 @@ export default function CheckoutPage() {
                       </span>
                     </span>
                   </label>
+                  {shipToRecipient && (
+                    <div className="mb-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-1.5">
+                        <div>
+                          <label className={labelClass}>Recipient&rsquo;s Email (optional)</label>
+                          <input type="email" value={recipientEmail} onChange={e => setRecipientEmail(e.target.value)} placeholder="sarah@example.com" className={inputClass} />
+                        </div>
+                        <div>
+                          <label className={labelClass}>Occasion (optional)</label>
+                          <input type="text" value={occasionLabel} onChange={e => setOccasionLabel(e.target.value)} placeholder="Baby shower — for Sarah" className={inputClass} />
+                        </div>
+                      </div>
+                      <p className="font-sans text-xs text-bark-400">We&rsquo;ll email them a digital copy of your gift note when the box ships — nothing else, ever, unless they subscribe themselves.</p>
+                    </div>
+                  )}
                   {shipToRecipient && !recipientName.trim() && (
                     <p className="font-sans text-xs text-rose-400 mb-3">Add the recipient&rsquo;s name under Contact Information so the shipping label carries it.</p>
                   )}

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { LayoutDashboard, ShoppingBag, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, ShieldCheck, LayoutTemplate, Tag, Sunrise, BookOpen, Star, PenLine, Users, Send } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, ShieldCheck, LayoutTemplate, Tag, Sunrise, BookOpen, Star, PenLine, Users, Send, Image as ImageIcon } from 'lucide-react'
 
 const NAV = [
   { href: '/portal', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
@@ -12,6 +12,7 @@ const NAV = [
   { href: '/portal/reviews', label: 'Reviews', icon: <Star size={16} /> },
   { href: '/portal/contacts', label: 'Contacts', icon: <Users size={16} /> },
   { href: '/portal/campaigns', label: 'Campaigns', icon: <Send size={16} /> },
+  { href: '/portal/ugc', label: 'Customer Photos', icon: <ImageIcon size={16} /> },
   { href: '/portal/cards', label: 'Cards', icon: <PenLine size={16} /> },
   { href: '/portal/lookbook/images', label: 'Lookbook', icon: <BookOpen size={16} /> },
   { href: '/portal/discounts', label: 'Discount Codes', icon: <Tag size={16} /> },
