@@ -1,3 +1,4 @@
+import { createHmac } from 'crypto'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
 
@@ -10,9 +11,12 @@ import { supabaseAdmin } from '@/lib/supabase'
 const COUPON_ID = 'WELCOME-10PCT'
 const ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
 
-function randomCode(): string {
+// Deterministic per email: retries always send Stripe identical parameters,
+// so the idempotency key can never conflict with an earlier attempt.
+function codeFor(email: string): string {
+  const digest = createHmac('sha256', 'pl-welcome-code').update(email).digest()
   let s = ''
-  for (let i = 0; i < 6; i++) s += ALPHABET[Math.floor(Math.random() * ALPHABET.length)]
+  for (let i = 0; i < 6; i++) s += ALPHABET[digest[i] % ALPHABET.length]
   return `WELC-${s}`
 }
 
@@ -32,12 +36,15 @@ async function ensureCoupon(): Promise<string> {
 export async function ensureWelcomeCode(email: string): Promise<string | null> {
   const norm = email.trim().toLowerCase()
   try {
-    const { data: existing } = await supabaseAdmin
+    // Supabase returns errors instead of throwing — check explicitly, or a
+    // missing column would read as "no contact" and mint unstored codes.
+    const { data: existing, error: selErr } = await supabaseAdmin
       .from('marketing_contacts').select('id, welcome_code').eq('email', norm).maybeSingle()
+    if (selErr) { console.warn('welcome code lookup failed:', selErr.message); return null }
     if (existing?.welcome_code) return existing.welcome_code as string
 
     const couponId = await ensureCoupon()
-    const code = randomCode()
+    const code = codeFor(norm)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (stripe.promotionCodes.create as any)(
       {
@@ -46,7 +53,7 @@ export async function ensureWelcomeCode(email: string): Promise<string | null> {
         max_redemptions: 1,
         metadata: { kind: 'welcome', email: norm },
       },
-      { idempotencyKey: `welcome-${norm}` }
+      { idempotencyKey: `welcome2-${norm}` }
     )
 
     if (existing) {

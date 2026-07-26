@@ -10,14 +10,12 @@ import { getLiveCollection, getLiveCollections } from '@/lib/collections'
 // empty-collection guard lives in lib/collections: below min_products a
 // collection 404s and leaves the sitemap/nav automatically.
 
-export const revalidate = 3600
+// Rendered on demand: the ISR + async-DB-generateStaticParams combination
+// 500s on unknown slugs in production (DYNAMIC_SERVER_USAGE), and these
+// pages are light. Crawlers see identical HTML either way.
+export const dynamic = 'force-dynamic'
 
 const BASE = (process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com').replace(/\/$/, '')
-
-export async function generateStaticParams() {
-  const live = await getLiveCollections().catch(() => [])
-  return live.map(c => ({ slug: c.slug }))
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
