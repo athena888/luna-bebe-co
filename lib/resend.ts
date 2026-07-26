@@ -244,6 +244,38 @@ export async function sendWinBackEmail({ customerName, customerEmail, segment }:
   })
 }
 
+// Build 1 upgrade — second abandoned-cart touch, D+3 after the first. No
+// discount on purpose (a rescue code would train cart-abandoning). Gated by
+// CART_SEQUENCE_ACTIVE via the cron; copy in MARKETING_COPY.md.
+export async function sendCartReminder2Email({ customerEmail }: { customerEmail: string }) {
+  return resend.emails.send({
+    from: FROM,
+    to: customerEmail,
+    headers: unsubHeaders(customerEmail),
+    subject: 'Your box is still saved 🌿',
+    html: `
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+        ${brandHeader}
+        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">Right where you left it</h1>
+        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
+            The box you built is still saved, exactly as you left it. If the moment passed, no worries at all — but if that gift is still on your mind, everything is ready to finish in a minute or two.
+          </p>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
+            Hand-packed within 24 hours of your order, finished with satin ribbon and a wax seal.
+          </p>
+          <div style="text-align:center;">
+            <a href="${utm('/checkout', 'cart')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+              Pick Up Where You Left Off
+            </a>
+          </div>
+        </div>
+        ${flowFooter(customerEmail)}
+      </div>
+    `,
+  })
+}
+
 // Build 3 occasion flow — one email ~30 days before a due date the customer
 // asked us to remember. Gated by OCCASIONS_ACTIVE via the scheduler; copy in
 // MARKETING_COPY.md, inactive until approved.

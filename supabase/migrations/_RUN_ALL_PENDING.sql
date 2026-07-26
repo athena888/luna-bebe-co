@@ -1276,4 +1276,11 @@ alter table email_events drop constraint if exists email_events_flow_check;
 alter table email_events add constraint email_events_flow_check
   check (flow in ('welcome','postpurchase','winback','transactional','occasion'));
 
+-- 40) Cart sequence (Build 1 upgrade) — allow the 'cart' flow so the second
+--     abandoned-cart touch can ride the email_events queue.
+--     (Also in supabase/migrations/cart_sequence.sql)
+alter table email_events drop constraint if exists email_events_flow_check;
+alter table email_events add constraint email_events_flow_check
+  check (flow in ('welcome','postpurchase','winback','transactional','occasion','cart'));
+
 -- Done.

@@ -9,6 +9,7 @@ import {
   sendOrderConfirmationEmail,
   sendOccasionDueEmail,
   sendOccasionBirthdayEmail,
+  sendCartReminder2Email,
 } from './resend'
 
 // Customer email flows on top of the `email_events` table (§31). Triggers
@@ -21,7 +22,7 @@ const DAY = 24 * 60 * 60 * 1000
 // (NEXT_PUBLIC_STORE_OPEN != true) these are HELD, not canceled — they stay
 // queued in email_events and the first daily cron after reopening sends them.
 // Review asks are not marketing and always flow.
-const MARKETING_TEMPLATES = new Set(['welcome-2', 'welcome-3', 'winback', 'occasion-due', 'occasion-birthday'])
+const MARKETING_TEMPLATES = new Set(['welcome-2', 'welcome-3', 'winback', 'occasion-due', 'occasion-birthday', 'cart-2'])
 
 /** Newsletter signup → welcome steps 2 (D+2) and 3 (D+4). Step 1 is the
  *  immediate welcome email the subscribe route already sends. */
@@ -162,6 +163,19 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
         case 'occasion-birthday':
           await sendOccasionBirthdayEmail({ customerEmail: ev.recipient })
           break
+        case 'cart-2': {
+          // Second cart touch — only if the cart is STILL pending. Anything
+          // else (paid, canceled, deleted) cancels the event silently.
+          const { data: order } = await supabaseAdmin
+            .from('orders').select('status').eq('id', ev.order_id).maybeSingle()
+          if (order?.status !== 'pending') {
+            await supabaseAdmin.from('email_events').update({ canceled_at: new Date().toISOString() }).eq('id', ev.id)
+            skipped++
+            continue
+          }
+          await sendCartReminder2Email({ customerEmail: ev.recipient })
+          break
+        }
         case 'postpurchase-review': {
           const { data: order } = await supabaseAdmin
             .from('orders').select('customer_name, selected_items').eq('id', ev.order_id).maybeSingle()

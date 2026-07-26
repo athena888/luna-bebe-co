@@ -113,4 +113,18 @@ always get today's copy unchanged.
 > **Who are you shopping for?** (optional, one tap)
 > chips: My own baby · A grandbaby · A friend or coworker
 
+### Build 1 upgrade — Cart sequence (INACTIVE — flips on via CART_SEQUENCE_ACTIVE=true after your approval)
+
+**Mechanics:** touch 1 is the existing abandoned-cart email (pending >1h, daily
+cron — unchanged). Touch 2 goes out **3 days later** only if the cart is still
+pending — paid or canceled carts cancel it automatically. No discount code on
+purpose: a rescue code teaches people to abandon carts. Also fixed: the cron now
+holds while the store is closed, and carts older than 14 days are never emailed.
+
+**Cart touch 2 (D+3)** — subject: `Your box is still saved 🌿`
+> **Right where you left it**
+> The box you built is still saved, exactly as you left it. If the moment passed, no worries at all — but if that gift is still on your mind, everything is ready to finish in a minute or two.
+> Hand-packed within 24 hours of your order, finished with satin ribbon and a wax seal.
+> CTA: Pick Up Where You Left Off → /checkout
+
 ### Build 8 — drafts land here with the build.
