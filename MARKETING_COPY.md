@@ -128,3 +128,42 @@ holds while the store is closed, and carts older than 14 days are never emailed.
 > CTA: Pick Up Where You Left Off → /checkout
 
 ### Build 8 — drafts land here with the build.
+
+## Collections (rows seeded INACTIVE — activate each after you approve its copy)
+
+_Say "apply collection copy" and I'll write approved copy into the rows and flip them active._
+
+### for-mama — h1: `Gifts for Mama`
+> intro: The baby gets everything, and the mother carries everything. This collection is for her — botanical bath comforts for the tender weeks, calming lavender, and small luxuries she would never buy herself.
+> meta title: `Gifts for New Moms — Postpartum Comfort Boxes`
+> meta description: `Thoughtful gifts for the new mother — botanical bath soaks, calming lavender, and small luxuries, hand-packed and sealed by hand.`
+
+### for-baby — h1: `Gifts for Baby`
+> intro: Soft things for a brand-new person — organic cotton to live in, gentle botanical care, and keepsakes worth growing up with. Every item is traced to its source.
+> meta title: `Organic Baby Gifts — Swaddles, Clothing & Keepsakes`
+> meta description: `Organic cotton swaddles and clothing from GOTS-certified makers, gentle bath care, and heirloom keepsakes for the newest arrival.`
+
+### for-both — h1: `Gifts for Mama & Baby`
+> intro: The gift that understands a birth happens to two people. Pieces for the baby, comfort for the mother — chosen to arrive as one beautiful box.
+> meta title: `Mama & Baby Gift Boxes — For Both of Them`
+> meta description: `Gift boxes that care for the new mother as much as the baby — organic cotton, botanical comforts, and keepsakes, hand-finished.`
+
+### baby-shower — h1: `Baby Shower Gifts`
+> intro: The shower gift they'll remember: not another registry checkbox, but a hand-packed box of organic keepsakes with your message inside.
+> meta title: `Baby Shower Gifts They'll Keep`
+> meta description: `Stand-out baby shower gifts — organic cotton, gentle botanical care, and keepsakes, ribbon-tied with a personalized card.`
+
+### new-arrival — h1: `Gifts for the New Arrival`
+> intro: The baby is here. Send something that says you understand what just happened — soft organic pieces, gentle care, and a card carrying your words.
+> meta title: `New Baby Gifts — Welcome the New Arrival`
+> meta description: `Welcome-to-the-world gifts for newborns — organic cotton, botanical bath care, and keepsakes, hand-packed and shipped with care.`
+
+### corporate-gifting — h1: `Corporate & Team Baby Gifts`
+> intro: When someone on the team becomes a parent, the company's gift speaks for the whole team. Curated boxes, your logo tag if you like, delivered without anyone leaving their desk.
+> meta title: `Corporate Baby Gifts for Employees & Clients`
+> meta description: `Corporate baby gifting made effortless — curated organic gift boxes for employees and clients, with team cards and volume pricing.`
+
+### Restock email (Build 12, INACTIVE until WAITLIST_ACTIVE) — subject: `It's back — {{product}} 🌿`
+> **Back in the studio**
+> Good news — {{product}} is back. You asked us to let you know, and waitlist members hear first, so the quietest window to order is right now.
+> CTA: See It Now → /products/{{id}}

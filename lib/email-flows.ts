@@ -22,7 +22,7 @@ const DAY = 24 * 60 * 60 * 1000
 // (NEXT_PUBLIC_STORE_OPEN != true) these are HELD, not canceled — they stay
 // queued in email_events and the first daily cron after reopening sends them.
 // Review asks are not marketing and always flow.
-const MARKETING_TEMPLATES = new Set(['welcome-2', 'welcome-3', 'winback', 'occasion-due', 'occasion-birthday', 'cart-2'])
+const MARKETING_TEMPLATES = new Set(['welcome-2', 'welcome-3', 'winback', 'occasion-due', 'occasion-birthday', 'cart-2', 'restock'])
 
 /** Newsletter signup → welcome steps 2 (D+2) and 3 (D+4). Step 1 is the
  *  immediate welcome email the subscribe route already sends. */
@@ -165,6 +165,23 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
         case 'occasion-birthday':
           await sendOccasionBirthdayEmail({ customerEmail: ev.recipient })
           break
+        case 'restock': {
+          // Re-check stock at send time — never announce a restock that
+          // already sold out again.
+          const { restockProductIdFromCampaign } = await import('./waitlist')
+          const pid = restockProductIdFromCampaign(ev.campaign)
+          const { getCatalogProduct, getProductStock } = await import('./products-db')
+          const product = pid ? await getCatalogProduct(pid) : null
+          const stock = pid ? await getProductStock(pid, false) : null
+          if (!product || !product.active || (stock !== null && stock <= 0)) {
+            await supabaseAdmin.from('email_events').update({ canceled_at: new Date().toISOString() }).eq('id', ev.id)
+            skipped++
+            continue
+          }
+          const { sendRestockEmail } = await import('./resend')
+          await sendRestockEmail({ customerEmail: ev.recipient, productName: product.name, productId: product.id })
+          break
+        }
         case 'cart-2': {
           // Second cart touch — only if the cart is STILL pending. Anything
           // else (paid, canceled, deleted) cancels the event silently.

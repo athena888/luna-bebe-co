@@ -13,6 +13,18 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  // Build 12: queue customer restock notifications for waitlisted products
+  // back in stock (no-op until WAITLIST_ACTIVE=true; sends drain via the
+  // daily-flows queue and are held while the store is closed).
+  let restocksQueued: number | string = 0
+  try {
+    const { processRestocks } = await import('@/lib/waitlist')
+    restocksQueued = await processRestocks()
+  } catch (e) {
+    console.error('waitlist restock sweep failed (run §42?):', e)
+    restocksQueued = 'error'
+  }
+
   try {
     const rows = await computeReorderStatus()
     const low = rows.filter(r => r.low).sort((a, b) => (a.weeksOnHand ?? Infinity) - (b.weeksOnHand ?? Infinity))
@@ -48,7 +60,7 @@ export async function GET(req: NextRequest) {
       })
     }
 
-    return NextResponse.json({ checked: rows.length, lowStock: low.length, ok: true })
+    return NextResponse.json({ checked: rows.length, lowStock: low.length, restocksQueued, ok: true })
   } catch (error) {
     console.error('Restock alert error:', error)
     return NextResponse.json({ error: 'Failed to check stock' }, { status: 500 })

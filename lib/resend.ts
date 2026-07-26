@@ -292,6 +292,27 @@ export async function sendWinBackEmail({ customerName, customerEmail, segment }:
   })
 }
 
+// Build 12 — restock notification, sent in waitlist signup order when a
+// product comes back. Copy in MARKETING_COPY.md; WAITLIST_ACTIVE-gated.
+export async function sendRestockEmail({ customerEmail, productName, productId }: {
+  customerEmail: string
+  productName: string
+  productId: string
+}) {
+  return sendEmail({
+    from: FROM,
+    to: customerEmail,
+    headers: unsubHeaders(customerEmail),
+    subject: `It's back — ${productName} 🌿`,
+    html: shell(
+      'Back in the studio',
+      P(`Good news — <strong>${productName}</strong> is back. You asked us to let you know, and waitlist members hear first, so the quietest window to order is right now.`) +
+      BTN(utm(`/products/${productId}`, 'restock'), 'See It Now'),
+      flowFooter(customerEmail)
+    ),
+  })
+}
+
 // Build 8 — one-off campaign email, composed in Portal → Campaigns. Same
 // shell as the flow emails so campaigns always look on-brand.
 export async function sendCampaignEmail({ customerEmail, subject, heading, paragraphs, ctaLabel, ctaHref, campaign }: {

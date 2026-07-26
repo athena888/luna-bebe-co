@@ -29,6 +29,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const lp of LANDING_PAGES) {
     urls.push({ url: `${base}/gifts/${lp.slug}`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 })
   }
+  // Collections — only active ones above their product threshold (the
+  // empty-collection guard in lib/collections applies here too).
+  try {
+    const { getLiveCollections } = await import('@/lib/collections')
+    for (const c of await getLiveCollections()) {
+      urls.push({ url: `${base}/collections/${c.slug}`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 })
+    }
+  } catch { /* §42 not run yet */ }
   // Journal posts — DB-published posts merged over the built-in starters, so
   // portal-created posts get indexed too (fails soft to the starters).
   for (const post of await getJournalPosts()) {
