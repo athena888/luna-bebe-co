@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
       {
         price_data: {
           currency: stripeCurrency,
-          product_data: { name: 'Keepsake Box, Wax Seal & Printed Card', description: 'Premium magnetic box, satin ribbon, wax seal, dried lavender, and your hand-penned card' },
+          product_data: { name: 'Keepsake Box, Ribbon & Printed Card', description: 'Premium magnetic box, satin ribbon, dried lavender, and your hand-penned card' },
           unit_amount: boxBase,
         },
         quantity: 1,

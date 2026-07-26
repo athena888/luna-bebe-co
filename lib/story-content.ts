@@ -28,14 +28,14 @@ export const DEFAULT_STORY_CONTENT: StoryContent = {
       "When my daughter was born, I found myself surrounded by well-meaning gifts — synthetic fabrics in shrieking plastic packaging, items that felt like they were designed for a big-box store, not for a baby I'd carry in my heart forever.",
       'I wanted something different. Something that felt like it was made with intention — organic, artisan, beautiful. Something the mother would open and feel, for a moment, that she was being celebrated too. I couldn’t find it. So I built it.',
       'Petite Lavande started at my kitchen table, sourcing directly from makers who share our values: no shortcuts, no synthetics, no compromises on what touches a newborn’s skin. Every item in every box is something I would give my own child.',
-      'We seal every box with our signature wax stamp, wrap every letter by hand, and ship every order with the care it deserves. Because a birth is not just a delivery — it’s a beginning. And beginnings deserve to be luminous.',
+      'We seal every box with our signature seal, wrap every letter by hand, and ship every order with the care it deserves. Because a birth is not just a delivery — it’s a beginning. And beginnings deserve to be luminous.',
     ],
     signature: '— Émilie, Founder',
   },
   values: [
     { title: 'Purely Organic', body: 'Our cotton garments are organic cotton from GOTS-certified makers, and we choose organic, natural materials across the box wherever we can.' },
     { title: 'Artisan-Made', body: "We source from small makers and family studios. The hands that made your gift cared deeply about it — and that's not something you can mass-produce." },
-    { title: 'Every Detail', body: 'Wax-sealed boxes, personalized cards, tissue and ribbon — because the unboxing is part of the gift. We believe in the beauty of ceremony.' },
+    { title: 'Every Detail', body: 'Hand-sealed boxes, personalized cards, tissue and ribbon — because the unboxing is part of the gift. We believe in the beauty of ceremony.' },
   ],
   traced: {
     eyebrow: 'Traced to the Source',
@@ -50,7 +50,7 @@ export const DEFAULT_STORY_CONTENT: StoryContent = {
   french: {
     eyebrow: 'French Apothecary Soul, PNW Heart',
     paragraphs: [
-      'The aesthetic comes from old French apothecaries — kraft paper, glass tubes, wax seals, twine, dried herbs. A time when remedies came with care, and care came with beauty.',
+      'The aesthetic comes from old French apothecaries — kraft paper, glass tubes, hand-pressed seals, twine, dried herbs. A time when remedies came with care, and care came with beauty.',
       'The ingredients come from two worlds — Provence lavender fields, Pacific Northwest farms, small American makers, ethical European sources.',
     ],
     tagline: 'A gift that feels both somewhere far away and grown close to home.',

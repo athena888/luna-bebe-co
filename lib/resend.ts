@@ -104,7 +104,7 @@ export async function sendWelcomeEmail({
         <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">${greeting}</h1>
         <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">
-            We're so glad you're here. Petite Lavande was born out of a love for new life — every box we create is handcrafted with organic materials, curated with intention, and packed with dried lavender and a wax seal because every detail matters.
+            We're so glad you're here. Petite Lavande was born out of a love for new life — every box we create is handcrafted with organic materials, curated with intention, and packed with dried lavender and sealed by hand because every detail matters.
           </p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
             Use code <strong>WELCOME10</strong> for 10% off your first order.
@@ -164,7 +164,7 @@ export async function sendWelcomeSeries2Email({ customerEmail, segment }: { cust
             ${opener}
           </p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
-            Hand-packed and finished with satin ribbon and a wax seal.
+            Hand-packed and finished with satin ribbon, sealed by hand.
           </p>
           <div style="text-align:center;">
             <a href="${utm('/boxes', 'welcome')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
@@ -244,6 +244,46 @@ export async function sendWinBackEmail({ customerName, customerEmail, segment }:
   })
 }
 
+// Build 8 — one-off campaign email, composed in Portal → Campaigns. Same
+// shell as the flow emails so campaigns always look on-brand.
+export async function sendCampaignEmail({ customerEmail, subject, heading, paragraphs, ctaLabel, ctaHref, campaign }: {
+  customerEmail: string
+  subject: string
+  heading: string
+  paragraphs: string[]
+  ctaLabel?: string
+  ctaHref?: string
+  campaign: string
+}) {
+  const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  const body = paragraphs.map(p =>
+    `<p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 16px;">${esc(p)}</p>`
+  ).join('')
+  const cta = ctaLabel && ctaHref ? `
+          <div style="text-align:center;margin-top:8px;">
+            <a href="${utm(ctaHref, `campaign-${campaign}`)}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
+              ${esc(ctaLabel)}
+            </a>
+          </div>` : ''
+  return resend.emails.send({
+    from: FROM,
+    to: customerEmail,
+    headers: unsubHeaders(customerEmail),
+    subject,
+    html: `
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#3d2c1e;">
+        ${brandHeader}
+        <h1 style="font-size:28px;font-weight:normal;text-align:center;margin:0 0 24px;">${esc(heading)}</h1>
+        <div style="background:#faf7f2;border-radius:16px;padding:32px;margin-bottom:24px;">
+          ${body}
+          ${cta}
+        </div>
+        ${flowFooter(customerEmail)}
+      </div>
+    `,
+  })
+}
+
 // Build 1 upgrade — second abandoned-cart touch, D+3 after the first. No
 // discount on purpose (a rescue code would train cart-abandoning). Gated by
 // CART_SEQUENCE_ACTIVE via the cron; copy in MARKETING_COPY.md.
@@ -262,7 +302,7 @@ export async function sendCartReminder2Email({ customerEmail }: { customerEmail:
             The box you built is still saved, exactly as you left it. If the moment passed, no worries at all — but if that gift is still on your mind, everything is ready to finish in a minute or two.
           </p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
-            Hand-packed within 24 hours of your order, finished with satin ribbon and a wax seal.
+            Hand-packed within 24 hours of your order, finished with satin ribbon and sealed by hand.
           </p>
           <div style="text-align:center;">
             <a href="${utm('/checkout', 'cart')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
@@ -294,7 +334,7 @@ export async function sendOccasionDueEmail({ customerEmail }: { customerEmail: s
             The arrival you asked us to remember is only a few weeks away now. If a gift is part of the plan, this is the window — every box is packed by hand and ships with time to spare.
           </p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
-            Organic keepsakes, chosen piece by piece, sealed with wax and ribbon.
+            Organic keepsakes, chosen piece by piece, ribbon-tied and sealed by hand.
           </p>
           <div style="text-align:center;">
             <a href="${utm('/build', 'occasion')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">
@@ -324,7 +364,7 @@ export async function sendOccasionBirthdayEmail({ customerEmail }: { customerEma
             A birthday you asked us to remember is a few weeks out. A box of organic keepsakes — soft things to grow into, gentle things for the bath — is a lovely way to mark the day.
           </p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#5a3e28;margin:0 0 24px;">
-            Hand-packed, finished with satin ribbon and a wax seal, with your message inside.
+            Hand-packed, finished with satin ribbon and sealed by hand, with your message inside.
           </p>
           <div style="text-align:center;">
             <a href="${utm('/boxes', 'occasion')}" style="display:inline-block;background:#c9a84c;color:#3d2c1e;font-family:sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px;">

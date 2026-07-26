@@ -85,7 +85,7 @@ export default async function PressPage() {
                     </div>
                   ))}
                 </div>
-                <p className="font-sans text-xs text-bark-400 mt-4">All boxes ship nationwide. Hand-finished in Seattle: printed card, dried lavender, wax seal, satin ribbon.</p>
+                <p className="font-sans text-xs text-bark-400 mt-4">All boxes ship nationwide. Hand-finished in Seattle: printed card, dried lavender, satin ribbon.</p>
               </section>
               </SlotBackground>
             )}

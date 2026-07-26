@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       `Field: "${fieldLabel || 'copy'}". Each option should be ${lenHint}.\n` +
       (context ? `Context: ${context}.\n` : '') +
       (current?.trim() ? `The current draft is: "${current.trim()}". Offer fresh angles, don't just echo it.\n` : '') +
-      `Lean into the brand's signatures (the mother as much as the baby, traced-to-source materials, hand-finished wax seal & linen ribbon, dried lavender, the personalized card). ` +
+      `Lean into the brand's signatures (the mother as much as the baby, traced-to-source materials, hand-finished signature seal & linen ribbon, dried lavender, the personalized card). ` +
       `Vary the angle across the three. No quotes around them, no numbering, no trailing commentary.\n` +
       `Return ONLY a JSON array of exactly 3 strings.`
 

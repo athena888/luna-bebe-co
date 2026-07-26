@@ -36,10 +36,10 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: 'The Organic Newborn Gift Box',
     intro: [
       'A new baby deserves the gentlest start — and the people welcoming them deserve a gift that feels as considered as the moment. Our organic newborn gift box is built around soft, breathable pieces in organic cotton from GOTS-certified makers, so everything that touches new skin is as pure as it is beautiful.',
-      'Every box is assembled by hand and finished the way you would for someone you love: a botanical lavender bouquet, a keepsake to remember the first days by, and a personalized card printed just for them. You can build your own box item by item, or choose a ready-made set we have already curated for newborns. Either way it arrives sealed with a wax stamp and tied with a natural linen ribbon — gift-ready the moment it lands on the doorstep.',
+      'Every box is assembled by hand and finished the way you would for someone you love: a botanical lavender bouquet, a keepsake to remember the first days by, and a personalized card printed just for them. You can build your own box item by item, or choose a ready-made set we have already curated for newborns. Either way it arrives sealed by hand and tied with a natural linen ribbon — gift-ready the moment it lands on the doorstep.',
     ],
     categories: ['swaddle', 'garment', 'bath', 'keepsake'],
-    highlights: ['Newborn clothing from GOTS-certified makers', 'Gentle botanical skincare', 'Personalized printed card', 'Wax seal & linen ribbon'],
+    highlights: ['Newborn clothing from GOTS-certified makers', 'Gentle botanical skincare', 'Personalized printed card', 'Signature seal & linen ribbon'],
   },
   {
     slug: 'gender-neutral-baby-gift-box',
@@ -50,7 +50,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: 'The Gender-Neutral Baby Gift Box',
     intro: [
       'When you do not know whether it is a boy or a girl — or you simply love a calmer, more timeless palette — a gender-neutral gift is always the right choice. Our neutral boxes lean into soft naturals: oat, cream, sage and bark, the colours of the Petite Lavande world. Nothing loud, nothing themed, just quietly beautiful pieces that suit any nursery.',
-      'Each box is built from organic cotton clothing and swaddles, gentle plant-based skincare, and a keepsake or two — all chosen the way a thoughtful friend would choose. Pick exactly what goes inside with our build-your-own tool, or start from a ready-made neutral edition. We finish every order by hand with dried lavender, a wax seal and a linen ribbon, and print your message on a personalized card so the gift feels unmistakably from you.',
+      'Each box is built from organic cotton clothing and swaddles, gentle plant-based skincare, and a keepsake or two — all chosen the way a thoughtful friend would choose. Pick exactly what goes inside with our build-your-own tool, or start from a ready-made neutral edition. We finish every order by hand with dried lavender, a signature seal and a linen ribbon, and print your message on a personalized card so the gift feels unmistakably from you.',
     ],
     categories: ['swaddle', 'garment', 'bath', 'keepsake'],
     highlights: ['Soft natural, non-themed palette', 'Organic cotton essentials', 'Suits any nursery', 'Personalized printed card'],
@@ -64,7 +64,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: 'The Postpartum Care Package',
     intro: [
       'Most baby gifts forget the person who just did the hardest, most beautiful work of all. A postpartum care package puts mom back at the centre — a quiet reminder that she is seen, cared for, and celebrated too.',
-      'Ours gathers the things that actually help in those tender first weeks: soothing botanical bath and body care, calming lavender to slow the evenings down, and small French luxuries she would never buy for herself. You can pair it with a few organic pieces for the baby, or keep it entirely for her. Build your own combination or choose a ready-made set; every package arrives finished by hand with a wax seal, a natural linen ribbon, and a personalized card carrying your words. It is the kind of gift that says I see how much love you carry — and here is a little, for you.',
+      'Ours gathers the things that actually help in those tender first weeks: soothing botanical bath and body care, calming lavender to slow the evenings down, and small French luxuries she would never buy for herself. You can pair it with a few organic pieces for the baby, or keep it entirely for her. Build your own combination or choose a ready-made set; every package arrives finished by hand with a signature seal, a natural linen ribbon, and a personalized card carrying your words. It is the kind of gift that says I see how much love you carry — and here is a little, for you.',
     ],
     categories: ['mom', 'bath'],
     highlights: ['Botanical bath & body for mom', 'Calming lavender', 'Quiet French luxuries', 'Personalized printed card'],
@@ -78,7 +78,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: 'The Organic Baby Clothes Gift Set',
     intro: [
       'Baby clothes are the gift everyone remembers — especially when they are this soft. Our organic baby clothes gift set is organic cotton from GOTS-certified makers: swaddles, rompers, bibs and gentle layers that feel as good as they look and are kind to delicate new skin.',
-      'Choose the pieces yourself with our build-your-own tool, mixing sizes and soft natural colours, or start from a ready-made clothing edition we have already styled. Each set is folded and packed by hand, then finished with dried lavender, a wax seal and a linen ribbon — with a personalized card printed for the occasion. Whether it is a baby shower, a welcome-home gift, or a first birthday, an organic clothing set is the kind of present parents reach for again and again.',
+      'Choose the pieces yourself with our build-your-own tool, mixing sizes and soft natural colours, or start from a ready-made clothing edition we have already styled. Each set is folded and packed by hand, then finished with dried lavender, a signature seal and a linen ribbon — with a personalized card printed for the occasion. Whether it is a baby shower, a welcome-home gift, or a first birthday, an organic clothing set is the kind of present parents reach for again and again.',
     ],
     categories: ['garment', 'swaddle'],
     highlights: ['Organic cotton, GOTS-certified makers', 'Swaddles, rompers & layers', 'Soft natural colours', 'Hand-folded & gift-ready'],
@@ -92,10 +92,10 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: 'French & European Baby Gifts',
     intro: [
       'There is a particular kind of beauty in a French gift — understated, natural, and quietly luxurious. Petite Lavande is built around exactly that feeling: fields of Provence lavender, soft linen, muted heirloom tones, and the belief that the most elegant gifts are the most considered ones.',
-      'Our French-inspired baby gifts bring that sensibility to the nursery and to mom: organic cotton in soft naturals, botanical lavender bouquets, gentle plant-based care, and small luxuries chosen with a European eye. Build your own box or choose a ready-made edition, and we will finish it the French way — sealed with wax, tied with a natural linen ribbon, scented with dried lavender, and carrying a personalized card. Fait avec amour, pour vous.',
+      'Our French-inspired baby gifts bring that sensibility to the nursery and to mom: organic cotton in soft naturals, botanical lavender bouquets, gentle plant-based care, and small luxuries chosen with a European eye. Build your own box or choose a ready-made edition, and we will finish it the French way — sealed by hand and tied with a natural linen ribbon, scented with dried lavender, and carrying a personalized card. Fait avec amour, pour vous.',
     ],
     categories: ['mom', 'bath', 'keepsake', 'garment'],
-    highlights: ['Provence lavender', 'Linen ribbon & wax seal', 'Soft heirloom palette', 'Quiet European luxury'],
+    highlights: ['Provence lavender', 'Linen ribbon & signature seal', 'Soft heirloom palette', 'Quiet European luxury'],
   },
   {
     slug: 'luxury-baby-shower-gift',
@@ -106,7 +106,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: 'The Luxury Baby Shower Gift',
     intro: [
       'You want the gift everyone at the shower asks about — the one that makes the moment feel special. A luxury baby shower gift from Petite Lavande is designed to be exactly that: a beautifully composed box of organic pieces, a botanical lavender bouquet, and small thoughtful touches, presented like something out of a Provence boutique.',
-      'Build your own box to match the parents perfectly, or choose a ready-made edition curated for showers. Every gift is assembled and finished entirely by hand — sealed with a wax stamp, tied with a natural linen ribbon, scented with dried lavender, and completed with a personalized card printed with your message. It is luxury you can feel the moment the box is opened, and a gift the new family will remember long after the day is over.',
+      'Build your own box to match the parents perfectly, or choose a ready-made edition curated for showers. Every gift is assembled and finished entirely by hand — sealed by hand, tied with a natural linen ribbon, scented with dried lavender, and completed with a personalized card printed with your message. It is luxury you can feel the moment the box is opened, and a gift the new family will remember long after the day is over.',
     ],
     categories: ['keepsake', 'garment', 'mom', 'bath'],
     highlights: ['A curated, show-stopping box', 'Botanical lavender bouquet', 'Personalized printed card', 'Finished entirely by hand'],
@@ -122,10 +122,10 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: 'The Baby Shower Gift for Mom',
     intro: [
       'Walk into any baby shower and the gift table tells the same story: everything is for the baby. The mother — the person the day is actually about — usually opens nothing that is hers. If you want your gift to be the one she remembers, give something to her.',
-      'Our boxes put the mom-to-be at the centre: a soothing botanical bath soak for the last heavy weeks, calming lavender, a small French luxury she would not buy for herself, and, if you like, one or two beautiful organic cotton pieces for the baby. We pack everything by hand, seal it with wax, and print your message on a card she will keep. Boxes range from $85 to $200 — build your own or start from a ready-made set.',
+      'Our boxes put the mom-to-be at the centre: a soothing botanical bath soak for the last heavy weeks, calming lavender, a small French luxury she would not buy for herself, and, if you like, one or two beautiful organic cotton pieces for the baby. We pack everything by hand, seal it by hand, and print your message on a card she will keep. Boxes range from $85 to $200 — build your own or start from a ready-made set.',
     ],
     categories: ['mom', 'bath', 'swaddle'],
-    highlights: ['Made for her, not just the baby', 'Botanical bath comforts', 'Personalized printed card', 'Hand-finished with a wax seal'],
+    highlights: ['Made for her, not just the baby', 'Botanical bath comforts', 'Personalized printed card', 'Hand-finished with a signature seal'],
     moment: {
       heading: 'Why this works at a shower',
       paragraphs: [
@@ -154,7 +154,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: 'The New Mom Gift Box',
     intro: [
       'In the first weeks after a birth, everyone asks about the baby. A new mom gift box is a way of asking about her. It arrives at the door, needs nothing from her, and says plainly: someone thought about you.',
-      'Ours is built for those blurry, tender weeks — a soothing botanical bath she can take one-handed, dried lavender to slow an evening down, a small luxury with no purpose except pleasure. Add a soft organic cotton piece for the baby if you like, or keep the whole box for her. Each one is packed by hand, sealed with wax, tied with ribbon, and finished with a card printed with your words. Build it yourself or choose a ready-made set between $85 and $200.',
+      'Ours is built for those blurry, tender weeks — a soothing botanical bath she can take one-handed, dried lavender to slow an evening down, a small luxury with no purpose except pleasure. Add a soft organic cotton piece for the baby if you like, or keep the whole box for her. Each one is packed by hand, sealed by hand, tied with ribbon, and finished with a card printed with your words. Build it yourself or choose a ready-made set between $85 and $200.',
     ],
     categories: ['mom', 'bath', 'keepsake'],
     highlights: ['Built around the mother', 'Soothing bath ritual', 'Calming lavender', 'Personalized printed card'],
@@ -170,7 +170,7 @@ export const LANDING_PAGES: LandingPage[] = [
       { q: 'When should I send a new mom gift?', a: 'Any time in the first six weeks lands well. Just after the first visitors thin out — week two or three — is often when a box at the door means the most.' },
       { q: 'Should the gift be for the mom or the baby?', a: 'For her, mostly. The baby has a registry; the mother usually has nothing addressed to her. A box that leads with her and adds one or two organic pieces for the baby covers both beautifully.' },
       { q: 'Can it be shipped directly to her?', a: 'Yes — choose gift shipping at checkout, enter her address, and we send the box with your printed card inside and no prices anywhere in the box.' },
-      { q: 'What is in a Petite Lavande new mom box?', a: 'Botanical bath and body care, calming lavender, and small French-style luxuries, with optional organic cotton pieces for the baby. Every box is hand-packed and finished with a wax seal, ribbon, and your personalized card.' },
+      { q: 'What is in a Petite Lavande new mom box?', a: 'Botanical bath and body care, calming lavender, and small French-style luxuries, with optional organic cotton pieces for the baby. Every box is hand-packed and finished with a signature seal, ribbon, and your personalized card.' },
     ],
     journalLinks: [
       { label: 'Gifts for the New Mom Who Has Everything', href: '/journal/gifts-for-the-new-mom-who-has-everything' },
@@ -186,7 +186,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: 'The Newborn Gift Set',
     intro: [
       'A newborn gift set should do two things: be genuinely useful in the first months, and feel nothing like a supply run. The difference is in the materials and the way it arrives.',
-      'Ours starts with what touches new skin — swaddles and soft garments in organic cotton from GOTS-certified makers, in calm natural tones that suit any nursery. Add a gentle botanical bath piece, or a keepsake like our linen bunny, and the set becomes something parents photograph rather than shelve. Every set is folded and packed by hand, sealed with wax, scented with dried lavender, and finished with a personalized card. Build your own from $85, or choose a ready-made edition up to $200.',
+      'Ours starts with what touches new skin — swaddles and soft garments in organic cotton from GOTS-certified makers, in calm natural tones that suit any nursery. Add a gentle botanical bath piece, or a keepsake like our linen bunny, and the set becomes something parents photograph rather than shelve. Every set is folded and packed by hand, sealed by hand, scented with dried lavender, and finished with a personalized card. Build your own from $85, or choose a ready-made edition up to $200.',
     ],
     categories: ['swaddle', 'garment', 'keepsake', 'bath'],
     highlights: ['Organic cotton from GOTS-certified makers', 'Calm, nursery-neutral tones', 'Keepsakes worth keeping', 'Hand-folded & gift-ready'],
@@ -202,7 +202,7 @@ export const LANDING_PAGES: LandingPage[] = [
       { q: 'Why does organic cotton matter for newborns?', a: 'Newborn skin is thinner and more permeable than adult skin. Organic cotton from GOTS-certified makers is grown and processed to a strict standard, so what touches new skin is as gentle as possible.' },
       { q: 'What sizes should I choose?', a: 'Parents are usually oversupplied in newborn sizes. Choosing 3–6 months means your gift gets worn — a small choice that doubles its usefulness.' },
       { q: 'Is this a good group or family gift?', a: 'Yes — a larger curated set works well when several people contribute, and the personalized card can carry everyone’s names.' },
-      { q: 'How is the set presented?', a: 'Hand-folded in a rigid keepsake box with dried lavender, a wax seal, and ribbon, plus your message printed on a card. It arrives ready to give — no wrapping needed.' },
+      { q: 'How is the set presented?', a: 'Hand-folded in a rigid keepsake box with dried lavender, a signature seal, and ribbon, plus your message printed on a card. It arrives ready to give — no wrapping needed.' },
     ],
     journalLinks: [
       { label: 'The Best Organic Baby Shower Gifts', href: '/journal/best-organic-baby-shower-gifts-2026' },
@@ -218,7 +218,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: 'The Gift for a Second Baby',
     intro: [
       'Second babies get hand-me-downs; second-time mothers get overlooked. By the time baby two arrives, the family owns the gear, the clothes, and three of everything — which is exactly what makes the gift decision interesting. What is left to give is care.',
-      'A second-baby box leans toward the mother: a soothing bath ritual for a woman who now has two people needing her, calming lavender, a quiet luxury. For the baby, one genuinely new thing — a keepsake of their own, or a fresh organic cotton piece that was never their sibling’s. We pack it by hand, seal it with wax, and print your card. It says what second-time parents rarely hear: this baby, and this mother, deserve celebrating just as much.',
+      'A second-baby box leans toward the mother: a soothing bath ritual for a woman who now has two people needing her, calming lavender, a quiet luxury. For the baby, one genuinely new thing — a keepsake of their own, or a fresh organic cotton piece that was never their sibling’s. We pack it by hand, seal it by hand, and print your card. It says what second-time parents rarely hear: this baby, and this mother, deserve celebrating just as much.',
     ],
     categories: ['mom', 'bath', 'keepsake'],
     highlights: ['Nothing she already owns', 'Comfort for a mom of two', 'A first thing of their own for baby', 'Personalized printed card'],
@@ -250,7 +250,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: 'Twin Baby Gifts',
     intro: [
       'Twin gifts fail in two predictable ways: one of everything (someone is left out) or two identical everythings (nobody is a person). The families we pack for tell us the same thing — matched, not identical, is the thoughtful middle.',
-      'A twin box from us pairs organic cotton pieces in coordinated natural tones — two swaddles that belong together without being copies, two soft garments in sibling shades. And because a mother of two newborns is doing double of everything, the box leans into her comfort too: a soothing bath soak, calming lavender, something that is only hers. Hand-packed, wax-sealed, with your card printed inside. Build your own or start ready-made, $85 to $200.',
+      'A twin box from us pairs organic cotton pieces in coordinated natural tones — two swaddles that belong together without being copies, two soft garments in sibling shades. And because a mother of two newborns is doing double of everything, the box leans into her comfort too: a soothing bath soak, calming lavender, something that is only hers. Hand-packed, hand-sealed, with your card printed inside. Build your own or start ready-made, $85 to $200.',
     ],
     categories: ['swaddle', 'garment', 'mom', 'bath'],
     highlights: ['Matched, not identical, pairs', 'Organic cotton in sibling tones', 'Real comfort for the mother', 'Personalized printed card'],
@@ -282,7 +282,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: 'The Baby Gift from Coworkers',
     intro: [
       'Every office knows the ritual: the envelope goes around, someone volunteers to buy the gift, and the pooled money becomes a gift card because nobody wanted to choose wrong. It is efficient — and completely forgettable.',
-      'A group gift works harder when the money buys one substantial, beautiful thing. Our boxes suit office pools naturally: a $120 to $200 box reads as generous from a team of five to fifteen, arrives at the colleague’s door gift-wrapped with a wax seal, and carries a printed card with the whole team’s message — every name included. The parent opens something curated, not a balance. Choose a ready-made set in one click, or have the volunteer build it in ten minutes.',
+      'A group gift works harder when the money buys one substantial, beautiful thing. Our boxes suit office pools naturally: a $120 to $200 box reads as generous from a team of five to fifteen, arrives at the colleague’s door gift-wrapped with a signature seal, and carries a printed card with the whole team’s message — every name included. The parent opens something curated, not a balance. Choose a ready-made set in one click, or have the volunteer build it in ten minutes.',
     ],
     categories: ['garment', 'swaddle', 'mom', 'keepsake'],
     highlights: ['One gift, whole-team card', 'Ships straight to their door', 'Group-worthy $85–$200 range', 'No collection-envelope chaos'],
@@ -314,7 +314,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: 'The C-Section Care Package',
     intro: [
       'The weeks after a cesarean birth move slowly, and the best gifts respect that. She is spending more time resting, moving carefully, and letting others carry things — a care package for this moment should bring comfort to her, not tasks.',
-      'Ours is chosen on one principle: everything must be easy. A soothing botanical bath soak for when she is ready for a long warm soak, calming lavender for the bedside, soft things that ask nothing, a small luxury purely for pleasure. If you like, add an organic cotton piece for the baby. We pack it all by hand, seal it with wax, and print your words on the card — so the box does the visiting when you cannot. From $85 to $200, built by you or ready-made.',
+      'Ours is chosen on one principle: everything must be easy. A soothing botanical bath soak for when she is ready for a long warm soak, calming lavender for the bedside, soft things that ask nothing, a small luxury purely for pleasure. If you like, add an organic cotton piece for the baby. We pack it all by hand, seal it by hand, and print your words on the card — so the box does the visiting when you cannot. From $85 to $200, built by you or ready-made.',
     ],
     categories: ['mom', 'bath', 'keepsake'],
     highlights: ['Comfort-first, task-free', 'Calming lavender for the bedside', 'Soothing bath for slow weeks', 'Personalized printed card'],

@@ -59,7 +59,7 @@ export const JOURNAL_POSTS: JournalPost[] = [
       { h2: 'Our 2026 edit' },
       { ul: ['An organic baby clothes gift set in soft naturals', 'A gender-neutral box for when the surprise is part of the fun', 'A botanical lavender bouquet to scent the nursery', 'A personalized card — the detail everyone reads first'] },
       { h2: 'Presentation matters' },
-      { p: 'A gift that arrives sealed with a wax stamp, tied with a natural linen ribbon and scented with dried lavender lands differently than a parcel of loose items. It tells the new family that real care went into it.' },
+      { p: 'A gift that arrives sealed by hand, tied with a natural linen ribbon and scented with dried lavender lands differently than a parcel of loose items. It tells the new family that real care went into it.' },
       { p: 'You can choose a ready-made set or build your own box item by item — either way, the pieces above are a reliable recipe for the kind of gift that gets asked about at the shower.' },
     ],
     related: [
@@ -106,7 +106,7 @@ export const JOURNAL_POSTS: JournalPost[] = [
       { h2: 'Something thoughtful' },
       { ul: ['A soft linen scrunchie or cosy socks', 'A beautiful tea blend for night feeds', 'A personalized card with words she can keep', 'A keepsake that marks the new chapter'] },
       { h2: 'Put it together with care' },
-      { p: 'The presentation is half the gift. A curated box — sealed with wax, tied with linen ribbon, scented with lavender — feels far more personal than a bouquet on the doorstep. Build your own combination, or start from a ready-made set made with mom in mind.' },
+      { p: 'The presentation is half the gift. A curated box — sealed by hand, tied with linen ribbon, scented with lavender — feels far more personal than a bouquet on the doorstep. Build your own combination, or start from a ready-made set made with mom in mind.' },
     ],
     related: [
       { label: 'Postpartum care package', href: '/gifts/postpartum-care-package' },

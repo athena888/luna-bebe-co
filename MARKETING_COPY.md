@@ -7,13 +7,13 @@ you approve it. (Live templates below are already deployed; edits welcome.)
 ## Live templates (lib/resend.ts)
 
 ### Welcome (instant, on newsletter signup) — subject: `Welcome to Petite Lavande ✨`
-> We're so glad you're here. Petite Lavande was born out of a love for new life — every box we create is handcrafted with organic materials, curated with intention, and packed with dried lavender and a wax seal because every detail matters.
+> We're so glad you're here. Petite Lavande was born out of a love for new life — every box we create is handcrafted with organic materials, curated with intention, and packed with dried lavender and sealed by hand because every detail matters.
 > Use code **WELCOME10** for 10% off your first order.
 > CTA: Build Your Box → /build
 
 ### Welcome 2 (D+2) — subject: `The story behind every box 🌿`
 > Every item in a Petite Lavande box is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender. The printed card in each box tells the story of every item, so the person you're gifting knows exactly what's touching their baby's skin.
-> Hand-packed, finished with satin ribbon and a wax seal.
+> Hand-packed, finished with satin ribbon, sealed by hand.
 > CTA: See the Boxes → /boxes
 
 ### Welcome 3 (D+4) — subject: `Still deciding? Your 10% is waiting ✨`
@@ -77,13 +77,13 @@ Saving a date through the form counts as opt-in (the form says we'll remind them
 **Due-date email** — subject: `The big day is getting close 🌿`
 > **Almost time**
 > The arrival you asked us to remember is only a few weeks away now. If a gift is part of the plan, this is the window — every box is packed by hand and ships with time to spare.
-> Organic keepsakes, chosen piece by piece, sealed with wax and ribbon.
+> Organic keepsakes, chosen piece by piece, ribbon-tied and sealed by hand.
 > CTA: Build Their Box → /build
 
 **Birthday email** — subject: `A little birthday is coming up 💛`
 > **A day worth celebrating**
 > A birthday you asked us to remember is a few weeks out. A box of organic keepsakes — soft things to grow into, gentle things for the bath — is a lovely way to mark the day.
-> Hand-packed, finished with satin ribbon and a wax seal, with your message inside.
+> Hand-packed, finished with satin ribbon and sealed by hand, with your message inside.
 > CTA: See the Boxes → /boxes
 
 **Capture card (approved & live — after newsletter signup in the footer):**
@@ -124,7 +124,7 @@ holds while the store is closed, and carts older than 14 days are never emailed.
 **Cart touch 2 (D+3)** — subject: `Your box is still saved 🌿`
 > **Right where you left it**
 > The box you built is still saved, exactly as you left it. If the moment passed, no worries at all — but if that gift is still on your mind, everything is ready to finish in a minute or two.
-> Hand-packed within 24 hours of your order, finished with satin ribbon and a wax seal.
+> Hand-packed within 24 hours of your order, finished with satin ribbon, sealed by hand.
 > CTA: Pick Up Where You Left Off → /checkout
 
 ### Build 8 — drafts land here with the build.

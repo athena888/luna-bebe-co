@@ -473,7 +473,7 @@ export default function CheckoutPage() {
                       <span className="text-espresso">{formatPrice(itemTotal)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-bark-600">Keepsake Box, Wax Seal &amp; Card</span>
+                      <span className="text-bark-600">Keepsake Box, Ribbon &amp; Card</span>
                       <span className="text-espresso">{formatPrice(BOX_BASE_PRICE)}</span>
                     </div>
                     <div className="flex justify-between">
