@@ -6,7 +6,7 @@ import { AestheticBoxes } from '@/components/ui/AestheticBoxes'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Ready-Made Gift Sets — Petite Lavande',
+  title: 'Ready-Made Gift Sets',
   description: 'Curated baby gift boxes — thoughtfully assembled, every detail chosen.',
   alternates: { canonical: '/boxes' },
 }

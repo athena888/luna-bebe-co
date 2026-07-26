@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   description: "Thoughtful organic newborn gift boxes for your employees' growing families. Hand-packed, traceable, delivered. Volume pricing for People & HR teams.",
   alternates: { canonical: `${BASE}/corporate` },
   openGraph: {
-    title: 'Corporate Baby Gifts for Employees | Petite Lavande',
+    title: 'Corporate & Team Baby Gifts',
     description: "Thoughtful organic newborn gift boxes for your employees' growing families. Hand-packed, traceable, delivered. Volume pricing for People & HR teams.",
     url: `${BASE}/corporate`,
     type: 'website',
