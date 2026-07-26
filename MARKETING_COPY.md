@@ -8,7 +8,7 @@ you approve it. (Live templates below are already deployed; edits welcome.)
 
 ### Welcome (instant, on newsletter signup) — subject: `Welcome to Petite Lavande ✨`
 > We're so glad you're here. Petite Lavande was born out of a love for new life — every box we create is handcrafted with organic materials, curated with intention, and packed with dried lavender and sealed by hand because every detail matters.
-> Use code **WELCOME10** for 10% off your first order.
+> Your personal code takes 10% off your first order — one use, just for you: **{{WELC-XXXXXX}}**
 > CTA: Build Your Box → /build
 
 ### Welcome 2 (D+2) — subject: `The story behind every box 🌿`
@@ -18,7 +18,7 @@ you approve it. (Live templates below are already deployed; edits welcome.)
 
 ### Welcome 3 (D+4) — subject: `Still deciding? Your 10% is waiting ✨`
 > Tell us who you're gifting and our gift guide will point you to the right box — for a new mama, a newborn, or both. Or build your own from scratch, item by item.
-> Your **WELCOME10** code still takes 10% off your first order.
+> Your personal code still takes 10% off your first order: **{{WELC-XXXXXX}}**
 > CTA: Find the Right Box → /guide
 
 ### Abandoned cart (pending >1h, daily cron) — subject: `Your Petite Lavande box is waiting ✨`

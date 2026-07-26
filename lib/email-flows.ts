@@ -149,9 +149,11 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
           await sendWelcomeSeries2Email({ customerEmail: ev.recipient, segment: await segmentOf(ev.recipient) })
           break
         }
-        case 'welcome-3':
-          await sendWelcomeSeries3Email({ customerEmail: ev.recipient })
+        case 'welcome-3': {
+          const { welcomeCodeOf } = await import('./welcome-code')
+          await sendWelcomeSeries3Email({ customerEmail: ev.recipient, code: await welcomeCodeOf(ev.recipient) })
           break
+        }
         case 'winback': {
           const { segmentOf } = await import('./contacts')
           await sendWinBackEmail({ customerEmail: ev.recipient, segment: await segmentOf(ev.recipient) })

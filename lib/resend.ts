@@ -130,9 +130,11 @@ export async function sendCorporateInquiryEmail(lead: {
 export async function sendWelcomeEmail({
   customerName,
   customerEmail,
+  code,
 }: {
   customerName?: string
   customerEmail: string
+  code?: string | null
 }) {
   const greeting = customerName ? `Welcome, ${customerName}` : 'Welcome'
   return sendEmail({
@@ -148,9 +150,11 @@ export async function sendWelcomeEmail({
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             We're so glad you're here. Petite Lavande was born out of a love for new life — every box we create is handcrafted with organic materials, curated with intention, and packed with dried lavender and sealed by hand because every detail matters.
           </p>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 24px;">
-            Use code <strong>WELCOME10</strong> for 10% off your first order.
+          ${code ? `
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 8px;">
+            Your personal code takes 10% off your first order — one use, just for you:
           </p>
+          ${CODE(code)}` : ''}
           <div style="text-align:center;">
             <a href="${utm('/build', 'welcome')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
               Build Your Box
@@ -221,7 +225,7 @@ export async function sendWelcomeSeries2Email({ customerEmail, segment }: { cust
 }
 
 // Welcome series step 3 (D+4) — gentle nudge with the code reminder.
-export async function sendWelcomeSeries3Email({ customerEmail }: { customerEmail: string }) {
+export async function sendWelcomeSeries3Email({ customerEmail, code }: { customerEmail: string; code?: string | null }) {
   return sendEmail({
     from: FROM,
     to: customerEmail,
@@ -235,9 +239,11 @@ export async function sendWelcomeSeries3Email({ customerEmail }: { customerEmail
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             Tell us who you're gifting and our gift guide will point you to the right box — for a new mama, a newborn, or both. Or build your own from scratch, item by item.
           </p>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 24px;">
-            Your <strong>WELCOME10</strong> code still takes 10% off your first order.
+          ${code ? `
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 8px;">
+            Your personal code still takes 10% off your first order:
           </p>
+          ${CODE(code)}` : ''}
           <div style="text-align:center;">
             <a href="${utm('/guide', 'welcome')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
               Find the Right Box

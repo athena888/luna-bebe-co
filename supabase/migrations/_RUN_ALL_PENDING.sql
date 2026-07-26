@@ -1284,4 +1284,10 @@ alter table email_events drop constraint if exists email_events_flow_check;
 alter table email_events add constraint email_events_flow_check
   check (flow in ('welcome','postpurchase','winback','transactional','occasion','cart','campaign'));
 
+-- 41) Personal welcome codes — replaces the shared WELCOME10 (which was never
+--     created in live Stripe and would be reusable by the same customer).
+--     Each signup mints a one-use WELC-XXXXXX; stored here so welcome-3 can
+--     repeat it at D+4.
+alter table marketing_contacts add column if not exists welcome_code text;
+
 -- Done.

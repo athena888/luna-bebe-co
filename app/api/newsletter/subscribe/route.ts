@@ -32,11 +32,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Fresh subscribe — send the welcome email with the WELCOME10 code.
-    // Wrapped so a send failure never fails the subscription itself.
-    // (Duplicate contacts throw above and are handled in catch, so they skip this.)
+    // Fresh subscribe — mint their personal one-use 10% code and send the
+    // welcome email with it. Wrapped so a failure never fails the subscription
+    // itself (a null code just omits the discount line).
     try {
-      await sendWelcomeEmail({ customerEmail: email })
+      const { ensureWelcomeCode } = await import('@/lib/welcome-code')
+      const code = await ensureWelcomeCode(email)
+      await sendWelcomeEmail({ customerEmail: email, code })
     } catch (e) {
       console.error('Welcome email send failed:', e)
     }
