@@ -30,7 +30,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return {
     title: p.name,
     description: (es.description ?? p.description ?? '').slice(0, 155),
-    alternates: { canonical: `/es/productos/${id}` },
+    alternates: {
+      canonical: `/es/productos/${id}`,
+      languages: { en: `/products/${id}`, 'es-US': `/es/productos/${id}`, 'x-default': `/products/${id}` },
+    },
   }
 }
 

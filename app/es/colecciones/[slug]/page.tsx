@@ -17,7 +17,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: t.h1 ?? t.title ?? c.title,
     description: (t.intro_copy ?? '').slice(0, 155) || undefined,
-    alternates: { canonical: `/es/colecciones/${slug}` },
+    alternates: {
+      canonical: `/es/colecciones/${slug}`,
+      languages: { en: `/collections/${slug}`, 'es-US': `/es/colecciones/${slug}`, 'x-default': `/collections/${slug}` },
+    },
   }
 }
 

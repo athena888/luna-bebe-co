@@ -4,7 +4,11 @@ import { CONTACT_EMAIL } from '@/lib/site-config'
 export const metadata: Metadata = {
   title: 'Returns & Refund Policy',
   description: 'Petite Lavande return, exchange, and refund policy.',
-  alternates: { canonical: '/legal/returns' },
+  alternates: {
+    canonical: '/legal/returns',
+    ...(process.env.NEXT_PUBLIC_SPANISH_ACTIVE === 'true' || process.env.SPANISH_ACTIVE === 'true'
+      ? { languages: { en: '/legal/returns', 'es-US': '/es/legal/devoluciones', 'x-default': '/legal/returns' } } : {}),
+  },
 }
 
 export default function ReturnsPage() {

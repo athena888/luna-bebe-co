@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { JsonLd } from '@/components/ui/JsonLd'
 import { getLiveCollection, getLiveCollections } from '@/lib/collections'
+import { SPANISH_ACTIVE } from '@/lib/i18n'
 
 // Collection pages — real indexable routes (never client-side tabs). The
 // empty-collection guard lives in lib/collections: below min_products a
@@ -24,7 +25,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: c.meta_title || c.title,
     description: c.meta_description || undefined,
-    alternates: { canonical: `/collections/${c.slug}` },
+    alternates: {
+      canonical: `/collections/${c.slug}`,
+      ...(SPANISH_ACTIVE ? { languages: { en: `/collections/${c.slug}`, 'es-US': `/es/colecciones/${c.slug}`, 'x-default': `/collections/${c.slug}` } } : {}),
+    },
   }
 }
 

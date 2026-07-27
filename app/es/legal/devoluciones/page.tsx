@@ -4,7 +4,10 @@ import { CONTACT_EMAIL } from '@/lib/site-config'
 export const metadata: Metadata = {
   title: 'Devoluciones y Reembolsos',
   description: 'Política de devoluciones, cambios y reembolsos de Petite Lavande.',
-  alternates: { canonical: '/es/legal/devoluciones' },
+  alternates: {
+    canonical: '/es/legal/devoluciones',
+    languages: { en: '/legal/returns', 'es-US': '/es/legal/devoluciones', 'x-default': '/legal/returns' },
+  },
 }
 
 // Spanish returns policy — mirrors the English page, reviewer-corrected

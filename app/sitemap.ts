@@ -37,6 +37,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       urls.push({ url: `${base}/collections/${c.slug}`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 })
     }
   } catch { /* §42 not run yet */ }
+  // Spanish locale — only when live, only pages with complete translations.
+  try {
+    const { SPANISH_ACTIVE, getTranslations } = await import('@/lib/i18n')
+    if (SPANISH_ACTIVE) {
+      urls.push({ url: `${base}/es`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 })
+      urls.push({ url: `${base}/es/legal/devoluciones`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 })
+      const { getLiveCollections } = await import('@/lib/collections')
+      for (const c of await getLiveCollections()) {
+        urls.push({ url: `${base}/es/colecciones/${c.slug}`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 })
+      }
+      const products = await getCatalog({ activeOnly: true })
+      const t = await getTranslations('product', products.map(p => p.id))
+      for (const p of products) {
+        if (t.get(p.id)?.description) {
+          urls.push({ url: `${base}/es/productos/${p.id}`, lastModified: now, changeFrequency: 'weekly', priority: 0.6 })
+        }
+      }
+    }
+  } catch { /* §44 not run yet */ }
   // Journal posts — DB-published posts merged over the built-in starters, so
   // portal-created posts get indexed too (fails soft to the starters).
   for (const post of await getJournalPosts()) {

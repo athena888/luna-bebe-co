@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { getCatalogProduct, getProductStock } from '@/lib/products-db'
 import { CATEGORY_LABELS } from '@/lib/products'
 import { JsonLd } from '@/components/ui/JsonLd'
+import { SPANISH_ACTIVE } from '@/lib/i18n'
 import ProductDetailClient from './ProductDetailClient'
 import { getCatalog } from '@/lib/products-db'
 import type { RelatedItem } from '@/components/ui/RelatedProducts'
@@ -25,7 +26,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return {
     title: p.seo_title ? { absolute: p.seo_title } : p.name,
     description,
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      ...(SPANISH_ACTIVE ? { languages: { en: url, 'es-US': `${BASE}/es/productos/${id}`, 'x-default': url } } : {}),
+    },
     openGraph: {
       title: `${p.name} | Petite Lavande`,
       description,
