@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
 import { getLiveCollections } from '@/lib/collections'
 import { getTranslations } from '@/lib/i18n'
 
@@ -27,6 +29,8 @@ export default async function EsHomePage() {
 
   return (
     <>
+      <Header />
+      <main className="min-h-screen bg-white">
       {/* Hero */}
       <section className="bg-[#faf7f2] border-b border-cream-300">
         <div className="max-w-4xl mx-auto px-6 py-16 text-center">
@@ -70,6 +74,8 @@ export default async function EsHomePage() {
           })}
         </div>
       </section>
+      </main>
+      <Footer />
     </>
   )
 }

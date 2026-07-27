@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
 import { getLiveCollection } from '@/lib/collections'
 import { getTranslations } from '@/lib/i18n'
 
@@ -31,6 +33,9 @@ export default async function EsCollectionPage({ params }: { params: Promise<{ s
   const t = (await getTranslations('collection', [slug])).get(slug) ?? {}
 
   return (
+    <>
+      <Header />
+      <main className="min-h-screen bg-white">
     <div className="max-w-6xl mx-auto px-6 pt-12 pb-16">
       <p className="font-sans text-[12px] tracking-[0.3em] uppercase font-bold text-[#7A8E7C] mb-3">Colección</p>
       <h1 className="font-playfair text-3xl sm:text-4xl text-espresso mb-4">{t.h1 ?? t.title ?? c.title}</h1>
@@ -54,5 +59,8 @@ export default async function EsCollectionPage({ params }: { params: Promise<{ s
         ))}
       </div>
     </div>
+      </main>
+      <Footer />
+    </>
   )
 }

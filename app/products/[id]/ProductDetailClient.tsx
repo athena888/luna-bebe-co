@@ -60,7 +60,8 @@ function Spinner() {
   )
 }
 
-export default function ProductDetailClient({ related }: { related?: RelatedItem[] }) {
+export default function ProductDetailClient({ related, locale = 'en' }: { related?: RelatedItem[]; locale?: 'en' | 'es' }) {
+  const isEs = locale === 'es'
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
 
@@ -70,6 +71,7 @@ export default function ProductDetailClient({ related }: { related?: RelatedItem
   const [imgFailed, setImgFailed] = useState<Record<number, boolean>>({})
   const [inBox, setInBox] = useState(false)
   const [stock, setStock] = useState<number | null>(null)
+  const [esDescription, setEsDescription] = useState<string | null>(null)
   const [wlEmail, setWlEmail] = useState('')
   const [wlState, setWlState] = useState<'idle' | 'saving' | 'done'>('idle')
   const [descOpen, setDescOpen] = useState(false)
@@ -93,9 +95,10 @@ export default function ProductDetailClient({ related }: { related?: RelatedItem
   useEffect(() => {
     fetch(`/api/products/${id}`)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
-      .then(({ product: p, gallery: g, stock: st }: { product: Product; gallery: GalleryImage[]; stock: number | null }) => {
+      .then(({ product: p, gallery: g, stock: st, esDescription: esd }: { product: Product; gallery: GalleryImage[]; stock: number | null; esDescription?: string | null }) => {
         setProduct(p)
         setStock(st ?? null)
+        setEsDescription(esd ?? null)
         trackViewItem({ id: p.id, name: p.name, price: p.price, category: p.category })
         const sorted = [...g].sort((a, b) => {
           if (a.is_primary && !b.is_primary) return -1
@@ -290,13 +293,13 @@ export default function ProductDetailClient({ related }: { related?: RelatedItem
                 ) : inBox ? (
                   <div className="space-y-2 mb-4">
                     <div className="w-full border border-gold-400 text-gold-400 font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 text-center">
-                      Added to Box
+                      {isEs ? 'En tu canastilla' : 'Added to Box'}
                     </div>
                     <button
                       onClick={() => router.push('/build')}
                       className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-[#6d8070] transition-colors"
                     >
-                      Go to Your Box
+                      {isEs ? 'Ir a tu canastilla' : 'Go to Your Box'}
                     </button>
                   </div>
                 ) : (
@@ -304,7 +307,7 @@ export default function ProductDetailClient({ related }: { related?: RelatedItem
                     onClick={handleAddToBox}
                     className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-[#6d8070] transition-colors mb-4"
                   >
-                    {(product as Product & { preorder?: boolean }).preorder ? 'Preorder Now' : 'Add to Box'}
+                    {(product as Product & { preorder?: boolean }).preorder ? (isEs ? 'Reservar ahora' : 'Preorder Now') : (isEs ? 'Agregar a tu canastilla' : 'Add to Box')}
                   </button>
                 )}
 
@@ -339,7 +342,7 @@ export default function ProductDetailClient({ related }: { related?: RelatedItem
                       className="pb-4 text-base text-bark-600 leading-relaxed"
                       style={{ fontFamily: 'var(--font-cormorant)' }}
                     >
-                      {clean(product.description)}
+                      {clean(isEs && esDescription ? esDescription : product.description)}
                     </p>
                   )}
                 </div>

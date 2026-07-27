@@ -23,10 +23,16 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
   const certs = await resolveCerts((product.certifications ?? []) as ProductCert[])
   const stock = await getProductStock(id, product.has_variants)
+  let esDescription: string | null = null
+  try {
+    const { getTranslations } = await import('@/lib/i18n')
+    esDescription = (await getTranslations('product', [id])).get(id)?.description ?? null
+  } catch { /* no translations yet */ }
 
   return NextResponse.json({
     product: { ...product, certifications: certs },
     stock,
+    esDescription,
     gallery: galleryRes.data ?? [],
     variants: variantsRes.data ?? [],
   })

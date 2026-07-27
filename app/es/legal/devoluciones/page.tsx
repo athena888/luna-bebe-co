@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
 import { CONTACT_EMAIL } from '@/lib/site-config'
 
 export const metadata: Metadata = {
@@ -14,6 +16,9 @@ export const metadata: Metadata = {
 // register (present tense, warm).
 export default function DevolucionesPage() {
   return (
+    <>
+      <Header />
+      <main className="min-h-screen bg-white">
     <article className="max-w-2xl mx-auto px-6 pt-12 pb-16 font-sans text-bark-600">
       <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-4">Legal</p>
       <h1 className="font-playfair text-4xl font-normal text-espresso mb-2">Devoluciones y Reembolsos</h1>
@@ -51,6 +56,9 @@ export default function DevolucionesPage() {
         Escríbenos a <a href={`mailto:${CONTACT_EMAIL}`} className="text-bark-600 underline underline-offset-2">{CONTACT_EMAIL}</a> con tu número de pedido y cuéntanos qué pasó. Respondemos dentro de 24 horas.
       </Section>
     </article>
+      </main>
+      <Footer />
+    </>
   )
 }
 

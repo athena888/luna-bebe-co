@@ -1,9 +1,10 @@
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { JsonLd } from '@/components/ui/JsonLd'
-import { getCatalogProduct, getProductStock } from '@/lib/products-db'
+import ProductDetailClient from '@/app/products/[id]/ProductDetailClient'
+import { getCatalog, getCatalogProduct, getProductStock } from '@/lib/products-db'
 import { getTranslations } from '@/lib/i18n'
+import type { RelatedItem } from '@/components/ui/RelatedProducts'
 
 export const dynamic = 'force-dynamic'
 
@@ -46,8 +47,16 @@ export default async function EsProductPage({ params }: { params: Promise<{ id: 
   const inStock = stock == null ? true : stock > 0
   const description = es.description ?? p.description ?? ''
 
+  let related: RelatedItem[] = []
+  try {
+    const catalog = await getCatalog({ activeOnly: true })
+    const same = catalog.filter(x => x.id !== p.id && x.category === p.category)
+    const rest = catalog.filter(x => x.id !== p.id && x.category !== p.category)
+    related = [...same, ...rest].slice(0, 3).filter(x => x.image).map(x => ({ id: x.id, name: x.name, price: x.price, image: x.image! }))
+  } catch { /* page renders without cross-links */ }
+
   return (
-    <div className="max-w-5xl mx-auto px-6 pt-12 pb-16">
+    <>
       <JsonLd data={{
         '@context': 'https://schema.org',
         '@type': 'Product',
@@ -64,31 +73,7 @@ export default async function EsProductPage({ params }: { params: Promise<{ id: 
           url: `${BASE}/es/productos/${id}`,
         },
       }} />
-      <div className="flex flex-col md:flex-row gap-10 items-start">
-        <div className="w-full md:w-[45%] shrink-0">
-          <div className="aspect-square overflow-hidden border border-cream-300 bg-cream-50">
-            {p.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-7xl">{p.imageEmoji}</div>
-            )}
-          </div>
-        </div>
-        <div className="flex-1">
-          <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-2">{CATEGORY_ES[p.category] ?? p.category}</p>
-          <h1 className="font-playfair text-3xl text-espresso leading-tight mb-2">{p.name}</h1>
-          <p className="font-sans text-base text-bark-400 mb-5">${(p.price / 100).toFixed(2)}</p>
-          {!inStock && (
-            <span className="inline-block bg-cream-200 text-bark-400 font-sans text-[10px] tracking-[0.15em] uppercase font-bold px-2.5 py-1 mb-4">Agotado</span>
-          )}
-          <p className="font-sans text-[14px] leading-[1.8] text-espresso-light mb-7 whitespace-pre-wrap">{description}</p>
-          <Link href="/build" className="inline-block bg-[#7A8E7C] text-white font-sans text-[12px] tracking-[0.2em] uppercase py-4 px-9 hover:bg-[#6b7d6d] transition-colors">
-            Agregar a tu canastilla
-          </Link>
-          <p className="font-sans text-[11px] text-bark-400 mt-3">El armado de la canastilla continúa en inglés por ahora.</p>
-        </div>
-      </div>
-    </div>
+      <ProductDetailClient related={related} locale="es" />
+    </>
   )
 }
