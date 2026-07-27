@@ -59,6 +59,9 @@ const ES: Record<string, string> = {
   'corp.q': '¿Regalos para tu equipo o tus clientes?',
   'corp.cta': 'Regalos corporativos',
   'why.intro': 'Cualquiera puede enviar un regalo. Nosotros te ayudamos a enviar un momento — pensado tanto para la mamá como para el bebé, con cada pieza de origen conocido y terminado a mano con ese cuidado que solo el cariño sabe dar.',
+  'unforgettable.title': 'Crea algo inolvidable',
+  'why.title': 'Lo que lo hace especial',
+  'story.heading': 'Nacida de la certeza de que los comienzos merecen ser hermosos',
   'unforgettable.body': 'Un ramo de lavanda y rituales de bienestar para suavizar los días largos, elegidos como los elegiría una hija para su propia madre.',
 }
 
@@ -107,9 +110,14 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
 
         {/* ── The Collection — Unforgettable panel + box carousel; lavender divider beneath ── */}
         <TheCollection
-          title={content.unforgettable.title}
+          title={s('unforgettable.title', content.unforgettable.title)}
           body={s('unforgettable.body', content.unforgettable.body)}
-          items={content.unforgettable.items}
+          items={isEs ? [
+            'Baños y rituales de calma para mamá',
+            'Algodón orgánico de talleres certificados',
+            'Esenciales premium y juguetes de recuerdo',
+            'Armada a mano con tarjeta personalizada',
+          ] : content.unforgettable.items}
         />
 
         {/* ── Shop by Category — heading above the image tiles, styled like Best Sellers ── */}
@@ -130,7 +138,7 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
             <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto rotate-180" />
           </div>
           <p className="font-sans text-[12px] tracking-[0.3em] uppercase font-bold text-[#7A8E7C] mb-4">{s('story.eyebrow', 'Our Story')}</p>
-          <h2 className="font-playfair text-2xl sm:text-3xl text-espresso leading-snug max-w-2xl mx-auto mb-6">{story.hero.heading}</h2>
+          <h2 className="font-playfair text-2xl sm:text-3xl text-espresso leading-snug max-w-2xl mx-auto mb-6">{s('story.heading', story.hero.heading)}</h2>
           <Link
             href="/story"
             className="inline-block font-sans text-[12px] tracking-[0.3em] uppercase text-espresso border-b border-espresso pb-1 hover:text-gold-500 hover:border-gold-500 transition-colors"
@@ -150,7 +158,7 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
 
         {/* ── What makes it special — full-bleed editorial photo with overlaid
              heading (client component; photo managed via Portal → Homepage). ── */}
-        <SpecialFeature title={content.why.title} intro={s('why.intro', content.why.intro)} />
+        <SpecialFeature title={s('why.title', content.why.title)} intro={s('why.intro', content.why.intro)} />
 
         {/* ── 8. Testimonials — shown only when NEXT_PUBLIC_SHOW_REVIEWS=true and there are real reviews ── */}
         {process.env.NEXT_PUBLIC_SHOW_REVIEWS === 'true' && content.reviews.items.length > 0 && (

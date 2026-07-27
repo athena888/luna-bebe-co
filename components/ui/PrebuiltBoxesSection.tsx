@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useIsEs } from '@/lib/use-is-es'
 import Image from 'next/image'
 import type { ResolvedBox } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE } from '@/lib/products'
@@ -22,13 +23,14 @@ export function PrebuiltBoxesSection() {
     fetch('/api/boxes?featured=true').then(r => r.json()).then(d => setBoxes(d.boxes ?? [])).catch(() => {})
   }, [])
 
+  const isEs = useIsEs()
   if (boxes.length === 0) return null
 
   return (
     <section className="pt-10 pb-12 sm:pt-12">
       <div className="px-6 mb-8 text-center">
-        <p className="font-sans text-[13px] tracking-[0.18em] uppercase font-medium text-gold-500 mb-2">Ready-Made</p>
-        <h2 className="font-playfair text-[2rem] sm:text-[2.6rem] uppercase tracking-[0.01em] font-medium text-espresso leading-none">Best Sellers</h2>
+        <p className="font-sans text-[13px] tracking-[0.18em] uppercase font-medium text-gold-500 mb-2">{isEs ? 'Listas para regalar' : 'Ready-Made'}</p>
+        <h2 className="font-playfair text-[2rem] sm:text-[2.6rem] uppercase tracking-[0.01em] font-medium text-espresso leading-none">{isEs ? 'Las más queridas' : 'Best Sellers'}</h2>
       </div>
 
       {/* Cover photos — contained grid with side margins on desktop, vertical

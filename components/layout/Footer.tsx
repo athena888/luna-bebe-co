@@ -6,6 +6,7 @@ import { ArrowRight } from 'lucide-react'
 import { CONTACT_EMAIL } from '@/lib/site-config'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { RegionSwitcher } from '@/components/ui/RegionSwitcher'
+import { useIsEs } from '@/lib/use-is-es'
 
 // Segment chips (Build 7) — one optional tap after signup so flow emails can
 // speak to the right reader. Fire-and-forget; disappears once tapped.
@@ -116,6 +117,7 @@ function OccasionCapture({ email }: { email: string }) {
 }
 
 function EmailSignup() {
+  const isEs = useIsEs()
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [done, setDone] = useState(false)
@@ -129,7 +131,7 @@ function EmailSignup() {
       await fetch('/api/newsletter/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, phone: phone.trim() || undefined }),
+        body: JSON.stringify({ email, phone: phone.trim() || undefined, locale: isEs ? 'es' : 'en' }),
       })
     } finally {
       setLoading(false)
@@ -140,7 +142,7 @@ function EmailSignup() {
   if (done) {
     return (
       <div>
-        <p className="font-sans text-sm text-espresso leading-loose text-center">Thank you — you&rsquo;re on the list.</p>
+        <p className="font-sans text-sm text-espresso leading-loose text-center">{isEs ? 'Gracias — ya estás en la lista.' : <>Thank you — you&rsquo;re on the list.</>}</p>
         <SegmentChips email={email} />
         <OccasionCapture email={email} />
       </div>
@@ -154,14 +156,14 @@ function EmailSignup() {
         required
         value={email}
         onChange={e => setEmail(e.target.value)}
-        placeholder="Email Address*"
+        placeholder={isEs ? 'Correo electrónico*' : 'Email Address*'}
         className="w-[45%] min-w-0 px-4 py-2.5 font-sans text-sm text-espresso placeholder:font-light placeholder:text-[#B8B0A6] bg-transparent focus:outline-none"
       />
       <input
         type="tel"
         value={phone}
         onChange={e => setPhone(e.target.value)}
-        placeholder="Phone Number"
+        placeholder={isEs ? 'Teléfono' : 'Phone Number'}
         className="flex-1 min-w-0 px-4 py-2.5 font-sans text-sm text-espresso placeholder:font-light placeholder:text-[#B8B0A6] bg-transparent focus:outline-none border-l border-cream-300"
       />
       <button type="submit" aria-label="Subscribe" className="px-4 text-gold-500 hover:text-gold-600 transition-colors">
@@ -172,6 +174,7 @@ function EmailSignup() {
 }
 
 export function Footer() {
+  const isEs = useIsEs()
   return (
     <footer className="font-medium">
       {/* Main footer — optional owner-managed background sits behind everything;
@@ -187,41 +190,41 @@ export function Footer() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logo-color.png" alt="Petite Lavande" className="h-14 sm:h-[4.25rem] w-auto mb-5 mx-auto" />
 
-              <p className="font-playfair text-[15px] text-espresso mb-1.5 text-center">Join our list — <span className="underline underline-offset-2">10% off your first box</span></p>
-              <p className="font-playfair text-[14px] text-espresso-light mb-3 leading-relaxed max-w-md mx-auto text-center">New-parent gift guides, quiet launches, and a welcome code for your first order.</p>
+              <p className="font-playfair text-[15px] text-espresso mb-1.5 text-center">{isEs ? <>Únete a nuestra lista — <span className="underline underline-offset-2">10% en tu primera canastilla</span></> : <>Join our list — <span className="underline underline-offset-2">10% off your first box</span></>}</p>
+              <p className="font-playfair text-[14px] text-espresso-light mb-3 leading-relaxed max-w-md mx-auto text-center">{isEs ? 'Guías de regalo, lanzamientos tranquilos y un código de bienvenida para tu primer pedido.' : 'New-parent gift guides, quiet launches, and a welcome code for your first order.'}</p>
               <div className="max-w-md mx-auto"><EmailSignup /></div>
             </div>
 
             {/* Link columns — kept off the right border and pulled toward centre */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-8 gap-x-5 sm:gap-x-8 lg:pr-14 xl:pr-24">
               <div>
-                <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">Shop &amp; Gift</p>
+                <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">{isEs ? 'Compra y regala' : <>Shop &amp; Gift</>}</p>
                 <ul className="space-y-2.5 text-[13.5px] font-sans font-normal">
-                  <li><Link href="/gift-guides" className="text-espresso hover:text-gold-500 transition-colors">Gifting Ideas</Link></li>
-                  <li><Link href="/boxes" className="text-espresso hover:text-gold-500 transition-colors">Gift Sets</Link></li>
-                  <li><Link href="/build" className="text-espresso hover:text-gold-500 transition-colors">Build Your Own Box</Link></li>
-                  <li><Link href="/gift-cards" className="text-espresso hover:text-gold-500 transition-colors">Gift Cards</Link></li>
+                  <li><Link href="/gift-guides" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Ideas para regalar' : 'Gifting Ideas'}</Link></li>
+                  <li><Link href="/boxes" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Sets de regalo' : 'Gift Sets'}</Link></li>
+                  <li><Link href={isEs ? '/es/build' : '/build'} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link></li>
+                  <li><Link href="/gift-cards" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link></li>
                 </ul>
               </div>
               <div>
-                <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">About</p>
+                <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">{isEs ? 'Nosotros' : 'About'}</p>
                 <ul className="space-y-2.5 text-[13.5px] font-sans font-normal">
-                  <li><Link href="/story" className="text-espresso hover:text-gold-500 transition-colors">Our Story</Link></li>
-                  <li><Link href="/journal" className="text-espresso hover:text-gold-500 transition-colors">The Journal</Link></li>
-                  <li><Link href="/track" className="text-espresso hover:text-gold-500 transition-colors">Track Order</Link></li>
-                  <li><Link href="/account" className="text-espresso hover:text-gold-500 transition-colors">My Account</Link></li>
+                  <li><Link href="/story" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Nuestra historia' : 'Our Story'}</Link></li>
+                  <li><Link href="/journal" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'El diario' : 'The Journal'}</Link></li>
+                  <li><Link href="/track" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Rastrear pedido' : 'Track Order'}</Link></li>
+                  <li><Link href="/account" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Mi cuenta' : 'My Account'}</Link></li>
                 </ul>
               </div>
               <div>
-                <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">Corporate</p>
+                <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">{isEs ? 'Corporativo' : 'Corporate'}</p>
                 <ul className="space-y-2.5 text-[13.5px] font-sans font-normal">
-                  <li><Link href="/corporate" className="text-espresso hover:text-gold-500 transition-colors">Team Gifting</Link></li>
-                  <li><Link href="/press" className="text-espresso hover:text-gold-500 transition-colors">Press</Link></li>
+                  <li><Link href="/corporate" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Regalos para equipos' : 'Team Gifting'}</Link></li>
+                  <li><Link href="/press" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Prensa' : 'Press'}</Link></li>
                   <li><a href={`mailto:${CONTACT_EMAIL}`} className="text-espresso hover:text-gold-500 transition-colors break-all">{CONTACT_EMAIL}</a></li>
                 </ul>
               </div>
               <div>
-                <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">Currency</p>
+                <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">{isEs ? 'Moneda' : 'Currency'}</p>
                 <div className="text-[13.5px] font-sans font-normal text-espresso"><RegionSwitcher /></div>
               </div>
             </div>
@@ -234,14 +237,23 @@ export function Footer() {
             <p className="whitespace-nowrap">© {new Date().getFullYear()} Petite Lavande.</p>
             {process.env.NEXT_PUBLIC_SPANISH_ACTIVE === 'true' && (
               <div className="flex border border-cream-300">
-                <span className="px-3 py-1.5 bg-[#7A8E7C] text-white font-semibold text-[12px]">English</span>
-                <Link href="/es" className="px-3 py-1.5 bg-white text-espresso hover:bg-cream-50 transition-colors text-[12px]">Español</Link>
+                {isEs ? (
+                  <>
+                    <Link href="/" className="px-3 py-1.5 bg-white text-espresso hover:bg-cream-50 transition-colors text-[12px]">English</Link>
+                    <span className="px-3 py-1.5 bg-[#7A8E7C] text-white font-semibold text-[12px]">Español</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="px-3 py-1.5 bg-[#7A8E7C] text-white font-semibold text-[12px]">English</span>
+                    <Link href="/es" className="px-3 py-1.5 bg-white text-espresso hover:bg-cream-50 transition-colors text-[12px]">Español</Link>
+                  </>
+                )}
               </div>
             )}
             <div className="flex items-center gap-x-5 sm:gap-x-8 whitespace-nowrap">
-              <Link href="/legal/privacy" className="hover:text-gold-500 transition-colors">Privacy Policy</Link>
-              <Link href="/legal/terms" className="hover:text-gold-500 transition-colors">Terms of Service</Link>
-              <Link href="/legal/returns" className="hover:text-gold-500 transition-colors">Returns</Link>
+              <Link href="/legal/privacy" className="hover:text-gold-500 transition-colors">{isEs ? 'Privacidad' : 'Privacy Policy'}</Link>
+              <Link href="/legal/terms" className="hover:text-gold-500 transition-colors">{isEs ? 'Términos' : 'Terms of Service'}</Link>
+              <Link href={isEs ? '/es/legal/devoluciones' : '/legal/returns'} className="hover:text-gold-500 transition-colors">{isEs ? 'Devoluciones' : 'Returns'}</Link>
             </div>
           </div>
 

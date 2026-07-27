@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useIsEs } from '@/lib/use-is-es'
 import { useState, useEffect, useRef } from 'react'
 import { Menu, X, User, ShoppingBag, Mail, ChevronDown } from 'lucide-react'
 import { cartCount } from '@/lib/cart'
@@ -126,12 +127,6 @@ const COLLECTION_GROUPS: Array<{ heading: string; headingEs: string; links: Arra
   },
 ]
 
-// On /es pages the same chrome speaks Spanish and keeps links inside /es
-// wherever a Spanish page exists; untranslated destinations stay English.
-function useIsEs() {
-  const pathname = usePathname()
-  return pathname === '/es' || pathname.startsWith('/es/')
-}
 const collectionHref = (slug: string, isEs: boolean) => isEs ? `/es/colecciones/${slug}` : `/collections/${slug}`
 
 // "Gift Boxes" with the collections dropdown. Every link renders in the
@@ -193,7 +188,7 @@ function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) 
     <>
       {/* Curated first, custom second */}
       <BoxesDropdown light={light} cls={cls} />
-      <Link href="/build" className={cls} onClick={onClick}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
+      <Link href={isEs ? '/es/build' : '/build'} className={cls} onClick={onClick}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
       <Link href="/gift-cards" className={cls} onClick={onClick}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
       <Link href="/story" className={cls} onClick={onClick}>{isEs ? 'Nuestra historia' : 'Stories'}</Link>
     </>
@@ -223,7 +218,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
           </div>
         )}
       </div>
-      <Link href="/build" className={linkCls} onClick={onClose}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
+      <Link href={isEs ? '/es/build' : '/build'} className={linkCls} onClick={onClose}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
       <Link href="/gift-cards" className={linkCls} onClick={onClose}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
       <Link href="/story" className={linkCls} onClick={onClose}>{isEs ? 'Nuestra historia' : 'Stories'}</Link>
       <Link href="/account" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors" onClick={onClose}>My Account</Link>
@@ -249,12 +244,20 @@ function PerksMarquee() {
       .then(d => { if (Array.isArray(d.perks) && d.perks.length > 0) setPerks(d.perks) })
       .catch(() => {})
   }, [])
+  const isEs = useIsEs()
+  const ES_PERKS: Record<string, { label: string; sub: string }> = {
+    'Free Shipping': { label: 'Envío gratis', sub: 'A partir de $100' },
+    'Personalized Card': { label: 'Tarjeta personalizada', sub: 'Terminada a mano para cada canastilla' },
+    'Organic Cotton': { label: 'Algodón orgánico', sub: 'De talleres certificados GOTS' },
+    'Gift Ready': { label: 'Lista para regalar', sub: 'Empacada con cuidado' },
+  }
+  const shown = isEs ? perks.map(pk => ES_PERKS[pk.label] ?? pk) : perks
   return (
     <div className="bg-[#4A3B30] py-2.5 overflow-hidden" aria-label="Our promises">
       <div className="flex w-max animate-[pl-marquee_18s_linear_infinite]">
         {[0, 1].map(copy => (
           <div key={copy} className="flex shrink-0 items-baseline" aria-hidden={copy === 1}>
-            {perks.map(({ label, sub }) => (
+            {shown.map(({ label, sub }) => (
               <span key={`${copy}-${label}`} className="flex items-baseline whitespace-nowrap px-8 sm:px-12">
                 <span className="font-sans text-[11px] tracking-[0.25em] uppercase font-semibold text-cream-50">{label}</span>
                 <span className="font-cormorant text-[15px] text-cream-200 ml-3">{sub}</span>
@@ -271,6 +274,7 @@ function PerksMarquee() {
 // The coming-soon announcement — cream marquee the homepage runs below the
 // hero (colours swapped with the perks strip above).
 export function LaunchMarquee() {
+  const isEs = useIsEs()
   return (
     <div className="bg-cream-white border-y border-cream-300 text-espresso py-2.5 overflow-hidden">
       <div className="flex w-max animate-[pl-marquee_36s_linear_infinite]">
@@ -278,11 +282,11 @@ export function LaunchMarquee() {
           <div key={copy} className="flex shrink-0" aria-hidden={copy === 1}>
             {[0, 1, 2].map(i => (
               <p key={i} className="font-sans text-[11px] tracking-[0.25em] uppercase leading-relaxed whitespace-nowrap px-12">
-                Fait avec amour, pour vous. &nbsp;·&nbsp; Petite Lavande is launching soon &mdash;&nbsp;
+                Fait avec amour, pour vous. &nbsp;·&nbsp; {isEs ? 'Petite Lavande llega muy pronto' : 'Petite Lavande is launching soon'} &mdash;&nbsp;
                 <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" tabIndex={copy === 1 ? -1 : undefined} className="underline underline-offset-2 hover:text-gold-500 transition-colors">Instagram</a>
                 &nbsp;&amp;&nbsp;
                 <a href="https://www.facebook.com/profile.php?id=61590439437590" target="_blank" rel="noopener noreferrer" tabIndex={copy === 1 ? -1 : undefined} className="underline underline-offset-2 hover:text-gold-500 transition-colors">Facebook</a>
-                &nbsp;for updates
+                {isEs ? <>&nbsp;para novedades</> : <>&nbsp;for updates</>}
               </p>
             ))}
           </div>
