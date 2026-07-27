@@ -230,7 +230,7 @@ export async function sendWelcomeSeries3Email({ customerEmail, code }: { custome
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
-    subject: 'Still deciding? Your 10% is waiting ✨',
+    subject: 'Still deciding? Let us help ✨',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}

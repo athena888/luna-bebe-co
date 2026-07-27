@@ -43,6 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (SPANISH_ACTIVE) {
       urls.push({ url: `${base}/es`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 })
       urls.push({ url: `${base}/es/legal/devoluciones`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 })
+      urls.push({ url: `${base}/es/historia`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 })
       const { getLiveCollections } = await import('@/lib/collections')
       for (const c of await getLiveCollections()) {
         urls.push({ url: `${base}/es/colecciones/${c.slug}`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 })

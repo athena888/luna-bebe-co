@@ -190,7 +190,7 @@ function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) 
       <BoxesDropdown light={light} cls={cls} />
       <Link href={isEs ? '/es/build' : '/build'} className={cls} onClick={onClick}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
       <Link href="/gift-cards" className={cls} onClick={onClick}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
-      <Link href="/story" className={cls} onClick={onClick}>{isEs ? 'Nuestra historia' : 'Stories'}</Link>
+      <Link href={isEs ? '/es/historia' : '/story'} className={cls} onClick={onClick}>{isEs ? 'Nuestra historia' : 'Stories'}</Link>
     </>
   )
 }
@@ -220,7 +220,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
       </div>
       <Link href={isEs ? '/es/build' : '/build'} className={linkCls} onClick={onClose}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
       <Link href="/gift-cards" className={linkCls} onClick={onClose}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
-      <Link href="/story" className={linkCls} onClick={onClose}>{isEs ? 'Nuestra historia' : 'Stories'}</Link>
+      <Link href={isEs ? '/es/historia' : '/story'} className={linkCls} onClick={onClose}>{isEs ? 'Nuestra historia' : 'Stories'}</Link>
       <Link href="/account" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors" onClick={onClose}>My Account</Link>
     </div>
   )

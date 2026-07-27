@@ -5,7 +5,17 @@ import { getCatalog } from '@/lib/products-db'
 export async function GET(req: NextRequest) {
   try {
     const includeInactive = req.nextUrl.searchParams.get('all') === 'true'
-    const products = await getCatalog({ activeOnly: !includeInactive })
+    let products = await getCatalog({ activeOnly: !includeInactive })
+
+    // Spanish storefront: swap in approved translated descriptions (names
+    // stay EN/FR — they are the brand). English fallback per product.
+    if (req.nextUrl.searchParams.get('lang') === 'es') {
+      try {
+        const { getTranslations } = await import('@/lib/i18n')
+        const t = await getTranslations('product', products.map(x => x.id))
+        products = products.map(x => ({ ...x, description: t.get(x.id)?.description ?? x.description }))
+      } catch { /* fall back to English */ }
+    }
 
     const byCategory: Record<string, typeof products> = {}
     for (const p of products) {

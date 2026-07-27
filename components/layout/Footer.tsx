@@ -190,8 +190,7 @@ export function Footer() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logo-color.png" alt="Petite Lavande" className="h-14 sm:h-[4.25rem] w-auto mb-5 mx-auto" />
 
-              <p className="font-playfair text-[15px] text-espresso mb-1.5 text-center">{isEs ? <>Únete a nuestra lista — <span className="underline underline-offset-2">10% en tu primera canastilla</span></> : <>Join our list — <span className="underline underline-offset-2">10% off your first box</span></>}</p>
-              <p className="font-playfair text-[14px] text-espresso-light mb-3 leading-relaxed max-w-md mx-auto text-center">{isEs ? 'Guías de regalo, lanzamientos tranquilos y un código de bienvenida para tu primer pedido.' : 'New-parent gift guides, quiet launches, and a welcome code for your first order.'}</p>
+              <p className="font-playfair text-[15px] text-espresso mb-3 text-center">{isEs ? 'Solo te enviamos lo bueno.' : 'We only send the good stuff.'}</p>
               <div className="max-w-md mx-auto"><EmailSignup /></div>
             </div>
 
@@ -209,7 +208,7 @@ export function Footer() {
               <div>
                 <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">{isEs ? 'Nosotros' : 'About'}</p>
                 <ul className="space-y-2.5 text-[13.5px] font-sans font-normal">
-                  <li><Link href="/story" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Nuestra historia' : 'Our Story'}</Link></li>
+                  <li><Link href={isEs ? '/es/historia' : '/story'} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Nuestra historia' : 'Our Story'}</Link></li>
                   <li><Link href="/journal" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'El diario' : 'The Journal'}</Link></li>
                   <li><Link href="/track" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Rastrear pedido' : 'Track Order'}</Link></li>
                   <li><Link href="/account" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Mi cuenta' : 'My Account'}</Link></li>

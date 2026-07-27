@@ -218,7 +218,7 @@ export default function BuildPage() {
   useEffect(() => {
     fetch('/api/inventory').then(r => r.json()).then(d => setInventory(d.inventory ?? {}))
     fetch('/api/products/hover').then(r => r.json()).then(d => setHoverMedia(d.hover ?? {}))
-    fetch('/api/products/all')
+    fetch(isEs ? '/api/products/all?lang=es' : '/api/products/all')
       .then(r => r.json())
       .then(d => { if (d.byCategory) setCatalog(d.byCategory) })
       .catch(() => {})
