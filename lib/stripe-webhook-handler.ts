@@ -226,7 +226,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       const reward = await recordRedemptionIfAny(session.id, order.id, order.customer_email)
       if (reward) {
         const { sendReferralRewardEmail } = await import('@/lib/resend')
-        await sendReferralRewardEmail({ customerEmail: reward.referrerEmail, code: reward.rewardCode })
+        const { localeOf } = await import('@/lib/contacts')
+        await sendReferralRewardEmail({ customerEmail: reward.referrerEmail, code: reward.rewardCode, locale: await localeOf(reward.referrerEmail) })
         await markRewardSent(reward.referrerEmail, reward.rewardCode)
       }
     }

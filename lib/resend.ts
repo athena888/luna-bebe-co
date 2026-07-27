@@ -268,23 +268,27 @@ export async function sendWelcomeSeries3Email({ customerEmail, code, locale = 'e
 }
 
 // Win-back — one email when a customer's last order is 75+ days old.
-export async function sendWinBackEmail({ customerName, customerEmail, segment }: { customerName?: string; customerEmail: string; segment?: CopySegment }) {
-  const greeting = customerName ? `Hi ${customerName},` : 'Hi,'
-  const opener = pickOpener(
-    WINBACK_OPENERS,
-    `Chances are someone around you is expecting — a friend, a colleague, a sister. When the moment comes, we're still here hand-packing organic gift boxes that care for the new parent as much as the baby.`,
-    segment
-  )
+export async function sendWinBackEmail({ customerName, customerEmail, segment, locale = 'en' }: { customerName?: string; customerEmail: string; segment?: CopySegment; locale?: EmailLocale }) {
+  const es = locale === 'es'
+  const greeting = customerName ? (es ? `Hola ${customerName},` : `Hi ${customerName},`) : (es ? 'Hola,' : 'Hi,')
+  // ES sends one reviewed opener — segment variants exist in English only.
+  const opener = es
+    ? `Es probable que alguien cerca de ti esté esperando un bebé — una amiga, una colega, una hermana. Cuando llegue el momento, aquí seguimos, empacando a mano canastillas orgánicas que cuidan a la mamá tanto como al bebé.`
+    : pickOpener(
+        WINBACK_OPENERS,
+        `Chances are someone around you is expecting — a friend, a colleague, a sister. When the moment comes, we're still here hand-packing organic gift boxes that care for the new parent as much as the baby.`,
+        segment
+      )
   return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
-    subject: 'A little lavender, from us to you 💛',
+    subject: es ? 'Un poquito de lavanda, de nosotros para ti 💛' : 'A little lavender, from us to you 💛',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
         <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
-          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">It's been a while</h1>
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${es ? 'Ha pasado un tiempo' : `It's been a while`}</h1>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             ${greeting}
           </p>
@@ -292,8 +296,8 @@ export async function sendWinBackEmail({ customerName, customerEmail, segment }:
             ${opener}
           </p>
           <div style="text-align:center;">
-            <a href="${utm('/boxes', 'winback')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
-              See What's New
+            <a href="${utm(es ? '/es/canastillas' : '/boxes', 'winback')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
+              ${es ? 'Ver lo nuevo' : `See What's New`}
             </a>
           </div>
         </div>
@@ -332,17 +336,22 @@ export async function sendGiftNoteEmail({ recipientEmail, recipientName, senderN
 
 // Build 10 — first-purchase anniversary prompt (yearly, ANNIVERSARY_ACTIVE-
 // gated via the scheduler; copy in MARKETING_COPY.md).
-export async function sendAnniversaryEmail({ customerEmail }: { customerEmail: string }) {
+export async function sendAnniversaryEmail({ customerEmail, locale = 'en' }: { customerEmail: string; locale?: EmailLocale }) {
+  const es = locale === 'es'
   return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
-    subject: 'The season comes around again 💛',
+    subject: es ? 'La temporada vuelve a llegar 💛' : 'The season comes around again 💛',
     html: shell(
-      'A year already',
-      P(`Around this time last year, you sent someone a Petite Lavande box. Babies have a way of multiplying the occasions — a first birthday here, a new arrival there — and we're still hand-packing boxes for every one of them.`) +
-      P(`If someone around you is celebrating soon, we'd love to help you say it beautifully.`) +
-      BTN(utm('/boxes', 'anniversary'), 'See the Boxes'),
+      es ? 'Ya pasó un año' : 'A year already',
+      P(es
+        ? `Por estas fechas el año pasado, le enviaste a alguien una canastilla Petite Lavande. Los bebés tienen la costumbre de multiplicar las ocasiones — un primer cumpleaños por aquí, una nueva llegada por allá — y seguimos empacando a mano una caja para cada una.`
+        : `Around this time last year, you sent someone a Petite Lavande box. Babies have a way of multiplying the occasions — a first birthday here, a new arrival there — and we're still hand-packing boxes for every one of them.`) +
+      P(es
+        ? `Si alguien cerca de ti celebra pronto, nos encantaría ayudarte a decirlo bonito.`
+        : `If someone around you is celebrating soon, we'd love to help you say it beautifully.`) +
+      BTN(utm(es ? '/es/canastillas' : '/boxes', 'anniversary'), es ? 'Ver las canastillas' : 'See the Boxes'),
       flowFooter(customerEmail)
     ),
   })
@@ -350,20 +359,24 @@ export async function sendAnniversaryEmail({ customerEmail }: { customerEmail: s
 
 // Build 12 — restock notification, sent in waitlist signup order when a
 // product comes back. Copy in MARKETING_COPY.md; WAITLIST_ACTIVE-gated.
-export async function sendRestockEmail({ customerEmail, productName, productId }: {
+export async function sendRestockEmail({ customerEmail, productName, productId, locale = 'en' }: {
   customerEmail: string
   productName: string
   productId: string
+  locale?: EmailLocale
 }) {
+  const es = locale === 'es'
   return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
-    subject: `It's back — ${productName} 🌿`,
+    subject: es ? `Volvió — ${productName} 🌿` : `It's back — ${productName} 🌿`,
     html: shell(
-      'Back in the studio',
-      P(`Good news — <strong>${productName}</strong> is back. You asked us to let you know, and waitlist members hear first, so the quietest window to order is right now.`) +
-      BTN(utm(`/products/${productId}`, 'restock'), 'See It Now'),
+      es ? 'De vuelta en el estudio' : 'Back in the studio',
+      P(es
+        ? `Buenas noticias: <strong>${productName}</strong> está de vuelta. Nos pediste avisarte, y la lista de espera se entera primero, así que el momento más tranquilo para ordenar es ahora.`
+        : `Good news — <strong>${productName}</strong> is back. You asked us to let you know, and waitlist members hear first, so the quietest window to order is right now.`) +
+      BTN(utm(es ? `/es/productos/${productId}` : `/products/${productId}`, 'restock'), es ? 'Verlo ahora' : 'See It Now'),
       flowFooter(customerEmail)
     ),
   })
@@ -445,26 +458,31 @@ export async function sendCartReminder2Email({ customerEmail, locale = 'en' }: {
 // Build 3 occasion flow — one email ~30 days before a due date the customer
 // asked us to remember. Gated by OCCASIONS_ACTIVE via the scheduler; copy in
 // MARKETING_COPY.md, inactive until approved.
-export async function sendOccasionDueEmail({ customerEmail }: { customerEmail: string }) {
+export async function sendOccasionDueEmail({ customerEmail, locale = 'en' }: { customerEmail: string; locale?: EmailLocale }) {
+  const es = locale === 'es'
   return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
-    subject: 'The big day is getting close 🌿',
+    subject: es ? 'El gran día se acerca 🌿' : 'The big day is getting close 🌿',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
         <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
-          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">Almost time</h1>
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${es ? 'Ya casi es hora' : 'Almost time'}</h1>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
-            The arrival you asked us to remember is only a few weeks away now. If a gift is part of the plan, this is the window — every box is packed by hand and ships with time to spare.
+            ${es
+              ? 'La llegada que nos pediste recordar está a unas pocas semanas. Si un regalo es parte del plan, esta es la ventana — cada canastilla se empaca a mano y llega con tiempo de sobra.'
+              : 'The arrival you asked us to remember is only a few weeks away now. If a gift is part of the plan, this is the window — every box is packed by hand and ships with time to spare.'}
           </p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 24px;">
-            Organic keepsakes, chosen piece by piece, ribbon-tied and sealed by hand.
+            ${es
+              ? 'Recuerdos orgánicos, elegidos pieza por pieza, atados con listón y sellados a mano.'
+              : 'Organic keepsakes, chosen piece by piece, ribbon-tied and sealed by hand.'}
           </p>
           <div style="text-align:center;">
-            <a href="${utm('/build', 'occasion')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
-              Build Their Box
+            <a href="${utm(es ? '/es/build' : '/build', 'occasion')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
+              ${es ? 'Armar su canastilla' : 'Build Their Box'}
             </a>
           </div>
         </div>
@@ -475,26 +493,31 @@ export async function sendOccasionDueEmail({ customerEmail }: { customerEmail: s
 }
 
 // Build 3 — ~21 days before a remembered baby birthday, every year.
-export async function sendOccasionBirthdayEmail({ customerEmail }: { customerEmail: string }) {
+export async function sendOccasionBirthdayEmail({ customerEmail, locale = 'en' }: { customerEmail: string; locale?: EmailLocale }) {
+  const es = locale === 'es'
   return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
-    subject: 'A little birthday is coming up 💛',
+    subject: es ? 'Se acerca un cumpleaños pequeñito 💛' : 'A little birthday is coming up 💛',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
         <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
-          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">A day worth celebrating</h1>
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${es ? 'Un día que merece celebrarse' : 'A day worth celebrating'}</h1>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
-            A birthday you asked us to remember is a few weeks out. A box of organic keepsakes — soft things to grow into, gentle things for the bath — is a lovely way to mark the day.
+            ${es
+              ? 'Un cumpleaños que nos pediste recordar está a unas semanas. Una canastilla de recuerdos orgánicos — cositas suaves para crecer, delicadas para el baño — es una manera hermosa de celebrar el día.'
+              : 'A birthday you asked us to remember is a few weeks out. A box of organic keepsakes — soft things to grow into, gentle things for the bath — is a lovely way to mark the day.'}
           </p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 24px;">
-            Hand-packed, finished with satin ribbon and sealed by hand, with your message inside.
+            ${es
+              ? 'Empacada a mano, con listón de satín y sellada a mano, con tu mensaje adentro.'
+              : 'Hand-packed, finished with satin ribbon and sealed by hand, with your message inside.'}
           </p>
           <div style="text-align:center;">
-            <a href="${utm('/boxes', 'occasion')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
-              See the Boxes
+            <a href="${utm(es ? '/es/canastillas' : '/boxes', 'occasion')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
+              ${es ? 'Ver las canastillas' : 'See the Boxes'}
             </a>
           </div>
         </div>
@@ -507,26 +530,29 @@ export async function sendOccasionBirthdayEmail({ customerEmail }: { customerEma
 // Build 6 referral loop — sent to the ORIGINAL buyer when a friend redeems
 // their code. Fires only while REFERRALS_ACTIVE (webhook gates the call);
 // copy lives in MARKETING_COPY.md and ships inactive until approved.
-export async function sendReferralRewardEmail({ customerEmail, code }: { customerEmail: string; code: string }) {
+export async function sendReferralRewardEmail({ customerEmail, code, locale = 'en' }: { customerEmail: string; code: string; locale?: EmailLocale }) {
+  const es = locale === 'es'
   return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
-    subject: 'A friend used your code — here\'s $15, from us 💛',
+    subject: es ? 'Alguien usó tu código — aquí tienes $15, de nuestra parte 💛' : 'A friend used your code — here\'s $15, from us 💛',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
         <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
-          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">Your gift inspired another</h1>
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${es ? 'Tu regalo inspiró otro' : 'Your gift inspired another'}</h1>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
-            Someone you shared Petite Lavande with just sent a box of their own. As a thank-you, here's $15 off your next order:
+            ${es
+              ? 'Alguien con quien compartiste Petite Lavande acaba de enviar su propia canastilla. Para darte las gracias, aquí tienes $15 de descuento en tu próximo pedido:'
+              : `Someone you shared Petite Lavande with just sent a box of their own. As a thank-you, here's $15 off your next order:`}
           </p>
           <p style="text-align:center;margin:0 0 24px;">
             <span style="display:inline-block;font-family:monospace;font-size:20px;letter-spacing:3px;background:rgba(255,255,255,0.14);border:1px dashed rgba(255,255,255,0.6);padding:12px 26px;color:#ffffff;">${code}</span>
           </p>
           <div style="text-align:center;">
-            <a href="${utm('/build', 'referral')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
-              Build Your Next Box
+            <a href="${utm(es ? '/es/build' : '/build', 'referral')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
+              ${es ? 'Armar mi próxima caja' : 'Build Your Next Box'}
             </a>
           </div>
         </div>

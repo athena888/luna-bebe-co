@@ -156,18 +156,30 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
         }
         case 'winback': {
           const { segmentOf } = await import('./contacts')
-          await sendWinBackEmail({ customerEmail: ev.recipient, segment: await segmentOf(ev.recipient) })
+          {
+            const { localeOf } = await import('./contacts')
+            await sendWinBackEmail({ customerEmail: ev.recipient, segment: await segmentOf(ev.recipient), locale: await localeOf(ev.recipient) })
+          }
           break
         }
         case 'occasion-due':
-          await sendOccasionDueEmail({ customerEmail: ev.recipient })
+          {
+            const { localeOf } = await import('./contacts')
+            await sendOccasionDueEmail({ customerEmail: ev.recipient, locale: await localeOf(ev.recipient) })
+          }
           break
         case 'occasion-birthday':
-          await sendOccasionBirthdayEmail({ customerEmail: ev.recipient })
+          {
+            const { localeOf } = await import('./contacts')
+            await sendOccasionBirthdayEmail({ customerEmail: ev.recipient, locale: await localeOf(ev.recipient) })
+          }
           break
         case 'occasion-anniversary': {
           const { sendAnniversaryEmail } = await import('./resend')
-          await sendAnniversaryEmail({ customerEmail: ev.recipient })
+          {
+            const { localeOf } = await import('./contacts')
+            await sendAnniversaryEmail({ customerEmail: ev.recipient, locale: await localeOf(ev.recipient) })
+          }
           break
         }
         case 'restock': {
@@ -184,7 +196,10 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
             continue
           }
           const { sendRestockEmail } = await import('./resend')
-          await sendRestockEmail({ customerEmail: ev.recipient, productName: product.name, productId: product.id })
+          {
+            const { localeOf } = await import('./contacts')
+            await sendRestockEmail({ customerEmail: ev.recipient, productName: product.name, productId: product.id, locale: await localeOf(ev.recipient) })
+          }
           break
         }
         case 'cart-2': {
