@@ -1420,3 +1420,24 @@ alter table marketing_contacts add column if not exists locale text not null def
 alter table orders add column if not exists locale text not null default 'en';
 
 -- Done.
+
+-- 45) Review thank-you (20% for verified-buyer reviews) — collision-probed
+--     2026-07-27: review_rewards free; reviews lacks these three columns.
+--     Reward is never conditioned on rating (FTC 16 CFR 465); incentivized
+--     reviews are excluded from the Google review feed.
+alter table reviews add column if not exists reviewer_email text;
+alter table reviews add column if not exists verified_buyer boolean not null default false;
+alter table reviews add column if not exists incentivized boolean not null default false;
+
+create table if not exists public.review_rewards (
+  id         uuid primary key default gen_random_uuid(),
+  email      text not null unique,      -- one reward per customer, ever
+  review_id  uuid,
+  code       text not null,             -- REV-XXXXXX (20% once, Stripe promo)
+  sent_at    timestamptz not null default now()
+);
+alter table public.review_rewards enable row level security;
+drop policy if exists review_rewards_service_all on public.review_rewards;
+create policy review_rewards_service_all on public.review_rewards for all to service_role using (true) with check (true);
+
+-- Done.

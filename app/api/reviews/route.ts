@@ -5,13 +5,26 @@ export async function GET(req: NextRequest) {
   const productId = req.nextUrl.searchParams.get('product_id')
   if (!productId) return NextResponse.json({ error: 'product_id required' }, { status: 400 })
 
-  const { data, error } = await supabaseAdmin
+  // verified_buyer only exists after §45 — fall back to the legacy shape so
+  // review display never breaks on an unmigrated DB.
+  let { data, error } = await supabaseAdmin
     .from('reviews')
-    .select('id, customer_name, rating, body, created_at')
+    .select('id, customer_name, rating, body, created_at, verified_buyer')
     .eq('product_id', productId)
     .eq('approved', true)
     .order('created_at', { ascending: false })
     .limit(20)
+  if (error) {
+    const legacy = await supabaseAdmin
+      .from('reviews')
+      .select('id, customer_name, rating, body, created_at')
+      .eq('product_id', productId)
+      .eq('approved', true)
+      .order('created_at', { ascending: false })
+      .limit(20)
+    data = legacy.data as typeof data
+    error = legacy.error
+  }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ reviews: data })
@@ -19,7 +32,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { product_id, customer_name, rating, body } = await req.json()
+    const { product_id, customer_name, rating, body, reviewer_email, reviewer_phone, locale } = await req.json()
 
     if (!product_id || !customer_name || !rating || !body) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 })
@@ -31,16 +44,51 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Review must be at least 10 characters' }, { status: 400 })
     }
 
-    const { error } = await supabaseAdmin.from('reviews').insert({
+    const email = typeof reviewer_email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reviewer_email.trim())
+      ? reviewer_email.trim().toLowerCase() : null
+
+    // Verified = the email (or fallback phone) matches a paid order. The check
+    // gates the thank-you code AND the on-site badge — never publication.
+    const { isVerifiedBuyer, grantReviewReward, REVIEW_REWARD_ACTIVE } = await import('@/lib/review-rewards')
+    const verified = email ? await isVerifiedBuyer(email, typeof reviewer_phone === 'string' ? reviewer_phone : null) : false
+
+    // Rich insert needs §45; fall back to the legacy shape so a review is
+    // never lost to an unmigrated DB.
+    let insert = await supabaseAdmin.from('reviews').insert({
       product_id,
       customer_name: customer_name.trim(),
       rating,
       body: body.trim(),
       approved: false,
-    })
+      reviewer_email: email,
+      verified_buyer: verified,
+      incentivized: false,
+    }).select('id').maybeSingle()
+    if (insert.error) {
+      insert = await supabaseAdmin.from('reviews').insert({
+        product_id,
+        customer_name: customer_name.trim(),
+        rating,
+        body: body.trim(),
+        approved: false,
+      }).select('id').maybeSingle()
+    }
+    if (insert.error) return NextResponse.json({ error: insert.error.message }, { status: 500 })
+    const reviewId = (insert.data as { id: string } | null)?.id ?? null
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ success: true })
+    // One-time 20% thank-you for verified buyers — any rating, fail-soft.
+    let rewarded = false
+    if (verified && email && REVIEW_REWARD_ACTIVE) {
+      const code = await grantReviewReward({ email, reviewId, locale: locale === 'es' ? 'es' : 'en' })
+      rewarded = !!code
+      if (rewarded && reviewId) {
+        // FTC/Google bookkeeping: this review is now incentivized → the
+        // Google review feed skips it; the site shows it with its badge.
+        await supabaseAdmin.from('reviews').update({ incentivized: true }).eq('id', reviewId)
+      }
+    }
+
+    return NextResponse.json({ success: true, verified, rewarded })
   } catch (err) {
     console.error('Review POST error:', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })

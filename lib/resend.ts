@@ -536,6 +536,50 @@ export async function sendReferralRewardEmail({ customerEmail, code }: { custome
   })
 }
 
+// Review thank-you (verified buyers, any rating — see lib/review-rewards.ts).
+export async function sendReviewRewardEmail({ customerEmail, code, locale = 'en' }: {
+  customerEmail: string
+  code: string
+  locale?: EmailLocale
+}) {
+  const es = locale === 'es'
+  return sendEmail({
+    from: FROM,
+    to: customerEmail,
+    headers: unsubHeaders(customerEmail),
+    subject: es
+      ? 'Gracias por tu reseña — 20% de descuento para tu próxima caja'
+      : 'Thank you for your review — 20% off your next box',
+    html: `
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
+        ${brandHeader}
+        <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${es ? 'Tu opinión nos importa' : 'Your words mean a lot'}</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
+            ${es
+              ? 'Gracias por tomarte el tiempo de compartir tu experiencia. Como agradecimiento, aquí tienes 20% de descuento en tu próximo pedido:'
+              : 'Thank you for taking the time to share your experience. As a thank-you, here\'s 20% off your next order:'}
+          </p>
+          <p style="text-align:center;margin:0 0 24px;">
+            <span style="display:inline-block;font-family:monospace;font-size:20px;letter-spacing:3px;background:rgba(255,255,255,0.14);border:1px dashed rgba(255,255,255,0.6);padding:12px 26px;color:#ffffff;">${code}</span>
+          </p>
+          <div style="text-align:center;">
+            <a href="${utm(es ? '/es/build' : '/build', 'review-reward')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
+              ${es ? 'Armar mi próxima caja' : 'Build Your Next Box'}
+            </a>
+          </div>
+        </div>
+        <p style="font-family:sans-serif;font-size:12px;line-height:1.6;color:#8a7a6a;margin:0 4px 24px;padding:0 28px;">
+          ${es
+            ? 'Un solo uso, para un pedido futuro. Agradecemos todas las reseñas por igual, sin importar la calificación.'
+            : 'One use, on a future order. We thank every review the same way, whatever the rating.'}
+        </p>
+        ${flowFooter(customerEmail)}
+      </div>
+    `,
+  })
+}
+
 export async function sendReviewRequestEmail({
   customerName,
   customerEmail,

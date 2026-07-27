@@ -30,12 +30,25 @@ export interface ReviewFeedRow {
 export interface ReviewFeedIssue { id: string; problems: string[] }
 
 export async function buildReviewFeed(): Promise<{ rows: ReviewFeedRow[]; issues: ReviewFeedIssue[]; total: number }> {
-  const { data } = await supabaseAdmin
+  // Incentivized reviews (review thank-you code, §45) are excluded from the
+  // FEED ONLY — Google bars incentivized reviews from Product Ratings. This is
+  // not rating-gating: the exclusion is reward-based, never star-based, and
+  // the reviews still show on site with their disclosure. Falls back to the
+  // legacy select pre-§45.
+  let { data, error } = await supabaseAdmin
     .from('reviews')
-    .select('id, product_id, customer_name, rating, body, approved, created_at')
+    .select('id, product_id, customer_name, rating, body, approved, created_at, incentivized')
     .eq('approved', true)
     .order('created_at', { ascending: true })
-  const all = data ?? []
+  if (error) {
+    const legacy = await supabaseAdmin
+      .from('reviews')
+      .select('id, product_id, customer_name, rating, body, approved, created_at')
+      .eq('approved', true)
+      .order('created_at', { ascending: true })
+    data = legacy.data as typeof data
+  }
+  const all = (data ?? []).filter(r => !(r as { incentivized?: boolean }).incentivized)
   const rows: ReviewFeedRow[] = []
   const issues: ReviewFeedIssue[] = []
   const seen = new Set<string>()

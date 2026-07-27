@@ -186,3 +186,10 @@ _Say "apply collection copy" and I'll write approved copy into the rows and flip
 
 ### Build 9 — UGC rights checkbox text (stored verbatim per upload)
 > "I give Petite Lavande permission to use this photo in marketing, on the website, in ads, and on marketplace listings. I can withdraw consent anytime by emailing us."
+
+### Review thank-you — 20% code for verified-buyer reviews (flips on via REVIEW_REWARD_ACTIVE=true) — subject: `Thank you for your review — 20% off your next box` / ES: `Gracias por tu reseña — 20% de descuento para tu próxima caja`
+> **Your words mean a lot** / ES: **Tu opinión nos importa**
+> Thank you for taking the time to share your experience. As a thank-you, here's 20% off your next order: `REV-XXXXXX`
+> CTA: Build Your Next Box → /build (ES → /es/build)
+> fine print in email: "One use, on a future order. We thank every review the same way, whatever the rating."
+> Rules: verified buyers only (email match against a paid order; phone fallback), ANY rating — never conditioned on sentiment (FTC 16 CFR 465), one reward per email ever, rewarded reviews stamped `incentivized` and excluded from the Google review feed (Google bars incentivized reviews), shown on site with a "Verified buyer" badge.
