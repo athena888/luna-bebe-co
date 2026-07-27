@@ -12,6 +12,7 @@ import Link from 'next/link'
 import { storeCheckoutEnabled } from '@/lib/store-flags'
 import { trackBeginCheckout } from '@/lib/analytics-events'
 import { AddonRow } from '@/components/ui/AddonRow'
+import { useIsEs } from '@/lib/use-is-es'
 
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
 function boxItemTotal(selection: BoxSelection) { return Object.values(selection).reduce((sum, p) => sum + (p?.price ?? 0) * ((p as { qty?: number })?.qty ?? 1), 0) }
@@ -30,6 +31,7 @@ const BOX_GARMENT_SIZES = ['0–3 mo', '3–6 mo']
 type VariantRow = { color: string | null; size: string; quantity: number }
 
 export default function CheckoutPage() {
+  const isEs = useIsEs()
   const router = useRouter()
   const [selection, setSelection] = useState<BoxSelection | null>(null)
   const [letter, setLetter] = useState('')
@@ -217,6 +219,7 @@ export default function CheckoutPage() {
           letterZone: letter && letterZone ? letterZone : undefined,
           shippingType,
           promoId: promoId || undefined,
+          locale: isEs ? 'es' : 'en',
           preferredAssemblyImage: null,
           preferredAssemblyStyle: null,
           recipientName: recipientName || undefined,
@@ -271,7 +274,7 @@ export default function CheckoutPage() {
 
                 {/* Shopping bag — one white card per item, qty stepper + remove */}
                 <div>
-                  <h1 className="font-playfair text-3xl sm:text-4xl text-espresso mb-6">Shopping Bag</h1>
+                  <h1 className="font-playfair text-3xl sm:text-4xl text-espresso mb-6">{isEs ? 'Tu bolsa' : 'Shopping Bag'}</h1>
                   <div className="space-y-4">
                     {entries.map(([key, item]) => {
                       const src = productImage(item)
@@ -362,27 +365,27 @@ export default function CheckoutPage() {
 
                 {/* Contact */}
                 <div className="bg-white p-6 sm:p-7">
-                  <h2 className="font-playfair text-xl text-espresso mb-6 pb-3 border-b border-cream-200">Contact Information</h2>
+                  <h2 className="font-playfair text-xl text-espresso mb-6 pb-3 border-b border-cream-200">{isEs ? 'Información de contacto' : 'Contact Information'}</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="sm:col-span-2">
-                      <label className={labelClass}>Full Name</label>
-                      <input required type="text" value={contact.name} onChange={e => setContact(c => ({ ...c, name: e.target.value }))} placeholder="Your full name" className={inputClass} />
+                      <label className={labelClass}>{isEs ? 'Nombre completo' : 'Full Name'}</label>
+                      <input required type="text" value={contact.name} onChange={e => setContact(c => ({ ...c, name: e.target.value }))} placeholder={isEs ? 'Tu nombre completo' : 'Your full name'} className={inputClass} />
                     </div>
                     <div>
-                      <label className={labelClass}>Email</label>
-                      <input required type="email" value={contact.email} onChange={e => setContact(c => ({ ...c, email: e.target.value }))} placeholder="you@email.com" className={inputClass} />
+                      <label className={labelClass}>{isEs ? 'Correo electrónico' : 'Email'}</label>
+                      <input required type="email" value={contact.email} onChange={e => setContact(c => ({ ...c, email: e.target.value }))} placeholder={isEs ? 'tu@correo.com' : 'you@email.com'} className={inputClass} />
                     </div>
                     <div>
-                      <label className={labelClass}>Phone (optional)</label>
+                      <label className={labelClass}>{isEs ? 'Teléfono (opcional)' : 'Phone (optional)'}</label>
                       <input type="tel" value={contact.phone} onChange={e => setContact(c => ({ ...c, phone: e.target.value }))} placeholder="+1 (555) 000-0000" className={inputClass} />
                     </div>
                     <div className="sm:col-span-2">
-                      <label className={labelClass}>Gift Recipient Name (optional)</label>
-                      <input type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)} placeholder="Who is this gift for?" className={inputClass} />
+                      <label className={labelClass}>{isEs ? 'Nombre de quien lo recibe (opcional)' : 'Gift Recipient Name (optional)'}</label>
+                      <input type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)} placeholder={isEs ? '¿Para quién es el regalo?' : 'Who is this gift for?'} className={inputClass} />
                     </div>
                     <div className="sm:col-span-2">
-                      <label className={labelClass}>Special requests / notes (optional)</label>
-                      <textarea value={specialNote} onChange={e => setSpecialNote(e.target.value)} rows={3} placeholder="Allergies, delivery timing, gift message, anything we should know…" className={inputClass + ' resize-none'} />
+                      <label className={labelClass}>{isEs ? 'Notas o pedidos especiales (opcional)' : 'Special requests / notes (optional)'}</label>
+                      <textarea value={specialNote} onChange={e => setSpecialNote(e.target.value)} rows={3} placeholder={isEs ? 'Alergias, tiempos de entrega, mensaje del regalo, lo que debamos saber…' : 'Allergies, delivery timing, gift message, anything we should know…'} className={inputClass + ' resize-none'} />
                     </div>
                   </div>
                 </div>
@@ -390,7 +393,7 @@ export default function CheckoutPage() {
                 {/* Shipping address */}
                 <div className="bg-white p-6 sm:p-7">
                   <h2 className="font-playfair text-xl text-espresso mb-2 pb-3 border-b border-cream-200">
-                    {shipToRecipient ? 'Recipient’s Shipping Address' : 'Shipping Address'}
+                    {shipToRecipient ? (isEs ? 'Dirección de envío de quien lo recibe' : 'Recipient’s Shipping Address') : (isEs ? 'Dirección de envío' : 'Shipping Address')}
                   </h2>
                   <label className="flex items-start gap-2.5 cursor-pointer py-3 mb-3">
                     <input
@@ -400,9 +403,9 @@ export default function CheckoutPage() {
                       className="accent-gold-500 w-4 h-4 mt-0.5"
                     />
                     <span className="font-sans text-sm text-bark-600">
-                      🎁 This is a gift — ship directly to the recipient
+                      {isEs ? '🎁 Es un regalo — enviar directamente a quien lo recibe' : '🎁 This is a gift — ship directly to the recipient'}
                       <span className="block font-sans text-xs text-bark-400 mt-0.5">
-                        Enter their address below. Receipts and confirmations still go to you, and no prices appear in the box.
+                        {isEs ? 'Escribe su dirección abajo. Los recibos y confirmaciones te llegan a ti, y la canastilla no lleva precios.' : 'Enter their address below. Receipts and confirmations still go to you, and no prices appear in the box.'}
                       </span>
                     </span>
                   </label>
@@ -410,15 +413,15 @@ export default function CheckoutPage() {
                     <div className="mb-3">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-1.5">
                         <div>
-                          <label className={labelClass}>Recipient&rsquo;s Email (optional)</label>
+                          <label className={labelClass}>{isEs ? 'Correo de quien lo recibe (opcional)' : <>Recipient&rsquo;s Email (optional)</>}</label>
                           <input type="email" value={recipientEmail} onChange={e => setRecipientEmail(e.target.value)} placeholder="sarah@example.com" className={inputClass} />
                         </div>
                         <div>
-                          <label className={labelClass}>Occasion (optional)</label>
-                          <input type="text" value={occasionLabel} onChange={e => setOccasionLabel(e.target.value)} placeholder="Baby shower — for Sarah" className={inputClass} />
+                          <label className={labelClass}>{isEs ? 'Ocasión (opcional)' : 'Occasion (optional)'}</label>
+                          <input type="text" value={occasionLabel} onChange={e => setOccasionLabel(e.target.value)} placeholder={isEs ? 'Baby shower — para Sarah' : 'Baby shower — for Sarah'} className={inputClass} />
                         </div>
                       </div>
-                      <p className="font-sans text-xs text-bark-400">We&rsquo;ll email them a digital copy of your gift note when the box ships — nothing else, ever, unless they subscribe themselves.</p>
+                      <p className="font-sans text-xs text-bark-400">{isEs ? 'Le enviaremos por correo una copia digital de tu nota cuando la canastilla salga — nada más, nunca, a menos que se suscriban.' : <>We&rsquo;ll email them a digital copy of your gift note when the box ships — nothing else, ever, unless they subscribe themselves.</>}</p>
                     </div>
                   )}
                   {shipToRecipient && !recipientName.trim() && (
@@ -426,24 +429,24 @@ export default function CheckoutPage() {
                   )}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="sm:col-span-2">
-                      <label className={labelClass}>Street Address</label>
+                      <label className={labelClass}>{isEs ? 'Dirección' : 'Street Address'}</label>
                       <input required type="text" value={address.line1} onChange={e => setAddress(a => ({ ...a, line1: e.target.value }))} placeholder="123 Main St" className={inputClass} />
                     </div>
                     <div className="sm:col-span-2">
-                      <label className={labelClass}>Apt / Suite (optional)</label>
+                      <label className={labelClass}>{isEs ? 'Apto / Suite (opcional)' : 'Apt / Suite (optional)'}</label>
                       <input type="text" value={address.line2} onChange={e => setAddress(a => ({ ...a, line2: e.target.value }))} placeholder="Apt 4B" className={inputClass} />
                     </div>
                     <div>
-                      <label className={labelClass}>City</label>
+                      <label className={labelClass}>{isEs ? 'Ciudad' : 'City'}</label>
                       <input required type="text" value={address.city} onChange={e => setAddress(a => ({ ...a, city: e.target.value }))} placeholder="New York" className={inputClass} />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className={labelClass}>State</label>
+                        <label className={labelClass}>{isEs ? 'Estado' : 'State'}</label>
                         <input required type="text" value={address.state} onChange={e => setAddress(a => ({ ...a, state: e.target.value }))} placeholder="NY" maxLength={2} className={inputClass} />
                       </div>
                       <div>
-                        <label className={labelClass}>ZIP</label>
+                        <label className={labelClass}>{isEs ? 'Código postal' : 'ZIP'}</label>
                         <input required type="text" value={address.zip} onChange={e => setAddress(a => ({ ...a, zip: e.target.value }))} placeholder="10001" className={inputClass} />
                       </div>
                     </div>
@@ -452,7 +455,7 @@ export default function CheckoutPage() {
 
                 {/* Shipping method */}
                 <div className="bg-white p-6 sm:p-7">
-                  <h2 className="font-playfair text-xl text-espresso mb-6 pb-3 border-b border-cream-200">Shipping Method</h2>
+                  <h2 className="font-playfair text-xl text-espresso mb-6 pb-3 border-b border-cream-200">{isEs ? 'Método de envío' : 'Shipping Method'}</h2>
                   <div className="space-y-3">
                     {(Object.entries(SHIPPING) as [ShippingType, typeof SHIPPING[ShippingType]][]).map(([key, option]) => (
                       <button
@@ -468,7 +471,7 @@ export default function CheckoutPage() {
                           </div>
                           <div className="text-right">
                             <p className="font-sans text-sm text-bark-600">
-                              {freeShippingApplies(itemTotal + BOX_BASE_PRICE, key) ? 'Free' : formatPrice(option.price)}
+                              {freeShippingApplies(itemTotal + BOX_BASE_PRICE, key) ? (isEs ? 'Gratis' : 'Free') : formatPrice(option.price)}
                             </p>
                             {'badge' in option && option.badge && (
                               <span className="font-sans text-[11px] tracking-wide uppercase text-gold-400">{option.badge}</span>
@@ -484,11 +487,11 @@ export default function CheckoutPage() {
               {/* Right — order summary card */}
               <div className="lg:col-span-2">
                 <div className="sticky top-24 bg-white rounded-xl shadow-sm p-6 sm:p-7">
-                  <h2 className="font-playfair text-2xl text-espresso mb-6">Order Summary</h2>
+                  <h2 className="font-playfair text-2xl text-espresso mb-6">{isEs ? 'Resumen del pedido' : 'Order Summary'}</h2>
 
                   <div className="space-y-3 font-sans text-sm">
                     <div className="flex justify-between">
-                      <span className="text-bark-600">Subtotal</span>
+                      <span className="text-bark-600">{isEs ? 'Subtotal' : 'Subtotal'}</span>
                       <span className="text-espresso">{formatPrice(itemTotal)}</span>
                     </div>
                     <div className="flex justify-between">
@@ -497,7 +500,7 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-bark-600">Shipping · {SHIPPING[shippingType].label}</span>
-                      <span className="text-espresso">{shipFree ? 'Free' : formatPrice(shippingCost)}</span>
+                      <span className="text-espresso">{shipFree ? (isEs ? 'Gratis' : 'Free') : formatPrice(shippingCost)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-bark-600">Taxes (estimated)</span>
@@ -506,7 +509,7 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="flex justify-between items-baseline border-t border-cream-300 mt-5 pt-5">
-                    <span className="font-playfair text-lg text-espresso">Order Total</span>
+                    <span className="font-playfair text-lg text-espresso">{isEs ? 'Total del pedido' : 'Order Total'}</span>
                     <span className="font-playfair text-lg text-espresso">{formatPrice(total)}</span>
                   </div>
                   <VatNotice className="mt-3" />
@@ -518,7 +521,7 @@ export default function CheckoutPage() {
                         type="text"
                         value={promoCode}
                         onChange={e => { setPromoCode(e.target.value); setPromoState('idle') }}
-                        placeholder="Discount code"
+                        placeholder={isEs ? 'Código de descuento' : 'Discount code'}
                         className={`flex-1 min-w-0 px-3 py-2.5 border font-sans text-sm text-bark-600 placeholder:text-bark-400/50 focus:outline-none transition-colors ${promoState === 'valid' ? 'border-sage-400 bg-sage-50' : promoState === 'invalid' ? 'border-red-300' : 'border-cream-300 bg-cream-50'}`}
                       />
                       <button
@@ -527,14 +530,14 @@ export default function CheckoutPage() {
                         disabled={!promoCode.trim() || promoState === 'checking'}
                         className="px-4 py-2.5 bg-cream-200 text-bark-600 font-sans text-[11px] tracking-[0.12em] uppercase hover:bg-cream-300 transition-colors disabled:opacity-40"
                       >
-                        {promoState === 'checking' ? '…' : 'Apply'}
+                        {promoState === 'checking' ? '…' : (isEs ? 'Aplicar' : 'Apply')}
                       </button>
                     </div>
                     {promoState === 'valid' && (
-                      <p className="font-sans text-[11px] text-sage-600 mt-1.5">✓ {promoLabel} applied — discount shown at payment</p>
+                      <p className="font-sans text-[11px] text-sage-600 mt-1.5">✓ {promoLabel} {isEs ? 'aplicado — el descuento se ve al pagar' : 'applied — discount shown at payment'}</p>
                     )}
                     {promoState === 'invalid' && (
-                      <p className="font-sans text-[11px] text-red-500 mt-1.5">Invalid or expired code</p>
+                      <p className="font-sans text-[11px] text-red-500 mt-1.5">{isEs ? 'Código inválido o vencido' : 'Invalid or expired code'}</p>
                     )}
                   </div>
 
@@ -548,16 +551,16 @@ export default function CheckoutPage() {
                           disabled={isSubmitting || entries.length === 0}
                           className="w-full bg-[#7A8E7C] text-white font-sans text-[13px] tracking-[0.2em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40"
                         >
-                          {isSubmitting ? 'Processing…' : 'Checkout'}
+                          {isSubmitting ? (isEs ? 'Procesando…' : 'Processing…') : (isEs ? 'Finalizar compra' : 'Checkout')}
                         </button>
                         <p className="text-center font-sans text-[11px] text-bark-500 mt-3">
-                          By placing this order, you agree to our <Link href="/legal/terms" className="underline underline-offset-2 hover:text-espresso">Terms &amp; Conditions</Link>.
+                          {isEs ? <>Al hacer tu pedido aceptas nuestros <Link href="/legal/terms" className="underline underline-offset-2 hover:text-espresso">Términos y condiciones</Link>.</> : <>By placing this order, you agree to our <Link href="/legal/terms" className="underline underline-offset-2 hover:text-espresso">Terms &amp; Conditions</Link>.</>}
                         </p>
-                        <p className="text-center font-sans text-[11px] text-bark-400/60 mt-1.5">Secure payment powered by Stripe</p>
+                        <p className="text-center font-sans text-[11px] text-bark-400/60 mt-1.5">{isEs ? 'Pago seguro con Stripe' : 'Secure payment powered by Stripe'}</p>
                       </>
                     ) : (
                       <div className="text-center border border-cream-300 bg-cream-50 py-4 px-4">
-                        <p className="font-sans text-[11px] tracking-[0.1em] text-bark-500 leading-relaxed">Checkout opens soon — you can build and preview, but purchases are paused for now.</p>
+                        <p className="font-sans text-[11px] tracking-[0.1em] text-bark-500 leading-relaxed">{isEs ? 'Muy pronto abrimos — puedes armar y ver tu canastilla, pero las compras están en pausa por ahora.' : 'Checkout opens soon — you can build and preview, but purchases are paused for now.'}</p>
                       </div>
                     )}
                   </div>

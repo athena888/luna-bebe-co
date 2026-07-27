@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useIsEs } from '@/lib/use-is-es'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Button } from '@/components/ui/Button'
@@ -20,6 +21,7 @@ const FALLBACK_ZONE: Zone = { x: 15, y: 42, w: 70, align: 'center' }
 function countWords(s: string) { return s.trim() ? s.trim().split(/\s+/).length : 0 }
 
 export default function CardPage() {
+  const isEs = useIsEs()
   const router = useRouter()
   const [recipientName, setRecipientName] = useState('')
   const [senderName, setSenderName] = useState('')
@@ -113,13 +115,13 @@ export default function CardPage() {
   function handleContinue() {
     if (overLimit) return
     persist(editedContent)
-    router.push('/checkout')
+    router.push(isEs ? '/es/checkout' : '/checkout')
   }
 
   function skipCard() {
     persist('')
     sessionStorage.setItem('pl_letter', '')
-    router.push('/checkout')
+    router.push(isEs ? '/es/checkout' : '/checkout')
   }
 
   const inputClass = 'w-full px-4 py-2.5 rounded-xl border border-cream-300 bg-cream-100 font-sans text-sm text-bark-600 placeholder:text-bark-400/50 focus:outline-none focus:border-gold-400 transition-colors'

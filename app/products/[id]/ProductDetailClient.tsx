@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { useIsEs } from '@/lib/use-is-es'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronDown, X, ChevronLeft, ChevronRight, Leaf } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { CATEGORY_LABELS, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
+import { CATEGORY_LABELS, CATEGORY_LABELS_ES, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
 import { trackViewItem } from '@/lib/analytics-events'
 import { RelatedProducts, type RelatedItem } from '@/components/ui/RelatedProducts'
 import { ReviewSection } from '@/components/ui/ReviewSection'
@@ -61,7 +62,8 @@ function Spinner() {
 }
 
 export default function ProductDetailClient({ related, locale = 'en' }: { related?: RelatedItem[]; locale?: 'en' | 'es' }) {
-  const isEs = locale === 'es'
+  const esPath = useIsEs()
+  const isEs = locale === 'es' || esPath
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
 
@@ -150,7 +152,7 @@ export default function ProductDetailClient({ related, locale = 'en' }: { relate
   function handleAddToBox() {
     if (!product) return
     sessionStorage.setItem('pl_pending_add', product.id)
-    router.push('/build')
+    router.push(isEs ? '/es/build' : '/build')
   }
 
   return (
@@ -218,14 +220,14 @@ export default function ProductDetailClient({ related, locale = 'en' }: { relate
 
                 {/* Breadcrumb */}
                 <nav className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 mb-4 flex items-center gap-1.5 flex-wrap">
-                  <Link href="/build" className="hover:text-bark-600 transition-colors">Build Your Box</Link>
+                  <Link href="/build" className="hover:text-bark-600 transition-colors">{isEs ? 'Arma tu canastilla' : 'Build Your Box'}</Link>
                   <span>/</span>
-                  <span>{CATEGORY_LABELS[product.category]}</span>
+                  <span>{(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[product.category]}</span>
                 </nav>
 
                 {/* Category label */}
                 <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-1.5">
-                  {CATEGORY_LABELS[product.category]}
+                  {(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[product.category]}
                 </p>
 
                 {/* Product name */}
@@ -263,16 +265,16 @@ export default function ProductDetailClient({ related, locale = 'en' }: { relate
                 {stock !== null && stock <= 0 && !(product as Product & { preorder?: boolean }).preorder ? (
                   <div className="mb-4">
                     <span className="inline-block bg-cream-200 text-bark-400 font-sans text-[10px] tracking-[0.15em] uppercase font-bold px-2.5 py-1 mb-3">
-                      Sold out
+                      {isEs ? 'Agotado' : 'Sold out'}
                     </span>
                     {wlState === 'done' ? (
                       <p className="font-sans text-[13px] text-espresso leading-relaxed border border-cream-300 bg-cream-50 p-4">
-                        You&rsquo;re on the list — we&rsquo;ll email you the moment it returns. 💛
+                        {isEs ? 'Ya estás en la lista — te escribimos en cuanto regrese. 💛' : <>You&rsquo;re on the list — we&rsquo;ll email you the moment it returns. 💛</>}
                       </p>
                     ) : (
                       <form onSubmit={joinWaitlist} className="border border-cream-300 bg-cream-50 p-4">
-                        <p className="font-playfair text-[15px] text-espresso mb-0.5">Be first when it returns</p>
-                        <p className="font-sans text-[11.5px] text-bark-400 mb-2.5">Waitlist members are emailed in order, before it goes public.</p>
+                        <p className="font-playfair text-[15px] text-espresso mb-0.5">{isEs ? 'Entérate primero cuando regrese' : 'Be first when it returns'}</p>
+                        <p className="font-sans text-[11.5px] text-bark-400 mb-2.5">{isEs ? 'Avisamos por correo en orden de registro, antes de publicarlo.' : 'Waitlist members are emailed in order, before it goes public.'}</p>
                         <div className="flex gap-2">
                           <input
                             type="email"
@@ -284,7 +286,7 @@ export default function ProductDetailClient({ related, locale = 'en' }: { relate
                           />
                           <button type="submit" disabled={wlState === 'saving'}
                             className="px-4 bg-[#7A8E7C] text-white font-sans text-[10px] tracking-[0.15em] uppercase font-semibold hover:bg-[#6d8070] transition-colors disabled:opacity-50">
-                            {wlState === 'saving' ? '…' : 'Notify Me'}
+                            {wlState === 'saving' ? '…' : (isEs ? 'Avísame' : 'Notify Me')}
                           </button>
                         </div>
                       </form>
@@ -314,9 +316,9 @@ export default function ProductDetailClient({ related, locale = 'en' }: { relate
                 {/* Trust badges */}
                 <div className="flex items-start justify-between border-t border-b border-cream-300 py-4 mb-4">
                   {[
-                    { label: 'Free Shipping', sub: `$${Math.round(FREE_SHIPPING_THRESHOLD / 100)}+` },
-                    { label: 'Handcrafted', sub: 'with care' },
-                    { label: 'Gift Ready', sub: 'carefully packed' },
+                    { label: isEs ? 'Envío gratis' : 'Free Shipping', sub: `$${Math.round(FREE_SHIPPING_THRESHOLD / 100)}+` },
+                    { label: isEs ? 'Hecho a mano' : 'Handcrafted', sub: isEs ? 'con cariño' : 'with care' },
+                    { label: isEs ? 'Listo para regalar' : 'Gift Ready', sub: isEs ? 'empacado con cuidado' : 'carefully packed' },
                   ].map(({ label, sub }) => (
                     <div key={label} className="flex-1 text-center">
                       <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-600">{label}</p>

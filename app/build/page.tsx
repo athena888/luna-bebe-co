@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useIsEs } from '@/lib/use-is-es'
+import { CATEGORY_LABELS_ES } from '@/lib/products'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
@@ -152,6 +154,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
 
 // ── Build Page ────────────────────────────────────────────────────────────────
 export default function BuildPage() {
+  const isEs = useIsEs()
   const router = useRouter()
   const [selected, setSelected] = useState<Map<string, SelectedItem>>(new Map())
   const [inventory, setInventory] = useState<Record<string, number>>({})
@@ -414,7 +417,7 @@ export default function BuildPage() {
 
   function handleCheckout() {
     sessionStorage.setItem('pl_box_selection', JSON.stringify(selectedList))
-    router.push('/letter')
+    router.push(isEs ? '/es/letter' : '/letter')
   }
 
   return (
@@ -448,15 +451,15 @@ export default function BuildPage() {
             className="relative z-10 w-full px-8 sm:px-14 pb-20 sm:pb-28 max-w-3xl"
             style={{ animation: 'slideUp 1.4s cubic-bezier(0.22,1,0.36,1) both' }}
           >
-            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-cream-200/60 mb-5">Build Your Box</p>
+            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-cream-200/60 mb-5">{isEs ? 'Arma tu canastilla' : 'Build Your Box'}</p>
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-cream-50 leading-[1.05] mb-6">
-              We don&apos;t add what doesn&apos;t belong.
+              {isEs ? 'No agregamos lo que no pertenece.' : <>We don&apos;t add what doesn&apos;t belong.</>}
             </h1>
             <p className="font-serif italic text-lg sm:text-xl text-cream-200/80 leading-relaxed max-w-lg mb-3">
-              We don&apos;t pad the box with filler. Every item here exists because a new mother and a newborn baby will actually use it and love it.
+              {isEs ? 'No rellenamos la canastilla por rellenar. Cada pieza está aquí porque una mamá reciente y su bebé de verdad la van a usar y querer.' : <>We don&apos;t pad the box with filler. Every item here exists because a new mother and a newborn baby will actually use it and love it.</>}
             </p>
             <p className="font-sans text-sm text-cream-100/50 tracking-wide">
-              Simplicity isn&apos;t a shortcut. It&apos;s the harder choice.
+              {isEs ? 'La sencillez no es un atajo. Es la decisión más difícil.' : <>Simplicity isn&apos;t a shortcut. It&apos;s the harder choice.</>}
             </p>
           </div>
         </section>
@@ -466,7 +469,7 @@ export default function BuildPage() {
           {activeCategories.map((cat) => (
             <section key={cat} id={`cat-${cat}`}>
               <div className="pl-6 sm:pl-9 pr-6 sm:pr-8 mb-8">
-                <p className="font-sans text-[11px] tracking-[0.3em] uppercase font-bold text-gold-500 mb-1">{CATEGORY_LABELS[cat]}</p>
+                <p className="font-sans text-[11px] tracking-[0.3em] uppercase font-bold text-gold-500 mb-1">{(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[cat]}</p>
                 <h2 className="font-serif text-lg sm:text-xl text-terra-500">{CATEGORY_SUBTITLES[cat]}</h2>
               </div>
               <div className="relative">
@@ -497,7 +500,7 @@ export default function BuildPage() {
                   type="button"
                   onClick={() => scrollCategoryTo(cat, Math.max(0, (activeIdxMap[cat] ?? 0) - 1))}
                   className="hidden sm:flex absolute left-3 top-[38%] -translate-y-1/2 z-10 w-11 h-11 rounded-full pl-round-full bg-white/95 shadow-md items-center justify-center text-bark-600 hover:bg-white hover:text-espresso transition-colors"
-                  aria-label={`Previous ${CATEGORY_LABELS[cat]} products`}
+                  aria-label={`Previous ${(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[cat]} products`}
                 >
                   <ChevronLeft size={20} strokeWidth={1.5} />
                 </button>
@@ -505,7 +508,7 @@ export default function BuildPage() {
                   type="button"
                   onClick={() => scrollCategoryTo(cat, Math.min((catalog[cat]?.length ?? 1) - 1, (activeIdxMap[cat] ?? 0) + 1))}
                   className="hidden sm:flex absolute right-3 top-[38%] -translate-y-1/2 z-10 w-11 h-11 rounded-full pl-round-full bg-white/95 shadow-md items-center justify-center text-bark-600 hover:bg-white hover:text-espresso transition-colors"
-                  aria-label={`Next ${CATEGORY_LABELS[cat]} products`}
+                  aria-label={`Next ${(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[cat]} products`}
                 >
                   <ChevronRight size={20} strokeWidth={1.5} />
                 </button>
@@ -532,7 +535,7 @@ export default function BuildPage() {
 
         {/* Drawer header */}
         <div className="flex items-center justify-between px-6 h-[68px] border-b border-cream-300 shrink-0">
-          <h2 className="font-serif text-xl text-bark-600">Your Box</h2>
+          <h2 className="font-serif text-xl text-bark-600">{isEs ? 'Tu canastilla' : 'Your Box'}</h2>
           <button onClick={() => setBagOpen(false)} className="text-bark-400 hover:text-bark-600 transition-colors">
             <X size={18} />
           </button>
@@ -624,16 +627,16 @@ export default function BuildPage() {
         {/* Drawer footer */}
         <div className="shrink-0 border-t border-cream-300 px-6 py-5">
           <div className="flex justify-between items-baseline mb-1">
-            <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">Subtotal</span>
+            <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">{isEs ? 'Subtotal' : 'Subtotal'}</span>
             <span className="font-sans text-base font-medium text-bark-600">{formatPrice(subtotal)}</span>
           </div>
-          <p className="font-sans text-[11px] text-bark-400/60 mb-4">Box fee &amp; shipping calculated at checkout</p>
+          <p className="font-sans text-[11px] text-bark-400/60 mb-4">{isEs ? 'Canastilla y envío se calculan al pagar' : <>Box fee &amp; shipping calculated at checkout</>}</p>
           <button
             onClick={handleCheckout}
             disabled={!hasItems}
             className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.25em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            Check Out
+            {isEs ? 'Finalizar compra' : 'Check Out'}
           </button>
         </div>
       </div>
@@ -732,7 +735,7 @@ export default function BuildPage() {
 
             {/* Product info — scrolls on desktop, flows naturally on mobile */}
             <div className="flex-1 lg:min-h-0 lg:overflow-y-auto p-6 lg:p-8 flex flex-col">
-              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-2">{CATEGORY_LABELS[modalProduct.category]}</p>
+              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-2">{(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[modalProduct.category]}</p>
               <h2 className="font-sans text-2xl lg:text-3xl text-espresso leading-tight mb-2">{modalProduct.name}</h2>
               <p className="font-sans text-base text-bark-400 mb-4">{formatPrice(modalProduct.price)}</p>
 
@@ -854,14 +857,14 @@ export default function BuildPage() {
                   ) : pickedInBox ? (
                     <button onClick={() => toggleVariant(modalProduct, pickColor!, pickSize!, pickedVariant?.color_hex, pickStyle ?? '')}
                       className="w-full border border-bark-300 text-bark-400 font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:border-bark-600 hover:text-bark-600 transition-colors flex items-center justify-center gap-2">
-                      <Check size={13} /> In Your Box · Remove
+                      <Check size={13} /> {isEs ? 'En tu canastilla · Quitar' : 'In Your Box · Remove'}
                     </button>
                   ) : (
                     <button
                       onClick={() => toggleVariant(modalProduct, pickColor!, pickSize!, pickedVariant?.color_hex, pickStyle ?? '')}
                       disabled={!pickInStock}
                       className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-                      {!pickColor ? 'Choose a color' : needsStyle && !pickStyle ? 'Choose a style' : !pickSize ? 'Choose a size' : 'Add to Box'}
+                      {!pickColor ? (isEs ? 'Elige un color' : 'Choose a color') : needsStyle && !pickStyle ? (isEs ? 'Elige un estilo' : 'Choose a style') : !pickSize ? (isEs ? 'Elige una talla' : 'Choose a size') : (isEs ? 'Agregar a tu canastilla' : 'Add to Box')}
                     </button>
                   )
                 ) : isSoldOut(modalProduct.id) ? (
@@ -869,7 +872,7 @@ export default function BuildPage() {
                 ) : selected.has(modalProduct.id) ? (
                   <div className="space-y-2">
                     <div className="w-full border border-gold-400 text-gold-500 font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 text-center flex items-center justify-center gap-2">
-                      <Check size={13} /> In Your Box
+                      <Check size={13} /> {isEs ? 'En tu canastilla' : 'In Your Box'}
                     </div>
                     <button onClick={() => toggle(modalProduct)}
                       className="w-full border border-bark-300 text-bark-400 font-sans text-[11px] tracking-[0.2em] uppercase py-3 hover:border-bark-600 hover:text-bark-600 transition-colors">
@@ -879,7 +882,7 @@ export default function BuildPage() {
                 ) : (
                   <button onClick={() => toggle(modalProduct)}
                     className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-[#6d8070] transition-colors">
-                    Add to Box
+                    {isEs ? 'Agregar a tu canastilla' : 'Add to Box'}
                   </button>
                 )}
               </div>

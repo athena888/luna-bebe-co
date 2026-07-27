@@ -244,7 +244,7 @@ function InsideCardContent() {
   )
 
   return (
-    <div className="p-6 sm:p-8 max-w-4xl">
+    <div className="p-6 sm:p-8 max-w-4xl mx-auto">
       {/* Screen-only header */}
       <div className="print:hidden mb-6">
         <div className="flex items-start justify-between gap-4">
@@ -284,7 +284,7 @@ function InsideCardContent() {
 
       <div className="space-y-10">
         {/* ── FRONT ── */}
-        <div>
+        <div className="max-w-[420px] mx-auto print:max-w-none">
           <p className="print:hidden font-sans text-[9px] tracking-[0.35em] uppercase text-bark-400 mb-2">
             Card — {sizeLabel}
           </p>

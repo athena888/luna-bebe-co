@@ -48,6 +48,14 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   mom: "Mama's Gift",
 }
 
+export const CATEGORY_LABELS_ES: Record<ProductCategory, string> = {
+  swaddle: 'Muselinas y mantas',
+  garment: 'Ropita',
+  bath: 'Baño y cuidado',
+  keepsake: 'Recuerdos y juguetes',
+  mom: 'Para mamá',
+}
+
 export const CATEGORY_ORDER: ProductCategory[] = ['swaddle', 'garment', 'bath', 'keepsake', 'mom']
 export const BOX_BASE_PRICE = 1500
 
