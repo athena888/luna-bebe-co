@@ -52,13 +52,27 @@ interface BoxRow {
   selection: SelectionJson | null
 }
 
-/** Seed the table from the static catalog the first time it's read. */
+// One-time-ever marker: without it, an emptied table would re-seed the static
+// starter boxes on the next read — deleting the last box brought all three
+// back ("why can't I delete these", 2026-07-27). Deliberate deletions stick.
+const SEED_MARKER_KEY = 'system.prebuilt_boxes_seeded'
+
+/** Seed the table from the static catalog the FIRST time ever (marker-gated),
+ * not merely whenever the table is empty. */
 async function ensureSeeded(): Promise<void> {
+  const { data: marker } = await supabaseAdmin
+    .from('site_content').select('key').eq('key', SEED_MARKER_KEY).maybeSingle()
+  if (marker) return
+
   const { count, error } = await supabaseAdmin
     .from('prebuilt_boxes')
     .select('slug', { count: 'exact', head: true })
   if (error) throw error
-  if ((count ?? 0) > 0) return
+  if ((count ?? 0) > 0) {
+    // Table predates the marker — record it and never seed again.
+    await supabaseAdmin.from('site_content').upsert({ key: SEED_MARKER_KEY, value: { seeded_at: new Date().toISOString() } })
+    return
+  }
 
   const rows = PREBUILT_BOXES.map((box, idx) => {
     const selection: SelectionJson = {}
@@ -83,6 +97,7 @@ async function ensureSeeded(): Promise<void> {
     }
   })
   await supabaseAdmin.from('prebuilt_boxes').upsert(rows, { onConflict: 'slug' })
+  await supabaseAdmin.from('site_content').upsert({ key: SEED_MARKER_KEY, value: { seeded_at: new Date().toISOString() } })
 }
 
 function resolveRow(row: BoxRow, productById: Map<string, Product>): ResolvedBox {
