@@ -146,7 +146,7 @@ function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
   return (
     <div className="relative" onMouseEnter={enter} onMouseLeave={leave} onFocus={enter} onBlur={leave}>
       <Link
-        href={isEs ? '/es' : '/boxes'}
+        href={isEs ? '/es/canastillas' : '/boxes'}
         className={cls}
         aria-expanded={open}
         aria-controls="boxes-dropdown"
@@ -170,7 +170,7 @@ function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
               ))}
             </div>
           ))}
-          <Link href={isEs ? '/es' : '/boxes'} onClick={() => setOpen(false)}
+          <Link href={isEs ? '/es/canastillas' : '/boxes'} onClick={() => setOpen(false)}
             className="self-end font-sans text-[12px] normal-case tracking-normal text-[#7A8E7C] underline underline-offset-2 hover:text-espresso transition-colors">
             {isEs ? 'Ver todas →' : 'View all boxes →'}
           </Link>
@@ -189,7 +189,7 @@ function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) 
       {/* Curated first, custom second */}
       <BoxesDropdown light={light} cls={cls} />
       <Link href={isEs ? '/es/build' : '/build'} className={cls} onClick={onClick}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
-      <Link href="/gift-cards" className={cls} onClick={onClick}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
+      <Link href={isEs ? '/es/tarjetas-regalo' : '/gift-cards'} className={cls} onClick={onClick}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
       <Link href={isEs ? '/es/historia' : '/story'} className={cls} onClick={onClick}>{isEs ? 'Nuestra historia' : 'Stories'}</Link>
     </>
   )
@@ -204,7 +204,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
       {/* Boxes accordion — same links as the desktop dropdown, tap to expand */}
       <div>
         <div className="flex items-center justify-between">
-          <Link href={isEs ? '/es' : '/boxes'} className={linkCls} onClick={onClose}>{isEs ? 'Canastillas' : 'Gift Boxes'}</Link>
+          <Link href={isEs ? '/es/canastillas' : '/boxes'} className={linkCls} onClick={onClose}>{isEs ? 'Canastillas' : 'Gift Boxes'}</Link>
           <button onClick={() => setBoxesOpen(o => !o)} aria-expanded={boxesOpen} aria-label="Show collections"
             className="w-9 h-9 flex items-center justify-center text-bark-400">
             <ChevronDown size={16} className={`transition-transform ${boxesOpen ? 'rotate-180' : ''}`} />
@@ -219,7 +219,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
         )}
       </div>
       <Link href={isEs ? '/es/build' : '/build'} className={linkCls} onClick={onClose}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
-      <Link href="/gift-cards" className={linkCls} onClick={onClose}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
+      <Link href={isEs ? '/es/tarjetas-regalo' : '/gift-cards'} className={linkCls} onClick={onClose}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
       <Link href={isEs ? '/es/historia' : '/story'} className={linkCls} onClick={onClose}>{isEs ? 'Nuestra historia' : 'Stories'}</Link>
       <Link href="/account" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors" onClick={onClose}>My Account</Link>
     </div>

@@ -200,9 +200,9 @@ export function Footer() {
                 <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">{isEs ? 'Compra y regala' : <>Shop &amp; Gift</>}</p>
                 <ul className="space-y-2.5 text-[13.5px] font-sans font-normal">
                   <li><Link href="/gift-guides" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Ideas para regalar' : 'Gifting Ideas'}</Link></li>
-                  <li><Link href="/boxes" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Sets de regalo' : 'Gift Sets'}</Link></li>
+                  <li><Link href={isEs ? '/es/canastillas' : '/boxes'} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Sets de regalo' : 'Gift Sets'}</Link></li>
                   <li><Link href={isEs ? '/es/build' : '/build'} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link></li>
-                  <li><Link href="/gift-cards" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link></li>
+                  <li><Link href={isEs ? '/es/tarjetas-regalo' : '/gift-cards'} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link></li>
                 </ul>
               </div>
               <div>

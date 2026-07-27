@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useIsEs } from '@/lib/use-is-es'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Gift, Lock } from 'lucide-react'
@@ -22,6 +23,7 @@ const labelClass = "block font-serif text-lg text-espresso mb-2"
 const sectionClass = "font-sans text-[12px] tracking-[0.3em] uppercase font-bold text-[#7A8E7C] mb-5 pb-3 border-b border-cream-300"
 
 export default function GiftCardsPage() {
+  const isEs = useIsEs()
   const [amount, setAmount] = useState(10000)
   const [recipientEmail, setRecipientEmail] = useState('')
   const [recipientName, setRecipientName] = useState('')
@@ -61,10 +63,10 @@ export default function GiftCardsPage() {
         <SlotBackground slotKey="giftcards.header_bg" scrim="bg-cream-50/55" className="px-6 pt-16 pb-14 sm:pt-20">
           <div className="max-w-4xl mx-auto">
             <div className="text-center">
-              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-3">The Perfect Gift</p>
-              <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-2">Gift Cards</h1>
+              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-3">{isEs ? 'El regalo perfecto' : 'The Perfect Gift'}</p>
+              <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-2">{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</h1>
               <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">
-                Can't decide? Give the gift of choice. Your recipient builds their own Petite Lavande box with your love.
+                {isEs ? '¿No te decides? Regala la posibilidad de elegir. Quien lo recibe arma su propia canastilla Petite Lavande con tu cariño.' : <>Can't decide? Give the gift of choice. Your recipient builds their own Petite Lavande box with your love.</>}
               </p>
             </div>
             {/* single divider between the intro and the form — one panel, no second band */}
@@ -76,7 +78,7 @@ export default function GiftCardsPage() {
 
               {/* Amount */}
               <div>
-                <p className={sectionClass}>Choose an Amount</p>
+                <p className={sectionClass}>{isEs ? 'Elige un monto' : 'Choose an Amount'}</p>
                 <div className="grid grid-cols-2 gap-3">
                   {AMOUNTS.map(opt => (
                     <button
@@ -87,7 +89,7 @@ export default function GiftCardsPage() {
                     >
                       {opt.label}
                       {opt.popular && (
-                        <span className="absolute top-2 right-2 font-sans text-[11px] tracking-[0.15em] uppercase bg-gold-400 text-white px-1.5 py-0.5">Popular</span>
+                        <span className="absolute top-2 right-2 font-sans text-[11px] tracking-[0.15em] uppercase bg-gold-400 text-white px-1.5 py-0.5">{isEs ? 'Popular' : 'Popular'}</span>
                       )}
                     </button>
                   ))}
@@ -96,34 +98,34 @@ export default function GiftCardsPage() {
 
               {/* Recipient */}
               <div>
-                <p className={sectionClass}>Send To</p>
+                <p className={sectionClass}>{isEs ? 'Para' : 'Send To'}</p>
                 <div className="space-y-4">
                   <div>
-                    <label className={labelClass}>Recipient Name</label>
-                    <input required type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)} placeholder="Who is this for?" className={inputClass} />
+                    <label className={labelClass}>{isEs ? 'Nombre de quien lo recibe' : 'Recipient Name'}</label>
+                    <input required type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)} placeholder={isEs ? '¿Para quién es?' : 'Who is this for?'} className={inputClass} />
                   </div>
                   <div>
-                    <label className={labelClass}>Recipient Email</label>
-                    <input required type="email" value={recipientEmail} onChange={e => setRecipientEmail(e.target.value)} placeholder="their@email.com" className={inputClass} />
+                    <label className={labelClass}>{isEs ? 'Correo de quien lo recibe' : 'Recipient Email'}</label>
+                    <input required type="email" value={recipientEmail} onChange={e => setRecipientEmail(e.target.value)} placeholder={isEs ? 'su@correo.com' : 'their@email.com'} className={inputClass} />
                   </div>
                 </div>
               </div>
 
               {/* Sender */}
               <div>
-                <p className={sectionClass}>From</p>
+                <p className={sectionClass}>{isEs ? 'De parte de' : 'From'}</p>
                 <div className="space-y-4">
                   <div>
-                    <label className={labelClass}>Your Name</label>
-                    <input required type="text" value={senderName} onChange={e => setSenderName(e.target.value)} placeholder="Your name" className={inputClass} />
+                    <label className={labelClass}>{isEs ? 'Tu nombre' : 'Your Name'}</label>
+                    <input required type="text" value={senderName} onChange={e => setSenderName(e.target.value)} placeholder={isEs ? 'Tu nombre' : 'Your name'} className={inputClass} />
                   </div>
                   <div>
-                    <label className={labelClass}>Your Email (for confirmation)</label>
-                    <input required type="email" value={senderEmail} onChange={e => setSenderEmail(e.target.value)} placeholder="you@email.com" className={inputClass} />
+                    <label className={labelClass}>{isEs ? 'Tu correo (para la confirmación)' : 'Your Email (for confirmation)'}</label>
+                    <input required type="email" value={senderEmail} onChange={e => setSenderEmail(e.target.value)} placeholder={isEs ? 'tu@correo.com' : 'you@email.com'} className={inputClass} />
                   </div>
                   <div>
-                    <label className={labelClass}>Personal Message (optional)</label>
-                    <textarea rows={3} value={message} onChange={e => setMessage(e.target.value)} placeholder="Add a heartfelt note..." className={`${inputClass} resize-none`} />
+                    <label className={labelClass}>{isEs ? 'Mensaje personal (opcional)' : 'Personal Message (optional)'}</label>
+                    <textarea rows={3} value={message} onChange={e => setMessage(e.target.value)} placeholder={isEs ? 'Escribe una notita con cariño…' : 'Add a heartfelt note...'} className={`${inputClass} resize-none`} />
                   </div>
                 </div>
               </div>
@@ -138,7 +140,7 @@ export default function GiftCardsPage() {
                     className="w-full bg-[#7A8E7C] text-white font-serif text-lg tracking-[0.06em] uppercase py-3.5 hover:bg-[#6d8070] transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
                   >
                     <Lock size={14} />
-                    {loading ? 'Processing...' : `Purchase $${(amount / 100).toFixed(0)} Gift Card`}
+                    {loading ? (isEs ? 'Procesando…' : 'Processing...') : (isEs ? `Comprar tarjeta de $${(amount / 100).toFixed(0)}` : `Purchase $${(amount / 100).toFixed(0)} Gift Card`)}
                   </button>
                   <p className="text-center font-sans text-[11px] text-bark-400/50">Powered by Stripe · 256-bit SSL</p>
                 </>

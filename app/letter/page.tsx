@@ -132,16 +132,16 @@ export default function CardPage() {
       <main className="min-h-screen bg-cream-100 py-12 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
-            <p className="text-xs font-sans font-semibold uppercase tracking-widest text-gold-400 mb-2">Your Card</p>
-            <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-2">Customize Your Card</h1>
-            <p className="font-sans text-sm text-bark-400">Pick a card design and write your message — we&rsquo;ll print it and tuck it into the box.</p>
+            <p className="text-xs font-sans font-semibold uppercase tracking-widest text-gold-400 mb-2">{isEs ? 'Tu tarjeta' : 'Your Card'}</p>
+            <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-2">{isEs ? 'Personaliza tu tarjeta' : 'Customize Your Card'}</h1>
+            <p className="font-sans text-sm text-bark-400">{isEs ? 'Elige un diseño y escribe tu mensaje — lo escribimos y lo guardamos dentro de la canastilla.' : <>Pick a card design and write your message — we&rsquo;ll print it and tuck it into the box.</>}</p>
           </div>
 
           <div className="flex flex-col md:flex-row gap-6 lg:gap-8 md:items-start">
             {/* Left — vertical carousel of whole (portrait) cards */}
             {styles.length > 0 && (
               <div className="md:w-48 lg:w-56 shrink-0 md:sticky md:top-6">
-                <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400 mb-3">Choose a card design — scroll to see them all</p>
+                <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400 mb-3">{isEs ? 'Elige un diseño — desliza para verlos todos' : 'Choose a card design — scroll to see them all'}</p>
                 <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto md:max-h-[78vh] scrollbar-hide snap-x md:snap-y snap-mandatory -mx-4 px-4 md:mx-0 md:px-0 md:pr-1 pb-2 md:pb-0">
                   {styles.map(s => {
                     const active = s.id === styleId
@@ -179,15 +179,15 @@ export default function CardPage() {
             <div className="bg-cream-50 rounded-2xl border border-cream-200 p-6 sm:p-8 mb-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-sans text-xs font-semibold uppercase tracking-wider text-bark-400 mb-1.5">Recipient Name</label>
-                  <input type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)} placeholder="e.g. Sarah" className={inputClass} />
+                  <label className="block font-sans text-xs font-semibold uppercase tracking-wider text-bark-400 mb-1.5">{isEs ? 'Nombre de quien lo recibe' : 'Recipient Name'}</label>
+                  <input type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)} placeholder={isEs ? 'p. ej. Sarah' : 'e.g. Sarah'} className={inputClass} />
                 </div>
                 <div>
-                  <label className="block font-sans text-xs font-semibold uppercase tracking-wider text-bark-400 mb-1.5">Your Name</label>
-                  <input type="text" value={senderName} onChange={e => setSenderName(e.target.value)} placeholder="e.g. Emily" className={inputClass} />
+                  <label className="block font-sans text-xs font-semibold uppercase tracking-wider text-bark-400 mb-1.5">{isEs ? 'Tu nombre' : 'Your Name'}</label>
+                  <input type="text" value={senderName} onChange={e => setSenderName(e.target.value)} placeholder={isEs ? 'p. ej. Emily' : 'e.g. Emily'} className={inputClass} />
                 </div>
               </div>
-              <p className="font-sans text-xs text-bark-400 mt-4">We&rsquo;ll draft two versions automatically as you type — you can edit or rewrite them.</p>
+              <p className="font-sans text-xs text-bark-400 mt-4">{isEs ? 'Redactamos dos versiones automáticamente mientras escribes — puedes editarlas o reescribirlas.' : <>We&rsquo;ll draft two versions automatically as you type — you can edit or rewrite them.</>}</p>
               {genError && (
                 <div className="mt-4 border border-cream-300 bg-cream-100 rounded-xl p-4 text-center">
                   <p className="font-sans text-xs text-bark-500 mb-3">{genError}</p>
@@ -207,7 +207,7 @@ export default function CardPage() {
           {phase === 'generating' && (
             <div className="bg-cream-50 rounded-2xl border border-cream-200 p-12 text-center">
               <RefreshCw size={32} className="animate-spin text-gold-400 mx-auto mb-4" />
-              <p className="font-sans text-sm text-bark-600">Drafting two heartfelt versions just for you…</p>
+              <p className="font-sans text-sm text-bark-600">{isEs ? 'Redactando dos versiones con cariño, solo para ti…' : 'Drafting two heartfelt versions just for you…'}</p>
             </div>
           )}
 
@@ -215,13 +215,13 @@ export default function CardPage() {
           {phase === 'edit' && (
             <>
               <div className="grid grid-cols-2 gap-3 mb-6">
-                <button onClick={() => switchVersion(0)} className={`py-3 px-4 rounded-xl border-2 font-sans text-sm font-semibold uppercase tracking-wide transition-colors ${chosenIndex === 0 ? 'border-gold-400 bg-gold-50 text-gold-600' : 'border-cream-200 bg-cream-50 text-bark-400 hover:border-cream-300'}`}>Warm &amp; Casual</button>
-                <button onClick={() => switchVersion(1)} className={`py-3 px-4 rounded-xl border-2 font-sans text-sm font-semibold uppercase tracking-wide transition-colors ${chosenIndex === 1 ? 'border-gold-400 bg-gold-50 text-gold-600' : 'border-cream-200 bg-cream-50 text-bark-400 hover:border-cream-300'}`}>Elegant &amp; Formal</button>
+                <button onClick={() => switchVersion(0)} className={`py-3 px-4 rounded-xl border-2 font-sans text-sm font-semibold uppercase tracking-wide transition-colors ${chosenIndex === 0 ? 'border-gold-400 bg-gold-50 text-gold-600' : 'border-cream-200 bg-cream-50 text-bark-400 hover:border-cream-300'}`}>{isEs ? 'Cálida y cercana' : <>Warm &amp; Casual</>}</button>
+                <button onClick={() => switchVersion(1)} className={`py-3 px-4 rounded-xl border-2 font-sans text-sm font-semibold uppercase tracking-wide transition-colors ${chosenIndex === 1 ? 'border-gold-400 bg-gold-50 text-gold-600' : 'border-cream-200 bg-cream-50 text-bark-400 hover:border-cream-300'}`}>{isEs ? 'Elegante y formal' : <>Elegant &amp; Formal</>}</button>
               </div>
 
               <div className="bg-cream-50 rounded-2xl border border-cream-200 p-6 sm:p-8 mb-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-serif text-xl text-bark-600">Your Message</h2>
+                  <h2 className="font-serif text-xl text-bark-600">{isEs ? 'Tu mensaje' : 'Your Message'}</h2>
                   <span className={`font-sans text-xs ${overLimit ? 'text-red-500 font-semibold' : 'text-bark-400'}`}>{words} / {wordLimit} words</span>
                 </div>
                 <textarea
@@ -234,7 +234,7 @@ export default function CardPage() {
                   ? <p className="font-sans text-xs text-red-500 mt-3">Your message is {words - wordLimit} word{words - wordLimit === 1 ? '' : 's'} over the limit for this card. Please shorten it.</p>
                   : <p className="font-sans text-xs text-bark-400 mt-3">{selectedStyle
                       ? <>We&rsquo;ll print exactly what you see here on the {selectedStyle.name} card{selectedStyle.size_label ? ` (${selectedStyle.size_label})` : ''}.</>
-                      : <>Your words will be written in pen, in a flowing script, on the card inside the box.</>}</p>}
+                      : (isEs ? <>Tus palabras se escribirán a pluma, en letra fluida, en la tarjeta dentro de la canastilla.</> : <>Your words will be written in pen, in a flowing script, on the card inside the box.</>)}</p>}
               </div>
 
               {/* Live preview — the message set on the chosen card, positioned
@@ -244,7 +244,7 @@ export default function CardPage() {
                 const setZ = (patch: Partial<Zone>) => setZone(z => ({ ...z, ...patch }))
                 return (
                   <div className="mb-6">
-                    <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400 mb-3 text-center">Preview on your card</p>
+                    <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400 mb-3 text-center">{isEs ? 'Vista previa en tu tarjeta' : 'Preview on your card'}</p>
                     <div className="relative mx-auto w-full max-w-sm border border-cream-300 shadow-sm bg-white overflow-hidden">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={selectedStyle.image_url} alt={selectedStyle.name} className="w-full h-auto block" />
@@ -269,7 +269,7 @@ export default function CardPage() {
                     {/* Placement control — move the note over the card's empty area */}
                     <div className="mx-auto w-full max-w-sm mt-3 bg-cream-50 border border-cream-200 rounded-xl p-4">
                       <div className="flex items-center justify-between mb-3">
-                        <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400">Message placement</p>
+                        <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400">{isEs ? 'Ubicación del mensaje' : 'Message placement'}</p>
                         <button
                           type="button"
                           onClick={() => { const z = selectedStyle.meta?.textZone; setZone(z ? { x: z.x, y: z.y, w: z.w, align: (z.align ?? 'center') as Align } : FALLBACK_ZONE) }}
@@ -294,7 +294,7 @@ export default function CardPage() {
                         </div>
                       ))}
                       <div className="flex items-center gap-3 mt-3">
-                        <span className="font-sans text-[11px] text-bark-500 w-12 shrink-0">Align</span>
+                        <span className="font-sans text-[11px] text-bark-500 w-12 shrink-0">{isEs ? 'Alinear' : 'Align'}</span>
                         <div className="flex gap-1">
                           {(['left', 'center', 'right'] as Align[]).map(a => (
                             <button
@@ -307,7 +307,7 @@ export default function CardPage() {
                         </div>
                       </div>
                     </div>
-                    <p className="font-sans text-[11px] text-bark-400 text-center mt-2">Move the dashed area over the card&rsquo;s empty space — that&rsquo;s where your note prints.</p>
+                    <p className="font-sans text-[11px] text-bark-400 text-center mt-2">{isEs ? 'Mueve el área punteada sobre el espacio libre de la tarjeta — ahí se escribe tu nota.' : <>Move the dashed area over the card&rsquo;s empty space — that&rsquo;s where your note prints.</>}</p>
                   </div>
                 )
               })()}
