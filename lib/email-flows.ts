@@ -145,13 +145,15 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
     try {
       switch (ev.template) {
         case 'welcome-2': {
-          const { segmentOf } = await import('./contacts')
-          await sendWelcomeSeries2Email({ customerEmail: ev.recipient, segment: await segmentOf(ev.recipient) })
+          const { segmentOf, localeOf } = await import('./contacts')
+          await sendWelcomeSeries2Email({ customerEmail: ev.recipient, segment: await segmentOf(ev.recipient), locale: await localeOf(ev.recipient) })
           break
         }
-        case 'welcome-3':
-          await sendWelcomeSeries3Email({ customerEmail: ev.recipient })
+        case 'welcome-3': {
+          const { localeOf } = await import('./contacts')
+          await sendWelcomeSeries3Email({ customerEmail: ev.recipient, locale: await localeOf(ev.recipient) })
           break
+        }
         case 'winback': {
           const { segmentOf } = await import('./contacts')
           await sendWinBackEmail({ customerEmail: ev.recipient, segment: await segmentOf(ev.recipient) })
@@ -195,25 +197,29 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
             skipped++
             continue
           }
-          await sendCartReminder2Email({ customerEmail: ev.recipient })
+          {
+            const { localeOf } = await import('./contacts')
+            await sendCartReminder2Email({ customerEmail: ev.recipient, locale: await localeOf(ev.recipient) })
+          }
           break
         }
         case 'postpurchase-review': {
           const { data: order } = await supabaseAdmin
-            .from('orders').select('customer_name, selected_items').eq('id', ev.order_id).maybeSingle()
+            .from('orders').select('customer_name, selected_items, locale').eq('id', ev.order_id).maybeSingle()
           const items = ((order?.selected_items ?? []) as Array<{ id: string; name: string }>).filter(i => i?.id)
           await sendReviewRequestEmail({
             customerName: order?.customer_name || 'there',
             customerEmail: ev.recipient,
             orderId: ev.order_id ?? '',
             selectedItems: items,
+            locale: (order as { locale?: string } | null)?.locale === 'es' ? 'es' : 'en',
           })
           break
         }
         case 'order-confirmation': {
           // Retry of a confirmation email that failed inside the webhook.
           const { data: order } = await supabaseAdmin
-            .from('orders').select('customer_name, recipient_name, total_amount, tracking_number, selected_items').eq('id', ev.order_id).maybeSingle()
+            .from('orders').select('customer_name, recipient_name, total_amount, tracking_number, selected_items, locale').eq('id', ev.order_id).maybeSingle()
           if (!order) {
             await supabaseAdmin.from('email_events').update({ canceled_at: new Date().toISOString() }).eq('id', ev.id)
             skipped++
@@ -227,6 +233,7 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
             recipientName: order.recipient_name ?? undefined,
             total: order.total_amount ?? 0,
             trackingNumber: order.tracking_number ?? undefined,
+            locale: (order as { locale?: string }).locale === 'es' ? 'es' : 'en',
             items: await resolveOrderItemImages(((order.selected_items ?? []) as Array<{ id?: string; name: string; price?: number; qty?: number; image?: string | null }>).map(i => ({
               id: i.id, name: i.name, price: i.price, qty: i.qty ?? 1, image: i.image ?? null,
             }))),

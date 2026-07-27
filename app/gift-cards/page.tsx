@@ -41,7 +41,7 @@ export default function GiftCardsPage() {
       const res = await fetch('/api/gift-cards/purchase', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, recipientEmail, recipientName, senderName, senderEmail, message }),
+        body: JSON.stringify({ amount, recipientEmail, recipientName, senderName, senderEmail, message, locale: isEs ? 'es' : 'en' }),
       })
       const data = await res.json()
       if (data.url) {

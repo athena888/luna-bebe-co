@@ -75,6 +75,7 @@ export async function POST(
   }
 
   await sendShippingNotificationEmail({
+    locale: (order as { locale?: string }).locale === 'es' ? 'es' : 'en',
     customerName: order.customer_name,
     customerEmail: order.customer_email,
     recipientName: order.recipient_name,

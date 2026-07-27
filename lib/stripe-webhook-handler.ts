@@ -73,6 +73,7 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
     customerEmail: order.customer_email,
     amount: charge.amount_refunded ?? order.total_amount ?? 0,
     orderId: order.id,
+    locale: (order as { locale?: string }).locale === 'es' ? 'es' : 'en',
   }).catch(err => console.error('Refund email error:', err))
 }
 
@@ -121,6 +122,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       message: message || undefined,
       amount: amountCents,
       code: promoCode.code,
+      locale: session.metadata?.locale === 'es' ? 'es' : 'en',
     }).catch(err => console.error('Gift card email error:', err))
     return
   }
@@ -191,6 +193,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     total: order.total_amount,
     trackingNumber: order.tracking_number,
     referralCode,
+    locale: (order as { locale?: string }).locale === 'es' ? 'es' : 'en',
     items: await resolveOrderItemImages((order.selected_items ?? []).map(i => ({
       id: i.id, name: i.name, price: i.price, qty: (i as { qty?: number }).qty ?? 1,
       image: (i as { image?: string | null }).image ?? null,

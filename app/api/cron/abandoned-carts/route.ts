@@ -55,6 +55,7 @@ export async function GET(req: NextRequest) {
         customerName: order.customer_name,
         customerEmail: order.customer_email,
         orderId: order.id,
+        locale: (order as { locale?: string }).locale === 'es' ? 'es' : 'en',
       })
       await supabaseAdmin
         .from('orders')

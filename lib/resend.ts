@@ -47,6 +47,8 @@ function htmlToText(html: string): string {
     .split('\n').map(l => l.replace(/\s+/g, ' ').trim()).filter(Boolean).join('\n')
 }
 
+export type EmailLocale = 'en' | 'es'
+
 function sendEmail(opts: { from: string; to: string; subject: string; html: string; headers?: Record<string, string>; replyTo?: string }) {
   return resend.emails.send({ ...opts, text: htmlToText(opts.html) })
 }
@@ -131,24 +133,29 @@ export async function sendWelcomeEmail({
   customerName,
   customerEmail,
   code,
+  locale = 'en',
 }: {
   customerName?: string
   customerEmail: string
   code?: string | null
+  locale?: EmailLocale
 }) {
-  const greeting = customerName ? `Welcome, ${customerName}` : 'Welcome'
+  const es = locale === 'es'
+  const greeting = es
+    ? (customerName ? `Te damos la bienvenida, ${customerName}` : 'Te damos la bienvenida')
+    : (customerName ? `Welcome, ${customerName}` : 'Welcome')
   return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
-    subject: 'Welcome to Petite Lavande ✨',
+    subject: es ? 'Te damos la bienvenida a Petite Lavande ✨' : 'Welcome to Petite Lavande ✨',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
         <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
           <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${greeting}</h1>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
-            We're so glad you're here. Petite Lavande was born out of a love for new life — every box we create is handcrafted with organic materials, curated with intention, and packed with dried lavender and sealed by hand because every detail matters.
+            ${es ? 'Qué alegría tenerte aquí. Petite Lavande nació del amor por la vida nueva — cada canastilla se hace a mano con materiales orgánicos, se cura con intención y se empaca con lavanda seca, sellada a mano, porque cada detalle importa.' : 'We\'re so glad you\'re here. Petite Lavande was born out of a love for new life — every box we create is handcrafted with organic materials, curated with intention, and packed with dried lavender and sealed by hand because every detail matters.'}
           </p>
           ${code ? `
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 8px;">
@@ -156,8 +163,8 @@ export async function sendWelcomeEmail({
           </p>
           ${CODE(code)}` : ''}
           <div style="text-align:center;">
-            <a href="${utm('/build', 'welcome')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
-              Build Your Box
+            <a href="${utm(es ? '/es/build' : '/build', 'welcome')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
+              ${es ? 'Arma tu canastilla' : 'Build Your Box'}
             </a>
           </div>
         </div>
@@ -190,31 +197,34 @@ function pickOpener(variants: Partial<Record<CopySegment, string>>, fallback: st
   return variants[segment] ?? fallback
 }
 
-export async function sendWelcomeSeries2Email({ customerEmail, segment }: { customerEmail: string; segment?: CopySegment }) {
-  const opener = pickOpener(
-    WELCOME2_OPENERS,
-    `Every item in a Petite Lavande box is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender. The printed card in each box tells the story of every item, so the person you're gifting knows exactly what's touching their baby's skin.`,
-    segment
-  )
+export async function sendWelcomeSeries2Email({ customerEmail, segment, locale = 'en' }: { customerEmail: string; segment?: CopySegment; locale?: EmailLocale }) {
+  const es = locale === 'es'
+  const opener = es
+    ? `Cada pieza de una canastilla Petite Lavande tiene su origen conocido — ropita de algodón orgánico de talleres certificados GOTS, cuidado botánico, lavanda de la Provenza. La tarjeta de cada canastilla cuenta la historia de cada pieza, para que quien recibe tu regalo sepa exactamente qué toca la piel de su bebé.`
+    : pickOpener(
+        WELCOME2_OPENERS,
+        `Every item in a Petite Lavande box is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender. The printed card in each box tells the story of every item, so the person you're gifting knows exactly what's touching their baby's skin.`,
+        segment
+      )
   return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
-    subject: 'The story behind every box 🌿',
+    subject: es ? 'La historia detrás de cada canastilla 🌿' : 'The story behind every box 🌿',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
         <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
-          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">We don't curate. We trace.</h1>
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${es ? 'No curamos. Rastreamos.' : `We don't curate. We trace.`}</h1>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             ${opener}
           </p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 24px;">
-            Hand-packed and finished with satin ribbon, sealed by hand.
+            ${es ? 'Armada a mano y terminada con listón de satén, sellada a mano.' : 'Hand-packed and finished with satin ribbon, sealed by hand.'}
           </p>
           <div style="text-align:center;">
-            <a href="${utm('/boxes', 'welcome')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
-              See the Boxes
+            <a href="${utm(es ? '/es/canastillas' : '/boxes', 'welcome')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
+              ${es ? 'Ver las canastillas' : 'See the Boxes'}
             </a>
           </div>
         </div>
@@ -225,19 +235,20 @@ export async function sendWelcomeSeries2Email({ customerEmail, segment }: { cust
 }
 
 // Welcome series step 3 (D+4) — gentle nudge with the code reminder.
-export async function sendWelcomeSeries3Email({ customerEmail, code }: { customerEmail: string; code?: string | null }) {
+export async function sendWelcomeSeries3Email({ customerEmail, code, locale = 'en' }: { customerEmail: string; code?: string | null; locale?: EmailLocale }) {
+  const es = locale === 'es'
   return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
-    subject: 'Still deciding? Let us help ✨',
+    subject: es ? '¿Aún decidiendo? Te ayudamos ✨' : 'Still deciding? Let us help ✨',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
         <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
-          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">Not sure which box?</h1>
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${es ? '¿No sabes cuál elegir?' : 'Not sure which box?'}</h1>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
-            Tell us who you're gifting and our gift guide will point you to the right box — for a new mama, a newborn, or both. Or build your own from scratch, item by item.
+            ${es ? 'Cuéntanos a quién le regalas y nuestra guía te llevará a la canastilla indicada — para una mamá reciente, un recién nacido o los dos. O arma la tuya desde cero, pieza por pieza.' : `Tell us who you're gifting and our gift guide will point you to the right box — for a new mama, a newborn, or both. Or build your own from scratch, item by item.`}
           </p>
           ${code ? `
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 8px;">
@@ -246,7 +257,7 @@ export async function sendWelcomeSeries3Email({ customerEmail, code }: { custome
           ${CODE(code)}` : ''}
           <div style="text-align:center;">
             <a href="${utm('/guide', 'welcome')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
-              Find the Right Box
+              ${es ? 'Encuentra la canastilla' : 'Find the Right Box'}
             </a>
           </div>
         </div>
@@ -295,23 +306,25 @@ export async function sendWinBackEmail({ customerName, customerEmail, segment }:
 // Build 17 — the recipient's digital gift note, sent once when their box
 // ships. Transactional in nature but carries unsubscribe anyway. Gated by
 // GIFTNOTE_ACTIVE via lib/gift-note.ts.
-export async function sendGiftNoteEmail({ recipientEmail, recipientName, senderName, noteUrl }: {
+export async function sendGiftNoteEmail({ recipientEmail, recipientName, senderName, noteUrl, locale = 'en' }: {
   recipientEmail: string
   recipientName?: string
   senderName: string
   noteUrl: string
+  locale?: EmailLocale
 }) {
+  const es = locale === 'es'
   const greeting = recipientName ? `${recipientName}, a` : 'A'
   return sendEmail({
     from: FROM,
     to: recipientEmail,
     headers: unsubHeaders(recipientEmail),
-    subject: `${senderName} sent you something 🌿`,
+    subject: es ? `${senderName} te envió algo 🌿` : `${senderName} sent you something 🌿`,
     html: shell(
-      `${greeting} gift is on its way to you`,
-      P(`<strong>${senderName}</strong> has sent you a Petite Lavande box — hand-packed organic keepsakes, on their way to your door. They wrote you a note to go with it.`) +
-      BTN(noteUrl, 'Read Your Note') +
-      P(`<span style="font-size:12px;color:rgba(255,255,255,0.8);">We're Petite Lavande, a small studio making organic baby & new-mama gift boxes. This is the only email we'll send you unless you ask to hear from us.</span>`),
+      es ? `${recipientName ? `${recipientName}, un` : 'Un'} regalo va en camino hacia ti` : `${greeting} gift is on its way to you`,
+      P(es ? `<strong>${senderName}</strong> te envió una canastilla Petite Lavande — recuerdos orgánicos hechos a mano, en camino a tu puerta. Escribió una nota para ti.` : `<strong>${senderName}</strong> has sent you a Petite Lavande box — hand-packed organic keepsakes, on their way to your door. They wrote you a note to go with it.`) +
+      BTN(noteUrl, es ? 'Leer tu nota' : 'Read Your Note') +
+      P(`<span style="font-size:12px;color:rgba(255,255,255,0.8);">${es ? 'Somos Petite Lavande, un pequeño estudio de canastillas orgánicas para bebé y mamá. Este es el único correo que te enviaremos, a menos que quieras saber de nosotros.' : `We're Petite Lavande, a small studio making organic baby & new-mama gift boxes. This is the only email we'll send you unless you ask to hear from us.`}</span>`),
       flowFooter(recipientEmail)
     ),
   })
@@ -399,26 +412,27 @@ export async function sendCampaignEmail({ customerEmail, subject, heading, parag
 // Build 1 upgrade — second abandoned-cart touch, D+3 after the first. No
 // discount on purpose (a rescue code would train cart-abandoning). Gated by
 // CART_SEQUENCE_ACTIVE via the cron; copy in MARKETING_COPY.md.
-export async function sendCartReminder2Email({ customerEmail }: { customerEmail: string }) {
+export async function sendCartReminder2Email({ customerEmail, locale = 'en' }: { customerEmail: string; locale?: EmailLocale }) {
+  const es = locale === 'es'
   return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
-    subject: 'Your box is still saved 🌿',
+    subject: es ? 'Tu canastilla sigue guardada 🌿' : 'Your box is still saved 🌿',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
         <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
-          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">Right where you left it</h1>
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${es ? 'Justo donde la dejaste' : 'Right where you left it'}</h1>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
-            The box you built is still saved, exactly as you left it. If the moment passed, no worries at all — but if that gift is still on your mind, everything is ready to finish in a minute or two.
+            ${es ? 'La canastilla que armaste sigue guardada, tal como la dejaste. Si el momento pasó, no hay problema — pero si ese regalo sigue en tu mente, todo está listo para terminar en un par de minutos.' : 'The box you built is still saved, exactly as you left it. If the moment passed, no worries at all — but if that gift is still on your mind, everything is ready to finish in a minute or two.'}
           </p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 24px;">
-            Hand-packed within 24 hours of your order, finished with satin ribbon and sealed by hand.
+            ${es ? 'Armada a mano dentro de las 24 horas de tu pedido, terminada con listón de satén y sellada a mano.' : 'Hand-packed within 24 hours of your order, finished with satin ribbon and sealed by hand.'}
           </p>
           <div style="text-align:center;">
-            <a href="${utm('/checkout', 'cart')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
-              Pick Up Where You Left Off
+            <a href="${utm(es ? '/es/checkout' : '/checkout', 'cart')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
+              ${es ? 'Retomar donde quedaste' : 'Pick Up Where You Left Off'}
             </a>
           </div>
         </div>
@@ -527,12 +541,15 @@ export async function sendReviewRequestEmail({
   customerEmail,
   orderId,
   selectedItems,
+  locale = 'en',
 }: {
   customerName: string
   customerEmail: string
   orderId: string
   selectedItems: Array<{ id: string; name: string }>
+  locale?: EmailLocale
 }) {
+  const es = locale === 'es'
   const itemLinks = selectedItems.slice(0, 3).map(item =>
     `<li style="margin-bottom:8px;"><a href="${utm(`/products/${item.id}`, 'postpurchase')}" style="font-family:sans-serif;font-size:14px;color:#ffffff;text-decoration:underline;">${item.name}</a></li>`
   ).join('')
@@ -545,19 +562,19 @@ export async function sendReviewRequestEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
-    subject: 'How was your Petite Lavande box? 🌿',
+    subject: es ? '¿Cómo llegó tu canastilla Petite Lavande? 🌿' : 'How was your Petite Lavande box? 🌿',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
         <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
-          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">We'd love your thoughts</h1>
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${es ? 'Nos encantaría saber' : `We'd love your thoughts`}</h1>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
-            Hi ${customerName}, we hope your Petite Lavande box arrived beautifully and brought a little joy. Your review helps other families discover these products — it would mean the world to us.
+            ${es ? `Hola ${customerName}, esperamos que tu canastilla haya llegado hermosa y traído un poquito de alegría. Tu reseña ayuda a otras familias a descubrir estas piezas — significaría muchísimo para nosotros.` : `Hi ${customerName}, we hope your Petite Lavande box arrived beautifully and brought a little joy. Your review helps other families discover these products — it would mean the world to us.`}
           </p>
           ${selectedItems.length > 0 ? `<ul style="padding-left:20px;margin:0 0 24px;">${itemLinks}</ul>` : ''}
           <div style="text-align:center;">
             <a href="${reviewHref}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
-              Leave a Review
+              ${es ? 'Escribir una reseña' : 'Leave a Review'}
             </a>
           </div>
         </div>
@@ -571,30 +588,33 @@ export async function sendAbandonedCartEmail({
   customerName,
   customerEmail,
   orderId,
+  locale = 'en',
 }: {
   customerName: string
   customerEmail: string
   orderId: string
+  locale?: EmailLocale
 }) {
+  const es = locale === 'es'
   return sendEmail({
     from: FROM,
     to: customerEmail,
     headers: unsubHeaders(customerEmail),
-    subject: 'Your Petite Lavande box is waiting ✨',
+    subject: es ? 'Tu canastilla te espera ✨' : 'Your Petite Lavande box is waiting ✨',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
         <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
-          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">Your box is waiting</h1>
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${es ? 'Tu canastilla te espera' : 'Your box is waiting'}</h1>
           <p style="font-family: sans-serif; font-size: 14px; line-height: 1.7; color: #ffffff; margin: 0 0 16px;">
-            Hi ${customerName},
+            ${es ? 'Hola' : 'Hi'} ${customerName},
           </p>
           <p style="font-family: sans-serif; font-size: 14px; line-height: 1.7; color: #ffffff; margin: 0 0 24px;">
-            You started building a beautiful gift box but didn't quite finish. Your selections are saved — all you need to do is complete checkout.
+            ${es ? 'Empezaste a armar una canastilla hermosa y quedó a medio camino. Tus selecciones están guardadas — solo falta finalizar la compra.' : `You started building a beautiful gift box but didn't quite finish. Your selections are saved — all you need to do is complete checkout.`}
           </p>
           <div style="text-align: center;">
-            <a href="${utm('/build', 'abandonedcart')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
-              Complete My Box
+            <a href="${utm(es ? '/es/build' : '/build', 'abandonedcart')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
+              ${es ? 'Completar mi canastilla' : 'Complete My Box'}
             </a>
           </div>
         </div>
@@ -611,6 +631,7 @@ export async function sendGiftCardEmail({
   message,
   amount,
   code,
+  locale = 'en',
 }: {
   recipientName: string
   recipientEmail: string
@@ -618,23 +639,25 @@ export async function sendGiftCardEmail({
   message?: string
   amount: number
   code: string
+  locale?: EmailLocale
 }) {
+  const es = locale === 'es'
   const formatted = `$${(amount / 100).toFixed(0)}`
   return sendEmail({
     from: FROM,
     to: recipientEmail,
-    subject: `A gift for you, from ${senderName}`,
+    subject: es ? `Un regalo para ti, de ${senderName}` : `A gift for you, from ${senderName}`,
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
         <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
-          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 6px;">You've received a gift</h1>
-          <p style="font-family:sans-serif;font-size:13px;text-align:center;color:rgba(255,255,255,0.85);margin:0 0 24px;">From ${senderName}, with love</p>
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 6px;">${es ? 'Recibiste un regalo' : `You've received a gift`}</h1>
+          <p style="font-family:sans-serif;font-size:13px;text-align:center;color:rgba(255,255,255,0.85);margin:0 0 24px;">${es ? `De ${senderName}, con cariño` : `From ${senderName}, with love`}</p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
-            Hi ${recipientName},
+            ${es ? 'Hola' : 'Hi'} ${recipientName},
           </p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 24px;">
-            ${senderName} has gifted you a <strong>${formatted} Petite Lavande gift card</strong>. Use the code below to build your own luxury baby gift box.
+            ${es ? `${senderName} te regaló una <strong>tarjeta Petite Lavande de ${formatted}</strong>. Usa el código de abajo para armar tu propia canastilla.` : `${senderName} has gifted you a <strong>${formatted} Petite Lavande gift card</strong>. Use the code below to build your own luxury baby gift box.`}
           </p>
           ${message ? `
           <div style="border-left:3px solid rgba(255,255,255,0.6);padding:12px 16px;margin-bottom:24px;">
@@ -642,17 +665,17 @@ export async function sendGiftCardEmail({
           </div>
           ` : ''}
           <div style="background:rgba(255,255,255,0.14);border:1px dashed rgba(255,255,255,0.6);padding:24px;text-align:center;margin-bottom:24px;">
-            <p style="font-family:sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin:0 0 8px;">Your Gift Code</p>
+            <p style="font-family:sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin:0 0 8px;">${es ? 'Tu código de regalo' : 'Your Gift Code'}</p>
             <p style="font-family:monospace;font-size:28px;font-weight:bold;color:#ffffff;letter-spacing:4px;margin:0;">${code}</p>
-            <p style="font-family:sans-serif;font-size:12px;color:rgba(255,255,255,0.75);margin:8px 0 0;">Worth ${formatted} · Valid forever</p>
+            <p style="font-family:sans-serif;font-size:12px;color:rgba(255,255,255,0.75);margin:8px 0 0;">${es ? `Vale ${formatted} · No vence` : `Worth ${formatted} · Valid forever`}</p>
           </div>
           <div style="text-align:center;">
-            <a href="${BASE_URL}/build" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
-              Build Your Box
+            <a href="${BASE_URL}${es ? '/es/build' : '/build'}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
+              ${es ? 'Arma tu canastilla' : 'Build Your Box'}
             </a>
           </div>
         </div>
-        <p style="font-family:sans-serif;font-size:12px;text-align:center;color:#9c7c5a;margin:0 0 4px;">Enter your code at checkout to redeem it.</p>
+        <p style="font-family:sans-serif;font-size:12px;text-align:center;color:#9c7c5a;margin:0 0 4px;">${es ? 'Escribe tu código al pagar para canjearlo.' : 'Enter your code at checkout to redeem it.'}</p>
         ${brandFooter}
       </div>
     `,
@@ -667,32 +690,35 @@ export async function sendShippingNotificationEmail({
   recipientName,
   trackingNumber,
   trackingUrl,
+  locale = 'en',
 }: {
   customerName: string
   customerEmail: string
   recipientName?: string
   trackingNumber?: string
   trackingUrl?: string
+  locale?: EmailLocale
 }) {
+  const es = locale === 'es'
   return sendEmail({
     from: FROM,
     to: customerEmail,
-    subject: 'Your Petite Lavande box has shipped 📦',
+    subject: es ? 'Tu canastilla Petite Lavande va en camino 📦' : 'Your Petite Lavande box has shipped 📦',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;">
         ${brandHeader}
         <div style="background:#7A8E7C;padding:36px 32px;margin:0 4px 24px;">
-          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">On Its Way</h1>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 6px;">Hi ${customerName},</p>
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${es ? 'En camino' : 'On Its Way'}</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 6px;">${es ? 'Hola' : 'Hi'} ${customerName},</p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 6px;">
-            Your box${recipientName ? ` for ${recipientName}` : ''} shipped today and is on its way.
+            ${es ? `Tu canastilla${recipientName ? ` para ${recipientName}` : ''} salió hoy y va en camino.` : `Your box${recipientName ? ` for ${recipientName}` : ''} shipped today and is on its way.`}
           </p>
           ${trackingNumber ? `
           <div style="border:1px dashed rgba(255,255,255,0.6);padding:20px;text-align:center;margin:22px 0 0;">
-            <p style="font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin:0 0 6px;">Tracking number</p>
+            <p style="font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin:0 0 6px;">${es ? 'Número de rastreo' : 'Tracking number'}</p>
             <p style="font-family:monospace;font-size:15px;letter-spacing:1px;color:#ffffff;margin:0;">${trackingNumber}</p>
             ${trackingUrl ? `
-            <a href="${trackingUrl}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;margin-top:18px;">Track Your Box</a>` : ''}
+            <a href="${trackingUrl}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;margin-top:18px;">${es ? 'Rastrear tu canastilla' : 'Track Your Box'}</a>` : ''}
           </div>` : ''}
         </div>
         ${brandFooter}
@@ -740,28 +766,31 @@ export async function sendRefundEmail({
   customerEmail,
   amount,
   orderId,
+  locale = 'en',
 }: {
   customerName: string
   customerEmail: string
   amount: number
   orderId: string
+  locale?: EmailLocale
 }) {
+  const es = locale === 'es'
   const formatted = `$${(amount / 100).toFixed(2)}`
   return sendEmail({
     from: FROM,
     to: customerEmail,
-    subject: 'Your Petite Lavande refund has been processed',
+    subject: es ? 'Tu reembolso de Petite Lavande fue procesado' : 'Your Petite Lavande refund has been processed',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
         <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
-          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">Refund Processed</h1>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">Hi ${customerName},</p>
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${es ? 'Reembolso procesado' : 'Refund Processed'}</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">${es ? 'Hola' : 'Hi'} ${customerName},</p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
-            We've processed a refund of <strong>${formatted}</strong> for your order. Depending on your bank, it may take 5–10 business days to appear on your statement.
+            ${es ? `Procesamos un reembolso de <strong>${formatted}</strong> por tu pedido. Según tu banco, puede tardar de 5 a 10 días hábiles en reflejarse.` : `We've processed a refund of <strong>${formatted}</strong> for your order. Depending on your bank, it may take 5–10 business days to appear on your statement.`}
           </p>
           <div style="border-top:1px solid rgba(255,255,255,0.25);padding-top:16px;">
-            <p style="font-family:sans-serif;font-size:12px;color:rgba(255,255,255,0.75);margin:0 0 4px;text-transform:uppercase;letter-spacing:1px;">Order Reference</p>
+            <p style="font-family:sans-serif;font-size:12px;color:rgba(255,255,255,0.75);margin:0 0 4px;text-transform:uppercase;letter-spacing:1px;">${es ? 'Referencia del pedido' : 'Order Reference'}</p>
             <p style="font-family:monospace;font-size:14px;color:#ffffff;margin:0;">#${orderId.slice(-8).toUpperCase()}</p>
           </div>
         </div>
@@ -807,6 +836,7 @@ export async function sendOrderConfirmationEmail({
   trackingUrl,
   items,
   referralCode,
+  locale = 'en',
 }: {
   customerName: string
   customerEmail: string
@@ -817,7 +847,9 @@ export async function sendOrderConfirmationEmail({
   trackingUrl?: string
   items?: Array<{ id?: string; name: string; price?: number; qty?: number; image?: string | null }>
   referralCode?: string | null
+  locale?: EmailLocale
 }) {
+  const es = locale === 'es'
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`
   const ref = (trackingNumber ?? orderId).slice(-8).toUpperCase()
   // Only render images the caller resolved (guessed storage URLs 404 — real
@@ -834,7 +866,7 @@ export async function sendOrderConfirmationEmail({
       </td>
       <td style="padding:9px 0 9px 12px;border-bottom:1px solid rgba(255,255,255,0.25);vertical-align:middle;">
         <p style="font-family:sans-serif;font-size:13px;color:#ffffff;margin:0 0 2px;">${i.name}</p>
-        <p style="font-family:sans-serif;font-size:11px;color:rgba(255,255,255,0.75);margin:0;">Qty ${qty}${i.price != null ? ` · ${formatPrice(i.price)} each` : ''}</p>
+        <p style="font-family:sans-serif;font-size:11px;color:rgba(255,255,255,0.75);margin:0;">${es ? 'Cant.' : 'Qty'} ${qty}${i.price != null ? ` · ${formatPrice(i.price)} ${es ? 'c/u' : 'each'}` : ''}</p>
       </td>
       ${i.price != null ? `<td style="padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.25);text-align:right;vertical-align:middle;font-family:sans-serif;font-size:13px;color:#ffffff;white-space:nowrap;">${formatPrice(i.price * qty)}</td>` : '<td style="border-bottom:1px solid rgba(255,255,255,0.25);"></td>'}
     </tr>`
@@ -843,15 +875,15 @@ export async function sendOrderConfirmationEmail({
   return sendEmail({
     from: FROM,
     to: customerEmail,
-    subject: 'Your Petite Lavande order is confirmed',
+    subject: es ? 'Tu pedido Petite Lavande está confirmado' : 'Your Petite Lavande order is confirmed',
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;">
         ${brandHeader}
         <div style="background:#7A8E7C;padding:36px 32px;margin:0 4px 24px;">
-          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">Order Confirmed</h1>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 6px;">Hi ${customerName},</p>
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${es ? 'Pedido confirmado' : 'Order Confirmed'}</h1>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 6px;">${es ? 'Hola' : 'Hi'} ${customerName},</p>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 6px;">
-            Thank you${recipientName ? ` — what a lovely thing to send ${recipientName}` : ' for your order'}. We are preparing your box by hand now.
+            ${es ? `Gracias${recipientName ? ` — qué lindo detalle para ${recipientName}` : ' por tu pedido'}. Ya estamos preparando tu canastilla a mano.` : `Thank you${recipientName ? ` — what a lovely thing to send ${recipientName}` : ' for your order'}. We are preparing your box by hand now.`}
           </p>
           ${itemRows ? `
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0 0;border-top:1px solid rgba(255,255,255,0.25);">
@@ -859,27 +891,27 @@ export async function sendOrderConfirmationEmail({
           </table>` : ''}
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:14px 0 0;">
             <tr>
-              <td style="font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.75);padding:6px 0;">Order total</td>
+              <td style="font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.75);padding:6px 0;">${es ? 'Total del pedido' : 'Order total'}</td>
               <td style="font-family:Georgia,serif;font-size:20px;color:#ffffff;text-align:right;padding:6px 0;">${formatPrice(total)}</td>
             </tr>
             <tr>
-              <td style="font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.75);padding:6px 0;">Order reference</td>
+              <td style="font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.75);padding:6px 0;">${es ? 'Referencia del pedido' : 'Order reference'}</td>
               <td style="font-family:monospace;font-size:13px;color:#ffffff;text-align:right;padding:6px 0;">${ref}</td>
             </tr>
           </table>
           ${trackingUrl ? `
           <div style="text-align:center;margin-top:26px;">
-            <a href="${trackingUrl}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">Track Your Order</a>
+            <a href="${trackingUrl}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">${es ? 'Rastrear tu pedido' : 'Track Your Order'}</a>
           </div>` : ''}
         </div>
         ${referralCode ? `
         <div style="background:#7A8E7C;padding:24px 30px;margin:0 4px 24px;">
-          <h2 style="font-family:Georgia,serif;font-size:19px;font-weight:normal;color:#ffffff;margin:0 0 8px;">Give $15, get $15</h2>
+          <h2 style="font-family:Georgia,serif;font-size:19px;font-weight:normal;color:#ffffff;margin:0 0 8px;">${es ? 'Da $15, recibe $15' : 'Give $15, get $15'}</h2>
           <p style="font-family:sans-serif;font-size:13px;line-height:1.7;color:rgba(255,255,255,0.92);margin:0;">
-            Your personal code <span style="font-family:monospace;letter-spacing:2px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.5);border-radius:6px;padding:2px 8px;color:#ffffff;">${referralCode}</span> gives a friend $15 off their first box — and when they use it, you get $15 off your next one.
+            Your personal code <span style="font-family:monospace;letter-spacing:2px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.5);border-radius:6px;padding:2px 8px;color:#ffffff;">${referralCode}</span> ${es ? 'le da a una amiga $15 en su primera canastilla — y cuando lo use, tú recibes $15 para la próxima.' : 'gives a friend $15 off their first box — and when they use it, you get $15 off your next one.'}
           </p>
         </div>` : ''}
-        <p style="font-family:sans-serif;font-size:12px;text-align:center;color:#9c7c5a;margin:0 0 4px;">We will email again the moment it ships.</p>
+        <p style="font-family:sans-serif;font-size:12px;text-align:center;color:#9c7c5a;margin:0 0 4px;">${es ? 'Te escribimos de nuevo en cuanto salga.' : 'We will email again the moment it ships.'}</p>
         ${brandFooter}
       </div>
     `,

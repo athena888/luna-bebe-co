@@ -12,6 +12,18 @@ import { supabaseAdmin } from './supabase'
 
 export type ContactSegment = 'parent_to_be' | 'grandparent' | 'friend_coworker' | 'corporate' | 'unknown'
 
+/** Locale lookup for send-time email routing — 'es' only when the contact
+ *  explicitly chose Spanish. Fail-soft to English. */
+export async function localeOf(email: string): Promise<'en' | 'es'> {
+  try {
+    const { data } = await supabaseAdmin
+      .from('marketing_contacts').select('locale').eq('email', email.trim().toLowerCase()).maybeSingle()
+    return data?.locale === 'es' ? 'es' : 'en'
+  } catch {
+    return 'en'
+  }
+}
+
 /** Segment lookup for send-time copy variants (Build 7). Fail-soft: any
  *  error or missing row reads as 'unknown', which sends the default copy. */
 export async function segmentOf(email: string): Promise<ContactSegment> {

@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     // Fresh subscribe — welcome email, no discount (Emily removed the signup
     // incentive 2026-07-27: "we only send the good stuff").
     try {
-      await sendWelcomeEmail({ customerEmail: email })
+      await sendWelcomeEmail({ customerEmail: email, locale: locale === 'es' ? 'es' : 'en' })
     } catch (e) {
       console.error('Welcome email send failed:', e)
     }

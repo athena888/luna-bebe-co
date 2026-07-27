@@ -9,7 +9,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: STORE_CLOSED_MESSAGE }, { status: 403 })
   }
   try {
-    const { amount, recipientEmail, recipientName, senderName, senderEmail, message } = await req.json()
+    const body = await req.json()
+    const { amount, recipientEmail, recipientName, senderName, senderEmail, message } = body
 
     if (!amount || !recipientEmail || !recipientName || !senderName || !senderEmail) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -35,6 +36,7 @@ export async function POST(req: NextRequest) {
       success_url: `${baseUrl}/gift-cards/confirmation?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/gift-cards`,
       metadata: {
+        locale: body.locale === 'es' ? 'es' : 'en',
         type: 'gift_card',
         recipient_email: recipientEmail,
         recipient_name: recipientName,

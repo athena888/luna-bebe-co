@@ -43,7 +43,7 @@ export async function sendGiftNoteIfDue(orderId: string): Promise<boolean> {
   if (!GIFTNOTE_ACTIVE) return false
   const { data: order } = await supabaseAdmin
     .from('orders')
-    .select('id, recipient_email, recipient_name, customer_name, gift_note_sent_at')
+    .select('id, recipient_email, recipient_name, customer_name, gift_note_sent_at, locale')
     .eq('id', orderId).maybeSingle()
   if (!order?.recipient_email || order.gift_note_sent_at) return false
   const email = (order.recipient_email as string).trim().toLowerCase()
@@ -55,6 +55,7 @@ export async function sendGiftNoteIfDue(orderId: string): Promise<boolean> {
     recipientName: (order.recipient_name as string) || undefined,
     senderName: (order.customer_name as string) || 'Someone who loves you',
     noteUrl: `${(process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com').replace(/\/$/, '')}/note/${giftNoteToken(order.id as string)}`,
+    locale: (order as { locale?: string }).locale === 'es' ? 'es' : 'en',
   })
   await supabaseAdmin.from('orders').update({ gift_note_sent_at: new Date().toISOString() }).eq('id', orderId)
   return true
