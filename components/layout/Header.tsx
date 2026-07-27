@@ -86,7 +86,7 @@ function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
   // Bigger at the hero top; shrinks to normal on scroll. transition-all animates height.
   const sizeCls = expanded ? 'h-[4.5rem] sm:h-[5.25rem]' : 'h-12 sm:h-14'
   return (
-    <Link href="/" className="flex items-center shrink-0 min-w-0" aria-label="Petite Lavande — home">
+    <Link href={useIsEs() ? '/es' : '/'} className="flex items-center shrink-0 min-w-0" aria-label="Petite Lavande — home">
       {err ? (
         <span className="flex items-center gap-2 sm:gap-2.5">
           <Sprig light={light} />
@@ -105,29 +105,40 @@ function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
 // Collection links shown in the Boxes dropdown. Mirrors the six live
 // shop_collections rows — update together with any activation change so the
 // nav never links to a 404 (the collection page guard 404s under-threshold).
-const COLLECTION_GROUPS: Array<{ heading: string; links: Array<{ href: string; label: string }> }> = [
+const COLLECTION_GROUPS: Array<{ heading: string; headingEs: string; links: Array<{ slug: string; label: string; labelEs: string }> }> = [
   {
     heading: 'By recipient',
+    headingEs: 'Por destinatario',
     links: [
-      { href: '/collections/for-mama', label: 'For Mama' },
-      { href: '/collections/for-baby', label: 'For Baby' },
-      { href: '/collections/for-both', label: 'For Mama & Baby' },
+      { slug: 'for-mama', label: 'For Mama', labelEs: 'Para Mamá' },
+      { slug: 'for-baby', label: 'For Baby', labelEs: 'Para el Bebé' },
+      { slug: 'for-both', label: 'For Mama & Baby', labelEs: 'Para Mamá y Bebé' },
     ],
   },
   {
     heading: 'By occasion',
+    headingEs: 'Por ocasión',
     links: [
-      { href: '/collections/baby-shower', label: 'Baby Shower' },
-      { href: '/collections/new-arrival', label: 'New Arrival' },
-      { href: '/collections/corporate-gifting', label: 'Corporate Gifting' },
+      { slug: 'baby-shower', label: 'Baby Shower', labelEs: 'Baby Shower' },
+      { slug: 'new-arrival', label: 'New Arrival', labelEs: 'Recién Nacido' },
+      { slug: 'corporate-gifting', label: 'Corporate Gifting', labelEs: 'Regalos Corporativos' },
     ],
   },
 ]
+
+// On /es pages the same chrome speaks Spanish and keeps links inside /es
+// wherever a Spanish page exists; untranslated destinations stay English.
+function useIsEs() {
+  const pathname = usePathname()
+  return pathname === '/es' || pathname.startsWith('/es/')
+}
+const collectionHref = (slug: string, isEs: boolean) => isEs ? `/es/colecciones/${slug}` : `/collections/${slug}`
 
 // "Gift Boxes" with the collections dropdown. Every link renders in the
 // initial HTML (hidden with CSS, never conditionally omitted) so crawlers see
 // the full list; the trigger itself links to /boxes so it works without JS.
 function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
+  const isEs = useIsEs()
   const [open, setOpen] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const enter = () => { if (timer.current) clearTimeout(timer.current); timer.current = setTimeout(() => setOpen(true), 150) }
@@ -140,13 +151,13 @@ function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
   return (
     <div className="relative" onMouseEnter={enter} onMouseLeave={leave} onFocus={enter} onBlur={leave}>
       <Link
-        href="/boxes"
+        href={isEs ? '/es' : '/boxes'}
         className={cls}
         aria-expanded={open}
         aria-controls="boxes-dropdown"
         onClick={() => setOpen(false)}
       >
-        Gift Boxes
+        {isEs ? 'Canastillas' : 'Gift Boxes'}
       </Link>
       <div
         id="boxes-dropdown"
@@ -155,18 +166,18 @@ function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
         <div className="bg-cream-white border border-cream-300 shadow-lg px-7 py-6 flex gap-10 whitespace-nowrap">
           {COLLECTION_GROUPS.map(g => (
             <div key={g.heading}>
-              <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-400 font-bold mb-2.5">{g.heading}</p>
+              <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-400 font-bold mb-2.5">{isEs ? g.headingEs : g.heading}</p>
               {g.links.map(l => (
-                <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
+                <Link key={l.slug} href={collectionHref(l.slug, isEs)} onClick={() => setOpen(false)}
                   className="block font-sans text-[13px] normal-case tracking-normal text-espresso hover:text-gold-500 transition-colors py-1">
-                  {l.label}
+                  {isEs ? l.labelEs : l.label}
                 </Link>
               ))}
             </div>
           ))}
-          <Link href="/boxes" onClick={() => setOpen(false)}
+          <Link href={isEs ? '/es' : '/boxes'} onClick={() => setOpen(false)}
             className="self-end font-sans text-[12px] normal-case tracking-normal text-[#7A8E7C] underline underline-offset-2 hover:text-espresso transition-colors">
-            View all boxes →
+            {isEs ? 'Ver todas →' : 'View all boxes →'}
           </Link>
         </div>
       </div>
@@ -175,20 +186,22 @@ function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
 }
 
 function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) {
+  const isEs = useIsEs()
   const base = light ? 'text-cream-50/90 hover:text-white' : 'text-espresso hover:text-gold-500'
   const cls = `uppercase font-medium ${base} transition-colors whitespace-nowrap`
   return (
     <>
       {/* Curated first, custom second */}
       <BoxesDropdown light={light} cls={cls} />
-      <Link href="/build" className={cls} onClick={onClick}>Build Your Own Box</Link>
-      <Link href="/gift-cards" className={cls} onClick={onClick}>Gift Cards</Link>
-      <Link href="/story" className={cls} onClick={onClick}>Stories</Link>
+      <Link href="/build" className={cls} onClick={onClick}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
+      <Link href="/gift-cards" className={cls} onClick={onClick}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
+      <Link href="/story" className={cls} onClick={onClick}>{isEs ? 'Nuestra historia' : 'Stories'}</Link>
     </>
   )
 }
 
 function MobileMenu({ onClose }: { onClose: () => void }) {
+  const isEs = useIsEs()
   const [boxesOpen, setBoxesOpen] = useState(false)
   const linkCls = 'uppercase text-espresso hover:text-gold-500 transition-colors'
   return (
@@ -196,7 +209,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
       {/* Boxes accordion — same links as the desktop dropdown, tap to expand */}
       <div>
         <div className="flex items-center justify-between">
-          <Link href="/boxes" className={linkCls} onClick={onClose}>Gift Boxes</Link>
+          <Link href={isEs ? '/es' : '/boxes'} className={linkCls} onClick={onClose}>{isEs ? 'Canastillas' : 'Gift Boxes'}</Link>
           <button onClick={() => setBoxesOpen(o => !o)} aria-expanded={boxesOpen} aria-label="Show collections"
             className="w-9 h-9 flex items-center justify-center text-bark-400">
             <ChevronDown size={16} className={`transition-transform ${boxesOpen ? 'rotate-180' : ''}`} />
@@ -205,14 +218,14 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
         {boxesOpen && (
           <div className="mt-3 pl-3 flex flex-col gap-2.5 font-sans text-[13px] tracking-normal normal-case">
             {COLLECTION_GROUPS.flatMap(g => g.links).map(l => (
-              <Link key={l.href} href={l.href} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{l.label}</Link>
+              <Link key={l.slug} href={collectionHref(l.slug, isEs)} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{isEs ? l.labelEs : l.label}</Link>
             ))}
           </div>
         )}
       </div>
-      <Link href="/build" className={linkCls} onClick={onClose}>Build Your Own Box</Link>
-      <Link href="/gift-cards" className={linkCls} onClick={onClose}>Gift Cards</Link>
-      <Link href="/story" className={linkCls} onClick={onClose}>Stories</Link>
+      <Link href="/build" className={linkCls} onClick={onClose}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
+      <Link href="/gift-cards" className={linkCls} onClick={onClose}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
+      <Link href="/story" className={linkCls} onClick={onClose}>{isEs ? 'Nuestra historia' : 'Stories'}</Link>
       <Link href="/account" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors" onClick={onClose}>My Account</Link>
     </div>
   )
