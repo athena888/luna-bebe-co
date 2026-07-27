@@ -48,7 +48,7 @@ export default function UgcPage() {
   const btn = 'font-sans text-[10px] tracking-[0.05em] px-2.5 py-1 border border-cream-300 bg-white hover:bg-cream-100 transition-colors disabled:opacity-40'
 
   return (
-    <div>
+    <div className="p-8">
       <h1 className="text-2xl text-bark-600 mb-1">Customer Photos</h1>
       <p className="font-sans text-sm text-bark-400 mb-6">
         Nothing is used anywhere without your approval here. Consent wording is stored verbatim per photo — marketing use only where the box was ticked.

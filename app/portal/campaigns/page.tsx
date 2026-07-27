@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { MarketingTabs } from '@/components/portal/MarketingTabs'
 
 // Portal → Campaigns (Build 8) — compose a one-off email, pick segments,
 // send a test to yourself, then send for real. Backed by /api/portal/campaigns.
@@ -96,7 +97,8 @@ export default function CampaignsPage() {
   }
 
   return (
-    <div>
+    <div className="p-8">
+      <MarketingTabs active="campaigns" />
       <h1 className="text-2xl text-bark-600 mb-1">Campaigns</h1>
       <p className="font-sans text-sm text-bark-400 mb-6">
         One-off emails to your opted-in list. The test lands in your inbox first — the real send unlocks after.

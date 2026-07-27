@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase'
+import { MarketingTabs } from '@/components/portal/MarketingTabs'
 
 export const dynamic = 'force-dynamic'
 
@@ -56,7 +57,8 @@ export default async function ContactsPage() {
   const count = (fn: (c: ContactRow) => boolean) => contacts.filter(fn).length
 
   return (
-    <div>
+    <div className="p-8">
+      <MarketingTabs active="contacts" />
       <h1 className="text-2xl text-bark-600 mb-1">Contacts</h1>
       <p className="font-sans text-sm text-bark-400 mb-6">
         Your marketing list — captured only at checkout, newsletter signup, and forms. Opt-in gates every marketing send.
