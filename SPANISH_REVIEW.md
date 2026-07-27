@@ -165,6 +165,71 @@ or ask us to add a discreet "(en inglés)" note.
 > ES: Suficientemente suave para abrazarla, suficientemente pequeña para ir a todas partes. Doble capa de muselina de algodón 100%, esquinitas anudadas y una carita de gato bordada.
 > _"mantita de apego" es el término para lovey si se necesita categoría; aquí se describe sin nombrarlo._
 
+
+### Remaining 20 products (generated under the confirmed register — skim pass)
+
+_EN sources are the live product pages. Names stay EN/FR per the standing rule._
+
+**garment-lavender-smocked-muslin-romper**
+> ES: Tejido a crochet en algodón 100% orgánico, The Garden Romper es suave como una mañana en flor — delicado con la piel más nueva y fresco para los días largos de verano. El canesú fruncido abraza sin apretar y los tirantes ajustables crecen con tu niña, temporada tras temporada. Cae en pliegues ligeros que se mueven como pétalos. En malva rosado, lavanda suave, crema o blanco sereno, llega listo para regalar — un recuerdo para los comienzos, los primeros veranos y las bebés que más queremos.
+
+**swaddle-fox-trio-gift-set**
+> ES: Tres amiguitos zorro para acompañar los sueños de tu bebé: felpa con textura de puntitos, gasa de algodón ligera y muselina como una nube. El aro mordedor de silicona libre de BPA alivia las encías, y el pañito de apego se vuelve compañero de siestas y abrazos. En algodón orgánico y tonos serenos de la naturaleza — un regalo pensado para los primeros rituales de la familia: el cuento antes de dormir, los mimos de la mañana, las manitas que buscan calma.
+
+**garment-bte13f-a-2**
+> ES: Para sostener, morder y agitar en cada rato inquieto. Hoja de muselina orgánica acolchada, madera de haya lisa y cuentas de algodón tejidas a crochet, en un aro fácil de agarrar.
+
+**garment-bd01f-2**
+> ES: Este vestido de gasa envuelve a tu niña en ternura desde el primer rubor de la mañana. De algodón 100% orgánico, con smocking delicado y una falda fruncida lista para girar. Las mangas largas abrigan las mañanas frescas y el tejido respira cuando el día se entibia. Rosa pálido y de ensueño — para los hitos, las fotos y la poesía de crecer.
+
+**swaddle-bunny-lovey-comforter**
+> ES: Un primer compañero para calmarse y encontrar el sueño. Doble capa de muselina de algodón, con esquinitas anudadas hechas para manitas pequeñas.
+
+**keepsake-wood-silicone-pacifier-clip**
+> ES: Hay cosas que se atesoran mucho después de cumplir su propósito. Este sujetachupetes se ensarta a mano con cuentas de silicona de grado alimenticio en tonos lavados por el sol — rosa polvoriento, salvia y cielo sereno — entre cuentas de madera natural que traen la calma del bosque. Un cordón de algodón lo une todo, con un clip de acero inoxidable que se sujeta con cuidado a la ropa, la mantita o la muselina favorita.
+
+**swaddle-soft-snap-bandana-bib**
+> ES: Algunos momentos merecen quedarse tiernos y secos. Set de dos baberos bandana de algodón 100%, con capa interior de toalla que recoge cada babita. Los broches ajustables crecen con tu bebé sin apretar nunca. En tonos serenos y atemporales, va del desayuno al paseo — una suavidad que se abrocha, un pequeño recuerdo de cuidado para los días que pasan demasiado rápido.
+
+**mom-botanical-postpartum-bath-saltz**
+> ES: Después del milagro del parto, tu cuerpo merece un cuidado tierno. Este baño de asiento orgánico se mezcla a mano con sal rosada del Himalaya, sal de Epsom y sal del Mar Muerto. Pétalos de manzanilla, caléndula y rosa flotan en el agua, mientras la lavanda y su aceite esencial te envuelven en una quietud fragante. Un ritual pequeño y suave para los primeros días de la maternidad, en honor a todo lo que tu cuerpo ha dado. Descansa. Restaura. Recupérate.
+
+**garment-bla09f-b**
+> ES: Ligera para los días cálidos, abrigadora para los frescos. Doble capa de muselina de algodón orgánico certificado GOTS que se vuelve más suave con cada lavada.
+
+**garment-bla09f-b-2**
+> ES: Semillitas de diente de león flotan sobre un fondo cálido y natural — un recordatorio de que los momentos más pequeños son los que guardamos para siempre. De gasa de algodón orgánico que respira con tu bebé, esta muselina se vuelve más suave con cada lavada: para envolver, calmar, dar sombra al cochecito o abrazar de cerca. Pide un deseo y envuelve a tu bebé en él.
+
+**keepsake-little-house-teething-ring-pink-purple**
+> ES: Una casita tejida a crochet en algodón orgánico: techo lavanda, puerta amarilla y una nubecita rosa por chimenea. Va montada en un aro de madera de haya de origen sostenible que alivia las encías doloridas. Y mucho después de los dientes, la casita se queda — guardada en la caja de los recuerdos, como un primer cuento sin palabras.
+
+**swaddle-daisy-teething-ring**
+> ES: La primera margarita que abre su carita a la mañana: pétalos de algodón orgánico tejidos a crochet alrededor de un corazón amarillo, sobre un aro de madera de haya que calma las encías que despiertan. Su peso ligero se acomoda en las palmas pequeñas — el primer agarre curioso, la primera sacudida feliz, el primer momento quieto de calma.
+
+**swaddle-the-oat-muslin-romper-swaddle**
+> ES: Hecho para los días lentos de verano y los soñadores más pequeños. Gasa de algodón 100% orgánico que se mueve con cada patadita y deja respirar la piel cuando el sol se queda. Botones de coco terminados a mano, cada uno único como quien lo lleva. Sin tintes fuertes — solo el lujo callado de lo natural.
+
+**swaddle-beechwood-rattle-pair**
+> ES: Hay una magia silenciosa en el primer agarre. Dos sonajeros torneados en madera de haya lisa y cálida: un osito entrañable y una pesita de aros que ruedan, ambos con un sonido suave en cada movimiento. Sin plástico y con acabado sencillo — la belleza honesta de la madera natural, para jugar ahora y heredar después.
+
+**garment-long-sleeve-footie-romper**
+> ES: Doble gasa ligera que respira en verano y se deja abrigar en invierno. Botones de coco al frente para vestir sin complicaciones.
+
+**swaddle-lemon-crochet-rattle-teether**
+> ES: Un susurro de sol tejido a crochet, puntada a puntada: un limoncito alegre coronado con una hojita color salvia, sobre un aro de madera de haya de origen sostenible. La superficie natural alivia los dientes que llegan y el hilo de algodón invita a apretar y explorar. Un momento dorado y pequeño, listo para quererse.
+
+**swaddle-dried-lavender-drawstring-sachet**
+> ES: Guarda una en el cajón del bebé y deja que el aroma haga el resto. Flores de lavanda secas de la Provenza francesa, en una bolsita de malla de algodón con cierre de cordón.
+
+**garment-bb142**
+> ES: Un respiro suave de aire de verano: muselina de algodón 100% orgánico, ligera como una pluma sobre la piel delicada. Botones de coco terminados a mano y una gasa que mantiene fresco a tu bebé toda la temporada. Se vuelve más querida con cada lavada — para las tardes cálidas, los abrazos con sueño y las primeras aventuras bajo el cielo abierto.
+
+**garment-br06f**
+> ES: Para las mañanas lentas y el asombro tranquilo. Algodón 100% orgánico, paleta serena sin género y botones en tono madera: el lujo callado de todos los días. Hecho para los momentos de en medio — la siesta, el alcance, la risa, el crecer. Puro algodón orgánico, hecho para el día a día y para quererse por completo.
+
+**swaddle-botanical-bath-melt-set**
+> ES: Cinco fundentes de baño terminados a mano, coronados con lo más suave de la naturaleza: lavanda que apacigua, pétalos de rosa, eucalipto y romero que despejan y cáscara de naranja que entibia. Sobre una base de sal de Epsom y sal rosada del Himalaya con aceite de coco, cada uno se disuelve despacio y perfuma el agua con aceites esenciales. Un ritual pausado para corazones cansados y madres agotadas — respira hondo, suelta los hombros y deja que el agua se lleve el resto.
+
 ## Email templates (Phase 5 — drafts land here after plan approval)
 
 _(All 7 transactional + 13 marketing variants, subject lines flagged
