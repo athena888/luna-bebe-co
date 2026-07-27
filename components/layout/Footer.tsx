@@ -232,6 +232,12 @@ export function Footer() {
               line on every screen size */}
           <div className="mt-8 pt-6 border-t border-cream-300 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 font-sans text-[13px] font-normal text-espresso">
             <p className="whitespace-nowrap">© {new Date().getFullYear()} Petite Lavande.</p>
+            {process.env.NEXT_PUBLIC_SPANISH_ACTIVE === 'true' && (
+              <div className="flex border border-cream-300">
+                <span className="px-3 py-1.5 bg-[#7A8E7C] text-white font-semibold text-[12px]">English</span>
+                <Link href="/es" className="px-3 py-1.5 bg-white text-espresso hover:bg-cream-50 transition-colors text-[12px]">Español</Link>
+              </div>
+            )}
             <div className="flex items-center gap-x-5 sm:gap-x-8 whitespace-nowrap">
               <Link href="/legal/privacy" className="hover:text-gold-500 transition-colors">Privacy Policy</Link>
               <Link href="/legal/terms" className="hover:text-gold-500 transition-colors">Terms of Service</Link>

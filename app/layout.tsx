@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LanguageBanner } from '@/components/ui/LanguageBanner'
 import { Dancing_Script, Cormorant_Garamond, Jost, Fraunces, Pinyon_Script, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import { Suspense } from "react";
@@ -110,6 +111,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <NextIntlClientProvider messages={messages}>
           <MarketGate />
           {children}
+        <LanguageBanner />
         </NextIntlClientProvider>
         <Suspense fallback={null}><UTMCapture /></Suspense>
         <CookieBanner />

@@ -9,7 +9,10 @@ import { supabaseAdmin } from './supabase'
 // Everything ships behind SPANISH_ACTIVE, off until SPANISH_REVIEW.md is
 // approved by the native reviewer (translations.approved gates per-entity).
 
-export const SPANISH_ACTIVE = process.env.SPANISH_ACTIVE === 'true'
+// Server flag OR the NEXT_PUBLIC variant (client components need the latter;
+// both are set per-environment, so preview builds carry Spanish while
+// production stays dark until launch).
+export const SPANISH_ACTIVE = process.env.SPANISH_ACTIVE === 'true' || process.env.NEXT_PUBLIC_SPANISH_ACTIVE === 'true'
 
 export type Locale = 'en' | 'es'
 
