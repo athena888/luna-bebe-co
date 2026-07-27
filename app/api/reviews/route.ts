@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { product_id, customer_name, rating, body, reviewer_email, reviewer_phone, locale } = await req.json()
+    const { product_id, customer_name, rating, body, review_token, locale } = await req.json()
 
     if (!product_id || !customer_name || !rating || !body) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 })
@@ -44,13 +44,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Review must be at least 10 characters' }, { status: 400 })
     }
 
-    const email = typeof reviewer_email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reviewer_email.trim())
-      ? reviewer_email.trim().toLowerCase() : null
+    // Buyer identity comes ONLY from the signed token in the review-ask
+    // email's link (Emily's call, 2026-07-27: no email field on the public
+    // form). Verification re-checks a paid order exists — a token outlives a
+    // refund, the reward shouldn't.
+    const { verifyReviewToken } = await import('@/lib/review-token')
+    const tokenData = typeof review_token === 'string' ? verifyReviewToken(review_token) : null
+    const email = tokenData?.email ?? null
 
-    // Verified = the email (or fallback phone) matches a paid order. The check
-    // gates the thank-you code AND the on-site badge — never publication.
     const { isVerifiedBuyer, grantReviewReward, REVIEW_REWARD_ACTIVE } = await import('@/lib/review-rewards')
-    const verified = email ? await isVerifiedBuyer(email, typeof reviewer_phone === 'string' ? reviewer_phone : null) : false
+    const verified = email ? await isVerifiedBuyer(email) : false
 
     // Rich insert needs §45; fall back to the legacy shape so a review is
     // never lost to an unmigrated DB.

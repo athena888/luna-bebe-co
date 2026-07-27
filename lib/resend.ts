@@ -594,12 +594,18 @@ export async function sendReviewRequestEmail({
   locale?: EmailLocale
 }) {
   const es = locale === 'es'
+  // Signed buyer identity — the review form passes it back so the API can
+  // verify the purchase and send the 20% thank-you without ever asking the
+  // customer to type an email on the site.
+  const { reviewToken } = await import('./review-token')
+  const rt = `&rt=${encodeURIComponent(reviewToken(orderId, customerEmail))}`
+  const productPath = (id: string) => es ? `/es/productos/${id}` : `/products/${id}`
   const itemLinks = selectedItems.slice(0, 3).map(item =>
-    `<li style="margin-bottom:8px;"><a href="${utm(`/products/${item.id}`, 'postpurchase')}" style="font-family:sans-serif;font-size:14px;color:#ffffff;text-decoration:underline;">${item.name}</a></li>`
+    `<li style="margin-bottom:8px;"><a href="${utm(productPath(item.id), 'postpurchase')}${rt}" style="font-family:sans-serif;font-size:14px;color:#ffffff;text-decoration:underline;">${item.name}</a></li>`
   ).join('')
   // CTA goes to the first item's product page — the review form lives there.
   const reviewHref = selectedItems[0]
-    ? utm(`/products/${selectedItems[0].id}`, 'postpurchase')
+    ? utm(productPath(selectedItems[0].id), 'postpurchase') + rt
     : utm(`/track?ref=${orderId.slice(-8).toUpperCase()}`, 'postpurchase')
 
   return sendEmail({
@@ -614,6 +620,11 @@ export async function sendReviewRequestEmail({
           <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${es ? 'Nos encantaría saber' : `We'd love your thoughts`}</h1>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             ${es ? `Hola ${customerName}, esperamos que tu canastilla haya llegado hermosa y traído un poquito de alegría. Tu reseña ayuda a otras familias a descubrir estas piezas — significaría muchísimo para nosotros.` : `Hi ${customerName}, we hope your Petite Lavande box arrived beautifully and brought a little joy. Your review helps other families discover these products — it would mean the world to us.`}
+          </p>
+          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
+            ${es
+              ? 'Y para darte las gracias: cada reseña recibe un código único de 20% de descuento para tu próxima caja, sin importar la calificación.'
+              : 'And as a thank-you, every review earns a one-time 20% code for your next box — whatever the rating.'}
           </p>
           ${selectedItems.length > 0 ? `<ul style="padding-left:20px;margin:0 0 24px;">${itemLinks}</ul>` : ''}
           <div style="text-align:center;">

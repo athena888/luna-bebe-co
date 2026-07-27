@@ -63,10 +63,18 @@ export function ReviewSection({ productId }: { productId: string }) {
     e.preventDefault()
     setSubmitState('submitting')
     try {
+      // ?rt= arrives only via the post-delivery review-ask email — it lets the
+      // server verify the purchase (and send the thank-you) without the form
+      // ever asking for an email. Absent for organic visitors, by design.
+      const rt = new URLSearchParams(window.location.search).get('rt')
       const res = await fetch('/api/reviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ product_id: productId, customer_name: name, rating, body }),
+        body: JSON.stringify({
+          product_id: productId, customer_name: name, rating, body,
+          review_token: rt || undefined,
+          locale: window.location.pathname.startsWith('/es') ? 'es' : 'en',
+        }),
       })
       const data = await res.json()
       if (data.success) {
