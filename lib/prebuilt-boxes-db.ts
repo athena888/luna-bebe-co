@@ -209,6 +209,51 @@ export async function updateBox(slug: string, input: UpdateBoxInput): Promise<vo
   if (error) throw error
 }
 
+export interface CreateBoxInput {
+  name: string
+  audience?: string          // 'baby' | 'mama' | 'bundle'
+  style?: string             // season label
+  variant?: string           // 'neutral' | 'girl' | 'boy'
+  customPrice?: number | null
+}
+
+/** Create an empty draft box: hidden until products are picked and it's shown.
+ * Slug derives from the name; a numeric suffix resolves collisions. */
+export async function createBox(input: CreateBoxInput): Promise<string> {
+  await ensureSeeded()
+  const base = input.name.trim().toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')   // strip accents (Sérénité → serenite)
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'box'
+
+  const { data: existing } = await supabaseAdmin.from('prebuilt_boxes').select('slug, sort_order')
+  const taken = new Set((existing ?? []).map(r => r.slug as string))
+  let slug = base
+  for (let n = 2; taken.has(slug); n++) slug = `${base}-${n}`
+  const sortOrder = Math.max(-1, ...(existing ?? []).map(r => (r.sort_order as number) ?? 0)) + 1
+
+  const selection: SelectionJson = {}
+  for (const slot of SLOTS) selection[slot] = null
+
+  const { error } = await supabaseAdmin.from('prebuilt_boxes').insert({
+    slug,
+    name: input.name.trim(),
+    style: input.style?.trim() || '',
+    audience: ['baby', 'mama', 'bundle'].includes(input.audience ?? '') ? input.audience : 'bundle',
+    variant: ['neutral', 'girl', 'boy'].includes(input.variant ?? '') ? input.variant : 'neutral',
+    tagline: '',
+    description: '',
+    aesthetic: '',
+    featured: false,
+    image: null,
+    custom_price: input.customPrice ?? null,
+    sort_order: sortOrder,
+    active: false,
+    selection,
+  })
+  if (error) throw error
+  return slug
+}
+
 /** Permanently delete a prebuilt box row. The storefront and portal read by
  * slug, so no other tables reference it — orders store item snapshots. */
 export async function deleteBox(slug: string): Promise<void> {
