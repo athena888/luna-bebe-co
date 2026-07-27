@@ -39,7 +39,7 @@ export const ES_UI = {
   'product.addToBox': 'Agregar a tu canastilla',
   'product.preorder': 'Reservar ahora',
   'product.soldOut': 'Agotado',
-  'product.waitlist.title': 'Sé la primera cuando regrese',
+  'product.waitlist.title': 'Entérate primero cuando regrese',
   'product.waitlist.sub': 'Avisamos por correo en orden de registro, antes de publicarlo.',
   'product.waitlist.cta': 'Avísame',
   'footer.join': 'Únete a nuestra lista — 10% en tu primera canastilla',
