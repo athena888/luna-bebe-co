@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
       shipToRecipient,
       recipientEmail,
       occasionLabel,
+      locale,
       totalAmount,
       promoId,
       preferredAssemblyImage,
@@ -56,6 +57,7 @@ export async function POST(req: NextRequest) {
       shipToRecipient?: boolean
       recipientEmail?: string
       occasionLabel?: string
+      locale?: string
       totalAmount: number
       promoId?: string
       preferredAssemblyImage?: string
@@ -149,6 +151,7 @@ export async function POST(req: NextRequest) {
         special_note: specialNote || null,
         ship_to_recipient: !!shipToRecipient,
         recipient_email: recipientEmail?.trim() || null,
+        locale: locale === 'es' ? 'es' : 'en',
         selected_items: selectedItems,
         letter_content: letterContent || null,
         letter_version: letterVersion || null,

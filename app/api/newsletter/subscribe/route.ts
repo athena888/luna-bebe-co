@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
     }
 
-    const { email, phone } = await req.json()
+    const { email, phone, locale } = await req.json()
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
     }
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     // Our contacts table is the marketing source of truth (§37). Best-effort.
     try {
       const { upsertContact } = await import('@/lib/contacts')
-      await upsertContact({ email, source: 'newsletter', marketingOptIn: true })
+      await upsertContact({ email, source: 'newsletter', marketingOptIn: true, locale: locale === 'es' ? 'es' : undefined })
     } catch (e) {
       console.error('Contact capture failed:', e)
     }

@@ -31,6 +31,7 @@ export async function upsertContact(input: {
   segment?: ContactSegment
   zip?: string | null
   marketingOptIn?: boolean
+  locale?: 'en' | 'es'
 }): Promise<void> {
   const email = input.email.trim().toLowerCase()
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return
@@ -48,6 +49,7 @@ export async function upsertContact(input: {
         source: input.source ?? 'unknown',
         marketing_opt_in: !!input.marketingOptIn,
         opt_in_at: input.marketingOptIn ? new Date().toISOString() : null,
+        ...(input.locale ? { locale: input.locale } : {}),
       })
       return
     }
@@ -56,6 +58,7 @@ export async function upsertContact(input: {
     if (!existing.name && input.name?.trim()) patch.name = input.name.trim()
     if (!existing.zip && input.zip?.trim()) patch.zip = input.zip.trim()
     if (existing.segment === 'unknown' && input.segment && input.segment !== 'unknown') patch.segment = input.segment
+    if (input.locale === 'es') patch.locale = 'es'  // explicit choice upgrades
     if (!existing.marketing_opt_in && input.marketingOptIn) {
       patch.marketing_opt_in = true
       patch.opt_in_at = new Date().toISOString()
