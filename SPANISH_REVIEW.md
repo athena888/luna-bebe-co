@@ -49,7 +49,7 @@ off until this doc is approved.
    *(Matches the English returns policy, including the 24h cancellation window — add if desired.)*
 
 6. **/nota — gift note wording**
-   > Con gusto escribimos tu dedicatoria a mano. Si quieres, te sugiero algo — dime si es para una amiga, tu hija, o una compañera de trabajo.
+   > Con gusto escribimos tu dedicatoria a mano. Si quieres, te sugiero algo — dime si es para una amiga, tu hija o una compañera de trabajo.
 
 7. **/grupo — group gift how-to**
    > ¡Claro! Muchas amigas y compañeras se juntan para regalar una canastilla. Pueden enviarnos un solo pago y nosotros nos encargamos del resto.
