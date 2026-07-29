@@ -209,7 +209,6 @@ export function Footer() {
                 <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">{isEs ? 'Nosotros' : 'About'}</p>
                 <ul className="space-y-2.5 text-[13.5px] font-sans font-normal">
                   <li><Link href={isEs ? '/es/historia' : '/story'} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Nuestra historia' : 'Our Story'}</Link></li>
-                  <li><Link href="/journal" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'El diario' : 'The Journal'}</Link></li>
                   <li><Link href="/track" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Rastrear pedido' : 'Track Order'}</Link></li>
                   <li><Link href="/account" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Mi cuenta' : 'My Account'}</Link></li>
                 </ul>

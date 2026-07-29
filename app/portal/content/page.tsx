@@ -26,7 +26,7 @@ const TABS: { id: PageId; label: string }[] = [
   { id: 'prebuilt',   label: 'Prebuilt Boxes' },
   { id: 'cardstyles', label: 'Card Styles' },
   { id: 'build',      label: 'Build Your Box' },
-  { id: 'guides',     label: 'Gift Guides' },
+  { id: 'guides',     label: 'Guides & Journal' },
   { id: 'giftcards',  label: 'Gift Cards' },
   { id: 'corporate',  label: 'Corporate' },
   { id: 'press',      label: 'Press Kit' },
@@ -34,7 +34,6 @@ const TABS: { id: PageId; label: string }[] = [
   { id: 'legal',      label: 'Legal' },
   { id: 'global',     label: 'Global' },
   { id: 'social',     label: 'Social Feed' },
-  { id: 'journal',    label: 'Journal' },
   { id: 'signin',     label: 'Sign In' },
 ]
 
@@ -58,6 +57,25 @@ function SlotRow({ slotKey, label, context, ratio, hint, where, scrim }: {
       <p className="font-sans text-[11px] text-bark-400 mb-3 leading-relaxed">{where}</p>
       <SiteImageUploader slotKey={slotKey} context={context} ratio={ratio} hint={hint} compact />
       {scrim && <ScrimControl scrimKey={slotKey} defaultScrim={{ hex: scrim.hex, opacity: scrim.opacity }} label={scrim.label} note={scrim.note} />}
+    </div>
+  )
+}
+
+// Guides + Journal share one sidebar entry (Emily, 2026-07-29) — both are
+// footer-only SEO surfaces, so they share a tab too.
+function GuidesJournalTabs() {
+  const [sub, setSub] = useState<'guides' | 'journal'>('guides')
+  return (
+    <div>
+      <div className="flex gap-2 px-8 pt-6">
+        {(['guides', 'journal'] as const).map(t => (
+          <button key={t} onClick={() => setSub(t)}
+            className={`font-sans text-[10px] tracking-[0.15em] uppercase px-4 py-2 rounded-lg border transition-colors ${sub === t ? 'bg-[#7A8E7C] border-[#7A8E7C] text-white' : 'border-cream-300 text-bark-500 hover:border-bark-400'}`}>
+            {t === 'guides' ? 'Gift Guides' : 'Journal'}
+          </button>
+        ))}
+      </div>
+      {sub === 'guides' ? <GiftGuidesEditor /> : <JournalPortal />}
     </div>
   )
 }
@@ -96,9 +114,8 @@ export default function ContentPage() {
         {active === 'spanish' && <TranslationsReview />}
         {active === 'prebuilt' && <BoxesPortal />}
         {active === 'cardstyles' && <CardStylesPortal />}
-        {active === 'guides' && <GiftGuidesEditor />}
+        {active === 'guides' && <GuidesJournalTabs />}
         {active === 'social' && <SocialPortalPage />}
-        {active === 'journal' && <JournalPortal />}
 
         {active === 'build' && (
           <div className="p-8 max-w-3xl">

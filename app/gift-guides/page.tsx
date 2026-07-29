@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Header } from '@/components/layout/Header'
+import Link from 'next/link'
 import { Footer } from '@/components/layout/Footer'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { getAllGuides } from '@/lib/landing-content'
@@ -68,6 +69,9 @@ export default async function GiftGuidesHub() {
           </div>
         </section>
 
+        <p className="max-w-6xl mx-auto px-6 pb-14 font-sans text-sm text-bark-400">
+          Prefer longer reads? <Link href="/journal" className="underline underline-offset-2 hover:text-bark-600">Visit the journal</Link>.
+        </p>
       </main>
       <Footer />
     </>
