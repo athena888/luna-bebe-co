@@ -103,37 +103,42 @@ function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
   )
 }
 
-// Collection links shown in the Boxes dropdown. Mirrors the six live
-// shop_collections rows — update together with any activation change so the
-// nav never links to a 404 (the collection page guard 404s under-threshold).
-const COLLECTION_GROUPS: Array<{ heading: string; headingEs: string; links: Array<{ slug: string; label: string; labelEs: string }> }> = [
-  {
-    heading: 'By recipient',
-    headingEs: 'Por destinatario',
-    links: [
-      { slug: 'for-mama', label: 'For Mama', labelEs: 'Para Mamá' },
-      { slug: 'for-baby', label: 'For Baby', labelEs: 'Para el Bebé' },
-      { slug: 'for-both', label: 'For Mama & Baby', labelEs: 'Para Mamá y Bebé' },
-    ],
-  },
-  {
-    heading: 'By occasion',
-    headingEs: 'Por ocasión',
-    links: [
-      { slug: 'baby-shower', label: 'Baby Shower', labelEs: 'Baby Shower' },
-      { slug: 'new-arrival', label: 'New Arrival', labelEs: 'Recién Nacido' },
-      { slug: 'corporate-gifting', label: 'Corporate Gifting', labelEs: 'Regalos Corporativos' },
-    ],
-  },
+// Gift Boxes dropdown — the NEW catalog structure (§46): ready-made parent
+// products first, occasion collections second. The static list is the SSR
+// fallback so crawlers always see the links; /api/catalog-nav refreshes it so
+// the seasonal hide toggle (e.g. Noël off-season) drops items without a deploy.
+const DEFAULT_BOX_PRODUCTS: Array<{ slug: string; name: string }> = [
+  { slug: 'signature', name: 'The Signature' },
+  { slug: 'la-collection', name: 'La Collection' },
+  { slug: 'mama', name: 'The Mama Box' },
+  { slug: 'mama-et-bebe', name: 'Mama et Bébé' },
+  { slug: 'noel', name: 'Noël' },
+]
+
+const OCCASION_LINKS: Array<{ slug: string; label: string; labelEs: string }> = [
+  { slug: 'baby-shower', label: 'Baby Shower', labelEs: 'Baby Shower' },
+  { slug: 'new-arrival', label: 'New Arrival', labelEs: 'Recién Nacido' },
+  { slug: 'corporate-gifting', label: 'Corporate Gifting', labelEs: 'Regalos Corporativos' },
 ]
 
 const collectionHref = (slug: string, isEs: boolean) => isEs ? `/es/colecciones/${slug}` : `/collections/${slug}`
+
+function useBoxProducts() {
+  const [products, setProducts] = useState(DEFAULT_BOX_PRODUCTS)
+  useEffect(() => {
+    fetch('/api/catalog-nav').then(r => r.json())
+      .then(d => { if (Array.isArray(d.products) && d.products.length) setProducts(d.products) })
+      .catch(() => {})
+  }, [])
+  return products
+}
 
 // "Gift Boxes" with the collections dropdown. Every link renders in the
 // initial HTML (hidden with CSS, never conditionally omitted) so crawlers see
 // the full list; the trigger itself links to /boxes so it works without JS.
 function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
   const isEs = useIsEs()
+  const boxProducts = useBoxProducts()
   const [open, setOpen] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const enter = () => { if (timer.current) clearTimeout(timer.current); timer.current = setTimeout(() => setOpen(true), 150) }
@@ -159,17 +164,28 @@ function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
         className={`absolute left-1/2 -translate-x-1/2 top-full pt-3 z-50 transition-opacity duration-150 ${open ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}
       >
         <div className="bg-cream-white border border-cream-300 shadow-lg px-7 py-6 flex gap-10 whitespace-nowrap">
-          {COLLECTION_GROUPS.map(g => (
-            <div key={g.heading}>
-              <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-400 font-bold mb-2.5">{isEs ? g.headingEs : g.heading}</p>
-              {g.links.map(l => (
-                <Link key={l.slug} href={collectionHref(l.slug, isEs)} onClick={() => setOpen(false)}
-                  className="block font-sans text-[13px] normal-case tracking-normal text-espresso hover:text-gold-500 transition-colors py-1">
-                  {isEs ? l.labelEs : l.label}
-                </Link>
-              ))}
-            </div>
-          ))}
+          <div>
+            <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-400 font-bold mb-2.5">{isEs ? 'Nuestras canastillas' : 'Ready-Made Boxes'}</p>
+            {boxProducts.map(p => (
+              <Link key={p.slug} href={`/boxes/${p.slug}`} onClick={() => setOpen(false)}
+                className="block font-sans text-[13px] normal-case tracking-normal text-espresso hover:text-gold-500 transition-colors py-1">
+                {p.name}
+              </Link>
+            ))}
+            <Link href={isEs ? '/es/build' : '/build'} onClick={() => setOpen(false)}
+              className="block font-sans text-[13px] normal-case tracking-normal text-[#7A8E7C] hover:text-espresso transition-colors py-1">
+              {isEs ? 'Arma la tuya' : 'Build Your Own'}
+            </Link>
+          </div>
+          <div>
+            <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-400 font-bold mb-2.5">{isEs ? 'Por ocasión' : 'By Occasion'}</p>
+            {OCCASION_LINKS.map(l => (
+              <Link key={l.slug} href={collectionHref(l.slug, isEs)} onClick={() => setOpen(false)}
+                className="block font-sans text-[13px] normal-case tracking-normal text-espresso hover:text-gold-500 transition-colors py-1">
+                {isEs ? l.labelEs : l.label}
+              </Link>
+            ))}
+          </div>
           <Link href={isEs ? '/es/canastillas' : '/boxes'} onClick={() => setOpen(false)}
             className="self-end font-sans text-[12px] normal-case tracking-normal text-[#7A8E7C] underline underline-offset-2 hover:text-espresso transition-colors">
             {isEs ? 'Ver todas →' : 'View all boxes →'}
@@ -197,6 +213,7 @@ function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) 
 
 function MobileMenu({ onClose }: { onClose: () => void }) {
   const isEs = useIsEs()
+  const boxProducts = useBoxProducts()
   const [boxesOpen, setBoxesOpen] = useState(false)
   const linkCls = 'uppercase text-espresso hover:text-gold-500 transition-colors'
   return (
@@ -212,7 +229,10 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
         </div>
         {boxesOpen && (
           <div className="mt-3 pl-3 flex flex-col gap-2.5 font-sans text-[13px] tracking-normal normal-case">
-            {COLLECTION_GROUPS.flatMap(g => g.links).map(l => (
+            {boxProducts.map(p => (
+              <Link key={p.slug} href={`/boxes/${p.slug}`} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{p.name}</Link>
+            ))}
+            {OCCASION_LINKS.map(l => (
               <Link key={l.slug} href={collectionHref(l.slug, isEs)} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{isEs ? l.labelEs : l.label}</Link>
             ))}
           </div>

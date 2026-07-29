@@ -106,7 +106,7 @@ export default async function BoxProductPage({ params, searchParams }: { params:
         })),
       }} />
       <Header />
-      <main className="bg-cream-50 min-h-screen">
+      <main className="bg-white min-h-screen">
         <div className="max-w-5xl mx-auto px-6 py-12">
           <nav className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 mb-8">
             <Link href="/" className="hover:text-bark-600">Home</Link>
