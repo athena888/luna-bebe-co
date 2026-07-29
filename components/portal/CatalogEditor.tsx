@@ -39,6 +39,51 @@ function economicsOf(v: Variant, itemById: Map<string, Item>, packaging: number,
   return { pct, worst, missing, cost, retail }
 }
 
+
+// Custom item picker — native <select> options can't render images, so the
+// open list is our own: thumbnail + name + price per row, searchable.
+function ItemPicker({ items, value, onChange }: { items: Item[]; value: string; onChange: (id: string) => void }) {
+  const [open, setOpen] = useState(false)
+  const [q, setQ] = useState('')
+  const current = items.find(i => i.id === value)
+  const shown = q.trim() ? items.filter(i => i.name.toLowerCase().includes(q.trim().toLowerCase())) : items
+  const thumb = (i: Item | undefined, size: string) => i?.image
+    // eslint-disable-next-line @next/next/no-img-element
+    ? <img src={i.image} alt="" className={`${size} shrink-0 object-cover rounded border border-cream-300`} />
+    : <span className={`${size} shrink-0 rounded border border-dashed border-cream-300 flex items-center justify-center font-sans text-[8px] text-bark-300`}>{i?.active === false ? 'draft' : 'no img'}</span>
+  return (
+    <div className="relative flex-1 min-w-0">
+      <button type="button" onClick={() => { setOpen(o => !o); setQ('') }}
+        className="w-full flex items-center gap-2.5 px-2.5 py-1.5 border border-cream-300 bg-white rounded-lg font-sans text-sm text-bark-600 hover:border-bark-400 transition-colors text-left">
+        {thumb(current, 'w-8 h-8')}
+        <span className="flex-1 truncate">{current?.name ?? 'Pick an item'}</span>
+        <span className="shrink-0 text-xs text-bark-400">${((current?.price ?? 0) / 100).toFixed(0)}{current?.active === false ? ' · DRAFT' : ''}</span>
+        <ChevronDown size={13} className="shrink-0 text-bark-400" />
+      </button>
+      {open && (
+        <>
+          <button type="button" aria-label="Close" onClick={() => setOpen(false)} className="fixed inset-0 z-30 cursor-default" tabIndex={-1} />
+          <div className="absolute z-40 top-full left-0 right-0 mt-1 bg-white border border-cream-300 rounded-lg shadow-lg max-h-80 overflow-y-auto">
+            <div className="sticky top-0 bg-white p-2 border-b border-cream-200">
+              <input autoFocus value={q} onChange={e => setQ(e.target.value)} placeholder="Search items…"
+                className="w-full px-2.5 py-1.5 border border-cream-300 rounded font-sans text-xs text-bark-600 focus:outline-none focus:border-bark-400" />
+            </div>
+            {shown.map(i => (
+              <button key={i.id} type="button" onClick={() => { onChange(i.id); setOpen(false) }}
+                className={`w-full flex items-center gap-2.5 px-2.5 py-2 text-left hover:bg-cream-100 transition-colors ${i.id === value ? 'bg-cream-100' : ''}`}>
+                {thumb(i, 'w-9 h-9')}
+                <span className="flex-1 font-sans text-[13px] text-bark-600 truncate">{i.name}</span>
+                <span className="shrink-0 font-sans text-[11px] text-bark-400">${(i.price / 100).toFixed(0)}{i.active === false ? ' · DRAFT' : ''}</span>
+              </button>
+            ))}
+            {shown.length === 0 && <p className="px-3 py-3 font-sans text-xs text-bark-400">No items match.</p>}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 export function CatalogEditor() {
   const [products, setProducts] = useState<CatalogProduct[]>([])
   const [variants, setVariants] = useState<Variant[]>([])
@@ -168,13 +213,8 @@ export function CatalogEditor() {
                         <label className={label}>Contents</label>
                         {v.contents.map((c, ci) => (
                           <div key={ci} className="flex items-center gap-2 mb-2">
-                            {(() => { const it = itemById.get(c.item_id); return it?.image
-                              // eslint-disable-next-line @next/next/no-img-element
-                              ? <img src={it.image} alt="" className="w-9 h-9 shrink-0 object-cover rounded border border-cream-300" />
-                              : <span className="w-9 h-9 shrink-0 rounded border border-dashed border-cream-300 flex items-center justify-center font-sans text-[9px] text-bark-300">{itemById.get(c.item_id)?.active === false ? 'draft' : 'no img'}</span> })()}
-                            <select value={c.item_id} onChange={e => { const nc = [...v.contents]; nc[ci] = { ...c, item_id: e.target.value }; post({ action: 'save-variant', variant: { ...v, contents: nc } }).then(load) }} className="flex-1 min-w-0 px-3 py-2 border border-cream-300 bg-white rounded-lg font-sans text-sm text-bark-600 focus:outline-none focus:border-bark-400">
-                              {items.map(i => <option key={i.id} value={i.id}>{i.name} — ${(i.price / 100).toFixed(0)}{i.active === false ? ' · DRAFT (placeholder, not sold yet)' : ''}</option>)}
-                            </select>
+                            <ItemPicker items={items} value={c.item_id}
+                              onChange={id => { const nc = [...v.contents]; nc[ci] = { ...c, item_id: id }; post({ action: 'save-variant', variant: { ...v, contents: nc } }).then(load) }} />
                             <input type="number" min="1" value={c.qty} onChange={e => { const nc = [...v.contents]; nc[ci] = { ...c, qty: parseInt(e.target.value) || 1 }; post({ action: 'save-variant', variant: { ...v, contents: nc } }).then(load) }} className="w-16 shrink-0 px-2 py-2 border border-cream-300 bg-white rounded-lg font-sans text-sm text-bark-600 text-center focus:outline-none focus:border-bark-400" />
                             <label className="flex items-center gap-1.5 font-sans text-[10px] uppercase tracking-wide text-bark-400 whitespace-nowrap">
                               <input type="checkbox" checked={!!c.color_choice} onChange={e => { const nc = [...v.contents]; nc[ci] = { ...c, color_choice: e.target.checked }; post({ action: 'save-variant', variant: { ...v, contents: nc } }).then(load) }} className="accent-sage-500" /> color pick
