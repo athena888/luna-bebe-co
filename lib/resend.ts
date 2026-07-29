@@ -425,7 +425,7 @@ export async function sendCampaignEmail({ customerEmail, subject, heading, parag
 // Build 1 upgrade — second abandoned-cart touch, D+3 after the first. No
 // discount on purpose (a rescue code would train cart-abandoning). Gated by
 // CART_SEQUENCE_ACTIVE via the cron; copy in MARKETING_COPY.md.
-export async function sendCartReminder2Email({ customerEmail, locale = 'en' }: { customerEmail: string; locale?: EmailLocale }) {
+export async function sendCartReminder2Email({ customerEmail, orderId, locale = 'en' }: { customerEmail: string; orderId?: string | null; locale?: EmailLocale }) {
   const es = locale === 'es'
   return sendEmail({
     from: FROM,
@@ -444,7 +444,7 @@ export async function sendCartReminder2Email({ customerEmail, locale = 'en' }: {
             ${es ? 'Armada a mano dentro de las 24 horas de tu pedido, terminada con listón de satén y sellada a mano.' : 'Hand-packed within 24 hours of your order, finished with satin ribbon and sealed by hand.'}
           </p>
           <div style="text-align:center;">
-            <a href="${utm(es ? '/es/checkout' : '/checkout', 'cart')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
+            <a href="${utm(es ? '/es/build' : '/build', 'cart')}${orderId ? '&resume=' + orderId : ''}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
               ${es ? 'Retomar donde quedaste' : 'Pick Up Where You Left Off'}
             </a>
           </div>
@@ -694,7 +694,7 @@ export async function sendAbandonedCartEmail({
             ${es ? 'Empezaste a armar una canastilla hermosa y quedó a medio camino. Tus selecciones están guardadas — solo falta finalizar la compra.' : `You started building a beautiful gift box but didn't quite finish. Your selections are saved — all you need to do is complete checkout.`}
           </p>
           <div style="text-align: center;">
-            <a href="${utm(es ? '/es/build' : '/build', 'abandonedcart')}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
+            <a href="${utm(es ? '/es/build' : '/build', 'abandonedcart')}&resume=${orderId}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
               ${es ? 'Completar mi canastilla' : 'Complete My Box'}
             </a>
           </div>

@@ -245,6 +245,28 @@ export default function BuildPage() {
       } catch { /* ignore */ }
       sessionStorage.removeItem('pl_recommended')
     }
+    // Resumable link (Phase 4): cart-recovery emails carry ?resume=<orderId>;
+    // restore that pending order's items into the bag once, then clean the URL.
+    const resume = new URLSearchParams(window.location.search).get('resume')
+    if (resume) {
+      fetch(`/api/build-resume?order=${encodeURIComponent(resume)}`)
+        .then(r => r.json())
+        .then(d => {
+          const items = (d.items ?? []) as SelectedItem[]
+          if (!items.length) return
+          setSelected(prev => {
+            const next = new Map(prev)
+            items.forEach(p => {
+              if (!p?.id) return
+              const key = p.lineKey ?? variantKey(p.id, p.selectedColor, p.selectedSize, p.selectedStyle)
+              next.set(key, { ...p, lineKey: key })
+            })
+            return next
+          })
+          window.history.replaceState(null, '', window.location.pathname)
+        })
+        .catch(() => {})
+    }
     // Restore the cart (e.g. items added from Shop by Occasion) into the bag.
     const cart = sessionStorage.getItem('pl_box_selection')
     if (cart) {

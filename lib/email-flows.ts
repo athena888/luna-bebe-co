@@ -214,7 +214,7 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
           }
           {
             const { localeOf } = await import('./contacts')
-            await sendCartReminder2Email({ customerEmail: ev.recipient, locale: await localeOf(ev.recipient) })
+            await sendCartReminder2Email({ customerEmail: ev.recipient, orderId: ev.order_id, locale: await localeOf(ev.recipient) })
           }
           break
         }
