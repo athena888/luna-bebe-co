@@ -33,6 +33,8 @@ export async function POST(req: NextRequest) {
       const clean = Object.fromEntries(Object.entries(patch ?? {}).filter(([k]) => allowed.includes(k)))
       const { error } = await supabaseAdmin.from('catalog_products').update(clean).eq('slug', slug)
       if (error) throw error
+      import('@/lib/auto-translate').then(({ autoTranslate }) =>
+        autoTranslate('catalog_product', slug, { name: clean.name as string, subtitle: clean.subtitle as string })).catch(() => {})
       return NextResponse.json({ success: true })
     }
 
@@ -54,6 +56,8 @@ export async function POST(req: NextRequest) {
       }
       const { error } = await supabaseAdmin.from('catalog_variants').upsert(row, { onConflict: 'product_slug,key' })
       if (error) throw error
+      import('@/lib/auto-translate').then(({ autoTranslate }) =>
+        autoTranslate('catalog_variant', row.product_slug + ':' + row.key, { label: row.label, adds: row.adds })).catch(() => {})
       return NextResponse.json({ success: true })
     }
 

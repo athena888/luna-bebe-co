@@ -78,6 +78,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   // Save core fields first — never let certifications block a save
   try {
     await updateProduct(id, { name, description, price, category, tag, ingredients, hasVariants, active, needsReview, featured, organic, preorder, preorderNote, seoTitle, seoDescription, faqs })
+    // Phase 7: English edits auto-queue Spanish (unapproved) — fire-and-forget
+    import('@/lib/auto-translate').then(({ autoTranslate }) =>
+      autoTranslate('product', id, { description, name })).catch(() => {})
   } catch {
     return NextResponse.json({ error: 'Failed to save product details' }, { status: 500 })
   }
