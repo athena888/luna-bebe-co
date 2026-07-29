@@ -11,14 +11,16 @@ const JAR_DEPTH = 8.5
 
 export async function GET() {
   try {
-    const [{ data: products }, { data: variants }, { data: items }, { data: pkg }] = await Promise.all([
+    const [{ data: products }, { data: variants }, { data: items }, { data: pkg }, { data: lbl }] = await Promise.all([
       supabaseAdmin.from('catalog_products').select('*').order('sort_order'),
       supabaseAdmin.from('catalog_variants').select('*').order('sort_order'),
       supabaseAdmin.from('products').select('id, name, price, cost_cents, category, image, active').order('name'),
       supabaseAdmin.from('site_content').select('value').eq('key', 'catalog.packaging_cents').maybeSingle(),
+      supabaseAdmin.from('site_content').select('value').eq('key', 'catalog.label_cents').maybeSingle(),
     ])
     const packaging = typeof pkg?.value === 'number' ? pkg.value : 850  // basket $5 + mailer $3 + kraft $0.50
-    return NextResponse.json({ products: products ?? [], variants: variants ?? [], items: items ?? [], packaging })
+    const label = typeof lbl?.value === 'number' ? lbl.value : 1200      // worst-case absorbed USPS label
+    return NextResponse.json({ products: products ?? [], variants: variants ?? [], items: items ?? [], packaging, label })
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : 'load failed' }, { status: 500 })
   }
@@ -72,8 +74,9 @@ export async function POST(req: NextRequest) {
 
     if (action === 'save-packaging') {
       const cents = Math.round(Number(body.packaging_cents)) || 0
+      const key = body.which === 'label' ? 'catalog.label_cents' : 'catalog.packaging_cents'
       const { error } = await supabaseAdmin.from('site_content')
-        .upsert({ key: 'catalog.packaging_cents', value: cents })
+        .upsert({ key, value: cents })
       if (error) throw error
       return NextResponse.json({ success: true })
     }
