@@ -28,6 +28,34 @@ export interface LandingPage {
 
 export const LANDING_PAGES: LandingPage[] = [
   {
+    slug: 'organic-baby-shower-gifts',
+    keyword: 'organic baby shower gifts',
+    title: 'The Best Organic Baby Shower Gifts | Petite Lavande',
+    metaDescription: 'Organic baby shower gifts that feel considered — GOTS-certified cotton keepsakes, botanical care for the mama, hand-packed in a ribbon-tied basket.',
+    eyebrow: 'For the Shower',
+    h1: 'The Best Organic Baby Shower Gifts',
+    intro: [
+      'The best baby shower gifts are the ones the family still reaches for months later — soft organic cotton against new skin, a keepsake that outlasts the newborn weeks and something for the mama herself. Every piece here is organic cotton from GOTS-certified makers or botanical care made in small batches.',
+      'Choose a ready-made basket or build your own piece by piece. Either way it arrives hand-packed, ribbon-tied and sealed by hand, with a personalized card — gift-ready for the shower table.',
+    ],
+    categories: ['swaddle', 'garment', 'keepsake', 'mom'],
+    highlights: ['GOTS-certified organic cotton', 'Something for the mama too', 'Hand-packed & ribbon-tied', 'Personalized card included'],
+  },
+  {
+    slug: 'new-mom-gift-ideas',
+    keyword: 'new mom gift ideas',
+    title: "New Mom Gift Ideas That Aren't Flowers | Petite Lavande",
+    metaDescription: 'Gift ideas for the new mom herself — silk sleep mask, botanical bath soaks, lavender comforts. Because the baby gets plenty; this one is for her.',
+    eyebrow: 'For the New Mama',
+    h1: "New Mom Gift Ideas That Aren't Flowers",
+    intro: [
+      'Flowers wilt in a week. A new mom is navigating recovery, midnight feeds and a body that just did something extraordinary — the gifts that matter meet her there: a silk sleep mask for stolen naps, botanical soaks for healing, lavender comforts for the long nights.',
+      'Every mama piece we carry is chosen for genuine postpartum usefulness, then hand-packed with the same care as our baby boxes — ribbon-tied, sealed by hand, with your message on a personalized card.',
+    ],
+    categories: ['mom', 'bath'],
+    highlights: ['Chosen for real postpartum use', 'Silk, lavender & botanicals', 'Nothing that wilts', 'Personalized card included'],
+  },
+  {
     slug: 'organic-newborn-gift-box',
     keyword: 'organic newborn gift box',
     title: 'Organic Newborn Gift Box | Petite Lavande',

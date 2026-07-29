@@ -30,6 +30,11 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // Phase 8b dispositions (Emily-approved 2026-07-29): journal->pSEO
+      { source: '/journal/best-organic-baby-shower-gifts-2026', destination: '/gifts/organic-baby-shower-gifts', permanent: true },
+      { source: '/journal/new-mom-gift-ideas-that-arent-flowers', destination: '/gifts/new-mom-gift-ideas', permanent: true },
+      { source: '/journal/newborn-milestone-photo-ideas', destination: '/gift-guides', permanent: true },
+      { source: '/guide', destination: '/gift-guides', permanent: true },
       // Fix "Seep Mask" typo — 301 from the old slug to the corrected one.
       // Run the SQL migration first; then check the actual DB slug with:
       //   SELECT id FROM products WHERE id ILIKE '%seep%';
