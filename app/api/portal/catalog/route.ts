@@ -11,12 +11,14 @@ const JAR_DEPTH = 8.5
 
 export async function GET() {
   try {
-    const [{ data: products }, { data: variants }, { data: items }] = await Promise.all([
+    const [{ data: products }, { data: variants }, { data: items }, { data: pkg }] = await Promise.all([
       supabaseAdmin.from('catalog_products').select('*').order('sort_order'),
       supabaseAdmin.from('catalog_variants').select('*').order('sort_order'),
       supabaseAdmin.from('products').select('id, name, price, cost_cents, category, image, active').order('name'),
+      supabaseAdmin.from('site_content').select('value').eq('key', 'catalog.packaging_cents').maybeSingle(),
     ])
-    return NextResponse.json({ products: products ?? [], variants: variants ?? [], items: items ?? [] })
+    const packaging = typeof pkg?.value === 'number' ? pkg.value : 850  // basket $5 + mailer $3 + kraft $0.50
+    return NextResponse.json({ products: products ?? [], variants: variants ?? [], items: items ?? [], packaging })
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : 'load failed' }, { status: 500 })
   }
@@ -64,6 +66,14 @@ export async function POST(req: NextRequest) {
     if (action === 'delete-variant') {
       const { error } = await supabaseAdmin.from('catalog_variants')
         .delete().eq('product_slug', body.product_slug).eq('key', body.key)
+      if (error) throw error
+      return NextResponse.json({ success: true })
+    }
+
+    if (action === 'save-packaging') {
+      const cents = Math.round(Number(body.packaging_cents)) || 0
+      const { error } = await supabaseAdmin.from('site_content')
+        .upsert({ key: 'catalog.packaging_cents', value: cents })
       if (error) throw error
       return NextResponse.json({ success: true })
     }

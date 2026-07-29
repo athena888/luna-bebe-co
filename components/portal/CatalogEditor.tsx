@@ -24,7 +24,7 @@ interface CatalogProduct {
 const field = "w-full px-3 py-2 border border-cream-300 bg-white rounded-lg font-sans text-sm text-bark-600 focus:outline-none focus:border-bark-400"
 const label = "block font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-1.5"
 
-function economicsOf(v: Variant, itemById: Map<string, Item>): { pct: number | null; missing: number; cost: number; retail: number } {
+function economicsOf(v: Variant, itemById: Map<string, Item>, packaging: number): { pct: number | null; missing: number; cost: number; retail: number } {
   let cost = 0, missing = 0, retail = 0
   for (const c of v.contents) {
     const item = itemById.get(c.item_id)
@@ -33,6 +33,7 @@ function economicsOf(v: Variant, itemById: Map<string, Item>): { pct: number | n
     if (!item.cost_cents) { missing++; continue }
     cost += item.cost_cents * (c.qty || 1)
   }
+  cost += packaging
   const pct = (missing === v.contents.length || v.price === 0) ? null : Math.round((1 - cost / v.price) * 100)
   return { pct, missing, cost, retail }
 }
@@ -41,6 +42,7 @@ export function CatalogEditor() {
   const [products, setProducts] = useState<CatalogProduct[]>([])
   const [variants, setVariants] = useState<Variant[]>([])
   const [items, setItems] = useState<Item[]>([])
+  const [packaging, setPackaging] = useState(850)
   const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState<string | null>(null)
   const [msg, setMsg] = useState('')
@@ -48,6 +50,7 @@ export function CatalogEditor() {
   const load = useCallback(() => {
     fetch('/api/portal/catalog').then(r => r.json()).then(d => {
       setProducts(d.products ?? []); setVariants(d.variants ?? []); setItems(d.items ?? [])
+      if (typeof d.packaging === 'number') setPackaging(d.packaging)
     }).finally(() => setLoading(false))
   }, [])
   useEffect(load, [load])
@@ -75,6 +78,13 @@ export function CatalogEditor() {
           prices are in dollars here, margins appear once item costs are filled in below each variant.
         </p>
         {msg && <p className="font-sans text-xs text-sage-700 mt-2">{msg}</p>}
+        <div className="flex items-center gap-2 mt-3 font-sans text-xs text-bark-500">
+          Per-box packaging (basket + mailer + kraft): $
+          <input type="number" step="0.5" defaultValue={packaging / 100}
+            onBlur={e => post({ action: 'save-packaging', packaging_cents: Math.round(parseFloat(e.target.value || '0') * 100) }).then(load)}
+            className="w-20 px-2 py-1 border border-cream-300 rounded font-sans text-xs text-bark-600 focus:outline-none focus:border-bark-400" />
+          <span className="text-bark-400">— included in every margin below</span>
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -117,7 +127,7 @@ export function CatalogEditor() {
                   {p.seasonal && <p className="font-sans text-xs text-bark-400">Seasonal product — &quot;Hide for the season&quot; removes it from nav + sitemap without deleting the page, so the URL and its reviews persist year to year.</p>}
 
                   {pv.map(v => {
-                    const m = economicsOf(v, itemById)
+                    const m = economicsOf(v, itemById, packaging)
                     return (
                       <div key={v.key} className="border border-cream-200 rounded-lg p-4">
                         <div className="flex items-center justify-between mb-3">
@@ -129,7 +139,7 @@ export function CatalogEditor() {
                             </span>
                             {m.pct !== null && (
                               <span className={`font-sans text-[11px] ${m.pct < 60 ? 'text-terra-500' : 'text-sage-700'}`}>
-                                cost ${(m.cost / 100).toFixed(0)} → margin ~{m.pct}%{m.missing ? ` (${m.missing} uncosted)` : ''}{m.pct < 60 ? ' — below 60%' : ''}
+                                cost ${(m.cost / 100).toFixed(2)} incl. pkg → margin ~{m.pct}%{m.missing ? ` (${m.missing} uncosted)` : ''}{m.pct < 60 ? ' — below 60%' : ''}
                               </span>
                             )}
                             {m.pct === null && <span className="font-sans text-[11px] text-bark-400">margin — add item costs</span>}
