@@ -61,15 +61,15 @@ function Spinner() {
   )
 }
 
-export default function ProductDetailClient({ related, locale = 'en' }: { related?: RelatedItem[]; locale?: 'en' | 'es' }) {
+export default function ProductDetailClient({ related, locale = 'en', initialProduct = null }: { related?: RelatedItem[]; locale?: 'en' | 'es'; initialProduct?: Product | null }) {
   const esPath = useIsEs()
   const isEs = locale === 'es' || esPath
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
 
-  const [product, setProduct] = useState<Product | null>(null)
+  const [product, setProduct] = useState<Product | null>(initialProduct)
   const [gallery, setGallery] = useState<GalleryImage[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!initialProduct)
   const [imgFailed, setImgFailed] = useState<Record<number, boolean>>({})
   const [inBox, setInBox] = useState(false)
   const [stock, setStock] = useState<number | null>(null)

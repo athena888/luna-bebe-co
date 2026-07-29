@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const url = `${BASE}/products/${id}`
   // Prefer the owner/AI SEO title + meta; fall back to product data.
   // seo_title is a complete tag → use absolute so the "| Petite Lavande" template doesn't double up.
-  const description = (p.seo_description || p.description || `${p.name} — a premium organic baby gift from Petite Lavande.`).slice(0, 160)
+  const description = (p.seo_description || p.description || `${p.name} — a premium organic baby gift from Petite Lavande.`).slice(0, 155)
   const img = productImage(p)
   return {
     title: p.seo_title ? { absolute: p.seo_title } : p.name,
@@ -159,7 +159,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           )}
         </>
       )}
-      <ProductDetailClient related={related} />
+      <ProductDetailClient related={related} initialProduct={p as import('@/types').Product} />
     </>
   )
 }
