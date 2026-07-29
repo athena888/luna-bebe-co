@@ -91,7 +91,7 @@ export default async function BoxProductPage({ params, searchParams }: { params:
             <div>
               <h1 className="font-serif text-4xl text-espresso">{box.name}</h1>
               {box.subtitle && <p className="font-serif italic text-lg text-bark-400 mt-1">{box.subtitle}</p>}
-              <p className="font-sans text-2xl text-bark-600 mt-4">${(variant.price / 100).toFixed(0)}</p>
+              <p className="font-sans text-2xl text-espresso mt-4">${(variant.price / 100).toFixed(0)}</p>
 
               {box.variants.length > 1 && (
                 <div className="mt-6">
@@ -102,7 +102,7 @@ export default async function BoxProductPage({ params, searchParams }: { params:
                         key={v.key}
                         href={`${`/boxes/${box.slug}`}?${box.variantParam}=${encodeURIComponent(v.key)}`}
                         className={`font-sans text-[11px] tracking-[0.15em] uppercase px-4 py-2 border transition-colors ${
-                          v.key === variant.key ? 'border-bark-600 bg-bark-600 text-cream-50' : 'border-cream-300 text-bark-500 hover:border-bark-400'
+                          v.key === variant.key ? 'border-espresso bg-espresso text-cream-50' : 'border-cream-300 text-bark-500 hover:border-espresso-light'
                         }`}
                       >
                         {v.label} · ${(v.price / 100).toFixed(0)}

@@ -45,7 +45,7 @@ export function BoxBuyPanel({ contents, price, boxName, needsColor }: {
                 type="button"
                 onClick={() => setColor(c)}
                 className={`font-sans text-[11px] tracking-[0.15em] uppercase px-4 py-2 border transition-colors ${
-                  color === c ? 'border-bark-600 bg-bark-600 text-cream-50' : 'border-cream-300 text-bark-500 hover:border-bark-400'
+                  color === c ? 'border-espresso bg-espresso text-cream-50' : 'border-cream-300 text-bark-500 hover:border-espresso-light'
                 }`}
               >
                 {c}
@@ -56,12 +56,12 @@ export function BoxBuyPanel({ contents, price, boxName, needsColor }: {
       )}
       <button
         onClick={buy}
-        className="w-full sm:w-auto bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-bark-700 transition-colors"
+        className="w-full sm:w-auto bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-[#6d8070] transition-colors"
       >
         Add to Cart — ${(price / 100).toFixed(0)}
       </button>
       <p className="font-sans text-xs text-bark-400 mt-3">
-        {boxName} ships hand-packed within 3 days — lost packages always replaced.
+        {boxName} ships hand-packed within 3 days.
       </p>
     </div>
   )
