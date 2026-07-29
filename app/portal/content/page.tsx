@@ -1,5 +1,6 @@
 'use client'
 
+import { CatalogEditor } from '@/components/portal/CatalogEditor'
 import { useState } from 'react'
 import { SiteImageUploader } from '@/components/portal/SiteImageUploader'
 import { ScrimControl } from '@/components/portal/ScrimControl'
@@ -13,12 +14,13 @@ import BoxesPortal from '@/app/portal/boxes/page'
 import CardStylesPortal from '@/app/portal/card-styles/page'
 import { GiftGuidesEditor } from '@/components/portal/GiftGuidesEditor'
 
-type PageId = 'home' | 'story' | 'build' | 'guides' | 'giftcards' | 'corporate' | 'press' | 'track' | 'legal' | 'global' | 'social' | 'journal' | 'signin' | 'products' | 'prebuilt' | 'cardstyles'
+type PageId = 'catalog' | 'home' | 'story' | 'build' | 'guides' | 'giftcards' | 'corporate' | 'press' | 'track' | 'legal' | 'global' | 'social' | 'journal' | 'signin' | 'products' | 'prebuilt' | 'cardstyles'
 
 const TABS: { id: PageId; label: string }[] = [
   { id: 'home',       label: 'Homepage' },
   { id: 'story',      label: 'Story' },
   { id: 'products',   label: 'Products' },
+  { id: 'catalog',    label: 'Box Products' },
   { id: 'prebuilt',   label: 'Prebuilt Boxes' },
   { id: 'cardstyles', label: 'Card Styles' },
   { id: 'build',      label: 'Build Your Box' },
@@ -88,6 +90,7 @@ export default function ContentPage() {
         {active === 'home' && <HomeContentPage />}
         {active === 'story' && <StoryPortal />}
         {active === 'products' && <ProductsPortal />}
+        {active === 'catalog' && <CatalogEditor />}
         {active === 'prebuilt' && <BoxesPortal />}
         {active === 'cardstyles' && <CardStylesPortal />}
         {active === 'guides' && <GiftGuidesEditor />}
