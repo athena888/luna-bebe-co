@@ -29,6 +29,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const lp of LANDING_PAGES) {
     urls.push({ url: `${base}/gifts/${lp.slug}`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 })
   }
+  // Box products (§46) — active AND visible only: seasonally hidden products
+  // keep their route but leave the sitemap off-season.
+  try {
+    const { getBoxProducts } = await import('@/lib/catalog-db')
+    for (const p of await getBoxProducts()) {
+      urls.push({ url: `${base}/boxes/${p.slug}`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 })
+    }
+  } catch { /* §46 not run yet */ }
   // Collections — only active ones above their product threshold (the
   // empty-collection guard in lib/collections applies here too).
   try {

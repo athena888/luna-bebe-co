@@ -1441,3 +1441,52 @@ drop policy if exists review_rewards_service_all on public.review_rewards;
 create policy review_rewards_service_all on public.review_rewards for all to service_role using (true) with check (true);
 
 -- Done.
+
+-- 46) Catalog restructure Phase 1+2 — products-with-variants layer.
+--     Collision-probed 2026-07-27: catalog_products/catalog_variants free.
+--     Boxes become 6 parent products with variant rows (tiers/themes); the
+--     existing `products` table serves as the items layer (new columns only).
+create table if not exists public.catalog_products (
+  slug          text primary key,          -- /boxes/<slug>
+  name          text not null,
+  subtitle      text not null default '',  -- one-line French subtitle
+  type          text not null default 'prebuilt_box',
+  story         jsonb not null default '{}'::jsonb,   -- Phase 3 copy blocks
+  variant_param text not null default 'v', -- query key: tier | theme | set
+  variant_label text not null default '',  -- "Tier" / "Theme" chip heading
+  seasonal      boolean not null default false,
+  visible       boolean not null default true,  -- seasonal hide: route stays; nav+sitemap drop
+  active        boolean not null default true,
+  sort_order    integer not null default 0,
+  cross_sell    jsonb not null default '[]'::jsonb,
+  faqs          jsonb not null default '[]'::jsonb,
+  created_at    timestamptz not null default now()
+);
+create table if not exists public.catalog_variants (
+  id            uuid primary key default gen_random_uuid(),
+  product_slug  text not null references public.catalog_products(slug) on delete cascade,
+  key           text not null,             -- 'tier-1' | 'strawberry' | 'wellness'
+  label         text not null,             -- 'Tier 1' | 'Strawberry'
+  price         integer not null,          -- cents
+  basket        text not null default '',  -- '22×16×6.5' display string
+  basket_depth_cm numeric,                 -- drives the salt-jar validation
+  adds          text not null default '',  -- "what the next tier adds" line
+  contents      jsonb not null default '[]'::jsonb,  -- [{item_id, qty, color_choice?, note?}]
+  images        jsonb not null default '[]'::jsonb,
+  active        boolean not null default true,
+  sort_order    integer not null default 0,
+  unique (product_slug, key)
+);
+alter table public.catalog_products enable row level security;
+alter table public.catalog_variants enable row level security;
+drop policy if exists catalog_products_service_all on public.catalog_products;
+create policy catalog_products_service_all on public.catalog_products for all to service_role using (true) with check (true);
+drop policy if exists catalog_variants_service_all on public.catalog_variants;
+create policy catalog_variants_service_all on public.catalog_variants for all to service_role using (true) with check (true);
+
+-- Items layer additions (existing products table)
+alter table products add column if not exists standalone boolean not null default true;
+alter table products add column if not exists cost_cents integer;
+alter table products add column if not exists safety_notes text;
+
+-- Done.
