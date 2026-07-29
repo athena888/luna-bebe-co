@@ -115,14 +115,6 @@ const DEFAULT_BOX_PRODUCTS: Array<{ slug: string; name: string }> = [
   { slug: 'noel', name: 'Noël' },
 ]
 
-const OCCASION_LINKS: Array<{ slug: string; label: string; labelEs: string }> = [
-  { slug: 'baby-shower', label: 'Baby Shower', labelEs: 'Baby Shower' },
-  { slug: 'new-arrival', label: 'New Arrival', labelEs: 'Recién Nacido' },
-  { slug: 'corporate-gifting', label: 'Corporate Gifting', labelEs: 'Regalos Corporativos' },
-]
-
-const collectionHref = (slug: string, isEs: boolean) => isEs ? `/es/colecciones/${slug}` : `/collections/${slug}`
-
 function useBoxProducts() {
   const [products, setProducts] = useState(DEFAULT_BOX_PRODUCTS)
   useEffect(() => {
@@ -177,15 +169,6 @@ function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
               {isEs ? 'Arma la tuya' : 'Build Your Own'}
             </Link>
           </div>
-          <div>
-            <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-400 font-bold mb-2.5">{isEs ? 'Por ocasión' : 'By Occasion'}</p>
-            {OCCASION_LINKS.map(l => (
-              <Link key={l.slug} href={collectionHref(l.slug, isEs)} onClick={() => setOpen(false)}
-                className="block font-sans text-[13px] normal-case tracking-normal text-espresso hover:text-gold-500 transition-colors py-1">
-                {isEs ? l.labelEs : l.label}
-              </Link>
-            ))}
-          </div>
           <Link href={isEs ? '/es/canastillas' : '/boxes'} onClick={() => setOpen(false)}
             className="self-end font-sans text-[12px] normal-case tracking-normal text-[#7A8E7C] underline underline-offset-2 hover:text-espresso transition-colors">
             {isEs ? 'Ver todas →' : 'View all boxes →'}
@@ -231,9 +214,6 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
           <div className="mt-3 pl-3 flex flex-col gap-2.5 font-sans text-[13px] tracking-normal normal-case">
             {boxProducts.map(p => (
               <Link key={p.slug} href={`/boxes/${p.slug}`} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{p.name}</Link>
-            ))}
-            {OCCASION_LINKS.map(l => (
-              <Link key={l.slug} href={collectionHref(l.slug, isEs)} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{isEs ? l.labelEs : l.label}</Link>
             ))}
           </div>
         )}

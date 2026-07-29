@@ -9,7 +9,7 @@ import { Loader, Plus, Trash2, ChevronDown, ChevronRight } from 'lucide-react'
 // (warn < 60%, block nothing — the salt-jar depth rule is the only blocker,
 // enforced by the API).
 
-interface Item { id: string; name: string; price: number; cost_cents: number | null; category: string }
+interface Item { id: string; name: string; price: number; cost_cents: number | null; category: string; image: string | null; active: boolean }
 interface Variant {
   product_slug: string; key: string; label: string; price: number; basket: string
   basket_depth_cm: number | null; adds: string
@@ -24,15 +24,17 @@ interface CatalogProduct {
 const field = "w-full px-3 py-2 border border-cream-300 bg-white rounded-lg font-sans text-sm text-bark-600 focus:outline-none focus:border-bark-400"
 const label = "block font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-1.5"
 
-function marginOf(v: Variant, itemById: Map<string, Item>): { pct: number | null; missing: number } {
-  let cost = 0, missing = 0
+function economicsOf(v: Variant, itemById: Map<string, Item>): { pct: number | null; missing: number; cost: number; retail: number } {
+  let cost = 0, missing = 0, retail = 0
   for (const c of v.contents) {
     const item = itemById.get(c.item_id)
-    if (!item?.cost_cents) { missing++; continue }
+    if (!item) continue
+    retail += item.price * (c.qty || 1)
+    if (!item.cost_cents) { missing++; continue }
     cost += item.cost_cents * (c.qty || 1)
   }
-  if (missing === v.contents.length || v.price === 0) return { pct: null, missing }
-  return { pct: Math.round((1 - cost / v.price) * 100), missing }
+  const pct = (missing === v.contents.length || v.price === 0) ? null : Math.round((1 - cost / v.price) * 100)
+  return { pct, missing, cost, retail }
 }
 
 export function CatalogEditor() {
@@ -115,15 +117,19 @@ export function CatalogEditor() {
                   {p.seasonal && <p className="font-sans text-xs text-bark-400">Seasonal product — &quot;Hide for the season&quot; removes it from nav + sitemap without deleting the page, so the URL and its reviews persist year to year.</p>}
 
                   {pv.map(v => {
-                    const m = marginOf(v, itemById)
+                    const m = economicsOf(v, itemById)
                     return (
                       <div key={v.key} className="border border-cream-200 rounded-lg p-4">
                         <div className="flex items-center justify-between mb-3">
                           <p className="font-sans text-sm font-medium text-bark-600">{v.label}</p>
                           <div className="flex items-center gap-3">
+                            <span className="font-sans text-[11px] text-bark-400">
+                              retail value ${(m.retail / 100).toFixed(0)} · box ${(v.price / 100).toFixed(0)}
+                              {m.retail > 0 ? ` (${v.price <= m.retail ? '-' : '+'}${Math.abs(Math.round((1 - v.price / m.retail) * 100))}%)` : ''}
+                            </span>
                             {m.pct !== null && (
                               <span className={`font-sans text-[11px] ${m.pct < 60 ? 'text-terra-500' : 'text-sage-700'}`}>
-                                margin ~{m.pct}%{m.missing ? ` (${m.missing} items uncosted)` : ''}{m.pct < 60 ? ' — below 60%' : ''}
+                                cost ${(m.cost / 100).toFixed(0)} → margin ~{m.pct}%{m.missing ? ` (${m.missing} uncosted)` : ''}{m.pct < 60 ? ' — below 60%' : ''}
                               </span>
                             )}
                             {m.pct === null && <span className="font-sans text-[11px] text-bark-400">margin — add item costs</span>}
@@ -144,8 +150,12 @@ export function CatalogEditor() {
                         <label className={label}>Contents</label>
                         {v.contents.map((c, ci) => (
                           <div key={ci} className="flex items-center gap-2 mb-2">
+                            {(() => { const it = itemById.get(c.item_id); return it?.image
+                              // eslint-disable-next-line @next/next/no-img-element
+                              ? <img src={it.image} alt="" className="w-9 h-9 shrink-0 object-cover rounded border border-cream-300" />
+                              : <span className="w-9 h-9 shrink-0 rounded border border-dashed border-cream-300 flex items-center justify-center font-sans text-[9px] text-bark-300">{itemById.get(c.item_id)?.active === false ? 'draft' : 'no img'}</span> })()}
                             <select value={c.item_id} onChange={e => { const nc = [...v.contents]; nc[ci] = { ...c, item_id: e.target.value }; post({ action: 'save-variant', variant: { ...v, contents: nc } }).then(load) }} className={`${field} flex-1`}>
-                              {items.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
+                              {items.map(i => <option key={i.id} value={i.id}>{i.name} — ${(i.price / 100).toFixed(0)}{i.active === false ? ' · DRAFT (placeholder, not sold yet)' : ''}</option>)}
                             </select>
                             <input type="number" min="1" value={c.qty} onChange={e => { const nc = [...v.contents]; nc[ci] = { ...c, qty: parseInt(e.target.value) || 1 }; post({ action: 'save-variant', variant: { ...v, contents: nc } }).then(load) }} className={`${field} w-16`} />
                             <label className="flex items-center gap-1.5 font-sans text-[10px] uppercase tracking-wide text-bark-400 whitespace-nowrap">

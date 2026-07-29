@@ -14,7 +14,7 @@ export async function GET() {
     const [{ data: products }, { data: variants }, { data: items }] = await Promise.all([
       supabaseAdmin.from('catalog_products').select('*').order('sort_order'),
       supabaseAdmin.from('catalog_variants').select('*').order('sort_order'),
-      supabaseAdmin.from('products').select('id, name, price, cost_cents, category').order('name'),
+      supabaseAdmin.from('products').select('id, name, price, cost_cents, category, image, active').order('name'),
     ])
     return NextResponse.json({ products: products ?? [], variants: variants ?? [], items: items ?? [] })
   } catch (e) {
