@@ -116,13 +116,13 @@ const DEFAULT_BOX_PRODUCTS: Array<{ slug: string; name: string }> = [
 ]
 
 // SHOP BY OCCASION column — Emily's exact format (2026-07-29).
+// Five rows, mirroring the five boxes beside them (Emily's exact list).
 const OCCASION_LINKS: Array<{ href: string; hrefEs?: string; label: string; labelEs: string }> = [
   { href: '/collections/baby-shower', hrefEs: '/es/colecciones/baby-shower', label: 'Baby Shower', labelEs: 'Baby Shower' },
   { href: '/collections/new-arrival', hrefEs: '/es/colecciones/new-arrival', label: 'New Baby', labelEs: 'Recién nacido' },
   { href: '/collections/for-mama', hrefEs: '/es/colecciones/for-mama', label: 'For Mom', labelEs: 'Para mamá' },
-  { href: '/collections/for-both', hrefEs: '/es/colecciones/for-both', label: 'For Mama & Baby', labelEs: 'Para mamá y bebé' },
   { href: '/boxes/baby-first-christmas-gift-box', label: "Baby's First Christmas", labelEs: 'La primera Navidad' },
-  { href: '/corporate', label: 'Corporate Gifts', labelEs: 'Regalos corporativos' },
+  { href: '/corporate', label: 'Corporate Gifting', labelEs: 'Regalos corporativos' },
 ]
 
 function useBoxProducts() {
