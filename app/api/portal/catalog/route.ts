@@ -14,7 +14,7 @@ export async function GET() {
     const [{ data: products }, { data: variants }, { data: items }, { data: pkg }, { data: lbl }] = await Promise.all([
       supabaseAdmin.from('catalog_products').select('*').order('sort_order'),
       supabaseAdmin.from('catalog_variants').select('*').order('sort_order'),
-      supabaseAdmin.from('products').select('id, name, price, cost_cents, category, image, active').order('name'),
+      supabaseAdmin.from('products').select('id, name, price, cost_cents, category, image, active').not('id', 'like', 'box-%').order('name'),
       supabaseAdmin.from('site_content').select('value').eq('key', 'catalog.packaging_cents').maybeSingle(),
       supabaseAdmin.from('site_content').select('value').eq('key', 'catalog.label_cents').maybeSingle(),
     ])

@@ -57,7 +57,7 @@ function ItemPicker({ items, value, onChange }: { items: Item[]; value: string; 
         className="w-full flex items-center gap-2.5 px-2.5 py-1.5 border border-cream-300 bg-white rounded-lg font-sans text-sm text-bark-600 hover:border-bark-400 transition-colors text-left">
         {thumb(current, 'w-8 h-8')}
         <span className="flex-1 truncate">{current?.name ?? 'Pick an item'}</span>
-        <span className="shrink-0 text-xs text-bark-400">${((current?.price ?? 0) / 100).toFixed(0)}{current?.active === false ? ' · DRAFT' : ''}</span>
+        {current?.active === false && <span className="shrink-0 text-[10px] uppercase text-bark-400">draft</span>}
         <ChevronDown size={13} className="shrink-0 text-bark-400" />
       </button>
       {open && (
@@ -300,29 +300,43 @@ export function CatalogEditor() {
                             <button onClick={() => window.confirm(`Delete ${v.label}?`) && post({ action: 'delete-variant', product_slug: p.slug, key: v.key }).then(load)} className="text-bark-400 hover:text-terra-500"><Trash2 size={13} /></button>
                           </div>
                         </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+                        <div className="grid grid-cols-3 gap-3 mb-3">
                           <div><label className={label}>Price $</label>
                             <input type="number" defaultValue={v.price / 100} onBlur={e => post({ action: 'save-variant', variant: { ...v, price: Math.round(parseFloat(e.target.value || '0') * 100) } }).then(load)} className={field} /></div>
                           <div><label className={label}>Basket (L×W×D)</label>
                             <input defaultValue={v.basket} onBlur={e => post({ action: 'save-variant', variant: { ...v, basket: e.target.value } }).then(load)} className={field} /></div>
                           <div><label className={label}>Depth cm</label>
                             <input type="number" step="0.5" defaultValue={v.basket_depth_cm ?? ''} onBlur={e => post({ action: 'save-variant', variant: { ...v, basket_depth_cm: parseFloat(e.target.value) || null } }).then(load)} className={field} /></div>
-                          <div><label className={label}>&quot;Adds&quot; line</label>
-                            <input defaultValue={v.adds} onBlur={e => post({ action: 'save-variant', variant: { ...v, adds: e.target.value } }).then(load)} className={field} /></div>
+
                         </div>
 
-                        <label className={label}>Contents</label>
-                        {v.contents.map((c, ci) => (
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="flex-1 font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400">Contents</span>
+                          <span className="w-14 shrink-0 text-right font-sans text-[9px] uppercase text-bark-300">cost</span>
+                          <span className="w-12 shrink-0 text-right font-sans text-[9px] uppercase text-bark-300">retail</span>
+                          <span className="w-12 shrink-0 text-center font-sans text-[9px] uppercase text-bark-300">qty</span>
+                          <span className="w-8 shrink-0" />
+                        </div>
+                        {v.contents.map((c, ci) => {
+                          const it = itemById.get(c.item_id)
+                          const isBlanket = /blanket/i.test(it?.name ?? '')
+                          return (
                           <div key={ci} className="flex items-center gap-2 mb-2">
                             <ItemPicker items={items} value={c.item_id}
                               onChange={id => { const nc = [...v.contents]; nc[ci] = { ...c, item_id: id }; post({ action: 'save-variant', variant: { ...v, contents: nc } }).then(load) }} />
-                            <input type="number" min="1" value={c.qty} onChange={e => { const nc = [...v.contents]; nc[ci] = { ...c, qty: parseInt(e.target.value) || 1 }; post({ action: 'save-variant', variant: { ...v, contents: nc } }).then(load) }} className="w-16 shrink-0 px-2 py-2 border border-cream-300 bg-white rounded-lg font-sans text-sm text-bark-600 text-center focus:outline-none focus:border-bark-400" />
-                            <label className="flex items-center gap-1.5 font-sans text-[10px] uppercase tracking-wide text-bark-400 whitespace-nowrap">
-                              <input type="checkbox" checked={!!c.color_choice} onChange={e => { const nc = [...v.contents]; nc[ci] = { ...c, color_choice: e.target.checked }; post({ action: 'save-variant', variant: { ...v, contents: nc } }).then(load) }} className="accent-sage-500" /> color pick
-                            </label>
-                            <button onClick={() => post({ action: 'save-variant', variant: { ...v, contents: v.contents.filter((_, i2) => i2 !== ci) } }).then(load)} className="text-bark-400 hover:text-terra-500"><Trash2 size={12} /></button>
+                            <span className="w-14 shrink-0 text-right font-sans text-[11px] text-bark-400" title="Unit cost">{it?.cost_cents ? `$${(it.cost_cents / 100).toFixed(2)}` : '—'}</span>
+                            <span className="w-12 shrink-0 text-right font-sans text-[11px] text-bark-600" title="Unit retail">${((it?.price ?? 0) / 100).toFixed(0)}</span>
+                            <input type="number" min="1" title="Quantity" value={c.qty} onChange={e => { const nc = [...v.contents]; nc[ci] = { ...c, qty: parseInt(e.target.value) || 1 }; post({ action: 'save-variant', variant: { ...v, contents: nc } }).then(load) }} className="w-12 shrink-0 px-1 py-2 border border-cream-300 bg-white rounded-lg font-sans text-sm text-bark-600 text-center focus:outline-none focus:border-bark-400" />
+                            {isBlanket && (
+                              <button title={c.color_choice ? 'Buyer picks the color — click to fix the colorway' : 'Fixed colorway — click to let the buyer pick'} onClick={() => { const nc = [...v.contents]; nc[ci] = { ...c, color_choice: !c.color_choice }; post({ action: 'save-variant', variant: { ...v, contents: nc } }).then(load) }}
+                                className={`shrink-0 font-sans text-[9px] tracking-wide uppercase border rounded px-1.5 py-1 ${c.color_choice ? 'border-espresso bg-espresso text-cream-50' : 'border-cream-300 text-bark-400 hover:border-bark-400'}`}>
+                                color pick
+                              </button>
+                            )}
+                            <button onClick={() => post({ action: 'save-variant', variant: { ...v, contents: v.contents.filter((_, i2) => i2 !== ci) } }).then(load)} className="shrink-0 text-bark-400 hover:text-terra-500"><Trash2 size={12} /></button>
                           </div>
-                        ))}
+                          )
+                        })}
                         <button onClick={() => post({ action: 'save-variant', variant: { ...v, contents: [...v.contents, { item_id: items[0]?.id, qty: 1 }] } }).then(load)} className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-500 border border-cream-300 rounded-lg px-3 py-1.5 hover:border-bark-400 flex items-center gap-1.5"><Plus size={11} /> Add item</button>
 
                         <div className="mt-4">
