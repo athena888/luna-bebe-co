@@ -84,6 +84,54 @@ function ItemPicker({ items, value, onChange }: { items: Item[]; value: string; 
   )
 }
 
+
+// AI naming assistant — French name options + fairy-tale description from the
+// box's actual items, with an optional direction from Emily.
+function NameAssistant({ itemNames, onPick }: { itemNames: string[]; onPick: (name: string) => void }) {
+  const [req, setReq] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [out, setOut] = useState<Array<{ name: string; story: string }>>([])
+  async function go() {
+    setBusy(true); setOut([])
+    try {
+      const r = await fetch('/api/portal/catalog/suggest-name', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: itemNames, request: req }),
+      })
+      const d = await r.json()
+      if (d.error) window.alert(d.error)
+      else setOut(d.suggestions ?? [])
+    } finally { setBusy(false) }
+  }
+  return (
+    <div className="border border-cream-200 rounded-lg p-4 bg-cream-50">
+      <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mb-2">Name it — AI assistant</p>
+      <div className="flex gap-2">
+        <input value={req} onChange={e => setReq(e.target.value)} placeholder="Optional direction — e.g. wintery, for grandmothers, strawberry theme…"
+          className="flex-1 min-w-0 px-3 py-2 border border-cream-300 bg-white rounded-lg font-sans text-xs text-bark-600 focus:outline-none focus:border-bark-400" />
+        <button onClick={go} disabled={busy || itemNames.length === 0}
+          className="shrink-0 flex items-center gap-2 bg-[#7A8E7C] hover:bg-[#6d8070] text-white rounded-lg font-sans text-[10px] tracking-[0.15em] uppercase px-4 py-2 transition-colors disabled:opacity-50">
+          {busy ? <Loader size={12} className="animate-spin" /> : null} {busy ? 'Dreaming…' : 'Suggest names'}
+        </button>
+      </div>
+      {itemNames.length === 0 && <p className="font-sans text-[11px] text-bark-400 mt-2">Add items first — names come from what&apos;s inside.</p>}
+      {out.length > 0 && (
+        <div className="mt-3 space-y-3">
+          {out.map((o, i) => (
+            <div key={i} className="bg-white border border-cream-200 rounded-lg p-3">
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-serif text-base text-espresso">{o.name}</p>
+                <button onClick={() => onPick(o.name)} className="shrink-0 font-sans text-[10px] tracking-[0.15em] uppercase border border-cream-300 rounded px-2.5 py-1 text-bark-500 hover:border-bark-400">Use this name</button>
+              </div>
+              <p className="font-sans text-xs text-bark-500 leading-relaxed mt-1">{o.story}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function CatalogEditor() {
   const [products, setProducts] = useState<CatalogProduct[]>([])
   const [variants, setVariants] = useState<Variant[]>([])
@@ -174,6 +222,11 @@ export function CatalogEditor() {
 
               {!isOpen && (
                 <div className="px-4 pb-4 space-y-2">
+                  <NameAssistant
+                    itemNames={[...new Set(pv.flatMap(v => v.contents.map(c => itemById.get(c.item_id)?.name).filter(Boolean)))] as string[]}
+                    onPick={name => post({ action: 'save-product', slug: p.slug, patch: { name } }).then(load)}
+                  />
+
                   {pv.map(v => {
                     const m = economicsOf(v, itemById, packaging, labelCost)
                     return (

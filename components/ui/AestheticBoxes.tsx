@@ -103,7 +103,7 @@ function BuyBox({ box, size }: { box: ResolvedBox; size: string }) {
       selectedSize: isGarment(it) ? size : (it as CartItem).selectedSize,
     }))
     writeCart(items)
-    router.push('/checkout')
+    router.push('/letter')
   }
   return (
     <button

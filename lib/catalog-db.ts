@@ -131,6 +131,47 @@ export async function getBoxProduct(slug: string): Promise<CatalogBoxProduct | n
   }
 }
 
+export interface SizeOption {
+  size: string
+  inStock: boolean
+  // First in-stock colorway for this size — written onto the cart line so
+  // checkout decrements the right variant row.
+  color: string | null
+  colorHex: string | null
+}
+
+/** Per-item size availability for the buy panel. Items whose only size is
+ * "one-size" are omitted (no picker needed). Stock = sum across colorways. */
+export async function getItemSizeOptions(itemIds: string[]): Promise<Record<string, SizeOption[]>> {
+  if (!itemIds.length) return {}
+  try {
+    const { data } = await supabaseAdmin
+      .from('product_variants')
+      .select('product_id, size, color, color_hex, quantity')
+      .in('product_id', itemIds)
+    const byItem: Record<string, SizeOption[]> = {}
+    for (const row of (data ?? []) as Array<{ product_id: string; size: string; color: string; color_hex: string | null; quantity: number }>) {
+      const list = (byItem[row.product_id] ??= [])
+      const existing = list.find(o => o.size === row.size)
+      if (existing) {
+        if (!existing.inStock && row.quantity > 0) {
+          existing.inStock = true; existing.color = row.color; existing.colorHex = row.color_hex
+        }
+      } else {
+        list.push({ size: row.size, inStock: row.quantity > 0, color: row.quantity > 0 ? row.color : null, colorHex: row.quantity > 0 ? row.color_hex : null })
+      }
+    }
+    for (const id of Object.keys(byItem)) {
+      const sizes = byItem[id]
+      if (sizes.length === 1 && sizes[0].size === 'one-size') delete byItem[id]
+      else byItem[id] = sizes.sort((a, b) => a.size.localeCompare(b.size, undefined, { numeric: true }))
+    }
+    return byItem
+  } catch {
+    return {}
+  }
+}
+
 export function priceRange(p: CatalogBoxProduct): { low: number; high: number } {
   const prices = p.variants.map(v => v.price)
   return { low: Math.min(...prices), high: Math.max(...prices) }

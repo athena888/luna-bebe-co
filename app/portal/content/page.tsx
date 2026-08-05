@@ -16,22 +16,24 @@ import { GiftGuidesEditor } from '@/components/portal/GiftGuidesEditor'
 
 type PageId = 'spanish' | 'catalog' | 'home' | 'story' | 'build' | 'guides' | 'giftcards' | 'corporate' | 'press' | 'track' | 'legal' | 'global' | 'social' | 'journal' | 'signin' | 'products' | 'prebuilt' | 'cardstyles'
 
+// Ordered by how often Emily actually opens each (2026-07-29), not by site
+// structure — most-touched at the top.
 const TABS: { id: PageId; label: string }[] = [
-  { id: 'home',       label: 'Homepage' },
-  { id: 'story',      label: 'Story' },
+  { id: 'catalog',    label: 'Gift Boxes' },
   { id: 'products',   label: 'Products' },
-  { id: 'catalog',    label: 'Box Products' },
+  { id: 'home',       label: 'Homepage' },
   { id: 'spanish',    label: 'Spanish Review' },
-  { id: 'cardstyles', label: 'Card Styles' },
   { id: 'build',      label: 'Build Your Box' },
+  { id: 'cardstyles', label: 'Card Styles' },
   { id: 'guides',     label: 'Guides & Journal' },
   { id: 'giftcards',  label: 'Gift Cards' },
   { id: 'corporate',  label: 'Corporate' },
+  { id: 'story',      label: 'Story' },
+  { id: 'social',     label: 'Social Feed' },
   { id: 'press',      label: 'Press Kit' },
   { id: 'track',      label: 'Track Order' },
   { id: 'legal',      label: 'Legal' },
   { id: 'global',     label: 'Global' },
-  { id: 'social',     label: 'Social Feed' },
   { id: 'signin',     label: 'Sign In' },
 ]
 

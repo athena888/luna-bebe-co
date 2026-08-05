@@ -9,7 +9,7 @@ import { BoxBuyPanel } from '@/components/ui/BoxBuyPanel'
 import { BoxGallery } from '@/components/ui/BoxGallery'
 import { OccasionCountdown } from '@/components/ui/OccasionCountdown'
 import { ReviewSection } from '@/components/ui/ReviewSection'
-import { getBoxProduct, priceRange } from '@/lib/catalog-db'
+import { getBoxProduct, getItemSizeOptions, priceRange } from '@/lib/catalog-db'
 
 // Phase 3 box product page — one data-driven template for every parent
 // product. Variants live in a query param (?tier=/?theme=); canonical strips
@@ -74,6 +74,10 @@ export default async function BoxProductPage({ params, searchParams }: { params:
   const story = (box.story ?? {}) as Story
   const faqs = box.faqs.length ? box.faqs : DEFAULT_FAQS
   const crossSell = (story.cross_sell ?? []).slice(0, 3)
+  // Per-size stock for sized items (garments) — drives the size chips.
+  const sizesByItem = await getItemSizeOptions(
+    variant.contents.filter(c => (c.item as { has_variants?: boolean }).has_variants).map(c => c.item.id)
+  )
 
   return (
     <>
@@ -155,9 +159,16 @@ export default async function BoxProductPage({ params, searchParams }: { params:
 
               <div className="mt-8">
                 <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-3">What&apos;s inside</p>
-                <ul className="space-y-2.5">
+                <ul className="space-y-2">
                   {variant.contents.map(c => (
-                    <li key={c.item.id} className="flex items-baseline gap-3 border-b border-cream-200 pb-2.5">
+                    <li key={c.item.id} className="flex items-center gap-3 border-b border-cream-200 pb-2">
+                      {c.item.image ? (
+                        <span className="relative w-10 h-10 shrink-0 overflow-hidden border border-cream-200">
+                          <Image src={c.item.image} alt={c.item.name} fill className="object-cover" unoptimized />
+                        </span>
+                      ) : (
+                        <span className="w-10 h-10 shrink-0 border border-dashed border-cream-300 bg-cream-100" />
+                      )}
                       <span className="font-sans text-sm text-bark-600">
                         {c.qty > 1 ? `${c.qty} × ` : ''}{c.item.name}
                         {c.colorChoice ? ' — your choice of color' : ''}
@@ -165,13 +176,12 @@ export default async function BoxProductPage({ params, searchParams }: { params:
                       {c.note && <span className="font-sans text-xs text-bark-400">{c.note}</span>}
                     </li>
                   ))}
-                  <li className="pb-1">
+                  <li className="flex items-center gap-3 pb-1">
+                    <span className="w-10 h-10 shrink-0 border border-cream-200 bg-cream-100 flex items-center justify-center font-serif text-sm text-bark-400">✎</span>
                     <span className="font-sans text-sm text-bark-600">Personalized card — hand-finished for every box, with your message</span>
                   </li>
                 </ul>
-                {variant.basket && (
-                  <p className="font-sans text-xs text-bark-400 mt-3">Woven basket, {variant.basket} cm — everything arrives nested, ribbon-tied, and sealed by hand.</p>
-                )}
+                <p className="font-sans text-xs text-bark-400 mt-3">Everything arrives nested in a woven seagrass basket with lid, ribbon-tied and sealed by hand.</p>
               </div>
 
               <OccasionCountdown />
@@ -181,6 +191,7 @@ export default async function BoxProductPage({ params, searchParams }: { params:
                 price={variant.price}
                 boxName={box.name}
                 needsColor={variant.contents.some(c => c.colorChoice)}
+                sizesByItem={sizesByItem}
               />
 
               <p className="font-sans text-sm text-bark-500 mt-8">
