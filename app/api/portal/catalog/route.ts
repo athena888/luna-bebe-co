@@ -86,6 +86,12 @@ export async function POST(req: NextRequest) {
         product_slug: slug, key: 'default', label: name, price, contents: [], sort_order: 0,
       })
       if (ve) throw ve
+      // Shadow row satisfies the reviews FK for pooled box reviews (inert).
+      await supabaseAdmin.from('products').upsert({
+        id: `box-${slug}`, name: `[box reviews] ${slug}`, category: 'keepsake', price: 0,
+        description: 'Shadow row for pooled box reviews.', active: false, standalone: false,
+        sort_order: 9999, image_emoji: '📦',
+      }, { onConflict: 'id', ignoreDuplicates: true })
       return NextResponse.json({ success: true, slug })
     }
 

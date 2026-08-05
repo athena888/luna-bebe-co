@@ -108,11 +108,21 @@ function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
 // fallback so crawlers always see the links; /api/catalog-nav refreshes it so
 // the seasonal hide toggle (e.g. Noël off-season) drops items without a deploy.
 const DEFAULT_BOX_PRODUCTS: Array<{ slug: string; name: string }> = [
-  { slug: 'signature', name: 'The Signature' },
-  { slug: 'la-collection', name: 'La Collection' },
-  { slug: 'mama', name: 'The Mama Box' },
-  { slug: 'mama-et-bebe', name: 'Mama et Bébé' },
-  { slug: 'noel', name: 'Noël' },
+  { slug: 'signature-baby-gift-box', name: 'The Signature' },
+  { slug: 'themed-baby-gift-box', name: 'La Collection' },
+  { slug: 'new-mom-gift-box', name: 'The Mama Box' },
+  { slug: 'mom-and-baby-gift-box', name: 'Mama et Bébé' },
+  { slug: 'baby-first-christmas-gift-box', name: 'Noël' },
+]
+
+// SHOP BY OCCASION column — Emily's exact format (2026-07-29).
+const OCCASION_LINKS: Array<{ href: string; hrefEs?: string; label: string; labelEs: string }> = [
+  { href: '/collections/baby-shower', hrefEs: '/es/colecciones/baby-shower', label: 'Baby Shower', labelEs: 'Baby Shower' },
+  { href: '/collections/new-arrival', hrefEs: '/es/colecciones/new-arrival', label: 'New Baby', labelEs: 'Recién nacido' },
+  { href: '/collections/for-mama', hrefEs: '/es/colecciones/for-mama', label: 'For Mom', labelEs: 'Para mamá' },
+  { href: '/collections/for-both', hrefEs: '/es/colecciones/for-both', label: 'For Mama & Baby', labelEs: 'Para mamá y bebé' },
+  { href: '/boxes/baby-first-christmas-gift-box', label: "Baby's First Christmas", labelEs: 'La primera Navidad' },
+  { href: '/corporate', label: 'Corporate Gifts', labelEs: 'Regalos corporativos' },
 ]
 
 function useBoxProducts() {
@@ -169,6 +179,15 @@ function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
               {isEs ? 'Arma la tuya' : 'Build Your Own'}
             </Link>
           </div>
+          <div>
+            <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-400 font-bold mb-2.5">{isEs ? 'Por ocasión' : 'Shop by Occasion'}</p>
+            {OCCASION_LINKS.map(l => (
+              <Link key={l.href} href={isEs && l.hrefEs ? l.hrefEs : l.href} onClick={() => setOpen(false)}
+                className="block font-sans text-[13px] normal-case tracking-normal text-espresso hover:text-gold-500 transition-colors py-1">
+                {isEs ? l.labelEs : l.label}
+              </Link>
+            ))}
+          </div>
           <Link href={isEs ? '/es/canastillas' : '/boxes'} onClick={() => setOpen(false)}
             className="self-end font-sans text-[12px] normal-case tracking-normal text-[#7A8E7C] underline underline-offset-2 hover:text-espresso transition-colors">
             {isEs ? 'Ver todas →' : 'View all boxes →'}
@@ -214,6 +233,9 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
           <div className="mt-3 pl-3 flex flex-col gap-2.5 font-sans text-[13px] tracking-normal normal-case">
             {boxProducts.map(p => (
               <Link key={p.slug} href={`/boxes/${p.slug}`} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{p.name}</Link>
+            ))}
+            {OCCASION_LINKS.map(l => (
+              <Link key={l.href} href={isEs && l.hrefEs ? l.hrefEs : l.href} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{isEs ? l.labelEs : l.label}</Link>
             ))}
           </div>
         )}

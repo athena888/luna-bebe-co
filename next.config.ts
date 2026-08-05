@@ -30,6 +30,13 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // Box slugs -> keyword URLs (Emily, 2026-07-29)
+      { source: '/boxes/signature', destination: '/boxes/signature-baby-gift-box', permanent: true },
+      { source: '/boxes/la-collection', destination: '/boxes/themed-baby-gift-box', permanent: true },
+      { source: '/boxes/mama', destination: '/boxes/new-mom-gift-box', permanent: true },
+      { source: '/boxes/mama-et-bebe', destination: '/boxes/mom-and-baby-gift-box', permanent: true },
+      { source: '/boxes/noel', destination: '/boxes/baby-first-christmas-gift-box', permanent: true },
+      { source: '/boxes/entry', destination: '/boxes/petite-baby-gift-box', permanent: true },
       // Phase 8b dispositions (Emily-approved 2026-07-29): journal->pSEO
       { source: '/journal/best-organic-baby-shower-gifts-2026', destination: '/gifts/organic-baby-shower-gifts', permanent: true },
       { source: '/journal/new-mom-gift-ideas-that-arent-flowers', destination: '/gifts/new-mom-gift-ideas', permanent: true },
