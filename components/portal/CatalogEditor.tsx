@@ -324,6 +324,36 @@ export function CatalogEditor() {
                           </div>
                         ))}
                         <button onClick={() => post({ action: 'save-variant', variant: { ...v, contents: [...v.contents, { item_id: items[0]?.id, qty: 1 }] } }).then(load)} className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-500 border border-cream-300 rounded-lg px-3 py-1.5 hover:border-bark-400 flex items-center gap-1.5"><Plus size={11} /> Add item</button>
+
+                        <div className="mt-4">
+                          <label className={label}>Photos — first one is this version&apos;s cover (shows on chips, cards and the page)</label>
+                          <div className="flex flex-wrap items-center gap-2">
+                            {v.images.map((img, ii) => (
+                              <div key={ii} className="relative group">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={img} alt="" className="w-16 h-16 object-cover rounded border border-cream-300" />
+                                {ii > 0 && (
+                                  <button title="Make cover" onClick={() => { const ni = [img, ...v.images.filter((_, x) => x !== ii)]; post({ action: 'save-variant', variant: { ...v, images: ni } }).then(load) }}
+                                    className="absolute bottom-0.5 left-0.5 hidden group-hover:flex bg-white/90 border border-cream-300 rounded px-1 font-sans text-[8px] uppercase text-bark-500">cover</button>
+                                )}
+                                <button title="Remove" onClick={() => post({ action: 'save-variant', variant: { ...v, images: v.images.filter((_, x) => x !== ii) } }).then(load)}
+                                  className="absolute -top-1.5 -right-1.5 hidden group-hover:flex w-4 h-4 items-center justify-center bg-white border border-cream-300 rounded-full text-bark-500 hover:text-red-500 text-[10px] leading-none">×</button>
+                              </div>
+                            ))}
+                            <label className="w-16 h-16 flex items-center justify-center border border-dashed border-cream-300 rounded cursor-pointer text-bark-400 hover:border-bark-400 hover:text-bark-600">
+                              <Plus size={14} />
+                              <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={async e => {
+                                const f = e.target.files?.[0]; if (!f) return
+                                const fd = new FormData(); fd.append('file', f)
+                                const r = await fetch(`/api/portal/boxes/${p.slug}-${v.key}/upload-image`, { method: 'POST', body: fd })
+                                const d = await r.json()
+                                if (d.url) post({ action: 'save-variant', variant: { ...v, images: [...v.images, d.url] } }).then(load)
+                                else window.alert(d.error || 'Upload failed')
+                                e.target.value = ''
+                              }} />
+                            </label>
+                          </div>
+                        </div>
                       </div>
                     )
                   })}
