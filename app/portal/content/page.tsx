@@ -11,7 +11,6 @@ import StoryPortal from '@/app/portal/story/page'
 import SocialPortalPage from '@/app/portal/social/page'
 import JournalPortal from '@/app/portal/journal/page'
 import ProductsPortal from '@/app/portal/products/page'
-import BoxesPortal from '@/app/portal/boxes/page'
 import CardStylesPortal from '@/app/portal/card-styles/page'
 import { GiftGuidesEditor } from '@/components/portal/GiftGuidesEditor'
 
@@ -23,7 +22,6 @@ const TABS: { id: PageId; label: string }[] = [
   { id: 'products',   label: 'Products' },
   { id: 'catalog',    label: 'Box Products' },
   { id: 'spanish',    label: 'Spanish Review' },
-  { id: 'prebuilt',   label: 'Prebuilt Boxes' },
   { id: 'cardstyles', label: 'Card Styles' },
   { id: 'build',      label: 'Build Your Box' },
   { id: 'guides',     label: 'Guides & Journal' },
@@ -112,7 +110,6 @@ export default function ContentPage() {
         {active === 'products' && <ProductsPortal />}
         {active === 'catalog' && <CatalogEditor />}
         {active === 'spanish' && <TranslationsReview />}
-        {active === 'prebuilt' && <BoxesPortal />}
         {active === 'cardstyles' && <CardStylesPortal />}
         {active === 'guides' && <GuidesJournalTabs />}
         {active === 'social' && <SocialPortalPage />}

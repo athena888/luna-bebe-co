@@ -120,11 +120,26 @@ export function CatalogEditor() {
   return (
     <div className="p-4 sm:p-8 max-w-4xl">
       <div className="mb-6">
-        <h1 className="font-serif text-3xl text-bark-600">Box Products</h1>
-        <p className="font-sans text-sm text-bark-400 mt-1">
-          The six parent products on /boxes. Contents lists render on the live product pages and feed checkout —
-          prices are in dollars here, margins appear once item costs are filled in below each variant.
-        </p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="font-serif text-3xl text-bark-600">Gift Boxes</h1>
+            <p className="font-sans text-sm text-bark-400 mt-1">
+              Every box on /boxes. Click a card to edit details and contents — prices in dollars, all margins include packaging.
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              const name = window.prompt('New box name:')
+              if (!name?.trim()) return
+              const priceStr = window.prompt('Box price in dollars (draft, editable):', '100')
+              const price = Math.round(parseFloat(priceStr || '100') * 100)
+              post({ action: 'add-product', name: name.trim(), price }).then(ok => ok && load())
+            }}
+            className="shrink-0 flex items-center gap-2 bg-[#7A8E7C] hover:bg-[#6d8070] text-white rounded-lg font-sans text-[10px] tracking-[0.15em] uppercase px-4 py-2.5 transition-colors"
+          >
+            <Plus size={13} /> Add Box
+          </button>
+        </div>
         {msg && <p className="font-sans text-xs text-sage-700 mt-2">{msg}</p>}
         <div className="flex items-center gap-2 mt-3 font-sans text-xs text-bark-500">
           Per-box packaging (basket + mailer + kraft): $
@@ -157,6 +172,33 @@ export function CatalogEditor() {
                 </span>
               </button>
 
+              {!isOpen && (
+                <div className="px-4 pb-4 space-y-2">
+                  {pv.map(v => {
+                    const m = economicsOf(v, itemById, packaging, labelCost)
+                    return (
+                      <div key={v.key} className="flex items-center gap-3 flex-wrap border-t border-cream-100 pt-2">
+                        <span className="font-sans text-xs font-medium text-bark-600 w-20 shrink-0 truncate">{v.label}</span>
+                        <div className="flex -space-x-1.5 shrink-0">
+                          {v.contents.map((c, ci) => {
+                            const it = itemById.get(c.item_id)
+                            return it?.image
+                              // eslint-disable-next-line @next/next/no-img-element
+                              ? <img key={ci} src={it.image} alt="" title={`${it.name}${c.qty > 1 ? ` ×${c.qty}` : ''}`} className="w-8 h-8 rounded-full object-cover border-2 border-white" />
+                              : <span key={ci} title={it?.name ?? c.item_id} className="w-8 h-8 rounded-full border-2 border-white bg-cream-200 flex items-center justify-center font-sans text-[8px] text-bark-400">{(it?.name ?? '?').slice(0, 2)}</span>
+                          })}
+                          {v.contents.length === 0 && <span className="font-sans text-[11px] text-bark-300">no items yet</span>}
+                        </div>
+                        <span className="font-sans text-[11px] text-bark-500 shrink-0">box <strong className="text-bark-600">${(v.price / 100).toFixed(0)}</strong> · retail ${(m.retail / 100).toFixed(0)}</span>
+                        {m.pct !== null
+                          ? <span className={`font-sans text-[11px] shrink-0 ${m.pct < 60 ? 'text-terra-500' : 'text-sage-700'}`}>margin {m.pct}% · worst {m.worst}%</span>
+                          : <span className="font-sans text-[11px] text-bark-300 shrink-0">no costs</span>}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+
               {isOpen && (
                 <div className="px-4 pb-5 border-t border-cream-200 pt-4 space-y-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -173,6 +215,12 @@ export function CatalogEditor() {
                     <button onClick={() => post({ action: 'save-product', slug: p.slug, patch: { active: !p.active } }).then(load)} className="font-sans text-[10px] tracking-[0.15em] uppercase border border-cream-300 px-3 py-2 rounded-lg text-bark-500 hover:border-bark-400">
                       {p.active ? 'Deactivate (page 404s)' : 'Activate'}
                     </button>
+                    {!p.active && (
+                      <button onClick={() => window.confirm(`Delete ${p.name} permanently? Its variants go with it.`) && post({ action: 'delete-product', slug: p.slug }).then(load)}
+                        className="font-sans text-[10px] tracking-[0.15em] uppercase border border-cream-300 px-3 py-2 rounded-lg text-bark-400 hover:border-red-400 hover:text-red-500">
+                        Delete box
+                      </button>
+                    )}
                     <button onClick={() => post({ action: 'save-product', slug: p.slug, patch: { visible: !p.visible } }).then(load)} className="font-sans text-[10px] tracking-[0.15em] uppercase border border-cream-300 px-3 py-2 rounded-lg text-bark-500 hover:border-bark-400" title="Removes it from nav + sitemap without deleting the page, so the URL and its reviews persist year to year.">
                       {p.visible ? 'Hide for the season' : 'Restore from hiding'}
                     </button>

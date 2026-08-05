@@ -65,6 +65,36 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true })
     }
 
+    if (action === 'add-product') {
+      const name = typeof body.name === 'string' ? body.name.trim() : ''
+      if (!name) return NextResponse.json({ error: 'Name is required' }, { status: 400 })
+      const base = name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'box'
+      const { data: existing } = await supabaseAdmin.from('catalog_products').select('slug, sort_order')
+      const taken = new Set((existing ?? []).map(r => r.slug as string))
+      let slug = base
+      for (let n = 2; taken.has(slug); n++) slug = `${base}-${n}`
+      const sortOrder = Math.max(-1, ...(existing ?? []).map(r => (r.sort_order as number) ?? 0)) + 1
+      const price = Math.round(Number(body.price)) || 10000
+      // Starts INACTIVE (page 404s) until she picks contents and activates.
+      const { error } = await supabaseAdmin.from('catalog_products').insert({
+        slug, name, subtitle: '', variant_param: 'v', variant_label: '',
+        seasonal: false, visible: true, active: false, sort_order: sortOrder,
+      })
+      if (error) throw error
+      const { error: ve } = await supabaseAdmin.from('catalog_variants').insert({
+        product_slug: slug, key: 'default', label: name, price, contents: [], sort_order: 0,
+      })
+      if (ve) throw ve
+      return NextResponse.json({ success: true, slug })
+    }
+
+    if (action === 'delete-product') {
+      const { error } = await supabaseAdmin.from('catalog_products').delete().eq('slug', body.slug)
+      if (error) throw error
+      return NextResponse.json({ success: true })
+    }
+
     if (action === 'delete-variant') {
       const { error } = await supabaseAdmin.from('catalog_variants')
         .delete().eq('product_slug', body.product_slug).eq('key', body.key)
