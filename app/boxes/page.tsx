@@ -44,7 +44,7 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
       <main className="min-h-screen bg-white">
 
         {catalogProducts.length > 0 && (
-          <section className="max-w-6xl mx-auto px-6 pt-14 pb-4">
+          <section className="max-w-6xl mx-auto px-6 pt-5 pb-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {catalogProducts.map(p => {
                 const { low, high } = priceRange(p)

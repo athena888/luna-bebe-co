@@ -121,8 +121,8 @@ const OCCASION_BY_SLUG: Record<string, { en: string; es: string }> = {
   'signature-baby-gift-box': { en: 'Baby Shower', es: 'Baby Shower' },
   'themed-baby-gift-box': { en: 'New Baby', es: 'Recién nacido' },
   'new-mom-gift-box': { en: 'For Mom', es: 'Para mamá' },
-  'mom-and-baby-gift-box': { en: "Baby's First Christmas", es: 'La primera Navidad' },
-  'baby-first-christmas-gift-box': { en: 'Corporate Gifting', es: 'Regalos corporativos' },
+  'mom-and-baby-gift-box': { en: 'For Her & Baby', es: 'Para ella y el bebé' },
+  'baby-first-christmas-gift-box': { en: "Baby's First Christmas", es: 'La primera Navidad' },
 }
 
 function useBoxProducts() {
@@ -176,6 +176,10 @@ function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
               )}
             </Link>
           ))}
+          <Link href="/corporate" onClick={() => setOpen(false)}
+            className="block font-sans text-[13px] normal-case tracking-normal text-espresso hover:text-gold-500 transition-colors py-1">
+            {isEs ? 'Regalos corporativos' : 'Corporate Gifting'}
+          </Link>
           <Link href={isEs ? '/es/build' : '/build'} onClick={() => setOpen(false)}
             className="block font-sans text-[13px] normal-case tracking-normal text-[#7A8E7C] hover:text-espresso transition-colors py-1">
             {isEs ? 'Arma la tuya' : 'Build Your Own'}
@@ -226,6 +230,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
             {boxProducts.map(p => (
               <Link key={p.slug} href={`/boxes/${p.slug}`} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{p.name}</Link>
             ))}
+            <Link href="/corporate" onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{isEs ? 'Regalos corporativos' : 'Corporate Gifting'}</Link>
 
           </div>
         )}
