@@ -7,7 +7,6 @@ import { Footer } from '@/components/layout/Footer'
 import { JsonLd } from '@/components/ui/JsonLd'
 import { BoxBuyPanel } from '@/components/ui/BoxBuyPanel'
 import { BoxGallery } from '@/components/ui/BoxGallery'
-import { OccasionCountdown } from '@/components/ui/OccasionCountdown'
 import { ReviewSection } from '@/components/ui/ReviewSection'
 import { getBoxProduct, getItemSizeOptions, priceRange } from '@/lib/catalog-db'
 import { CATEGORY_LABELS } from '@/lib/products'
@@ -186,16 +185,9 @@ export default async function BoxProductPage({ params, searchParams }: { params:
                       </div>
                     ))}
                 </div>
-                <ul className="mt-4">
-                  <li className="flex items-center gap-3 pb-1">
-                    <span className="w-10 h-10 shrink-0 border border-cream-200 bg-cream-100 flex items-center justify-center font-serif text-sm text-bark-400">✎</span>
-                    <span className="font-sans text-sm text-bark-600">Personalized card — hand-finished for every box, with your message</span>
-                  </li>
-                </ul>
+                <p className="font-sans text-sm text-bark-600 mt-4">Personalized card — hand-finished for every box, with your message</p>
                 <p className="font-sans text-xs text-bark-400 mt-3">Everything arrives nested in a woven seagrass basket with lid, ribbon-tied and sealed by hand.</p>
               </div>
-
-              <OccasionCountdown />
 
               <BoxBuyPanel
                 contents={variant.contents.map(c => ({ item: c.item, qty: c.qty, colorChoice: c.colorChoice }))}

@@ -1490,3 +1490,11 @@ alter table products add column if not exists cost_cents integer;
 alter table products add column if not exists safety_notes text;
 
 -- Done.
+
+-- 47) Pooled box reviews: box pages review under box-<slug> ids, which live
+--     in catalog_products — the reviews→products FK can't model both, and
+--     shadow rows kept getting cleaned away. Drop the constraint; the app
+--     validates product links itself (feed validator, JSON-LD emitters).
+alter table reviews drop constraint if exists reviews_product_id_fkey;
+
+-- Done.

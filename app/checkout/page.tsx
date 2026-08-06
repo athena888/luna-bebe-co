@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
+import { OccasionCountdown } from '@/components/ui/OccasionCountdown'
 import { Footer } from '@/components/layout/Footer'
 import { VatNotice } from '@/components/ui/VatNotice'
 import { SHIPPING, BOX_BASE_PRICE, freeShippingApplies } from '@/lib/products'
@@ -456,6 +457,8 @@ export default function CheckoutPage() {
                 {/* Shipping method */}
                 <div className="bg-white p-6 sm:p-7">
                   <h2 className="font-playfair text-xl text-espresso mb-6 pb-3 border-b border-cream-200">{isEs ? 'Método de envío' : 'Shipping Method'}</h2>
+                  <OccasionCountdown />
+                  <div className="mb-4" />
                   <div className="space-y-3">
                     {(Object.entries(SHIPPING) as [ShippingType, typeof SHIPPING[ShippingType]][]).map(([key, option]) => (
                       <button
