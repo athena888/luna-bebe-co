@@ -10,6 +10,7 @@ import { BoxGallery } from '@/components/ui/BoxGallery'
 import { OccasionCountdown } from '@/components/ui/OccasionCountdown'
 import { ReviewSection } from '@/components/ui/ReviewSection'
 import { getBoxProduct, getItemSizeOptions, priceRange } from '@/lib/catalog-db'
+import { CATEGORY_LABELS } from '@/lib/products'
 
 // Phase 3 box product page — one data-driven template for every parent
 // product. Variants live in a query param (?tier=/?theme=); canonical strips
@@ -112,14 +113,6 @@ export default async function BoxProductPage({ params, searchParams }: { params:
       <Header />
       <main className="bg-white min-h-screen">
         <div className="max-w-5xl mx-auto px-6 py-12">
-          <nav className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 mb-8">
-            <Link href="/" className="hover:text-bark-600">Home</Link>
-            <span className="mx-2">/</span>
-            <Link href="/boxes" className="hover:text-bark-600">Gift Boxes</Link>
-            <span className="mx-2">/</span>
-            <span className="text-bark-600">{box.name}</span>
-          </nav>
-
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             {/* 1 — Gallery: the selected variant's set only */}
             <div className="lg:sticky lg:top-24 lg:self-start">
@@ -159,23 +152,35 @@ export default async function BoxProductPage({ params, searchParams }: { params:
 
               <div className="mt-8">
                 <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-3">What&apos;s inside</p>
-                <ul className="space-y-2">
-                  {variant.contents.map(c => (
-                    <li key={c.item.id} className="flex items-center gap-3 border-b border-cream-200 pb-2">
-                      {c.item.image ? (
-                        <span className="relative w-10 h-10 shrink-0 overflow-hidden border border-cream-200">
-                          <Image src={c.item.image} alt={c.item.name} fill className="object-cover" unoptimized />
-                        </span>
-                      ) : (
-                        <span className="w-10 h-10 shrink-0 border border-dashed border-cream-300 bg-cream-100" />
-                      )}
-                      <span className="font-sans text-sm text-bark-600">
-                        {c.qty > 1 ? `${c.qty} × ` : ''}{c.item.name}
-                        {c.colorChoice ? ' — your choice of color' : ''}
-                      </span>
-                      {c.note && <span className="font-sans text-xs text-bark-400">{c.note}</span>}
-                    </li>
-                  ))}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-5">
+                  {(Object.keys(CATEGORY_LABELS) as Array<keyof typeof CATEGORY_LABELS>)
+                    .map(cat => ({ cat, items: variant.contents.filter(c => c.item.category === cat) }))
+                    .filter(g => g.items.length > 0)
+                    .map(g => (
+                      <div key={g.cat}>
+                        <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-300 mb-2">{CATEGORY_LABELS[g.cat]}</p>
+                        <ul className="space-y-2">
+                          {g.items.map(c => (
+                            <li key={c.item.id} className="flex items-center gap-3 border-b border-cream-200 pb-2">
+                              {c.item.image ? (
+                                <span className="relative w-10 h-10 shrink-0 overflow-hidden border border-cream-200">
+                                  <Image src={c.item.image} alt={c.item.name} fill className="object-cover" unoptimized />
+                                </span>
+                              ) : (
+                                <span className="w-10 h-10 shrink-0 border border-dashed border-cream-300 bg-cream-100" />
+                              )}
+                              <span className="font-sans text-sm text-bark-600">
+                                {c.qty > 1 ? `${c.qty} × ` : ''}{c.item.name}
+                                {c.colorChoice ? ' — your choice of color' : ''}
+                              </span>
+                              {c.note && <span className="font-sans text-xs text-bark-400">{c.note}</span>}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                </div>
+                <ul className="mt-4">
                   <li className="flex items-center gap-3 pb-1">
                     <span className="w-10 h-10 shrink-0 border border-cream-200 bg-cream-100 flex items-center justify-center font-serif text-sm text-bark-400">✎</span>
                     <span className="font-sans text-sm text-bark-600">Personalized card — hand-finished for every box, with your message</span>
