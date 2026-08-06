@@ -132,6 +132,74 @@ function NameAssistant({ itemNames, onPick }: { itemNames: string[]; onPick: (na
   )
 }
 
+
+// Uploadable page backgrounds + scrim swatch, managed here (no separate
+// panel per Emily): Gift Boxes hub + FAQ page, desktop and mobile crops.
+function PageBackgrounds() {
+  const SLOTS = [
+    { key: 'boxes.page_bg', label: 'Gift Boxes page background' },
+    { key: 'faq.page_bg', label: 'FAQ page background' },
+  ]
+  const [images, setImages] = useState<Record<string, { public_url: string }>>({})
+  const [scrims, setScrims] = useState<Record<string, { hex: string; opacity: number }>>({})
+  const [msg, setMsg] = useState('')
+  const load = useCallback(() => {
+    fetch('/api/portal/site-images').then(r => r.json()).then(d => setImages(d.images ?? {})).catch(() => {})
+    fetch('/api/portal/site-scrims').then(r => r.json()).then(d => setScrims(d.scrims ?? {})).catch(() => {})
+  }, [])
+  useEffect(load, [load])
+  async function upload(slotKey: string, f: File) {
+    const fd = new FormData(); fd.append('file', f); fd.append('slotKey', slotKey); fd.append('altText', 'Page background')
+    const r = await fetch('/api/portal/site-images', { method: 'POST', body: fd })
+    const d = await r.json()
+    if (d.error) window.alert(d.error); else { setMsg('Uploaded'); setTimeout(() => setMsg(''), 1500); load() }
+  }
+  async function saveScrim(slotKey: string, hex: string, opacity: number) {
+    await fetch('/api/portal/site-scrims', { method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slotKey, hex, opacity }) })
+    setMsg('Saved'); setTimeout(() => setMsg(''), 1500); load()
+  }
+  return (
+    <div className="mt-10">
+      <h2 className="font-serif text-xl text-bark-600 mb-1">Page backgrounds</h2>
+      <p className="font-sans text-xs text-bark-400 mb-4">Full-bleed photo behind the page (no white space, all screens). Upload a separate mobile crop if the wide photo doesn&apos;t suit phones. The swatch tints over the photo so text stays readable. {msg && <span className="text-sage-700">{msg}</span>}</p>
+      <div className="space-y-5">
+        {SLOTS.map(slot => {
+          const scrim = scrims[slot.key] ?? { hex: '#FFFFFF', opacity: 0.7 }
+          return (
+            <div key={slot.key} className="bg-white border border-cream-300 rounded-xl p-4">
+              <p className="font-sans text-sm font-medium text-bark-600 mb-3">{slot.label}</p>
+              <div className="flex flex-wrap items-center gap-5">
+                {[{ k: slot.key, l: 'Desktop' }, { k: `${slot.key}.mobile`, l: 'Mobile' }].map(v => (
+                  <div key={v.k} className="flex items-center gap-2">
+                    <span className="font-sans text-[10px] uppercase tracking-wide text-bark-400 w-14">{v.l}</span>
+                    {images[v.k]?.public_url
+                      // eslint-disable-next-line @next/next/no-img-element
+                      ? <img src={images[v.k].public_url} alt="" className="w-16 h-10 object-cover rounded border border-cream-300" />
+                      : <span className="w-16 h-10 rounded border border-dashed border-cream-300" />}
+                    <label className="font-sans text-[10px] uppercase tracking-wide text-bark-500 border border-cream-300 rounded px-2 py-1.5 cursor-pointer hover:border-bark-400">
+                      Upload
+                      <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
+                        onChange={e => { const f = e.target.files?.[0]; if (f) upload(v.k, f); e.target.value = '' }} />
+                    </label>
+                  </div>
+                ))}
+                <div className="flex items-center gap-2">
+                  <span className="font-sans text-[10px] uppercase tracking-wide text-bark-400">Swatch</span>
+                  <input type="color" defaultValue={scrim.hex} onBlur={e => saveScrim(slot.key, e.target.value, scrim.opacity)} className="w-9 h-9 border border-cream-300 rounded cursor-pointer" />
+                  <input type="number" min="0" max="1" step="0.05" defaultValue={scrim.opacity} title="Opacity 0-1"
+                    onBlur={e => saveScrim(slot.key, scrim.hex, Math.min(1, Math.max(0, parseFloat(e.target.value) || 0)))}
+                    className="w-16 px-2 py-1.5 border border-cream-300 rounded font-sans text-xs text-bark-600" />
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 export function CatalogEditor() {
   const [products, setProducts] = useState<CatalogProduct[]>([])
   const [variants, setVariants] = useState<Variant[]>([])
@@ -389,6 +457,8 @@ export function CatalogEditor() {
           )
         })}
       </div>
+
+      <PageBackgrounds />
 
       <div className="mt-10">
         <h2 className="font-serif text-xl text-bark-600 mb-1">Item costs</h2>

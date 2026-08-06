@@ -4,6 +4,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { getBoxes } from '@/lib/prebuilt-boxes-db'
 import { AestheticBoxes } from '@/components/ui/AestheticBoxes'
+import { SlotBackground } from '@/components/ui/SlotBackground'
 
 export const dynamic = 'force-dynamic'
 
@@ -44,6 +45,7 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
       <main className="min-h-screen bg-white">
 
         {catalogProducts.length > 0 && (
+          <SlotBackground slotKey="boxes.page_bg" scrim="" className="min-h-screen">
           <section className="max-w-6xl mx-auto px-6 pt-5 pb-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {catalogProducts.map(p => {
@@ -59,7 +61,6 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
                         <h2 className="font-serif text-2xl text-espresso group-hover:text-bark-600">{p.name}</h2>
                         <p className="font-sans text-sm text-bark-600 mt-1">
                           {low === high ? `$${low / 100}` : `$${low / 100} – $${high / 100}`}
-                          {p.variants.length > 1 && <span className="text-bark-400"> · {p.variants.length} {(p.variantLabel || 'option').toLowerCase()}s</span>}
                         </p>
                       </div>
                     </div>
@@ -68,6 +69,7 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
               })}
             </div>
           </section>
+          </SlotBackground>
         )}
 
         <AestheticBoxes byStyle={byStyle} />

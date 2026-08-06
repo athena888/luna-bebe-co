@@ -117,8 +117,6 @@ export function BoxBuyPanel({ contents, price, needsColor, sizesByItem = {} }: {
       >
         Add to Cart — ${(price / 100).toFixed(0)}
       </button>
-      {needsSize && !size && <p className="font-sans text-xs text-bark-400 mt-2">Choose a size first.</p>}
-      <p className="font-sans text-xs text-bark-400 mt-3">Ships within 3 days.</p>
     </div>
   )
 }

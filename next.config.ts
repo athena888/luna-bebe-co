@@ -34,7 +34,8 @@ const nextConfig: NextConfig = {
       { source: '/boxes/signature', destination: '/boxes/signature-baby-gift-box', permanent: true },
       { source: '/boxes/la-collection', destination: '/boxes/themed-baby-gift-box', permanent: true },
       { source: '/boxes/mama', destination: '/boxes/new-mom-gift-box', permanent: true },
-      { source: '/boxes/mama-et-bebe', destination: '/boxes/mom-and-baby-gift-box', permanent: true },
+      { source: '/boxes/mama-et-bebe', destination: '/boxes/themed-baby-gift-box', permanent: true },
+      { source: '/boxes/mom-and-baby-gift-box', destination: '/boxes/themed-baby-gift-box', permanent: true },
       { source: '/boxes/noel', destination: '/boxes/baby-first-christmas-gift-box', permanent: true },
       { source: '/boxes/entry', destination: '/boxes/petite-baby-gift-box', permanent: true },
       // Phase 8b dispositions (Emily-approved 2026-07-29): journal->pSEO

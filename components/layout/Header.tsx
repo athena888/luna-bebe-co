@@ -109,9 +109,8 @@ function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
 // the seasonal hide toggle (e.g. Noël off-season) drops items without a deploy.
 const DEFAULT_BOX_PRODUCTS: Array<{ slug: string; name: string }> = [
   { slug: 'signature-baby-gift-box', name: 'The Signature' },
-  { slug: 'themed-baby-gift-box', name: 'La Collection' },
+  { slug: 'themed-baby-gift-box', name: 'Mama et Bébé' },
   { slug: 'new-mom-gift-box', name: 'The Mama Box' },
-  { slug: 'mom-and-baby-gift-box', name: 'Mama et Bébé' },
   { slug: 'baby-first-christmas-gift-box', name: 'Noël' },
 ]
 
@@ -119,10 +118,9 @@ const DEFAULT_BOX_PRODUCTS: Array<{ slug: string; name: string }> = [
 // ONE column (Emily): each box row carries its occasion as a right-hand tag.
 const OCCASION_BY_SLUG: Record<string, { en: string; es: string }> = {
   'signature-baby-gift-box': { en: 'Baby Shower', es: 'Baby Shower' },
-  'themed-baby-gift-box': { en: 'New Baby', es: 'Recién nacido' },
+  'themed-baby-gift-box': { en: 'For Her & Baby', es: 'Para ella y el bebé' },
   'new-mom-gift-box': { en: 'For Mom', es: 'Para mamá' },
-  'mom-and-baby-gift-box': { en: 'For Her & Baby', es: 'Para ella y el bebé' },
-  'baby-first-christmas-gift-box': { en: "Baby's First Christmas", es: 'La primera Navidad' },
+  'baby-first-christmas-gift-box': { en: 'Christmas Gifts For Little Ones', es: 'Regalos de Navidad para los más pequeños' },
 }
 
 function useBoxProducts() {
@@ -169,10 +167,13 @@ function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
           <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-400 font-bold mb-2.5">{isEs ? 'Nuestras canastillas' : 'Ready-Made Boxes'}</p>
           {boxProducts.map(p => (
             <Link key={p.slug} href={`/boxes/${p.slug}`} onClick={() => setOpen(false)}
-              className="flex items-baseline justify-between gap-8 font-sans text-[13px] normal-case tracking-normal text-espresso hover:text-gold-500 transition-colors py-1">
-              <span>{p.name}</span>
+              className="block font-sans text-[13px] normal-case tracking-normal text-espresso hover:text-gold-500 transition-colors py-1">
+              {p.name}
               {OCCASION_BY_SLUG[p.slug] && (
-                <span className="text-[11px] text-bark-400">{isEs ? OCCASION_BY_SLUG[p.slug].es : OCCASION_BY_SLUG[p.slug].en}</span>
+                <>
+                  <span className="text-cream-300 mx-2">|</span>
+                  {isEs ? OCCASION_BY_SLUG[p.slug].es : OCCASION_BY_SLUG[p.slug].en}
+                </>
               )}
             </Link>
           ))}

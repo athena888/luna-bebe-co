@@ -25,9 +25,9 @@ interface Category {
 // Tiles deep-link straight into the build page (or its category anchors).
 // The "bundle" tile is a box carousel handled separately below.
 const TILE_LINKS: Record<string, string> = {
-  newborn: '/build#cat-garment',   // baby garments list
-  mama: '/build#cat-mom',          // mama's list
-  custom: '/build',                // top of the build page
+  newborn: '/boxes/signature-baby-gift-box',   // ready-made baby box
+  mama: '/boxes/new-mom-gift-box',             // the mama box
+  custom: '/build',                            // build your own
 }
 
 // ─── Bundle tile — the Mère et Bébé box as a static photo card ───────────────
@@ -41,7 +41,7 @@ function BundleTile({ boxes, fallback }: { boxes: BoxItem[]; fallback: Category 
   // Tile photo: the Homepage editor's "Mama & Baby Bundle" upload (the
   // category fallback image) wins; the prebuilt box's cover is the backstop.
   const img = fallback.img ?? box?.image ?? null
-  const href = box ? `/boxes#box-${box.slug}` : '/boxes'
+  const href = '/boxes/themed-baby-gift-box'  // Mama et Bébé (merged themed box)
   const name = box?.name ?? 'Mère et Bébé'
 
   return (

@@ -23,15 +23,6 @@ const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 type Params = Promise<{ slug: string }>
 type Search = Promise<Record<string, string | string[] | undefined>>
 
-// Rendered when a product has no FAQ rows of its own; FAQPage schema follows
-// whichever set renders.
-const DEFAULT_FAQS = [
-  { q: 'Can I change what\'s inside?', a: 'Every piece is swappable — use Build Your Own Box to choose item by item, or note a swap at checkout and we\'ll accommodate where stock allows.' },
-  { q: 'Is everything baby-safe?', a: 'Every textile is organic cotton from GOTS-certified makers, and every toy meets US safety standards for newborns. Safety notes for specific items appear on their product pages.' },
-  { q: 'How fast does it ship?', a: 'Boxes are hand-packed and ship within 3 days. Add your occasion date above and we\'ll show you the order-by date.' },
-  { q: 'Can I include a gift note?', a: 'Always — you\'ll write your message at checkout and we hand-finish a card for every box. If you add the recipient\'s email, they receive a digital note when the box ships.' },
-]
-
 interface Story {
   paragraphs?: string[]
   variant_stories?: Record<string, string>
@@ -73,7 +64,6 @@ export default async function BoxProductPage({ params, searchParams }: { params:
   const { low, high } = priceRange(box)
   const url = `${BASE}/boxes/${box.slug}`
   const story = (box.story ?? {}) as Story
-  const faqs = box.faqs.length ? box.faqs : DEFAULT_FAQS
   const crossSell = (story.cross_sell ?? []).slice(0, 3)
   // Per-size stock for sized items (garments) — drives the size chips.
   const sizesByItem = await getItemSizeOptions(
@@ -101,14 +91,6 @@ export default async function BoxProductPage({ params, searchParams }: { params:
           { '@type': 'ListItem', position: 2, name: 'Gift Boxes', item: `${BASE}/boxes` },
           { '@type': 'ListItem', position: 3, name: box.name, item: url },
         ],
-      }} />
-      <JsonLd data={{
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: faqs.map(f => ({
-          '@type': 'Question', name: f.q,
-          acceptedAnswer: { '@type': 'Answer', text: f.a },
-        })),
       }} />
       <Header />
       <main className="bg-white min-h-screen">
@@ -197,7 +179,11 @@ export default async function BoxProductPage({ params, searchParams }: { params:
                 sizesByItem={sizesByItem}
               />
 
-              <p className="font-sans text-sm text-bark-500 mt-8">
+              <p className="font-sans text-sm text-bark-500 mt-6">
+                <Link href="/faq" className="underline underline-offset-2 hover:text-bark-600">Frequently asked questions</Link>
+              </p>
+
+              <p className="font-sans text-sm text-bark-500 mt-3">
                 Prefer to choose every piece yourself? <Link href="/build" className="underline hover:text-bark-600">Build your own box</Link>.
               </p>
             </div>
@@ -266,18 +252,6 @@ export default async function BoxProductPage({ params, searchParams }: { params:
             </section>
           )}
 
-          {/* 7 — FAQ (schema above) */}
-          <section className="max-w-2xl mx-auto mt-16 pt-12 border-t border-cream-200 pb-4">
-            <h2 className="font-serif text-2xl text-espresso mb-6">Questions, answered</h2>
-            <div className="space-y-6">
-              {faqs.map((f, i) => (
-                <div key={i}>
-                  <p className="font-sans text-sm font-medium text-bark-600 mb-1.5">{f.q}</p>
-                  <p className="font-sans text-sm text-bark-500 leading-relaxed">{f.a}</p>
-                </div>
-              ))}
-            </div>
-          </section>
         </div>
       </main>
       <Footer />

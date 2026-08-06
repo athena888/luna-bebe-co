@@ -129,7 +129,11 @@ async function ensureSeeded(): Promise<void> {
 /** All products in the live catalog (optionally only active). */
 export async function getCatalog(opts: { activeOnly?: boolean } = {}): Promise<DbProduct[]> {
   await ensureSeeded()
-  let query = supabaseAdmin.from('products').select('*').order('sort_order')
+  // box-% rows exist ONLY to satisfy the reviews FK for pooled box-product
+  // reviews (§46/§47). They must never surface anywhere — portal lists,
+  // builder, feeds — and especially not in the no-image cleanup, which kept
+  // deleting them and re-breaking box reviews.
+  let query = supabaseAdmin.from('products').select('*').not('id', 'like', 'box-%').order('sort_order')
   if (opts.activeOnly) query = query.eq('active', true)
   const { data, error } = await query
   if (error) throw error
