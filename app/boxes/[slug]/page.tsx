@@ -35,6 +35,7 @@ const DEFAULT_FAQS = [
 
 interface Story {
   paragraphs?: string[]
+  variant_stories?: Record<string, string>
   unboxing?: Array<{ title: string; text: string; image?: string }>
   comparison_image?: string
   cross_sell?: Array<{ label: string; sub?: string; href: string; image?: string }>
@@ -122,7 +123,6 @@ export default async function BoxProductPage({ params, searchParams }: { params:
             {/* 2 — Buy panel */}
             <div>
               <h1 className="font-serif text-4xl text-espresso">{box.name}</h1>
-              {box.subtitle && <p className="font-serif italic text-lg text-bark-400 mt-1">{box.subtitle}</p>}
               <p className="font-sans text-2xl text-espresso mt-4">${(variant.price / 100).toFixed(0)}</p>
 
               {box.variants.length > 1 && (
@@ -148,6 +148,12 @@ export default async function BoxProductPage({ params, searchParams }: { params:
                   </div>
                   {variant.adds && <p className="font-sans text-xs text-bark-400 mt-3">{variant.adds}</p>}
                 </div>
+              )}
+
+              {story.variant_stories?.[variant.key] && (
+                <p className="font-serif italic text-[15px] text-bark-500 leading-relaxed mt-6">
+                  {story.variant_stories[variant.key]}
+                </p>
               )}
 
               <div className="mt-8">
