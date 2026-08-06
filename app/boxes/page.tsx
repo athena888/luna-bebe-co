@@ -53,7 +53,7 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
                 const cover = p.variants[0]?.images[0]
                 return (
                   <Link key={p.slug} href={`${isEs ? '/boxes' : '/boxes'}/${p.slug}`} className="group block border border-cream-300 hover:border-bark-400 transition-colors">
-                    <div className="relative h-[80vh] bg-cream-100">
+                    <div className="relative h-[calc(100vh-350px)] min-h-[400px] bg-cream-100">
                       {cover
                         ? <Image src={cover} alt={p.name} fill className="object-cover" unoptimized />
                         : <div className="absolute inset-0 flex items-center justify-center font-sans text-[10px] tracking-[0.2em] uppercase text-bark-300">Photography coming soon</div>}
