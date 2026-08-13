@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Header, LaunchMarquee } from '@/components/layout/Header'
+import { Header, PerksMarquee } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
@@ -103,7 +103,7 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
         </section>
 
         {/* ── Launch marquee — runs right below the hero ── */}
-        <LaunchMarquee />
+        <PerksMarquee />
 
         {/* ── Best Sellers ── */}
         <PrebuiltBoxesSection />

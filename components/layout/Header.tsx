@@ -254,7 +254,7 @@ const DEFAULT_PERKS: Perk[] = [
   { label: 'Organic Cotton', sub: 'From GOTS-certified makers' },
   { label: 'Gift-Ready', sub: 'Ships within 3 days' },
 ]
-function PerksMarquee() {
+export function PerksMarquee() {
   const [perks, setPerks] = useState<Perk[]>(DEFAULT_PERKS)
   useEffect(() => {
     fetch('/api/home-perks')
@@ -376,7 +376,6 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
     <header ref={headerRef} className={`fixed top-0 inset-x-0 z-40 transition-transform duration-300 ease-out ${hidden ? '-translate-y-full' : 'translate-y-0'} ${overHero ? '' : 'bg-cream-white'}`}>
 
       {/* Top strip — the perks marquee, identical on every page */}
-      <PerksMarquee />
 
       {/* Nav bar — Organic-Zoo style: at the hero top, a big centered logo with the
           nav beneath it; on scroll it collapses smoothly to a compact bar with the
