@@ -8,6 +8,12 @@ export const dynamic = 'force-dynamic'
 export async function GET() {
   const products = await getBoxProducts()
   return NextResponse.json({
-    products: products.map(p => ({ slug: p.slug, name: p.name })),
+    products: products.map(p => ({
+      slug: p.slug,
+      name: p.name,
+      image: p.variants[0]?.images[0] ?? null,
+      low: Math.min(...p.variants.map(v => v.price)),
+      high: Math.max(...p.variants.map(v => v.price)),
+    })),
   }, { headers: { 'Cache-Control': 's-maxage=300, stale-while-revalidate=3600' } })
 }

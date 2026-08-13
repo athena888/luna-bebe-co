@@ -12,7 +12,7 @@ export function BoxGallery({ images, alt }: { images: string[]; alt: string }) {
 
   if (images.length === 0) {
     return (
-      <div className="relative h-[95vh] bg-cream-200 border border-cream-300">
+      <div className="relative aspect-[3/4] bg-cream-200 border border-cream-300">
         <div className="absolute inset-0 flex items-center justify-center font-sans text-xs tracking-[0.2em] uppercase text-bark-300">Photography coming soon</div>
       </div>
     )
@@ -30,7 +30,7 @@ export function BoxGallery({ images, alt }: { images: string[]; alt: string }) {
           }}
         >
           {images.map((src, i) => (
-            <div key={i} className="relative shrink-0 w-full h-[95vh] snap-center bg-cream-200">
+            <div key={i} className="relative shrink-0 w-full aspect-[3/4] snap-center bg-cream-200">
               <Image src={src} alt={`${alt} — ${i + 1}`} fill className="object-cover" unoptimized />
             </div>
           ))}
@@ -54,7 +54,7 @@ export function BoxGallery({ images, alt }: { images: string[]; alt: string }) {
             </button>
           ))}
         </div>
-        <div className="relative flex-1 h-[95vh] bg-cream-200 overflow-hidden group">
+        <div className="relative flex-1 aspect-[3/4] bg-cream-200 overflow-hidden group">
           <Image src={images[Math.min(idx, images.length - 1)]} alt={alt} fill className="object-cover transition-transform duration-300 group-hover:scale-105" unoptimized />
         </div>
       </div>

@@ -3,24 +3,15 @@
 import Link from 'next/link'
 import { useIsEs } from '@/lib/use-is-es'
 import Image from 'next/image'
-import type { ResolvedBox } from '@/lib/prebuilt-boxes-db'
-import { BOX_BASE_PRICE } from '@/lib/products'
 import { Package } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { QuickAddBox } from '@/components/ui/QuickAddBox'
-
-function fmt(cents: number) { return `$${(cents / 100).toFixed(0)}` }
-
-function boxTotal(box: ResolvedBox): number {
-  return box.customPrice ?? (BOX_BASE_PRICE + box.items.reduce((s, p) => s + (p?.price ?? 0), 0))
-}
 
 // ── Section ──────────────────────────────────────────────────────────────────
 export function PrebuiltBoxesSection() {
-  const [boxes, setBoxes] = useState<ResolvedBox[]>([])
+  const [boxes, setBoxes] = useState<Array<{ slug: string; name: string; image: string | null; low: number; high: number }>>([])
 
   useEffect(() => {
-    fetch('/api/boxes?featured=true').then(r => r.json()).then(d => setBoxes(d.boxes ?? [])).catch(() => {})
+    fetch('/api/catalog-nav').then(r => r.json()).then(d => setBoxes(d.products ?? [])).catch(() => {})
   }, [])
 
   const isEs = useIsEs()
@@ -37,18 +28,16 @@ export function PrebuiltBoxesSection() {
           stack on mobile. Click to open the set. */}
       <div className="max-w-6xl mx-auto px-6 flex flex-col gap-9 sm:grid sm:grid-cols-3 sm:gap-x-5 sm:gap-y-10">
         {boxes.map(box => (
-          <Link key={box.slug} href={`/boxes#box-${box.slug}`} className="group w-full text-center">
-            <div className="relative aspect-[4/5] bg-white overflow-hidden">
+          <Link key={box.slug} href={`/boxes/${box.slug}`} className="group w-full text-center">
+            <div className="relative aspect-[3/4] bg-white overflow-hidden">
               {box.image
                 ? <Image src={box.image} alt={box.name} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" unoptimized sizes="(max-width:640px) 78vw, 380px" />
                 : <div className="absolute inset-0 flex items-center justify-center text-bark-300"><Package size={32} /></div>}
-              <QuickAddBox box={box} className="absolute bottom-3 right-3 z-10" />
             </div>
             {/* Caption below the image — espresso, turns gold on hover */}
             <div className="pt-4 text-espresso transition-colors duration-300 group-hover:text-gold-500">
-              <p className="font-sans text-[11px] tracking-[0.3em] uppercase font-semibold text-gold-400 mb-1.5 transition-colors duration-300 group-hover:text-gold-500">{box.style}</p>
               <h3 className="font-serif text-xl font-semibold leading-tight">{box.name}</h3>
-              <p className="font-serif text-lg font-semibold mt-1">{fmt(boxTotal(box))}</p>
+              <p className="font-serif text-lg font-semibold mt-1">{box.low === box.high ? `$${(box.low / 100).toFixed(0)}` : `$${(box.low / 100).toFixed(0)} – $${(box.high / 100).toFixed(0)}`}</p>
             </div>
           </Link>
         ))}

@@ -170,9 +170,9 @@ function PageBackgrounds() {
             <div key={slot.key} className="bg-white border border-cream-300 rounded-xl p-4">
               <p className="font-sans text-sm font-medium text-bark-600 mb-3">{slot.label}</p>
               <div className="flex flex-wrap items-center gap-5">
-                {[{ k: slot.key, l: 'Desktop' }, { k: `${slot.key}.mobile`, l: 'Mobile' }].map(v => (
+                {[{ k: slot.key, l: 'Desktop · 16:9 (e.g. 2560×1440px)' }, { k: `${slot.key}.mobile`, l: 'Mobile · 9:16 (e.g. 1080×1920px)' }].map(v => (
                   <div key={v.k} className="flex items-center gap-2">
-                    <span className="font-sans text-[10px] uppercase tracking-wide text-bark-400 w-14">{v.l}</span>
+                    <span className="font-sans text-[10px] uppercase tracking-wide text-bark-400">{v.l}</span>
                     {images[v.k]?.public_url
                       // eslint-disable-next-line @next/next/no-img-element
                       ? <img src={images[v.k].public_url} alt="" className="w-16 h-10 object-cover rounded border border-cream-300" />
@@ -408,7 +408,7 @@ export function CatalogEditor() {
                         <button onClick={() => post({ action: 'save-variant', variant: { ...v, contents: [...v.contents, { item_id: items[0]?.id, qty: 1 }] } }).then(load)} className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-500 border border-cream-300 rounded-lg px-3 py-1.5 hover:border-bark-400 flex items-center gap-1.5"><Plus size={11} /> Add item</button>
 
                         <div className="mt-4">
-                          <label className={label}>Photos — first one is this version&apos;s cover (shows on chips, cards and the page)</label>
+                          <label className={label}>Photos — 3:4 portrait (e.g. 1200×1600px). First one is this version&apos;s cover on chips, cards and the page.</label>
                           <div className="flex flex-wrap items-center gap-2">
                             {v.images.map((img, ii) => (
                               <div key={ii} className="relative group">
