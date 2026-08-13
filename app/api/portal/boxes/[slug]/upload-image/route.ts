@@ -20,7 +20,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     const safe = slug.replace(/[^a-z0-9.-]/gi, '-')
     const path = `uploads/${safe}-${Date.now()}.${ext}`
     const raw = Buffer.from(await file.arrayBuffer())
-    let uploadBuf = raw
+    let uploadBuf: Uint8Array = raw
     let contentType = file.type
     if (isHeic) {
       const sharp = (await import('sharp')).default
