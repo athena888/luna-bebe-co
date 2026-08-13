@@ -11,16 +11,18 @@ const JAR_DEPTH = 8.5
 
 export async function GET() {
   try {
-    const [{ data: products }, { data: variants }, { data: items }, { data: pkg }, { data: lbl }] = await Promise.all([
+    const [{ data: products }, { data: variants }, { data: items }, { data: pkg }, { data: lbl }, { data: bs }] = await Promise.all([
       supabaseAdmin.from('catalog_products').select('*').order('sort_order'),
       supabaseAdmin.from('catalog_variants').select('*').order('sort_order'),
       supabaseAdmin.from('products').select('id, name, price, cost_cents, category, image, active').not('id', 'like', 'box-%').order('name'),
       supabaseAdmin.from('site_content').select('value').eq('key', 'catalog.packaging_cents').maybeSingle(),
       supabaseAdmin.from('site_content').select('value').eq('key', 'catalog.label_cents').maybeSingle(),
+      supabaseAdmin.from('site_content').select('value').eq('key', 'home.bestseller_boxes').maybeSingle(),
     ])
     const packaging = typeof pkg?.value === 'number' ? pkg.value : 850  // basket $5 + mailer $3 + kraft $0.50
     const label = typeof lbl?.value === 'number' ? lbl.value : 1200      // worst-case absorbed USPS label
-    return NextResponse.json({ products: products ?? [], variants: variants ?? [], items: items ?? [], packaging, label })
+    const bestsellers = Array.isArray(bs?.value) ? bs.value : []
+    return NextResponse.json({ products: products ?? [], variants: variants ?? [], items: items ?? [], packaging, label, bestsellers })
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : 'load failed' }, { status: 500 })
   }
@@ -100,6 +102,16 @@ export async function POST(req: NextRequest) {
         .delete().eq('product_slug', body.product_slug).eq('key', body.key)
       if (error) throw error
       return NextResponse.json({ success: true })
+    }
+
+    if (action === 'toggle-bestseller') {
+      const slug = String(body.slug ?? '')
+      const { data: cur } = await supabaseAdmin.from('site_content').select('value').eq('key', 'home.bestseller_boxes').maybeSingle()
+      const list: string[] = Array.isArray(cur?.value) ? cur.value : []
+      const next = list.includes(slug) ? list.filter(x => x !== slug) : [...list, slug]
+      const { error } = await supabaseAdmin.from('site_content').upsert({ key: 'home.bestseller_boxes', value: next })
+      if (error) throw error
+      return NextResponse.json({ success: true, bestsellers: next })
     }
 
     if (action === 'save-packaging') {

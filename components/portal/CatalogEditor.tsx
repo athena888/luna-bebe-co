@@ -205,6 +205,7 @@ export function CatalogEditor() {
   const [variants, setVariants] = useState<Variant[]>([])
   const [items, setItems] = useState<Item[]>([])
   const [packaging, setPackaging] = useState(850)
+  const [bestsellers, setBestsellers] = useState<string[]>([])
   const [labelCost, setLabelCost] = useState(1200)
   const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState<string | null>(null)
@@ -215,6 +216,7 @@ export function CatalogEditor() {
       setProducts(d.products ?? []); setVariants(d.variants ?? []); setItems(d.items ?? [])
       if (typeof d.packaging === 'number') setPackaging(d.packaging)
       if (typeof d.label === 'number') setLabelCost(d.label)
+      if (Array.isArray(d.bestsellers)) setBestsellers(d.bestsellers)
     }).finally(() => setLoading(false))
   }, [])
   useEffect(load, [load])
@@ -283,8 +285,17 @@ export function CatalogEditor() {
                   <span className="font-serif text-lg text-bark-600">{p.name}</span>
                   <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400">/boxes/{p.slug} · {pv.length} variant{pv.length !== 1 ? 's' : ''}</span>
                 </div>
-                <span className={`font-sans text-[10px] tracking-[0.15em] uppercase px-2 py-1 rounded ${p.active ? (p.visible ? 'bg-sage-50 text-sage-700' : 'bg-cream-200 text-bark-500') : 'bg-cream-200 text-bark-400'}`}>
-                  {!p.active ? 'Inactive' : p.visible ? 'Live' : 'Hidden (seasonal)'}
+                <span className="flex items-center gap-2">
+                  <button
+                    onClick={e => { e.stopPropagation(); post({ action: 'toggle-bestseller', slug: p.slug }).then(load) }}
+                    title="Show this box in the homepage Best Sellers strip. With none picked, all live boxes show."
+                    className={`font-sans text-[10px] tracking-[0.15em] uppercase px-2 py-1 rounded border transition-colors ${bestsellers.includes(p.slug) ? 'bg-[#7A8E7C] border-[#7A8E7C] text-white' : 'border-cream-300 text-bark-400 hover:border-bark-400'}`}
+                  >
+                    {bestsellers.includes(p.slug) ? '★ On homepage' : '☆ Homepage'}
+                  </button>
+                  <span className={`font-sans text-[10px] tracking-[0.15em] uppercase px-2 py-1 rounded ${p.active ? (p.visible ? 'bg-sage-50 text-sage-700' : 'bg-cream-200 text-bark-500') : 'bg-cream-200 text-bark-400'}`}>
+                    {!p.active ? 'Inactive' : p.visible ? 'Live' : 'Hidden (seasonal)'}
+                  </span>
                 </span>
               </button>
 

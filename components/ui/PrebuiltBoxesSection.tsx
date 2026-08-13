@@ -11,7 +11,7 @@ export function PrebuiltBoxesSection() {
   const [boxes, setBoxes] = useState<Array<{ slug: string; name: string; image: string | null; low: number; high: number }>>([])
 
   useEffect(() => {
-    fetch('/api/catalog-nav').then(r => r.json()).then(d => setBoxes(d.products ?? [])).catch(() => {})
+    fetch('/api/catalog-nav?bestsellers=1').then(r => r.json()).then(d => setBoxes(d.products ?? [])).catch(() => {})
   }, [])
 
   const isEs = useIsEs()
