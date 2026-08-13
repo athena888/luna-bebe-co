@@ -104,6 +104,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true })
     }
 
+    if (action === 'set-hub-image') {
+      const slug = String(body.slug ?? '')
+      const { data: row } = await supabaseAdmin.from('catalog_products').select('story').eq('slug', slug).maybeSingle()
+      const story = (row?.story && typeof row.story === 'object') ? row.story as Record<string, unknown> : {}
+      story.hub_image = typeof body.url === 'string' && body.url ? body.url : undefined
+      const { error } = await supabaseAdmin.from('catalog_products').update({ story }).eq('slug', slug)
+      if (error) throw error
+      return NextResponse.json({ success: true })
+    }
+
     if (action === 'toggle-bestseller') {
       const slug = String(body.slug ?? '')
       const { data: cur } = await supabaseAdmin.from('site_content').select('value').eq('key', 'home.bestseller_boxes').maybeSingle()

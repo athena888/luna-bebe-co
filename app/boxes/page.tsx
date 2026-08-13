@@ -38,6 +38,13 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
   // prebuilt grid keeps the page alive either way.
   const { getBoxProducts, priceRange } = await import('@/lib/catalog-db')
   const catalogProducts = await getBoxProducts()
+  const { getScrims } = await import('@/lib/scrims')
+  const scrims = await getScrims().catch(() => ({}))
+  const shadow = (scrims as Record<string, { hex: string; opacity: number }>)['boxes.card_shadow'] ?? { hex: '#FFFFFF', opacity: 0.95 }
+  const rgba = (a: number) => {
+    const h = shadow.hex
+    return `rgba(${parseInt(h.slice(1, 3), 16)},${parseInt(h.slice(3, 5), 16)},${parseInt(h.slice(5, 7), 16)},${Math.min(1, Math.max(0, shadow.opacity * a))})`
+  }
 
   return (
     <>
@@ -50,14 +57,14 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {catalogProducts.map(p => {
                 const { low, high } = priceRange(p)
-                const cover = p.variants[0]?.images[0]
+                const cover = ((p.story as { hub_image?: string })?.hub_image) || p.variants[0]?.images[0]
                 return (
                   <Link key={p.slug} href={`${isEs ? '/boxes' : '/boxes'}/${p.slug}`} className="group block border border-cream-300 hover:border-bark-400 transition-colors">
                     <div className="relative aspect-[3/4] bg-cream-100">
                       {cover
                         ? <Image src={cover} alt={p.name} fill className="object-cover" unoptimized />
                         : <div className="absolute inset-0 flex items-center justify-center font-sans text-[10px] tracking-[0.2em] uppercase text-bark-300">Photography coming soon</div>}
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-white/95 via-white/70 to-transparent pt-14 pb-5 px-5">
+                      <div className="absolute inset-x-0 bottom-0 pt-14 pb-5 px-5" style={{ backgroundImage: `linear-gradient(to top, ${rgba(1)}, ${rgba(0.72)}, transparent)` }}>
                         <h2 className="font-serif text-2xl text-espresso group-hover:text-bark-600">{p.name}</h2>
                         <p className="font-sans text-sm text-bark-600 mt-1">
                           {low === high ? `$${low / 100}` : `$${low / 100} – $${high / 100}`}

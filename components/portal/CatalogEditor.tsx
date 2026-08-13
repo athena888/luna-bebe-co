@@ -18,6 +18,7 @@ interface Variant {
 }
 interface CatalogProduct {
   slug: string; name: string; subtitle: string; variant_label: string
+  story?: { hub_image?: string } | null
   seasonal: boolean; visible: boolean; active: boolean; sort_order: number
 }
 
@@ -200,6 +201,34 @@ function PageBackgrounds() {
   )
 }
 
+
+// Color swatch for the shadow behind the baked-on names on /boxes cards.
+function CardShadowSwatch() {
+  const [scrim, setScrim] = useState<{ hex: string; opacity: number }>({ hex: '#FFFFFF', opacity: 0.95 })
+  const [msg, setMsg] = useState('')
+  useEffect(() => {
+    fetch('/api/portal/site-scrims').then(r => r.json())
+      .then(d => { const v = d.scrims?.['boxes.card_shadow']; if (v?.hex) setScrim(v) }).catch(() => {})
+  }, [])
+  async function save(hex: string, opacity: number) {
+    setScrim({ hex, opacity })
+    await fetch('/api/portal/site-scrims', { method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slotKey: 'boxes.card_shadow', hex, opacity }) })
+    setMsg('Saved'); setTimeout(() => setMsg(''), 1500)
+  }
+  return (
+    <div className="mt-6 bg-white border border-cream-300 rounded-xl p-4 flex items-center gap-3 flex-wrap">
+      <span className="font-sans text-sm font-medium text-bark-600">/boxes card shadow</span>
+      <span className="font-sans text-xs text-bark-400">the fade behind each box&apos;s name on the Gift Boxes page</span>
+      <input type="color" value={scrim.hex} onChange={e => save(e.target.value, scrim.opacity)} className="w-9 h-9 border border-cream-300 rounded cursor-pointer" />
+      <input type="number" min="0" max="1" step="0.05" value={scrim.opacity} title="Opacity 0-1"
+        onChange={e => save(scrim.hex, Math.min(1, Math.max(0, parseFloat(e.target.value) || 0)))}
+        className="w-16 px-2 py-1.5 border border-cream-300 rounded font-sans text-xs text-bark-600" />
+      {msg && <span className="font-sans text-xs text-sage-700">{msg}</span>}
+    </div>
+  )
+}
+
 export function CatalogEditor() {
   const [products, setProducts] = useState<CatalogProduct[]>([])
   const [variants, setVariants] = useState<Variant[]>([])
@@ -301,6 +330,21 @@ export function CatalogEditor() {
 
               {!isOpen && (
                 <div className="px-4 pb-4 space-y-2">
+                  {(() => { const allImgs = [...new Set(pv.flatMap(v => v.images))]; return allImgs.length > 0 && (
+                    <div>
+                      <label className={label}>/boxes cover — click the photo shown on the Gift Boxes page card</label>
+                      <div className="flex flex-wrap gap-2">
+                        {allImgs.map(img => (
+                          <button key={img} onClick={() => post({ action: 'set-hub-image', slug: p.slug, url: img }).then(load)} title="Use as /boxes cover"
+                            className={`relative border-2 rounded ${ (p.story?.hub_image ?? allImgs[0]) === img ? 'border-[#7A8E7C]' : 'border-transparent hover:border-cream-300'}`}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={img} alt="" className="w-14 h-[74px] object-cover rounded" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) })()}
+
                   <NameAssistant
                     itemNames={[...new Set(pv.flatMap(v => v.contents.map(c => itemById.get(c.item_id)?.name).filter(Boolean)))] as string[]}
                     onPick={name => post({ action: 'save-product', slug: p.slug, patch: { name } }).then(load)}
@@ -470,6 +514,7 @@ export function CatalogEditor() {
       </div>
 
       <PageBackgrounds />
+      <CardShadowSwatch />
 
       <div className="mt-10">
         <h2 className="font-serif text-xl text-bark-600 mb-1">Item costs</h2>
