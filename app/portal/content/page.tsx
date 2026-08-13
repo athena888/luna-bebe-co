@@ -1,7 +1,6 @@
 'use client'
 
 import { CatalogEditor } from '@/components/portal/CatalogEditor'
-import { BestsellerBoxPicker } from '@/components/portal/BestsellerBoxPicker'
 import { TranslationsReview } from '@/components/portal/TranslationsReview'
 import { useState } from 'react'
 import { SiteImageUploader } from '@/components/portal/SiteImageUploader'
@@ -108,7 +107,7 @@ export default function ContentPage() {
       {/* Right: content for selected page — inline editors manage their own padding */}
       <div className="flex-1 min-w-0">
 
-        {active === 'home' && <><BestsellerBoxPicker /><HomeContentPage /></>}
+        {active === 'home' && <HomeContentPage />}
         {active === 'story' && <StoryPortal />}
         {active === 'products' && <ProductsPortal />}
         {active === 'catalog' && <CatalogEditor />}

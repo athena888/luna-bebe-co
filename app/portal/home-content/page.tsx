@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { BestsellerBoxPicker } from '@/components/portal/BestsellerBoxPicker'
 import { Loader, Plus, Trash2, Check } from 'lucide-react'
 import type { HomeContent, Perk, Review } from '@/lib/home-content'
 import { ImageSlotCard, GallerySlot } from '@/components/portal/HomeMediaWidgets'
@@ -157,8 +158,8 @@ function HomepageEditor() {
 
       {/* 3 · Best Sellers */}
       <section className="mb-12">
-        <SectionTitle n="3" title="Best Sellers" note="The box carousel below the promise ticker (stacked vertically on phones). Pick which boxes appear." />
-        <BoxPicker />
+        <SectionTitle n="3" title="Best Sellers" note="The box strip below the promise ticker. Star the exact versions to feature — none starred shows all live boxes." />
+        <BestsellerBoxPicker />
       </section>
 
       {/* 4 · The Collection — "Create Something Unforgettable" panel */}
