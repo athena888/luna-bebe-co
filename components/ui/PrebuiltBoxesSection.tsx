@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react'
 
 // ── Section ──────────────────────────────────────────────────────────────────
 export function PrebuiltBoxesSection() {
-  const [boxes, setBoxes] = useState<Array<{ slug: string; name: string; image: string | null; low: number; high: number }>>([])
+  const [boxes, setBoxes] = useState<Array<{ slug: string; name: string; image: string | null; low: number; high: number; href?: string }>>([])
 
   useEffect(() => {
     fetch('/api/catalog-nav?bestsellers=1').then(r => r.json()).then(d => setBoxes(d.products ?? [])).catch(() => {})
@@ -28,7 +28,7 @@ export function PrebuiltBoxesSection() {
           stack on mobile. Click to open the set. */}
       <div className="max-w-6xl mx-auto px-6 flex flex-col gap-9 sm:grid sm:grid-cols-3 sm:gap-x-5 sm:gap-y-10">
         {boxes.map(box => (
-          <Link key={box.slug} href={`/boxes/${box.slug}`} className="group w-full text-center">
+          <Link key={box.slug} href={box.href ?? `/boxes/${box.slug}`} className="group w-full text-center">
             <div className="relative aspect-[3/4] bg-white overflow-hidden">
               {box.image
                 ? <Image src={box.image} alt={box.name} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" unoptimized sizes="(max-width:640px) 78vw, 380px" />
