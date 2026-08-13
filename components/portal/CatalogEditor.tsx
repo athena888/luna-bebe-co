@@ -457,15 +457,20 @@ export function CatalogEditor() {
                           <label className={label}>Photos — 3:4 portrait (e.g. 1200×1600px). First one is this version&apos;s cover on chips, cards and the page.</label>
                           <div className="flex flex-wrap items-center gap-2">
                             {v.images.map((img, ii) => (
-                              <div key={ii} className="relative group">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={img} alt="" className="w-16 h-16 object-cover rounded border border-cream-300" />
-                                {ii > 0 && (
-                                  <button title="Make cover" onClick={() => { const ni = [img, ...v.images.filter((_, x) => x !== ii)]; post({ action: 'save-variant', variant: { ...v, images: ni } }).then(load) }}
-                                    className="absolute bottom-0.5 left-0.5 hidden group-hover:flex bg-white/90 border border-cream-300 rounded px-1 font-sans text-[8px] uppercase text-bark-500">cover</button>
-                                )}
-                                <button title="Remove" onClick={() => post({ action: 'save-variant', variant: { ...v, images: v.images.filter((_, x) => x !== ii) } }).then(load)}
-                                  className="absolute -top-1.5 -right-1.5 hidden group-hover:flex w-4 h-4 items-center justify-center bg-white border border-cream-300 rounded-full text-bark-500 hover:text-red-500 text-[10px] leading-none">×</button>
+                              <div key={ii} className="flex flex-col items-center gap-1">
+                                <div className="relative">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img src={img} alt="" className="w-16 h-[85px] object-cover rounded border border-cream-300" />
+                                  {ii === 0 && <span className="absolute bottom-0.5 left-0.5 bg-[#7A8E7C] text-white rounded px-1 font-sans text-[8px] uppercase">cover</span>}
+                                  <button title="Remove photo" onClick={() => window.confirm('Remove this photo?') && post({ action: 'save-variant', variant: { ...v, images: v.images.filter((_, x) => x !== ii) } }).then(load)}
+                                    className="absolute -top-1.5 -right-1.5 flex w-4 h-4 items-center justify-center bg-white border border-cream-300 rounded-full text-bark-500 hover:text-red-500 text-[10px] leading-none">×</button>
+                                </div>
+                                <div className="flex gap-1">
+                                  <button title="Move left" disabled={ii === 0} onClick={() => { const ni = [...v.images]; ;[ni[ii - 1], ni[ii]] = [ni[ii], ni[ii - 1]]; post({ action: 'save-variant', variant: { ...v, images: ni } }).then(load) }}
+                                    className="font-sans text-[10px] px-1 border border-cream-300 rounded text-bark-500 disabled:opacity-30 hover:border-bark-400">←</button>
+                                  <button title="Move right" disabled={ii === v.images.length - 1} onClick={() => { const ni = [...v.images]; ;[ni[ii], ni[ii + 1]] = [ni[ii + 1], ni[ii]]; post({ action: 'save-variant', variant: { ...v, images: ni } }).then(load) }}
+                                    className="font-sans text-[10px] px-1 border border-cream-300 rounded text-bark-500 disabled:opacity-30 hover:border-bark-400">→</button>
+                                </div>
                               </div>
                             ))}
                             <label className="w-16 h-16 flex items-center justify-center border border-dashed border-cream-300 rounded cursor-pointer text-bark-400 hover:border-bark-400 hover:text-bark-600">
