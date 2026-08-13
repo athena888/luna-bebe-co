@@ -28,18 +28,20 @@ export function RegionSwitcher() {
   return (
     <label className="inline-flex items-center gap-1.5 text-espresso">
       <Globe size={14} className="shrink-0" />
-      <select
-        aria-label="Region and currency"
-        value={current}
-        onChange={e => choose(e.target.value as Locale)}
-        className="bg-transparent font-sans text-[13px] font-medium text-espresso focus:outline-none cursor-pointer"
-      >
-        {LOCALES.map(loc => (
-          <option key={loc} value={loc}>
-            {MARKETS[loc].label}{MARKETS[loc].enabled ? '' : ' · soon'}
-          </option>
-        ))}
-      </select>
+      {LOCALES.filter(l => MARKETS[l].enabled).length < 2 ? (
+        <span className="font-sans text-[13px] font-medium text-espresso">{MARKETS[current]?.label ?? MARKETS[DEFAULT_LOCALE].label}</span>
+      ) : (
+        <select
+          aria-label="Region and currency"
+          value={current}
+          onChange={e => choose(e.target.value as Locale)}
+          className="bg-transparent font-sans text-[13px] font-medium text-espresso focus:outline-none cursor-pointer"
+        >
+          {LOCALES.filter(l => MARKETS[l].enabled).map(loc => (
+            <option key={loc} value={loc}>{MARKETS[loc].label}</option>
+          ))}
+        </select>
+      )}
     </label>
   )
 }
