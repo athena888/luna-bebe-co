@@ -4,10 +4,6 @@ import { supabaseAdmin } from '@/lib/supabase'
 export const dynamic = 'force-dynamic'
 
 // Phase 6 — portal CRUD for the products-with-variants catalog (§46).
-// Hard rule enforced server-side: the salt jar (8.5cm) only fits baskets
-// with depth ≥ 8.5cm — save is blocked with an explanation, per the spec.
-const SALT_JAR_ID = 'mom-botanical-postpartum-bath-saltz'
-const JAR_DEPTH = 8.5
 
 export async function GET() {
   try {
@@ -48,11 +44,6 @@ export async function POST(req: NextRequest) {
       const v = body.variant
       const contents = Array.isArray(v.contents) ? v.contents : []
       const depth = Number(v.basket_depth_cm) || null
-      if (contents.some((c: { item_id: string }) => c.item_id === SALT_JAR_ID) && (depth ?? 0) < JAR_DEPTH) {
-        return NextResponse.json({
-          error: `The bath-salts jar is ${JAR_DEPTH}cm tall — this basket is ${depth ?? '?'}cm deep, so the lid wouldn't close. Deepen the basket or remove the jar.`,
-        }, { status: 400 })
-      }
       const row = {
         product_slug: v.product_slug, key: v.key, label: v.label,
         price: Math.round(Number(v.price) || 0), basket: v.basket ?? '',
