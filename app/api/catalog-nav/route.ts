@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
     } catch { /* fall back to all live boxes */ }
   }
   if (picks) {
-    return NextResponse.json({ products: picks }, { headers: { 'Cache-Control': 's-maxage=300, stale-while-revalidate=3600' } })
+    return NextResponse.json({ products: picks }, { headers: { 'Cache-Control': 'no-store' } })
   }
   return NextResponse.json({
     products: products.map(p => ({
@@ -43,5 +43,5 @@ export async function GET(req: NextRequest) {
       high: Math.max(...p.variants.map(v => v.price)),
       href: `/boxes/${p.slug}`,
     })),
-  }, { headers: { 'Cache-Control': 's-maxage=300, stale-while-revalidate=3600' } })
+  }, { headers: { 'Cache-Control': 'no-store' } })
 }
