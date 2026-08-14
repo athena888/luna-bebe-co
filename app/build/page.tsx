@@ -6,7 +6,7 @@ import { CATEGORY_LABELS_ES } from '@/lib/products'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { PRODUCTS, CATEGORY_LABELS, CATEGORY_ORDER, getAllProducts, BOX_BASE_PRICE, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
+import { CATEGORY_LABELS, CATEGORY_ORDER, BOX_BASE_PRICE, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
 import type { Product, ProductCategory } from '@/types'
 import { Check, X, Plus, Minus, Leaf, ZoomIn, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react'
 import Image from 'next/image'
@@ -168,9 +168,12 @@ export default function BuildPage() {
   const [hoverMedia, setHoverMedia] = useState<Record<string, { image?: string; video?: string }>>({})
   const [productCerts, setProductCerts] = useState<Record<string, ResolvedCert[]>>({})
 
-  // Live catalog from the database, grouped by category. Falls back to the
-  // built-in static catalog until the fetch resolves.
-  const [catalog, setCatalog] = useState<Record<string, BuildProduct[]>>(() => ({ ...PRODUCTS }))
+  // Live catalog from the database, grouped by category. Starts EMPTY on
+  // purpose: the old fallback to the static demo catalog (lib/products
+  // PRODUCTS) put ~30 fake, selectable products into the server HTML and the
+  // first client render until the fetch resolved — removed 2026-08-14.
+  const [catalog, setCatalog] = useState<Record<string, BuildProduct[]>>({})
+  const [catalogLoading, setCatalogLoading] = useState(true)
   const activeCategories = useMemo(
     () => CATEGORY_ORDER.filter(cat => (catalog[cat]?.length ?? 0) > 0),
     [catalog]
@@ -227,14 +230,20 @@ export default function BuildPage() {
     fetch('/api/products/hover').then(r => r.json()).then(d => setHoverMedia(d.hover ?? {}))
     fetch(isEs ? '/api/products/all?lang=es' : '/api/products/all')
       .then(r => r.json())
-      .then(d => { if (d.byCategory) setCatalog(d.byCategory) })
+      .then(d => {
+        const byCat = (d.byCategory ?? {}) as Record<string, BuildProduct[]>
+        setCatalog(byCat)
+        // Product-page "Add to box" handoff — resolved against the LIVE
+        // catalog (used to hit the static demo list).
+        const pendingId = sessionStorage.getItem('pl_pending_add')
+        if (pendingId) {
+          const found = Object.values(byCat).flat().find(p => p.id === pendingId)
+          if (found) setSelected(prev => { const next = new Map(prev); next.set(found.id, { ...found, lineKey: found.id, qty: 1 }); return next })
+          sessionStorage.removeItem('pl_pending_add')
+        }
+      })
       .catch(() => {})
-    const pendingId = sessionStorage.getItem('pl_pending_add')
-    if (pendingId) {
-      const found = getAllProducts().find(p => p.id === pendingId)
-      if (found) setSelected(prev => { const next = new Map(prev); next.set(found.id, { ...found, lineKey: found.id, qty: 1 }); return next })
-      sessionStorage.removeItem('pl_pending_add')
-    }
+      .finally(() => setCatalogLoading(false))
     // Coming from the Gift Guide's "Build This Box" — load the recommended
     // items straight into the bag and open it.
     const rec = sessionStorage.getItem('pl_recommended')
@@ -446,7 +455,7 @@ export default function BuildPage() {
 
   function handleCheckout() {
     sessionStorage.setItem('pl_box_selection', JSON.stringify(selectedList))
-    router.push(isEs ? '/es/letter' : '/letter')
+    router.push(isEs ? '/es/checkout' : '/checkout')
   }
 
   return (
@@ -495,6 +504,12 @@ export default function BuildPage() {
 
         <div className="w-full pt-12 pb-4 relative">
           <div className="relative z-10 space-y-8">
+          {catalogLoading && activeCategories.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-24 gap-3">
+              <div className="w-8 h-8 border-2 border-cream-300 border-t-bark-600 rounded-full animate-spin" />
+              <p className="font-sans text-xs tracking-[0.2em] uppercase text-bark-400">{isEs ? 'Cargando la colección…' : 'Loading the collection…'}</p>
+            </div>
+          )}
           {activeCategories.map((cat) => (
             <section key={cat} id={`cat-${cat}`}>
               <div className="pl-6 sm:pl-9 pr-6 sm:pr-8 mb-8">
