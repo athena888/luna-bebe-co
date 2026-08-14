@@ -42,6 +42,8 @@ export interface FeedItem {
   price: string
   categoryId: number
   productType: string
+  category: string
+  organic: boolean
 }
 
 export interface FeedIssue { id: string; problems: string[] }
@@ -99,6 +101,8 @@ export async function buildFeed(): Promise<{ items: FeedItem[]; issues: FeedIssu
       price: `${(p.price / 100).toFixed(2)} USD`,
       categoryId: CATEGORY_IDS[p.category],
       productType: PRODUCT_TYPE[p.category] ?? 'Gift Boxes',
+      category: p.category,
+      organic: !!(p as { organic?: boolean }).organic,
     })
     if (problems.length) issues.push({ id: p.id, problems })
   }
