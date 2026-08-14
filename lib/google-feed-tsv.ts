@@ -91,7 +91,12 @@ const clean = (s: string) => s.replace(/[\t\n\r]+/g, ' ').trim()
 // GOTS wording is held out of the FEED until the Transaction Certificate
 // confirms per-product certification (gots_certified, §49). Site copy is
 // handled separately.
-const scrubGots = (s: string) => s.replace(/GOTS[- ]certified/gi, 'certified organic').replace(/\bGOTS\b/g, 'certified organic')
+// "GOTS-certified organic cotton" must become "certified organic cotton" —
+// the eager first replacement alone produced "certified organic organic".
+const scrubGots = (s: string) => s
+  .replace(/GOTS[- ]certified\s+organic\b/gi, 'certified organic')
+  .replace(/GOTS[- ]certified/gi, 'certified organic')
+  .replace(/\bGOTS\b/g, 'certified organic')
 
 const HEADER = [
   'id', 'title', 'description', 'link', 'image_link', 'price', 'availability',
