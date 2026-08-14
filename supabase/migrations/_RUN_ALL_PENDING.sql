@@ -1498,3 +1498,11 @@ alter table products add column if not exists safety_notes text;
 alter table reviews drop constraint if exists reviews_product_id_fkey;
 
 -- Done.
+
+-- 48) Same-Day Courier (Seattle area): orders.shipping_type check constraint
+--     predates the new option — allow 'sameday'.
+alter table orders drop constraint if exists orders_shipping_type_check;
+alter table orders add constraint orders_shipping_type_check
+  check (shipping_type in ('standard', 'premium', 'sameday'));
+
+-- Done.
