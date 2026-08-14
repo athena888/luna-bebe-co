@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
-import { BOX_BASE_PRICE, SHIPPING, freeShippingApplies } from '@/lib/products'
+import { BOX_BASE_PRICE, SHIPPING, freeShippingApplies, sameDayEligible } from '@/lib/products'
 import { resolveLocale, marketFor, LOCALE_COOKIE } from '@/lib/markets'
 import { getProductPrices, BOX_BASE_BY_CURRENCY, SHIPPING_BY_CURRENCY } from '@/lib/pricing'
 import type { Product, ShippingType } from '@/types'
@@ -86,6 +86,9 @@ export async function POST(req: NextRequest) {
     const currency = market.currency
     const stripeCurrency = currency.toLowerCase()
 
+    if (shippingType === 'sameday' && !sameDayEligible(shippingAddress?.zip)) {
+      return NextResponse.json({ error: 'Same-day courier is only available in the Seattle area.' }, { status: 400 })
+    }
     const shippingOption = SHIPPING[shippingType]
 
     // Per-currency amounts. USD uses the existing static prices (identical to

@@ -1,4 +1,4 @@
-export type ShippingType = 'standard' | 'premium'
+export type ShippingType = 'standard' | 'premium' | 'sameday'
 export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded'
 export type IssueStatus = 'open' | 'in_progress' | 'resolved'
 

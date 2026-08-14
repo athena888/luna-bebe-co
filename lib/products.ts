@@ -66,6 +66,26 @@ export const BOX_PACKAGING_COST = 850
 export const SHIPPING = {
   standard: { label: 'Standard Shipping', price: 1200, days: '5–7 business days' },
   premium: { label: 'Premium Rush Shipping', price: 2800, days: '1–2 business days', badge: 'Arrives Fast' },
+  sameday: { label: 'Same-Day Courier', price: 1500, days: 'This evening 5–9 PM · order by 1 PM (after: tomorrow evening)', badge: 'Seattle Area' },
+}
+
+// Same-day courier eligibility — Seattle (981xx incl. Shoreline) plus the
+// Eastside cities promised on /same-day-delivery. Checked in the checkout UI
+// (option only appears for these ZIPs) AND re-checked server-side.
+const SAMEDAY_EASTSIDE_ZIPS = new Set([
+  '98004', '98005', '98006', '98007', '98008', '98009', // Bellevue
+  '98011', '98012', '98021', '98041',                   // Bothell
+  '98027', '98029',                                     // Issaquah
+  '98033', '98034', '98083',                            // Kirkland
+  '98039', '98040',                                     // Medina, Mercer Island
+  '98052', '98053', '98073',                            // Redmond
+  '98055', '98056', '98057', '98058', '98059',          // Renton, Newcastle
+  '98072', '98077',                                     // Woodinville
+  '98074', '98075',                                     // Sammamish
+])
+export function sameDayEligible(zip: string | undefined | null): boolean {
+  const z = (zip ?? '').trim().slice(0, 5)
+  return /^981\d\d$/.test(z) || SAMEDAY_EASTSIDE_ZIPS.has(z)
 }
 
 // Free STANDARD shipping once the merchandise total (box base + items) reaches

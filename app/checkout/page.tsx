@@ -6,7 +6,7 @@ import { Header } from '@/components/layout/Header'
 import { OccasionCountdown } from '@/components/ui/OccasionCountdown'
 import { Footer } from '@/components/layout/Footer'
 import { VatNotice } from '@/components/ui/VatNotice'
-import { SHIPPING, BOX_BASE_PRICE, freeShippingApplies } from '@/lib/products'
+import { SHIPPING, BOX_BASE_PRICE, freeShippingApplies, sameDayEligible } from '@/lib/products'
 import type { BoxSelection, ShippingType } from '@/types'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -460,7 +460,9 @@ export default function CheckoutPage() {
                   <OccasionCountdown />
                   <div className="mb-4" />
                   <div className="space-y-3">
-                    {(Object.entries(SHIPPING) as [ShippingType, typeof SHIPPING[ShippingType]][]).map(([key, option]) => (
+                    {(Object.entries(SHIPPING) as [ShippingType, typeof SHIPPING[ShippingType]][])
+                      .filter(([key]) => key !== 'sameday' || sameDayEligible(address.zip))
+                      .map(([key, option]) => (
                       <button
                         key={key}
                         type="button"
