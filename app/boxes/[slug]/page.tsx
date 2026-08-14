@@ -181,7 +181,13 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                               )}
                               <span className="font-sans text-sm text-bark-600">
                                 {c.qty > 1 ? `${c.qty} × ` : ''}{c.item.name}
+                                {c.item.id === 'swaddle-botanical-bath-melt-set' && (
+                                  <span className="text-bark-400"> ({isEs ? '5 bombas de baño' : '5 bath bombs'})</span>
+                                )}
                                 {c.colorChoice ? ` — ${t.color}` : ''}
+                                {(c.item as { organic?: boolean }).organic && (
+                                  <span className="ml-2 font-sans text-[9px] tracking-[0.12em] uppercase border border-[#7A8E7C] text-[#7A8E7C] px-1.5 py-0.5 align-middle">{isEs ? 'orgánico' : 'organic'}</span>
+                                )}
                               </span>
                               {c.note && <span className="font-sans text-xs text-bark-400">{c.note}</span>}
                             </li>
