@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useIsEs } from '@/lib/use-is-es'
 import Image from 'next/image'
 import { BOX_BASE_PRICE } from '@/lib/products'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -11,6 +12,7 @@ import { useState, useEffect, useRef } from 'react'
 // the right with the name baked over the photo. Arrows + swipe + dots.
 
 export function TheCollection({ title, body, items }: { title: string; body: string; items: string[] }) {
+  const isEs = useIsEs()
   const [boxes, setBoxes] = useState<Array<{ slug: string; name: string; image: string | null; low: number; href?: string }>>([])
   const [idx, setIdx] = useState(0)
   const [paused, setPaused] = useState(false)
@@ -37,8 +39,8 @@ export function TheCollection({ title, body, items }: { title: string; body: str
   return (
     <section className="pt-4 pb-14 sm:pt-6">
       <div className="px-6 mb-8 text-center">
-        <p className="font-sans text-[13px] tracking-[0.18em] uppercase font-medium text-gold-500 mb-2">Every box, every season</p>
-        <h2 className="font-playfair text-[2rem] sm:text-[2.6rem] uppercase tracking-[0.01em] font-medium text-espresso leading-none">The Collection</h2>
+        <p className="font-sans text-[13px] tracking-[0.18em] uppercase font-medium text-gold-500 mb-2">{isEs ? 'Cada canastilla, cada temporada' : 'Every box, every season'}</p>
+        <h2 className="font-playfair text-[2rem] sm:text-[2.6rem] uppercase tracking-[0.01em] font-medium text-espresso leading-none">{isEs ? 'La Colección' : 'The Collection'}</h2>
       </div>
 
       <div className="relative">

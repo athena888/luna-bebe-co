@@ -9,7 +9,7 @@ import { BoxBuyPanel } from '@/components/ui/BoxBuyPanel'
 import { BoxGallery } from '@/components/ui/BoxGallery'
 import { ReviewSection } from '@/components/ui/ReviewSection'
 import { getBoxProduct, getItemSizeOptions, priceRange } from '@/lib/catalog-db'
-import { CATEGORY_LABELS } from '@/lib/products'
+import { CATEGORY_LABELS, CATEGORY_LABELS_ES } from '@/lib/products'
 
 // Phase 3 box product page — one data-driven template for every parent
 // product. Variants live in a query param (?tier=/?theme=); canonical strips
@@ -53,7 +53,27 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   }
 }
 
-export default async function BoxProductPage({ params, searchParams }: { params: Params; searchParams: Search }) {
+const T = {
+  en: {
+    inside: "What's inside", color: 'your choice of color',
+    card: 'Personalized card — hand-finished for every box, with your message',
+    basket: 'Everything arrives nested in a woven seagrass basket with lid, ribbon-tied and sealed by hand.',
+    faq: 'Frequently asked questions', prefer: 'Prefer to choose every piece yourself?', build: 'Build your own box',
+    options: 'Options',
+  },
+  es: {
+    inside: 'Qué contiene', color: 'el color lo eliges tú',
+    card: 'Tarjeta personalizada — terminada a mano para cada canastilla, con tu mensaje',
+    basket: 'Todo llega acomodado en una canasta tejida de fibra marina con tapa, atada con listón y sellada a mano.',
+    faq: 'Preguntas frecuentes', prefer: '¿Prefieres elegir cada pieza?', build: 'Arma tu propia canastilla',
+    options: 'Opciones',
+  },
+} as const
+const VARIANT_LABEL_ES: Record<string, string> = { Tier: 'Nivel', Theme: 'Tema', Set: 'Set' }
+
+export async function BoxProductView({ params, searchParams, locale = 'en' }: { params: Params; searchParams: Search; locale?: 'en' | 'es' }) {
+  const t = T[locale]
+  const isEs = locale === 'es'
   const { slug } = await params
   const box = await getBoxProduct(slug)
   if (!box) notFound()
@@ -108,12 +128,12 @@ export default async function BoxProductPage({ params, searchParams }: { params:
 
               {box.variants.length > 1 && (
                 <div className="mt-6">
-                  <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">{box.variantLabel || 'Options'}</p>
+                  <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">{(isEs ? VARIANT_LABEL_ES[box.variantLabel] ?? box.variantLabel : box.variantLabel) || t.options}</p>
                   <div className="flex flex-wrap gap-2">
                     {box.variants.map(v => (
                       <Link
                         key={v.key}
-                        href={`/boxes/${box.slug}?${box.variantParam}=${encodeURIComponent(v.key)}`}
+                        href={`${isEs ? '/es/canastillas' : '/boxes'}/${box.slug}?${box.variantParam}=${encodeURIComponent(v.key)}`}
                         className={`flex items-center gap-2 font-sans text-[11px] tracking-[0.15em] uppercase border transition-colors ${
                           v.images[0] ? 'p-1.5 pr-3' : 'px-4 py-2'
                         } ${v.key === variant.key ? 'border-espresso bg-espresso text-cream-50' : 'border-cream-300 text-bark-500 hover:border-espresso-light'}`}
@@ -138,14 +158,14 @@ export default async function BoxProductPage({ params, searchParams }: { params:
               )}
 
               <div className="mt-8">
-                <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-3">What&apos;s inside</p>
+                <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-3">{t.inside}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-5">
                   {(Object.keys(CATEGORY_LABELS) as Array<keyof typeof CATEGORY_LABELS>)
                     .map(cat => ({ cat, items: variant.contents.filter(c => c.item.category === cat) }))
                     .filter(g => g.items.length > 0)
                     .map(g => (
                       <div key={g.cat}>
-                        <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-300 mb-2">{CATEGORY_LABELS[g.cat]}</p>
+                        <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-300 mb-2">{(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[g.cat]}</p>
                         <ul className="space-y-2">
                           {g.items.map(c => (
                             <li key={c.item.id} className="flex items-center gap-3 border-b border-cream-200 pb-2">
@@ -158,7 +178,7 @@ export default async function BoxProductPage({ params, searchParams }: { params:
                               )}
                               <span className="font-sans text-sm text-bark-600">
                                 {c.qty > 1 ? `${c.qty} × ` : ''}{c.item.name}
-                                {c.colorChoice ? ' — your choice of color' : ''}
+                                {c.colorChoice ? ` — ${t.color}` : ''}
                               </span>
                               {c.note && <span className="font-sans text-xs text-bark-400">{c.note}</span>}
                             </li>
@@ -167,8 +187,8 @@ export default async function BoxProductPage({ params, searchParams }: { params:
                       </div>
                     ))}
                 </div>
-                <p className="font-sans text-sm text-bark-600 mt-4">Personalized card — hand-finished for every box, with your message</p>
-                <p className="font-sans text-xs text-bark-400 mt-3">Everything arrives nested in a woven seagrass basket with lid, ribbon-tied and sealed by hand.</p>
+                <p className="font-sans text-sm text-bark-600 mt-4">{t.card}</p>
+                <p className="font-sans text-xs text-bark-400 mt-3">{t.basket}</p>
               </div>
 
               <BoxBuyPanel
@@ -180,11 +200,11 @@ export default async function BoxProductPage({ params, searchParams }: { params:
               />
 
               <p className="font-sans text-sm text-bark-500 mt-6">
-                <Link href="/faq" className="underline underline-offset-2 hover:text-bark-600">Frequently asked questions</Link>
+                <Link href="/faq" className="underline underline-offset-2 hover:text-bark-600">{t.faq}</Link>
               </p>
 
               <p className="font-sans text-sm text-bark-500 mt-3">
-                Prefer to choose every piece yourself? <Link href="/build" className="underline hover:text-bark-600">Build your own box</Link>.
+                {t.prefer} <Link href={isEs ? '/es/build' : '/build'} className="underline hover:text-bark-600">{t.build}</Link>.
               </p>
             </div>
           </div>
@@ -257,4 +277,8 @@ export default async function BoxProductPage({ params, searchParams }: { params:
       <Footer />
     </>
   )
+}
+
+export default async function BoxProductPage({ params, searchParams }: { params: Params; searchParams: Search }) {
+  return BoxProductView({ params, searchParams, locale: 'en' })
 }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useIsEs } from '@/lib/use-is-es'
 import { writeCart, type CartItem } from '@/lib/cart'
 import { BLANKET_COLORS } from '@/lib/box-colors'
 import type { Product } from '@/types'
@@ -23,6 +24,7 @@ export function BoxBuyPanel({ contents, price, needsColor, sizesByItem = {} }: {
   sizesByItem?: Record<string, SizeOption[]>
 }) {
   const router = useRouter()
+  const isEs = useIsEs()
   const [color, setColor] = useState<string>(BLANKET_COLORS[0])
   const [size, setSize] = useState<string>('')
 
@@ -59,14 +61,14 @@ export function BoxBuyPanel({ contents, price, needsColor, sizesByItem = {} }: {
       } as CartItem
     })
     writeCart(items)
-    router.push('/letter')
+    router.push(isEs ? '/es/letter' : '/letter')
   }
 
   return (
     <div className="mt-6">
       {needsColor && (
         <div className="mb-5">
-          <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">Blanket color</p>
+          <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">{isEs ? 'Color de la manta' : 'Blanket color'}</p>
           <div className="flex flex-wrap gap-2">
             {BLANKET_COLORS.map(c => (
               <button
@@ -86,7 +88,7 @@ export function BoxBuyPanel({ contents, price, needsColor, sizesByItem = {} }: {
 
       {needsSize && (
         <div className="mb-5">
-          <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">Size</p>
+          <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">{isEs ? 'Talla' : 'Size'}</p>
           <div className="flex flex-wrap gap-2">
             {boxSizes.map(s => {
               const ok = sizeAvailable(s)
@@ -115,7 +117,7 @@ export function BoxBuyPanel({ contents, price, needsColor, sizesByItem = {} }: {
         disabled={!canBuy}
         className="w-full sm:w-auto bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
-        Add to Cart — ${(price / 100).toFixed(0)}
+        {isEs ? 'Agregar al carrito' : 'Add to Cart'} — ${(price / 100).toFixed(0)}
       </button>
     </div>
   )

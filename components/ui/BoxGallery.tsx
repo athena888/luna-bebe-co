@@ -2,18 +2,20 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import { useIsEs } from '@/lib/use-is-es'
 
 // Phase 3 gallery — mobile: swipe carousel (scroll-snap) with dots + "1/6"
 // counter; desktop: main image + vertical thumbnail rail. Receives the
 // SELECTED variant's image set only (never all variants appended). Shows a
 // quiet placeholder until photography exists.
 export function BoxGallery({ images, alt }: { images: string[]; alt: string }) {
+  const isEs = useIsEs()
   const [idx, setIdx] = useState(0)
 
   if (images.length === 0) {
     return (
       <div className="relative aspect-[3/4] bg-cream-200 border border-cream-300">
-        <div className="absolute inset-0 flex items-center justify-center font-sans text-xs tracking-[0.2em] uppercase text-bark-300">Photography coming soon</div>
+        <div className="absolute inset-0 flex items-center justify-center font-sans text-xs tracking-[0.2em] uppercase text-bark-300">{isEs ? 'Fotografía muy pronto' : 'Photography coming soon'}</div>
       </div>
     )
   }
