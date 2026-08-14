@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { OccasionCountdown } from '@/components/ui/OccasionCountdown'
+import { OrganicBadge } from '@/components/ui/OrganicBadge'
 import { Footer } from '@/components/layout/Footer'
 import { VatNotice } from '@/components/ui/VatNotice'
 import { SHIPPING, BOX_BASE_PRICE, freeShippingApplies, sameDayEligible } from '@/lib/products'
@@ -521,7 +522,8 @@ export default function CheckoutPage() {
 
                   {/* Promo code */}
                   <div className="mt-6">
-                    <div className="flex gap-2">
+                    <div className="mb-4"><OrganicBadge /></div>
+                <div className="flex gap-2">
                       <input
                         type="text"
                         value={promoCode}

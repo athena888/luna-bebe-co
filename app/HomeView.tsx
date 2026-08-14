@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Header, PerksMarquee } from '@/components/layout/Header'
+import { OrganicBadge } from '@/components/ui/OrganicBadge'
 import { Footer } from '@/components/layout/Footer'
 import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
@@ -98,6 +99,7 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
               >
                 {s('hero.cta', 'Shop Gift Boxes')}
               </Link>
+              <div className="mt-5 flex justify-center sm:justify-start"><OrganicBadge /></div>
             </div>
           </div>
         </section>
