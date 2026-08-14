@@ -5,7 +5,6 @@ import { useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { CONTACT_EMAIL } from '@/lib/site-config'
 import { SlotBackground } from '@/components/ui/SlotBackground'
-import { RegionSwitcher } from '@/components/ui/RegionSwitcher'
 import { useIsEs } from '@/lib/use-is-es'
 
 // Segment chips (Build 7) — one optional tap after signup so flow emails can
@@ -195,7 +194,7 @@ export function Footer() {
             </div>
 
             {/* Link columns — kept off the right border and pulled toward centre */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-8 gap-x-5 sm:gap-x-8 lg:pr-14 xl:pr-24">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-8 gap-x-5 sm:gap-x-8 lg:pr-14 xl:pr-24">
               <div>
                 <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">{isEs ? 'Compra y regala' : <>Shop &amp; Gift</>}</p>
                 <ul className="space-y-2.5 text-[13.5px] font-sans font-normal">
@@ -220,10 +219,6 @@ export function Footer() {
                   <li><Link href="/press" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Prensa' : 'Press'}</Link></li>
                   <li><a href={`mailto:${CONTACT_EMAIL}`} className="text-espresso hover:text-gold-500 transition-colors break-all">{CONTACT_EMAIL}</a></li>
                 </ul>
-              </div>
-              <div>
-                <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">{isEs ? 'Moneda' : 'Currency'}</p>
-                <div className="text-[13.5px] font-sans font-normal text-espresso"><RegionSwitcher /></div>
               </div>
             </div>
 
