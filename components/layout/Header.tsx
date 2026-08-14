@@ -247,12 +247,12 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
 // The promise perks — espresso strip pinned to the top of the header on EVERY
 // page. Perks come from Portal → Homepage (falls back to the defaults until
 // the fetch lands).
-type Perk = { label: string; sub: string }
+type Perk = { label: string; sub: string; es?: { label?: string; sub?: string } }
 const DEFAULT_PERKS: Perk[] = [
-  { label: 'Free Shipping', sub: `On orders over $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}` },
-  { label: 'Personalized Card', sub: 'Hand-finished for every box' },
-  { label: 'Organic Cotton', sub: 'From GOTS-certified makers' },
-  { label: 'Gift-Ready', sub: 'Ships within 3 days' },
+  { label: 'Free Shipping', sub: `On orders over $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}`, es: { label: 'Envío gratis', sub: `En pedidos desde $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}` } },
+  { label: 'Personalized Card', sub: 'Hand-finished for every box', es: { label: 'Tarjeta personalizada', sub: 'Terminada a mano para cada canastilla' } },
+  { label: 'Organic Cotton', sub: 'From GOTS-certified makers', es: { label: 'Algodón orgánico', sub: 'De talleres certificados GOTS' } },
+  { label: 'Gift-Ready', sub: 'Ships within 3 days', es: { label: 'Lista para regalar', sub: 'Se envía en 3 días' } },
 ]
 export function PerksMarquee() {
   const [perks, setPerks] = useState<Perk[]>(DEFAULT_PERKS)
@@ -263,13 +263,12 @@ export function PerksMarquee() {
       .catch(() => {})
   }, [])
   const isEs = useIsEs()
-  const ES_PERKS: Record<string, { label: string; sub: string }> = {
-    'Free Shipping': { label: 'Envío gratis', sub: 'A partir de $100' },
-    'Personalized Card': { label: 'Tarjeta personalizada', sub: 'Terminada a mano para cada canastilla' },
-    'Organic Cotton': { label: 'Algodón orgánico', sub: 'De talleres certificados GOTS' },
-    'Gift Ready': { label: 'Lista para regalar', sub: 'Empacada con cuidado' },
-  }
-  const shown = isEs ? perks.map(pk => ES_PERKS[pk.label] ?? pk) : perks
+  // Spanish rides on each perk's own `es` subtree (edited with the English in
+  // Portal → Home Content). No label-keyed lookup — that drifted the moment a
+  // label was reworded ('Gift Ready' vs 'Gift-Ready' silently fell back to EN).
+  const shown = isEs
+    ? perks.map(pk => ({ label: pk.es?.label || pk.label, sub: pk.es?.sub || pk.sub }))
+    : perks
   return (
     <div className="bg-[#4A3B30] py-2.5 overflow-hidden" aria-label="Our promises">
       <div className="flex w-max animate-[pl-marquee_18s_linear_infinite]">

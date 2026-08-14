@@ -22,7 +22,7 @@ function collectionImg(slot: string) {
 
 // Server-fetch Shop by Occasion data so the section renders immediately
 // (no client-side "Loading collections…" hang).
-async function getCollectionsData() {
+async function getCollectionsData(locale: 'en' | 'es' = 'en') {
   try {
     const { getCatalog } = await import('@/lib/products-db')
     const { getCollections } = await import('@/lib/collections-db')
@@ -32,10 +32,27 @@ async function getCollectionsData() {
       getCollections().catch(() => []),
       getBoxes({}).catch(() => []),
     ])
+    // Tile names/subtitles are portal-editable (collections table); their
+    // Spanish lives in the translations table (entity 'collection_tile',
+    // fields label/sub — reviewable in Portal → Spanish Review). English
+    // fallback per field.
+    let tileEs = new Map<string, Record<string, string>>()
+    if (locale === 'es') {
+      try {
+        const { getTranslations } = await import('@/lib/i18n')
+        tileEs = await getTranslations('collection_tile', collections.map(c => c.id))
+      } catch { /* fall back to English */ }
+    }
     const byCategory: Record<string, typeof catalog> = {}
     for (const p of catalog) (byCategory[p.category] ??= []).push(p)
     return {
-      categories: collections.map(c => ({ id: c.id, label: c.label, sub: c.sub, img: collectionImg(c.home_image_slot), productIds: c.product_ids })),
+      categories: collections.map(c => ({
+        id: c.id,
+        label: tileEs.get(c.id)?.label ?? c.label,
+        sub: tileEs.get(c.id)?.sub ?? c.sub,
+        img: collectionImg(c.home_image_slot),
+        productIds: c.product_ids,
+      })),
       byCategory,
       boxes: boxes.map(b => ({ slug: b.slug, name: b.name, tagline: b.tagline, image: b.image })),
     }
@@ -58,18 +75,16 @@ const ES: Record<string, string> = {
   'story.cta': 'Lee nuestra historia',
   'corp.q': '¿Regalos para tu equipo o tus clientes?',
   'corp.cta': 'Regalos corporativos',
-  'why.intro': 'Cualquiera puede enviar un regalo. Nosotros te ayudamos a enviar un momento — pensado tanto para la mamá como para el bebé, con cada pieza de origen conocido y terminado a mano con ese cuidado que solo el cariño sabe dar.',
-  'unforgettable.title': 'Crea algo inolvidable',
-  'why.title': 'Lo que lo hace especial',
   'story.heading': 'Nacida de la certeza de que los comienzos merecen ser hermosos',
-  'unforgettable.body': 'Un ramo de lavanda y rituales de bienestar para suavizar los días largos, elegidos como los elegiría una hija para su propia madre.',
 }
+// (unforgettable/why Spanish moved into the Home Content blocks' own `es`
+// subtrees — see lib/home-content.ts — so portal edits carry both languages.)
 
 export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
   const isEs = locale === 'es'
   const s = (key: string, english: string) => (isEs ? ES[key] ?? english : english)
   const [collectionsData, content, galleries, igPosts, story] = await Promise.all([
-    getCollectionsData(), getHomeContent(), getHomeGalleries(['hero']), getActiveSocialPosts(6), getStoryContent(),
+    getCollectionsData(locale), getHomeContent(), getHomeGalleries(['hero']), getActiveSocialPosts(6), getStoryContent(),
   ])
 
   return (
@@ -108,16 +123,13 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
         {/* ── Best Sellers ── */}
         <PrebuiltBoxesSection />
 
-        {/* ── The Collection — Unforgettable panel + box carousel; lavender divider beneath ── */}
+        {/* ── The Collection — Unforgettable panel + box carousel; lavender divider beneath ──
+             Spanish comes from the block's own `es` subtree (edited alongside
+             English in Portal → Home Content), falling back to English. */}
         <TheCollection
-          title={s('unforgettable.title', content.unforgettable.title)}
-          body={s('unforgettable.body', content.unforgettable.body)}
-          items={isEs ? [
-            'Baños y rituales de calma para mamá',
-            'Algodón orgánico de talleres certificados',
-            'Esenciales premium y juguetes de recuerdo',
-            'Armada a mano con tarjeta personalizada',
-          ] : content.unforgettable.items}
+          title={isEs ? content.unforgettable.es?.title || content.unforgettable.title : content.unforgettable.title}
+          body={isEs ? content.unforgettable.es?.body || content.unforgettable.body : content.unforgettable.body}
+          items={isEs && content.unforgettable.es?.items?.length ? content.unforgettable.es.items : content.unforgettable.items}
         />
 
         {/* ── Shop by Category — heading above the image tiles, styled like Best Sellers ── */}
@@ -158,7 +170,10 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
 
         {/* ── What makes it special — full-bleed editorial photo with overlaid
              heading (client component; photo managed via Portal → Homepage). ── */}
-        <SpecialFeature title={s('why.title', content.why.title)} intro={s('why.intro', content.why.intro)} />
+        <SpecialFeature
+          title={isEs ? content.why.es?.title || content.why.title : content.why.title}
+          intro={isEs ? content.why.es?.intro || content.why.intro : content.why.intro}
+        />
 
         {/* ── 8. Testimonials — shown only when NEXT_PUBLIC_SHOW_REVIEWS=true and there are real reviews ── */}
         {process.env.NEXT_PUBLIC_SHOW_REVIEWS === 'true' && content.reviews.items.length > 0 && (

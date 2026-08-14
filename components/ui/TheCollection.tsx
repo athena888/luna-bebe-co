@@ -68,10 +68,10 @@ export function TheCollection({ title, body, items }: { title: string; body: str
                 ))}
               </div>
               <Link
-                href="/boxes"
+                href={isEs ? '/es/canastillas' : '/boxes'}
                 className="inline-block font-sans text-[12px] tracking-[0.3em] uppercase text-white border-b border-white pb-1 hover:text-cream-100 hover:border-cream-100 transition-colors"
               >
-                Shop Now
+                {isEs ? 'Comprar ahora' : 'Shop Now'}
               </Link>
             </div>
           </div>

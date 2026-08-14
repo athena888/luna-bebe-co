@@ -5,7 +5,11 @@ import { FREE_SHIPPING_THRESHOLD } from './products'
 // (key → JSON value). When a row is missing we fall back to these defaults, so
 // the homepage always renders even before anything is saved in the portal.
 
-export interface Perk { label: string; sub: string }
+// Every block carries an optional `es` mirror of its string leaves so English
+// and Spanish are edited TOGETHER in Portal → Home Content — a portal edit can
+// never update one language and silently leave the other stale. Missing es
+// falls back to English on /es.
+export interface Perk { label: string; sub: string; es?: { label?: string; sub?: string } }
 export interface Review { quote: string; name: string; context: string }
 
 // One full-bleed editorial feature: a managed photo (home-images bucket slot)
@@ -23,6 +27,7 @@ export interface WhyBlock {
   title: string
   intro: string
   features: FeatureBlock[]
+  es?: { title?: string; intro?: string }
 }
 
 export interface ReviewsBlock {
@@ -39,6 +44,7 @@ export interface UnforgettableBlock {
   title: string
   body: string
   items: string[]
+  es?: { title?: string; body?: string; items?: string[] }
 }
 
 export interface HomeContent {
@@ -50,15 +56,19 @@ export interface HomeContent {
 
 export const DEFAULT_HOME_CONTENT: HomeContent = {
   perks: [
-    { label: 'Free Shipping', sub: `On orders over $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}` },
-    { label: 'Personalized Card', sub: 'Hand-finished for every box' },
-    { label: 'Organic Cotton', sub: 'From GOTS-certified makers' },
-    { label: 'Gift-Ready', sub: 'Ships within 3 days' },
+    { label: 'Free Shipping', sub: `On orders over $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}`, es: { label: 'Envío gratis', sub: `En pedidos desde $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}` } },
+    { label: 'Personalized Card', sub: 'Hand-finished for every box', es: { label: 'Tarjeta personalizada', sub: 'Terminada a mano para cada canastilla' } },
+    { label: 'Organic Cotton', sub: 'From GOTS-certified makers', es: { label: 'Algodón orgánico', sub: 'De talleres certificados GOTS' } },
+    { label: 'Gift-Ready', sub: 'Ships within 3 days', es: { label: 'Lista para regalar', sub: 'Se envía en 3 días' } },
   ],
   why: {
     eyebrow: 'Why Petite Lavande',
     title: 'What makes it special',
     intro: 'Anyone can send a gift. We help you send a moment — built around the mother as much as the baby, traced to its source, and finished by hand with the kind of care only love remembers.',
+    es: {
+      title: 'Lo que lo hace especial',
+      intro: 'Cualquiera puede enviar un regalo. Nosotros te ayudamos a enviar un momento — pensado tanto para la mamá como para el bebé, con cada pieza de origen conocido y terminado a mano con ese cuidado que solo el cariño sabe dar.',
+    },
     features: [
       {
         slot: 'brand',
@@ -85,6 +95,16 @@ export const DEFAULT_HOME_CONTENT: HomeContent = {
       'Premium baby essentials & heirloom toys',
       'Hand-packed with a personalized card',
     ],
+    es: {
+      title: 'Crea algo inolvidable',
+      body: 'Un ramo de lavanda y rituales de bienestar para suavizar los días largos, elegidos como los elegiría una hija para su propia madre.',
+      items: [
+        'Baños y rituales de calma para mamá',
+        'Algodón orgánico de talleres certificados',
+        'Esenciales premium y juguetes de recuerdo',
+        'Armada a mano con tarjeta personalizada',
+      ],
+    },
   },
   reviews: {
     eyebrow: 'Stories',

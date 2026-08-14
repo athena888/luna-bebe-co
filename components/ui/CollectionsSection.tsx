@@ -35,6 +35,9 @@ const TILE_LINKS: Record<string, string> = {
 const BUNDLE_SUB = 'For mother & baby — one gift, both of them'
 
 function BundleTile({ boxes, fallback }: { boxes: BoxItem[]; fallback: Category }) {
+  // Subtitle comes from the (possibly es-translated) collection row; the
+  // constant is only the last-resort fallback.
+  const bundleSub = fallback.sub || BUNDLE_SUB
   // The mother-&-baby flagship (slug kept stable through the rename).
   const box = boxes.find(b => b.name === 'Mère et Bébé') ?? boxes.find(b => b.slug === 'petit-ciel') ?? boxes[0]
 
@@ -54,7 +57,7 @@ function BundleTile({ boxes, fallback }: { boxes: BoxItem[]; fallback: Category 
         {/* Name + subtitle baked into the photo */}
         <div className="absolute bottom-0 inset-x-0 flex flex-col items-center text-center pb-4 px-3">
           <span className="text-white font-sans text-[11px] tracking-[0.2em] uppercase px-2 py-1 drop-shadow-md">{name}</span>
-          <span className="text-white/85 font-serif italic text-[12px] leading-snug drop-shadow-md">{BUNDLE_SUB}</span>
+          <span className="text-white/85 font-serif italic text-[12px] leading-snug drop-shadow-md">{bundleSub}</span>
         </div>
       </div>
     </Link>

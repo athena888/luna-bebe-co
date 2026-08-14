@@ -150,6 +150,8 @@ function HomepageEditor() {
             <Card key={i} onRemove={() => setPerks(c.perks.filter((_, j) => j !== i))}>
               <Field label="Headline" value={p.label} onChange={v => setPerks(c.perks.map((x, j) => j === i ? { ...x, label: v } : x))} ai={{ kind: 'text', context: 'a 2–3 word benefit headline in the promise ticker' }} />
               <Field label="Subtext" value={p.sub} onChange={v => setPerks(c.perks.map((x, j) => j === i ? { ...x, sub: v } : x))} />
+              <Field label="Headline (Español)" value={p.es?.label ?? ''} onChange={v => setPerks(c.perks.map((x, j) => j === i ? { ...x, es: { ...x.es, label: v } } : x))} />
+              <Field label="Subtext (Español)" value={p.es?.sub ?? ''} onChange={v => setPerks(c.perks.map((x, j) => j === i ? { ...x, es: { ...x.es, sub: v } } : x))} />
             </Card>
           ))}
         </div>
@@ -169,6 +171,9 @@ function HomepageEditor() {
           <Field label="Script heading (keeps to one line — keep it short)" value={c.unforgettable.title} onChange={v => setUnf({ title: v })} ai={{ kind: 'title', context: 'a short elegant script heading for the gift-box feature panel' }} />
           <Area label="Paragraph" value={c.unforgettable.body} onChange={v => setUnf({ body: v })} rows={3} ai={{ kind: 'body', context: 'the intro paragraph inside the framed feature panel about the mama gift box' }} />
           <Area label="List — one per line (each shown with a hyphen)" value={c.unforgettable.items.join('\n')} onChange={v => setUnf({ items: v.split('\n') })} rows={5} />
+          <Field label="Script heading (Español)" value={c.unforgettable.es?.title ?? ''} onChange={v => setUnf({ es: { ...c.unforgettable.es, title: v } })} />
+          <Area label="Paragraph (Español)" value={c.unforgettable.es?.body ?? ''} onChange={v => setUnf({ es: { ...c.unforgettable.es, body: v } })} rows={3} />
+          <Area label="List (Español) — one per line" value={(c.unforgettable.es?.items ?? []).join('\n')} onChange={v => setUnf({ es: { ...c.unforgettable.es, items: v.split('\n') } })} rows={5} />
         </div>
       </section>
 
@@ -197,6 +202,8 @@ function HomepageEditor() {
         <div className="space-y-3">
           <Field label="Heading (first word renders italic, the rest in big caps)" value={c.why.title} onChange={v => setWhy({ title: v })} ai={{ kind: 'title', context: 'the section heading for why-choose-us' }} />
           <Area label="Subline under the heading" value={c.why.intro} onChange={v => setWhy({ intro: v })} ai={{ kind: 'body', context: 'the one-sentence subline under the why-choose-us heading' }} />
+          <Field label="Heading (Español)" value={c.why.es?.title ?? ''} onChange={v => setWhy({ es: { ...c.why.es, title: v } })} />
+          <Area label="Subline (Español)" value={c.why.es?.intro ?? ''} onChange={v => setWhy({ es: { ...c.why.es, intro: v } })} />
         </div>
       </section>
 

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { SlotBackground } from './SlotBackground'
+import { useIsEs } from '@/lib/use-is-es'
 
 interface Perk { label: string; sub: string }
 
@@ -32,6 +33,7 @@ export function PerksTicker({ perks }: { perks: Perk[] }) {
 // High-Summer-Edit style: italic first word + big didone caps, subline and a
 // SHOP NOW link.
 export function SpecialFeature({ title, intro }: { title: string; intro: string }) {
+  const isEs = useIsEs()
   const [first, ...rest] = title.split(' ')
 
   return (
@@ -51,10 +53,10 @@ export function SpecialFeature({ title, intro }: { title: string; intro: string 
               {intro}
             </p>
             <Link
-              href="/boxes"
+              href={isEs ? '/es/canastillas' : '/boxes'}
               className={`inline-block font-sans text-[12px] tracking-[0.3em] uppercase border-b pb-1 transition-colors ${hasImage ? 'text-white border-white hover:text-cream-100 hover:border-cream-100' : 'text-espresso border-espresso hover:text-gold-500 hover:border-gold-500'}`}
             >
-              Shop Now
+              {isEs ? 'Comprar ahora' : 'Shop Now'}
             </Link>
           </div>
         )}
