@@ -108,7 +108,7 @@ function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
 // fallback so crawlers always see the links; /api/catalog-nav refreshes it so
 // the seasonal hide toggle (e.g. Noël off-season) drops items without a deploy.
 const DEFAULT_BOX_PRODUCTS: Array<{ slug: string; name: string }> = [
-  { slug: 'signature-baby-gift-box', name: 'The Signature' },
+  { slug: 'signature-baby-gift-box', name: 'The Petite' },
   { slug: 'themed-baby-gift-box', name: 'Mama et Bébé' },
   { slug: 'new-mom-gift-box', name: 'The Mama Box' },
   { slug: 'baby-first-christmas-gift-box', name: 'Noël' },
