@@ -7,7 +7,7 @@ export const BOX_BASE_BY_CURRENCY: Record<Currency, number> = { USD: 1500, GBP: 
 export const SHIPPING_BY_CURRENCY: Record<Currency, { standard: number; premium: number; sameday: number }> = {
   USD: { standard: 1200, premium: 2800, sameday: 1500 },
   GBP: { standard: 1000, premium: 2400, sameday: 1500 },
-  EUR: { standard: 1200, premium: 2800 },
+  EUR: { standard: 1200, premium: 2800, sameday: 1500 },
 }
 
 // Active per-currency product prices, keyed by product id. Missing ⇒ that
