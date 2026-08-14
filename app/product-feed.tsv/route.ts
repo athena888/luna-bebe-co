@@ -9,7 +9,6 @@ export async function GET() {
   return new Response(tsv, {
     headers: {
       'Content-Type': 'text/tab-separated-values; charset=utf-8',
-      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=600',
     },
   })
 }
