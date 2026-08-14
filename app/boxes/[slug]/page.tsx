@@ -182,7 +182,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                               <span className="font-sans text-sm text-bark-600">
                                 {c.qty > 1 ? `${c.qty} × ` : ''}{c.item.name}
                                 {c.item.id === 'swaddle-botanical-bath-melt-set' && (
-                                  <span className="text-bark-400"> ({isEs ? '5 bombas de baño' : '5 bath bombs'})</span>
+                                  <span className="text-bark-400"> ({c.pieces ?? 5} {isEs ? 'bombas de baño' : 'bath bombs'})</span>
                                 )}
                                 {c.colorChoice ? ` — ${t.color}` : ''}
                                 {(c.item as { organic?: boolean }).organic && (

@@ -27,6 +27,28 @@ export async function PATCH(req: NextRequest) {
   try {
     const b = (await req.json()) as Record<string, unknown>
     if (!b.id) return NextResponse.json({ error: 'id required' }, { status: 400 })
+    const id = String(b.id)
+
+    // Live-catalog rows ("<product_slug>:<variant_key>"): only the corporate
+    // fields are writable — name/price/order belong to the catalog.
+    if (id.includes(':')) {
+      const sep = id.indexOf(':')
+      const row: Record<string, unknown> = {
+        product_slug: id.slice(0, sep), variant_key: id.slice(sep + 1),
+        updated_at: new Date().toISOString(),
+      }
+      for (const k of ['corporate_price_10', 'corporate_price_25', 'corporate_price_50'] as const) {
+        if (b[k] !== undefined) row[k] = b[k] === null || b[k] === '' ? null : Math.max(0, Math.round(Number(b[k])))
+      }
+      if (b.description !== undefined) row.description = String(b.description ?? '').trim() || null
+      const { error } = await supabaseAdmin
+        .from('lookbook_tier_overlay')
+        .upsert(row, { onConflict: 'product_slug,variant_key' })
+      if (error) throw error
+      return NextResponse.json({ ok: true })
+    }
+
+    // Legacy catalog_tiers rows (pre-§46 fallback): fully editable.
     const row: Record<string, unknown> = {}
     if (typeof b.name === 'string' && b.name.trim()) row.name = b.name.trim()
     for (const k of ['price', 'corporate_price_10', 'corporate_price_25', 'corporate_price_50', 'sort'] as const) {
@@ -35,7 +57,7 @@ export async function PATCH(req: NextRequest) {
     if (b.description !== undefined) row.description = String(b.description ?? '').trim() || null
     if (row.price === null) delete row.price   // price is not nullable
     if (Object.keys(row).length) {
-      const { error } = await supabaseAdmin.from('catalog_tiers').update(row).eq('id', b.id)
+      const { error } = await supabaseAdmin.from('catalog_tiers').update(row).eq('id', id)
       if (error) throw error
     }
     return NextResponse.json({ ok: true })

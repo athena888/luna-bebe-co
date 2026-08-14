@@ -2,6 +2,7 @@ import sharp from 'sharp'
 import convertHeic from 'heic-convert'
 import { anthropic } from '../anthropic'
 import { supabaseAdmin } from '../supabase'
+import { getTiers } from './copy'
 
 // Brand image library for the lookbook (Supabase Storage bucket 'brand-assets',
 // PRIVATE — previews and PDFs are served via short-lived signed URLs only).
@@ -104,8 +105,7 @@ interface Tagging { kind: ImageKind | null; tier: string | null; tags: string[];
 async function autoTag(jpeg: Buffer): Promise<Tagging> {
   // Downsize for the vision call — tagging doesn't need print resolution.
   const small = await sharp(jpeg).resize(1200, 1200, { fit: 'inside' }).jpeg({ quality: 80 }).toBuffer()
-  const { data: tiers } = await supabaseAdmin.from('catalog_tiers').select('name').order('sort')
-  const tierNames = ((tiers ?? []) as { name: string }[]).map(t => t.name)
+  const tierNames = (await getTiers()).map(t => t.name)   // live-catalog SKU names
 
   const res = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',

@@ -161,7 +161,10 @@ export default function LookbookBuilderPage() {
       {step === 0 && (
         <div className="space-y-4">
           <div className="bg-white rounded-2xl border border-cream-300 p-4 overflow-x-auto">
-            <h2 className="font-serif text-lg text-bark-700 mb-3">Tiers</h2>
+            <h2 className="font-serif text-lg text-bark-700 mb-1">Tiers</h2>
+            {tiers.some(t => t.id.includes(':')) && (
+              <p className="font-sans text-[10px] text-bark-400 mb-3">One row per live catalog variant — names &amp; retail prices mirror the store (edit those in the catalog). The 10+/25+/50+ prices and one-liners are lookbook-only; unedited volume prices default to ~5/10/15% off retail.</p>
+            )}
             <table className="w-full min-w-[560px] font-sans text-xs text-bark-600">
               <thead><tr className="text-left text-[10px] uppercase tracking-wide text-bark-400">
                 <th className="pb-2 pr-2">Name</th><th className="pb-2 pr-2 w-16">Price</th>
@@ -169,24 +172,35 @@ export default function LookbookBuilderPage() {
                 <th className="pb-2">One-liner (used if AI copy is empty)</th>
               </tr></thead>
               <tbody>
-                {tiers.map((t, i) => (
-                  <tr key={t.id} className="border-t border-cream-200">
-                    {(['name', 'price', 'corporate_price_10', 'corporate_price_25', 'corporate_price_50', 'description'] as const).map(f => (
-                      <td key={f} className="py-1.5 pr-2">
-                        <input
-                          value={t[f] ?? ''}
-                          type={f === 'name' || f === 'description' ? 'text' : 'number'}
-                          onChange={e => {
-                            const v = f === 'name' || f === 'description' ? e.target.value : (num(e.target.value) as never)
-                            setTiers(list => list.map((x, j) => (j === i ? { ...x, [f]: v } : x)))
-                          }}
-                          onBlur={() => saveTier(tiers[i])}
-                          className="w-full border border-cream-300 rounded px-1.5 py-1 bg-cream-50 focus:outline-none focus:border-gold-300"
-                        />
-                      </td>
-                    ))}
-                  </tr>
-                ))}
+                {tiers.map((t, i) => {
+                  // Live-catalog rows: name & price are catalog-owned, read-only here.
+                  const catalogOwned = t.id.includes(':')
+                  return (
+                    <tr key={t.id} className="border-t border-cream-200">
+                      {(['name', 'price', 'corporate_price_10', 'corporate_price_25', 'corporate_price_50', 'description'] as const).map(f => {
+                        const locked = catalogOwned && (f === 'name' || f === 'price')
+                        return (
+                          <td key={f} className="py-1.5 pr-2">
+                            <input
+                              value={t[f] ?? ''}
+                              type={f === 'name' || f === 'description' ? 'text' : 'number'}
+                              disabled={locked}
+                              title={locked ? 'From the live catalog — edit there' : undefined}
+                              onChange={e => {
+                                const v = f === 'name' || f === 'description' ? e.target.value : (num(e.target.value) as never)
+                                setTiers(list => list.map((x, j) => (j === i ? { ...x, [f]: v } : x)))
+                              }}
+                              onBlur={() => saveTier(tiers[i])}
+                              className={locked
+                                ? 'w-full border border-transparent rounded px-1.5 py-1 bg-transparent text-bark-500'
+                                : 'w-full border border-cream-300 rounded px-1.5 py-1 bg-cream-50 focus:outline-none focus:border-gold-300'}
+                            />
+                          </td>
+                        )
+                      })}
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>

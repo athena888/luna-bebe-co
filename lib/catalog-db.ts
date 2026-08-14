@@ -13,6 +13,7 @@ export interface ContentRef {
   qty: number
   color_choice?: boolean   // buyer picks a blanket color (BLANKET_COLORS)
   note?: string
+  pieces?: number          // per-box piece count for multi-piece sets (e.g. 2 of the 5 bath melts)
 }
 
 export interface ResolvedContent {
@@ -20,6 +21,7 @@ export interface ResolvedContent {
   qty: number
   colorChoice: boolean
   note?: string
+  pieces?: number
 }
 
 export interface CatalogVariant {
@@ -74,7 +76,7 @@ function resolveVariant(v: VariantRow, items: Map<string, Product>): CatalogVari
   for (const ref of (v.contents ?? [])) {
     const item = items.get(ref.item_id)
     if (!item) continue
-    contents.push({ item, qty: ref.qty || 1, colorChoice: !!ref.color_choice, note: ref.note })
+    contents.push({ item, qty: ref.qty || 1, colorChoice: !!ref.color_choice, note: ref.note, pieces: ref.pieces })
   }
   return {
     key: v.key, label: v.label, price: v.price, basket: v.basket,
@@ -191,7 +193,9 @@ export function piecesPerItem(id: string, name: string): number {
   return 1
 }
 export function pieceCount(v: CatalogVariant): number {
-  return v.contents.reduce((sum, c) => sum + piecesPerItem(c.item.id, c.item.name) * (c.qty || 1), 0)
+  // A contents entry can carry its own `pieces` (a box may include only 2 of
+  // the 5-melt set); the item-level number is the fallback.
+  return v.contents.reduce((sum, c) => sum + (c.pieces ?? piecesPerItem(c.item.id, c.item.name)) * (c.qty || 1), 0)
 }
 
 export function priceRange(p: CatalogBoxProduct): { low: number; high: number } {

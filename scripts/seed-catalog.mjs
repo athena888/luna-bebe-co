@@ -55,13 +55,13 @@ const PRODUCTS = [
         contents: [it(OAT_SWADDLE), it(HENLEY), it(BUNNY_LOVEY), it(SACHET), it(RATTLE_PAIR), it(CLIP)],
         adds: 'Adds a beechwood rattle and braided pacifier clip.' },
       { key: 'tier-3', label: 'Tier 3', price: 12500, basket: '25×19×7', basket_depth_cm: 7,
-        contents: [it(OAT_SWADDLE), it(ROMPER), it(BUNNY_LOVEY), it(SACHET), it(RATTLE_PAIR), it(CLIP), it(BATH_MELTS)],
+        contents: [it(OAT_SWADDLE), it(ROMPER), it(BUNNY_LOVEY), it(SACHET), it(RATTLE_PAIR), it(CLIP), it(BATH_MELTS, { pieces: 2 })],
         adds: 'The garment upgrades to a muslin romper; adds a bath melt duo.' },
       { key: 'tier-4', label: 'Tier 4', price: 15000, basket: '27×22×8', basket_depth_cm: 8,
-        contents: [it(KNIT_BLANKET, { color_choice: true }), it(ROMPER), it(BUNNY_LOVEY), it(SACHET), it(RATTLE_PAIR), it(CLIP), it(BATH_MELTS)],
+        contents: [it(KNIT_BLANKET, { color_choice: true }), it(ROMPER), it(BUNNY_LOVEY), it(SACHET), it(RATTLE_PAIR), it(CLIP), it(BATH_MELTS, { pieces: 2 })],
         adds: 'A knit blanket in your choice of color replaces the swaddle.' },
       { key: 'tier-5', label: 'Tier 5', price: 17500, basket: '32×27×8.5', basket_depth_cm: 8.5,
-        contents: [it(KNIT_BLANKET, { color_choice: true }), it(ROMPER), it(CROCHET_BUNNY), it(SACHET), it(RATTLE_PAIR), it(CLIP), it(BATH_MELTS), it(BOUQUET)],
+        contents: [it(KNIT_BLANKET, { color_choice: true }), it(ROMPER), it(CROCHET_BUNNY), it(SACHET), it(RATTLE_PAIR), it(CLIP), it(BATH_MELTS, { pieces: 2 }), it(BOUQUET)],
         adds: 'A crochet bunny replaces the lovey; adds a dried lavender bouquet.' },
       { key: 'tier-6', label: 'Tier 6', price: 20000, basket: '34×29×9', basket_depth_cm: 9,
         contents: [it(KNIT_BLANKET, { color_choice: true }), it(OAT_SWADDLE), it(HENLEY), it(ROMPER), it(CROCHET_BUNNY), it(RATTLE_PAIR), it(CLIP), it(SACHET), it(SILK_MASK), it(SALT_JAR)],
@@ -89,9 +89,9 @@ const PRODUCTS = [
     variant_param: 'set', variant_label: 'Set', sort_order: 2,
     variants: [
       { key: 'wellness', label: 'Wellness', price: 13500, basket: '28×24×8.5', basket_depth_cm: 8.5,
-        contents: [it(EYE_PILLOW), it('mom-porcelain-cup'), it(SALT_JAR), it(BATH_MELTS), it(SACHET), it(BOUQUET)] },
+        contents: [it(EYE_PILLOW), it('mom-porcelain-cup'), it(SALT_JAR), it(BATH_MELTS, { pieces: 3 }), it(SACHET), it(BOUQUET)] },
       { key: 'postpartum', label: 'Postpartum', price: 14500, basket: '28×24×8.5', basket_depth_cm: 8.5,
-        contents: [it(SILK_MASK), it('mom-fuzzy-socks'), it(SALT_JAR), it(BATH_MELTS), it(SACHET), it(KNIT_BLANKET, { color_choice: true })] },
+        contents: [it(SILK_MASK), it('mom-fuzzy-socks'), it(SALT_JAR), it(BATH_MELTS, { pieces: 3 }), it(SACHET), it(KNIT_BLANKET, { color_choice: true })] },
     ],
   },
   {
@@ -101,7 +101,7 @@ const PRODUCTS = [
       // Tier-2 baby contents + the Wellness set minus the salt jar (basket
       // depth); price = ($105 + $135) − ~10% ≈ $216.
       { key: 'default', label: 'Mama et Bébé', price: 21600, basket: '34×29×9', basket_depth_cm: 9,
-        contents: [it(OAT_SWADDLE), it(HENLEY), it(BUNNY_LOVEY), it(RATTLE_PAIR), it(CLIP), it(EYE_PILLOW), it('mom-porcelain-cup'), it(BATH_MELTS), it(SACHET), it(BOUQUET)],
+        contents: [it(OAT_SWADDLE), it(HENLEY), it(BUNNY_LOVEY), it(RATTLE_PAIR), it(CLIP), it(EYE_PILLOW), it('mom-porcelain-cup'), it(BATH_MELTS, { pieces: 3 }), it(SACHET), it(BOUQUET)],
         adds: 'Save about 10% vs buying the Tier 2 and Wellness boxes separately.' },
     ],
   },
