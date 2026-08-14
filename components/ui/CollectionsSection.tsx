@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useIsEs } from '@/lib/use-is-es'
 import type { Product } from '@/types'
 import type { CollectionDef } from '@/lib/collections-db'
 
@@ -22,19 +23,21 @@ interface Category {
   productIds: string[]
 }
 
-// Tiles deep-link straight into the build page (or its category anchors).
+// Tiles deep-link straight into the box pages (or the builder). Locale-aware:
+// a Spanish visitor must STAY under /es — an EN href here silently flips the
+// whole session to English (Emily 2026-08-14).
 // The "bundle" tile is a box carousel handled separately below.
-const TILE_LINKS: Record<string, string> = {
-  newborn: '/boxes/signature-baby-gift-box',   // ready-made baby box
-  mama: '/boxes/new-mom-gift-box',             // the mama box
-  custom: '/build',                            // build your own
+const TILE_LINKS: Record<string, { en: string; es: string }> = {
+  newborn: { en: '/boxes/signature-baby-gift-box', es: '/es/canastillas/signature-baby-gift-box' },
+  mama: { en: '/boxes/new-mom-gift-box', es: '/es/canastillas/new-mom-gift-box' },
+  custom: { en: '/build', es: '/es/build' },
 }
 
 // ─── Bundle tile — the Mère et Bébé box as a static photo card ───────────────
 
 const BUNDLE_SUB = 'For mother & baby — one gift, both of them'
 
-function BundleTile({ boxes, fallback }: { boxes: BoxItem[]; fallback: Category }) {
+function BundleTile({ boxes, fallback, isEs }: { boxes: BoxItem[]; fallback: Category; isEs: boolean }) {
   // Subtitle comes from the (possibly es-translated) collection row; the
   // constant is only the last-resort fallback.
   const bundleSub = fallback.sub || BUNDLE_SUB
@@ -44,7 +47,7 @@ function BundleTile({ boxes, fallback }: { boxes: BoxItem[]; fallback: Category 
   // Tile photo: the Homepage editor's "Mama & Baby Bundle" upload (the
   // category fallback image) wins; the prebuilt box's cover is the backstop.
   const img = fallback.img ?? box?.image ?? null
-  const href = '/boxes/themed-baby-gift-box'  // Mama et Bébé (merged themed box)
+  const href = isEs ? '/es/canastillas/themed-baby-gift-box' : '/boxes/themed-baby-gift-box'  // Mama et Bébé (merged themed box)
   const name = box?.name ?? 'Mère et Bébé'
 
   return (
@@ -73,6 +76,7 @@ export interface CollectionsInitial {
 }
 
 export function CollectionsSection({ initial }: { initial?: CollectionsInitial }) {
+  const isEs = useIsEs()
   const [categories, setCategories] = useState<Category[]>(initial?.categories ?? [])
   const [boxes, setBoxes] = useState<BoxItem[]>(initial?.boxes ?? [])
   const [loading, setLoading] = useState(!initial)
@@ -118,11 +122,11 @@ export function CollectionsSection({ initial }: { initial?: CollectionsInitial }
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-cream-300">
       {categories.map((cat) => (
         cat.id === 'bundle' ? (
-          <BundleTile key={cat.id} boxes={boxes} fallback={cat} />
+          <BundleTile key={cat.id} boxes={boxes} fallback={cat} isEs={isEs} />
         ) : (
           <Link
             key={cat.id}
-            href={TILE_LINKS[cat.id] ?? '/build'}
+            href={TILE_LINKS[cat.id]?.[isEs ? 'es' : 'en'] ?? (isEs ? '/es/build' : '/build')}
             className="group relative overflow-hidden bg-cream-200 block"
           >
             <div className="relative w-full aspect-[3/4] lg:aspect-none lg:h-[clamp(300px,58vh,600px)]">

@@ -9,6 +9,7 @@ import type { Product } from '@/types'
 import type { ProductCert, CertDef } from '@/lib/certifications'
 import { CATEGORY_LABELS, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
 import { CertBadges, isGots } from '@/components/ui/CertBadges'
+import { useIsEs } from '@/lib/use-is-es'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 
@@ -57,6 +58,7 @@ function isOrganic(p: Product): boolean {
 
 function ProductModal({ product, onClose }: { product: Product; onClose: () => void }) {
   const router = useRouter()
+  const isEs = useIsEs()
   const [gallery, setGallery] = useState<GalleryImage[]>([])
   const [variants, setVariants] = useState<VariantOpt[]>([])
   const [certs, setCerts] = useState<ResolvedCert[]>([])
@@ -120,7 +122,7 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
   function handleAddToBox() {
     sessionStorage.setItem('pl_pending_add', product.id)
     onClose()
-    router.push('/build')
+    router.push(isEs ? '/es/build' : '/build')
   }
 
   return (

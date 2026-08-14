@@ -74,7 +74,7 @@ function Sprig({ light }: { light: boolean }) {
     return <LavenderSprig className="h-9 sm:h-12 w-auto shrink-0" style={{ color: light ? '#FBF4EA' : '#8B79B0' }} title="Petite Lavande" />
   }
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt="" className="h-9 sm:h-12 w-auto shrink-0 object-contain" onError={() => setErr(true)} />
+  return <img src={src} alt="Petite Lavande" className="h-9 sm:h-12 w-auto shrink-0 object-contain" onError={() => setErr(true)} />
 }
 
 // Full brand lockup (wordmark + flanking sprigs, baked into one image): white
@@ -166,7 +166,7 @@ function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
         <div className="bg-cream-white border border-cream-300 shadow-lg px-7 py-6 whitespace-nowrap min-w-[340px]">
           <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-400 font-bold mb-2.5">{isEs ? 'Nuestras canastillas' : 'Ready-Made Boxes'}</p>
           {boxProducts.map(p => (
-            <Link key={p.slug} href={`/boxes/${p.slug}`} onClick={() => setOpen(false)}
+            <Link key={p.slug} href={isEs ? `/es/canastillas/${p.slug}` : `/boxes/${p.slug}`} onClick={() => setOpen(false)}
               className="block font-sans text-[13px] normal-case tracking-normal text-espresso hover:text-gold-500 transition-colors py-1">
               {p.name}
               {OCCASION_BY_SLUG[p.slug] && (
@@ -229,7 +229,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
         {boxesOpen && (
           <div className="mt-3 pl-3 flex flex-col gap-2.5 font-sans text-[13px] tracking-normal normal-case">
             {boxProducts.map(p => (
-              <Link key={p.slug} href={`/boxes/${p.slug}`} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{p.name}</Link>
+              <Link key={p.slug} href={isEs ? `/es/canastillas/${p.slug}` : `/boxes/${p.slug}`} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{p.name}</Link>
             ))}
             <Link href="/corporate" onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{isEs ? 'Regalos corporativos' : 'Corporate Gifting'}</Link>
 

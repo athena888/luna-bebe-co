@@ -108,7 +108,7 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
                 {s('hero.sub', 'Luxury organic gift boxes — hand-packed and delivered with love.')}
               </p>
               <Link
-                href="/boxes"
+                href={isEs ? '/es/canastillas' : '/boxes'}
                 className="inline-block bg-[#7A8E7C] text-white font-serif text-base sm:text-lg tracking-[0.06em] uppercase px-9 py-3 hover:bg-[#6d8070] transition-colors"
               >
                 {s('hero.cta', 'Shop Gift Boxes')}
