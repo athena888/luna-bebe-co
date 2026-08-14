@@ -24,6 +24,9 @@ async function siteCorporateHeroUrl(): Promise<string | undefined> {
 /** Resolve brand_images ids in the slot map to signed URLs the renderer can fetch. */
 export async function buildRenderInput(copy: LookbookCopy, imageMap: ImageMap): Promise<RenderInput> {
   const [tiers, corporate] = await Promise.all([getTiers(), getCorporateFields()])
+  // getTiers() fails soft to [] on a DB hiccup — never render (or worse,
+  // publish) a lookbook with an empty collection page.
+  if (!tiers.length) throw new Error('Catalog unavailable right now (database hiccup) — wait a moment and try again.')
   const ids = [imageMap.cover, imageMap.detail, ...Object.values(imageMap.tiers ?? {})].filter((v): v is string => Boolean(v))
   const urlById = new Map<string, string>()
   if (ids.length) {
