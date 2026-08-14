@@ -3,9 +3,9 @@ import type { Currency } from './markets'
 
 // Per-currency box fee and shipping (explicit, rounded per market — no FX).
 // USD mirrors lib/products (BOX_BASE_PRICE / SHIPPING) so the US flow is identical.
-export const BOX_BASE_BY_CURRENCY: Record<Currency, number> = { USD: 1500, GBP: 2500, EUR: 2900 }
+export const BOX_BASE_BY_CURRENCY: Record<Currency, number> = { USD: 0, GBP: 2500, EUR: 2900 }
 export const SHIPPING_BY_CURRENCY: Record<Currency, { standard: number; premium: number; sameday: number }> = {
-  USD: { standard: 1200, premium: 2800, sameday: 1500 },
+  USD: { standard: 995, premium: 2800, sameday: 1500 },
   GBP: { standard: 1000, premium: 2400, sameday: 1500 },
   EUR: { standard: 1200, premium: 2800, sameday: 1500 },
 }

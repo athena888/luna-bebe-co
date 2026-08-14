@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { OccasionCountdown } from '@/components/ui/OccasionCountdown'
-import { OrganicBadge } from '@/components/ui/OrganicBadge'
 import { Footer } from '@/components/layout/Footer'
 import { VatNotice } from '@/components/ui/VatNotice'
 import { SHIPPING, BOX_BASE_PRICE, freeShippingApplies, sameDayEligible } from '@/lib/products'
+import { readBoxRef, clearBoxRef, type BoxRef as BoxRefType } from '@/lib/cart'
 import type { BoxSelection, ShippingType } from '@/types'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -50,6 +50,8 @@ export default function CheckoutPage() {
   const [letterVersion, setLetterVersion] = useState<1 | 2>(1)
   const [cardStyle, setCardStyle] = useState('')
   const [letterZone, setLetterZone] = useState<{ x: number; y: number; w: number; align: string } | null>(null)
+  // Unmodified prebuilt box in the bag → the whole bag sells at the box price.
+  const [boxRef, setBoxRef] = useState<BoxRefType | null>(null)
 
   const [promoCode, setPromoCode] = useState('')
   const [promoState, setPromoState] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle')
@@ -93,6 +95,7 @@ export default function CheckoutPage() {
     } else {
       router.push('/build')
     }
+    setBoxRef(readBoxRef())
     if (storedLetter) setLetter(storedLetter)
     if (storedRecipient) setRecipientName(storedRecipient)
     if (storedVersion) setLetterVersion(parseInt(storedVersion) as 1 | 2)
@@ -154,7 +157,7 @@ export default function CheckoutPage() {
 
   if (!selection) return null
 
-  const itemTotal = boxItemTotal(selection)
+  const itemTotal = boxRef ? boxRef.price : boxItemTotal(selection)
   const shipFree = freeShippingApplies(itemTotal + BOX_BASE_PRICE, shippingType)
   const shippingCost = shipFree ? 0 : SHIPPING[shippingType].price
   const total = itemTotal + BOX_BASE_PRICE + shippingCost
@@ -168,12 +171,22 @@ export default function CheckoutPage() {
     setSelection(next)
     sessionStorage.setItem('pl_box_selection', JSON.stringify(next))
   }
+  // Editing quantities or removing pieces makes the bag CUSTOM — box pricing
+  // no longer applies and every line reverts to its own price. (Choosing a
+  // size does not: sizes are part of the box offer.)
+  function dropBoxPricing() {
+    if (!boxRef) return
+    clearBoxRef()
+    setBoxRef(null)
+  }
   function setQty(key: string, qty: number) {
     const item = (selection as unknown as Record<string, CartItem | null>)[key]
     if (!item || qty < 1) return
+    dropBoxPricing()
     updateSelection({ ...(selection as object), [key]: { ...item, qty } } as unknown as BoxSelection)
   }
   function removeItem(key: string) {
+    dropBoxPricing()
     updateSelection({ ...(selection as object), [key]: null } as unknown as BoxSelection)
   }
   // Is `size` in stock for this line? Uses the per-variant rows when the
@@ -215,6 +228,7 @@ export default function CheckoutPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           selectedItems,
+          boxRef: boxRef ? { slug: boxRef.slug, variantKey: boxRef.variantKey } : undefined,
           letterContent: letter,
           letterVersion: letter ? letterVersion : undefined,
           cardStyle: cardStyle || undefined,
@@ -294,7 +308,8 @@ export default function CheckoutPage() {
                           <div className="flex-1 min-w-0">
                             <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-bark-400 mb-1.5">Petite Lavande</p>
                             <p className="font-sans text-[15px] text-espresso leading-snug">{item.name}</p>
-                            <p className="font-sans text-sm text-bark-500 mt-1.5">{formatPrice(item.price)}</p>
+                            {/* Box pricing: pieces are included in the box price — no per-line price */}
+                            <p className="font-sans text-sm text-bark-500 mt-1.5">{boxRef ? (isEs ? 'Incluido' : 'Included') : formatPrice(item.price)}</p>
                             {item.selectedSize && BOX_GARMENT_SIZES.includes(item.selectedSize) ? (
                               <>
                               <div className="flex items-center gap-2 mt-2">
@@ -497,13 +512,15 @@ export default function CheckoutPage() {
 
                   <div className="space-y-3 font-sans text-sm">
                     <div className="flex justify-between">
-                      <span className="text-bark-600">{isEs ? 'Subtotal' : 'Subtotal'}</span>
+                      <span className="text-bark-600">{boxRef ? boxRef.name : 'Subtotal'}</span>
                       <span className="text-espresso">{formatPrice(itemTotal)}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-bark-600">Keepsake Box, Ribbon &amp; Card</span>
-                      <span className="text-espresso">{formatPrice(BOX_BASE_PRICE)}</span>
-                    </div>
+                    {BOX_BASE_PRICE > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-bark-600">Keepsake Box, Ribbon &amp; Card</span>
+                        <span className="text-espresso">{formatPrice(BOX_BASE_PRICE)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
                       <span className="text-bark-600">Shipping · {SHIPPING[shippingType].label}</span>
                       <span className="text-espresso">{shipFree ? (isEs ? 'Gratis' : 'Free') : formatPrice(shippingCost)}</span>
@@ -522,7 +539,6 @@ export default function CheckoutPage() {
 
                   {/* Promo code */}
                   <div className="mt-6">
-                    <div className="mb-4"><OrganicBadge /></div>
                 <div className="flex gap-2">
                       <input
                         type="text"

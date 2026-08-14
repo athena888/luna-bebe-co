@@ -57,14 +57,16 @@ export const CATEGORY_LABELS_ES: Record<ProductCategory, string> = {
 }
 
 export const CATEGORY_ORDER: ProductCategory[] = ['swaddle', 'garment', 'bath', 'keepsake', 'mom']
-export const BOX_BASE_PRICE = 1500
+// 2026-08-14 (Emily): the separate box fee is retired — packaging is part of
+// the product price. Kept as a constant so the checkout math stays in one place.
+export const BOX_BASE_PRICE = 0
 
 // Real per-box packaging cost (owner-stated): seagrass basket $5 + mailer $3
 // + shredded kraft $0.50. Used by the portal box editor's cost panel.
 export const BOX_PACKAGING_COST = 850
 
 export const SHIPPING = {
-  standard: { label: 'Standard Shipping', price: 1200, days: '5–7 business days' },
+  standard: { label: 'Standard Shipping', price: 995, days: '5–7 business days' },
   premium: { label: 'Premium Rush Shipping', price: 2800, days: '1–2 business days', badge: 'Arrives Fast' },
   sameday: { label: 'Same-Day Courier', price: 1500, days: 'This evening 5–9 PM · order by 1 PM (after: tomorrow evening)', badge: 'Seattle Area' },
 }

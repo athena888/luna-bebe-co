@@ -204,6 +204,8 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                 contents={variant.contents.map(c => ({ item: c.item, qty: c.qty, colorChoice: c.colorChoice }))}
                 price={variant.price}
                 boxName={box.name}
+                boxSlug={box.slug}
+                variantKey={variant.key}
                 needsColor={variant.contents.some(c => c.colorChoice)}
                 sizesByItem={sizesByItem}
               />

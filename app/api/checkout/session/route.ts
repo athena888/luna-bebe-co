@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
   try {
     const {
       selectedItems,
+      boxRef,
       letterContent,
       letterVersion,
       cardStyle,
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest) {
       utmContent,
     }: {
       selectedItems: Product[]
+      boxRef?: { slug: string; variantKey: string }
       letterContent: string
       letterVersion?: 1 | 2
       cardStyle?: string
@@ -97,7 +99,7 @@ export async function POST(req: NextRequest) {
     let shipAmount = currency === 'USD' ? shippingOption.price : SHIPPING_BY_CURRENCY[currency][shippingType]
     const priceMap = currency === 'USD' ? {} : await getProductPrices(selectedItems.map(i => i.id), currency)
 
-    const itemLineItems: Array<{ price_data: { currency: string; product_data: { name: string; description?: string }; unit_amount: number }; quantity: number }> = []
+    let itemLineItems: Array<{ price_data: { currency: string; product_data: { name: string; description?: string }; unit_amount: number }; quantity: number }> = []
     for (const item of selectedItems) {
       const v = item as Product & { selectedColor?: string; selectedSize?: string; selectedStyle?: string; qty?: number }
       const unit = currency === 'USD' ? item.price : priceMap[item.id]
@@ -112,22 +114,52 @@ export async function POST(req: NextRequest) {
       })
     }
 
+    // ── Prebuilt-box pricing (USD): an UNMODIFIED box sells at the box's own
+    // price, never summed item retail. The client sends only {slug, variantKey};
+    // the price and the contents check are server-side, so neither can be
+    // spoofed. Any mismatch (customized contents) falls back to itemized.
+    if (boxRef?.slug && boxRef?.variantKey && currency === 'USD') {
+      const { getBoxProducts } = await import('@/lib/catalog-db')
+      const box = (await getBoxProducts()).find(b => b.slug === boxRef.slug)
+      const variant = box?.variants.find(v => v.key === boxRef.variantKey)
+      if (box && variant) {
+        const wanted = new Map(variant.contents.map(c => [c.item.id, c.qty]))
+        const inCart = new Map(selectedItems.map(i => [i.id, Math.max(1, Math.round((i as { qty?: number }).qty ?? 1))]))
+        const matches = wanted.size === inCart.size
+          && [...wanted].every(([id, qty]) => inCart.get(id) === qty)
+        if (matches) {
+          itemLineItems = [{
+            price_data: {
+              currency: stripeCurrency,
+              product_data: {
+                name: `${box.name}${box.variants.length > 1 ? ` (${variant.label})` : ''}`,
+                description: `${variant.contents.map(c => c.item.name).join(', ')} — hand-packed, ribbon-tied, with your personalized card`,
+              },
+              unit_amount: variant.price,
+            },
+            quantity: 1,
+          }]
+        }
+      }
+    }
+
     // Honor the free-shipping bar the cart drawer shows: standard shipping is
     // free once box base + items reach FREE_SHIPPING_THRESHOLD (USD only).
     const merchandiseTotal = boxBase + itemLineItems.reduce((s, li) => s + li.price_data.unit_amount * li.quantity, 0)
     const shipFree = freeShippingApplies(merchandiseTotal, shippingType, currency)
     if (shipFree) shipAmount = 0
 
-    // Build line items for Stripe
+    // Build line items for Stripe. The separate keepsake-box fee is retired
+    // (boxBase 0 in USD) — the line only renders where a market still has one.
     const lineItems = [
-      {
+      ...(boxBase > 0 ? [{
         price_data: {
           currency: stripeCurrency,
           product_data: { name: 'Keepsake Box, Ribbon & Printed Card', description: 'Premium magnetic box, satin ribbon, dried lavender, and your hand-penned card' },
           unit_amount: boxBase,
         },
         quantity: 1,
-      },
+      }] : []),
       ...itemLineItems,
       {
         price_data: {

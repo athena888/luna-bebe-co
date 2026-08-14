@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { X, Minus, Plus } from 'lucide-react'
-import { readCart, writeCart, type CartItem } from '@/lib/cart'
+import { readCart, writeCart, readBoxRef, type CartItem, type BoxRef } from '@/lib/cart'
 import { BOX_BASE_PRICE, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
 import { useIsEs } from '@/lib/use-is-es'
 
@@ -21,10 +21,14 @@ export function BagDrawer() {
   const isEs = useIsEs()
   const [open, setOpen] = useState(false)
   const [items, setItems] = useState<CartItem[]>([])
+  // Set while the bag is an unmodified prebuilt box — the bag then sells at
+  // the box price. Any qty/remove edit clears it (via writeCart) and every
+  // line reverts to its own price.
+  const [boxRef, setBoxRef] = useState<BoxRef | null>(null)
 
   useEffect(() => {
-    const openBag = () => { setItems(readCart()); setOpen(true) }
-    const sync = () => setItems(readCart())
+    const openBag = () => { setItems(readCart()); setBoxRef(readBoxRef()); setOpen(true) }
+    const sync = () => { setItems(readCart()); setBoxRef(readBoxRef()) }
     window.addEventListener('pl:open-bag', openBag)
     window.addEventListener('pl:cart', sync)
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
@@ -39,7 +43,7 @@ export function BagDrawer() {
   if (pathname?.startsWith('/build')) return null
 
   const hasItems = items.length > 0
-  const subtotal = items.reduce((s, i) => s + i.price * (i.qty ?? 1), 0)
+  const subtotal = boxRef ? boxRef.price : items.reduce((s, i) => s + i.price * (i.qty ?? 1), 0)
 
   function update(next: CartItem[]) {
     setItems(next)
@@ -123,7 +127,7 @@ export function BagDrawer() {
                     {variantLabel && (
                       <p className="font-sans text-[11px] text-bark-400 capitalize mb-1">{variantLabel}</p>
                     )}
-                    <p className="font-sans text-sm text-bark-500 mb-3">{formatPrice(product.price * (product.qty ?? 1))}{(product.qty ?? 1) > 1 && <span className="text-bark-400/70 text-xs"> ({formatPrice(product.price)} ea)</span>}</p>
+                    <p className="font-sans text-sm text-bark-500 mb-3">{boxRef ? (isEs ? 'Incluido' : 'Included') : <>{formatPrice(product.price * (product.qty ?? 1))}{(product.qty ?? 1) > 1 && <span className="text-bark-400/70 text-xs"> ({formatPrice(product.price)} ea)</span>}</>}</p>
                     <div className="flex items-center gap-4">
                       <div className="flex items-center border border-cream-300">
                         <button onClick={() => changeQty(key, -1)} disabled={(product.qty ?? 1) <= 1}

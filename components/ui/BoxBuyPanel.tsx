@@ -16,10 +16,12 @@ import type { SizeOption } from '@/lib/catalog-db'
 
 export interface BuyContent { item: Product; qty: number; colorChoice: boolean }
 
-export function BoxBuyPanel({ contents, price, needsColor, sizesByItem = {} }: {
+export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, needsColor, sizesByItem = {} }: {
   contents: BuyContent[]
   price: number
   boxName?: string
+  boxSlug?: string
+  variantKey?: string
   needsColor: boolean
   sizesByItem?: Record<string, SizeOption[]>
 }) {
@@ -60,8 +62,12 @@ export function BoxBuyPanel({ contents, price, needsColor, sizesByItem = {} }: {
         ...(opts?.length ? { selectedSize: opt?.size ?? size } : {}),
       } as CartItem
     })
-    writeCart(items)
-    router.push(isEs ? '/es/letter' : '/letter')
+    // An untouched prebuilt box sells at the BOX price, not summed item
+    // retail — the ref survives until any cart edit (see lib/cart.ts).
+    writeCart(items, boxSlug && variantKey
+      ? { slug: boxSlug, variantKey, name: boxName ?? 'Gift Box', price }
+      : undefined)
+    router.push(isEs ? '/es/checkout' : '/checkout')
   }
 
   return (

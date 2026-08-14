@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { OrganicBadge } from '@/components/ui/OrganicBadge'
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
@@ -21,7 +20,6 @@ export default function OurCottonPage() {
       <Header />
       <main className="bg-white min-h-screen">
         <section className="max-w-2xl mx-auto px-6 py-16">
-          <div className="mb-6"><OrganicBadge /></div>
           <h1 className="font-serif text-4xl text-espresso mb-8">Our cotton, in plain words</h1>
           <div className="space-y-5 font-sans text-[15px] text-bark-600 leading-relaxed">
             <p>
