@@ -51,7 +51,7 @@ async function getCollectionsData() {
 const ES: Record<string, string> = {
   'hero.h1a': 'Vemos a la mamá,',
   'hero.h1b': 'no solo al bebé.',
-  'hero.sub': 'Canastillas orgánicas de lujo — armadas a mano y entregadas con amor.',
+  'hero.sub': 'La canastilla que cuida al bebé — y honra a mamá.',  // pending native review ('honra a mamá')
   'hero.cta': 'Ver las canastillas',
   'cat.eyebrow': 'Sets curados para cada nuevo comienzo — o arma la tuya desde cero.',
   'cat.title': 'Compra por categoría',

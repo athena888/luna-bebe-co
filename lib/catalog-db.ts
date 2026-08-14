@@ -172,6 +172,28 @@ export async function getItemSizeOptions(itemIds: string[]): Promise<Record<stri
   }
 }
 
+// Piece count from the variant's ACTUAL contents (single source of truth):
+// qty × pieces-in-name ('Set of 2' → 2, 'Pair' → 2, 'Trio' → 3).
+// Multi-piece sets count their stated piece number (Emily 2026-08-14):
+// explicit map first, then 'Set of N', Pair=2, Trio=3.
+const SET_PIECES: Record<string, number> = {
+  'swaddle-botanical-bath-melt-set': 5, // Bath Melt Set of 5
+  'swaddle-fox-trio-gift-set': 3,
+  'swaddle-beechwood-rattle-pair': 2,
+  'swaddle-soft-snap-bandana-bib': 2, // Set of 2
+}
+export function piecesPerItem(id: string, name: string): number {
+  if (SET_PIECES[id]) return SET_PIECES[id]
+  const m = name.match(/set of (\d+)/i)
+  if (m) return parseInt(m[1])
+  if (/pair/i.test(name)) return 2
+  if (/trio/i.test(name)) return 3
+  return 1
+}
+export function pieceCount(v: CatalogVariant): number {
+  return v.contents.reduce((sum, c) => sum + piecesPerItem(c.item.id, c.item.name) * (c.qty || 1), 0)
+}
+
 export function priceRange(p: CatalogBoxProduct): { low: number; high: number } {
   const prices = p.variants.map(v => v.price)
   return { low: Math.min(...prices), high: Math.max(...prices) }

@@ -1506,3 +1506,9 @@ alter table orders add constraint orders_shipping_type_check
   check (shipping_type in ('standard', 'premium', 'sameday'));
 
 -- Done.
+
+-- 49) GOTS claim audit: per-product verified-certification flag. GOTS wording
+--     (feed titles, badges, copy) may only appear where this is true.
+alter table products add column if not exists gots_certified boolean not null default false;
+
+-- Done.

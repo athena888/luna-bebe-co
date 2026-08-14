@@ -8,7 +8,7 @@ import { JsonLd } from '@/components/ui/JsonLd'
 import { BoxBuyPanel } from '@/components/ui/BoxBuyPanel'
 import { BoxGallery } from '@/components/ui/BoxGallery'
 import { ReviewSection } from '@/components/ui/ReviewSection'
-import { getBoxProduct, getItemSizeOptions, priceRange } from '@/lib/catalog-db'
+import { getBoxProduct, getItemSizeOptions, pieceCount, priceRange } from '@/lib/catalog-db'
 import { CATEGORY_LABELS, CATEGORY_LABELS_ES } from '@/lib/products'
 
 // Phase 3 box product page — one data-driven template for every parent
@@ -124,6 +124,9 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
             {/* 2 — Buy panel */}
             <div>
               <h1 className="font-serif text-4xl text-espresso">{box.name}</h1>
+              <p className="font-sans text-[13px] tracking-[0.08em] text-bark-500 mt-2">
+                {pieceCount(variant)} {isEs ? 'piezas, empacadas a mano' : 'pieces, hand-packed'}
+              </p>
               <p className="font-sans text-2xl text-espresso mt-4">${(variant.price / 100).toFixed(0)}</p>
 
               {box.variants.length > 1 && (

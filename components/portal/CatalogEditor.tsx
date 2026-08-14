@@ -399,7 +399,12 @@ export function CatalogEditor() {
                     return (
                       <div key={v.key} className="border border-cream-200 rounded-lg p-4">
                         <div className="flex items-center justify-between mb-3">
-                          <p className="font-sans text-sm font-medium text-bark-600">{v.label}</p>
+                          <input
+                            defaultValue={v.label}
+                            title="Version name — shows on chips, homepage picks and the feed"
+                            onBlur={e => e.target.value.trim() && e.target.value !== v.label && post({ action: 'save-variant', variant: { ...v, label: e.target.value.trim() } }).then(load)}
+                            className="font-sans text-sm font-medium text-bark-600 bg-transparent border-b border-transparent hover:border-cream-300 focus:border-bark-400 focus:outline-none px-0.5 -ml-0.5 w-40"
+                          />
                           <div className="flex items-center gap-3">
                             <span className="font-sans text-[11px] text-bark-400">
                               retail value ${(m.retail / 100).toFixed(0)} · box ${(v.price / 100).toFixed(0)}
