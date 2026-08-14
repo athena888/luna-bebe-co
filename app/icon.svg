@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Petite Lavande tab icon — upright lavender sprig (brand mark) -->
+  <g fill="none" stroke="#89A03E" stroke-width="15" stroke-linecap="round">
+    <path d="M258 476 C252 400 253 300 256 122" />
+  </g>
+  <g fill="#89A03E">
+    <ellipse cx="205" cy="418" rx="58" ry="17" transform="rotate(-52 205 418)" />
+    <ellipse cx="308" cy="424" rx="54" ry="16" transform="rotate(48 308 424)" />
+  </g>
+  <g fill="#A180C8">
+    <ellipse cx="256" cy="96" rx="27" ry="36" />
+    <ellipse cx="222" cy="140" rx="25" ry="33" transform="rotate(-30 222 140)" />
+    <ellipse cx="291" cy="140" rx="25" ry="33" transform="rotate(30 291 140)" />
+    <ellipse cx="215" cy="204" rx="26" ry="34" transform="rotate(-36 215 204)" />
+    <ellipse cx="298" cy="204" rx="26" ry="34" transform="rotate(36 298 204)" />
+    <ellipse cx="219" cy="270" rx="24" ry="32" transform="rotate(-40 219 270)" />
+    <ellipse cx="294" cy="270" rx="24" ry="32" transform="rotate(40 294 270)" />
+    <ellipse cx="228" cy="332" rx="20" ry="27" transform="rotate(-44 228 332)" />
+    <ellipse cx="286" cy="332" rx="20" ry="27" transform="rotate(44 286 332)" />
+  </g>
+</svg>
