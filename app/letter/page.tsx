@@ -6,10 +6,8 @@ import { useIsEs } from '@/lib/use-is-es'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Button } from '@/components/ui/Button'
-import { RefreshCw, ArrowRight, Check, ChevronDown, ChevronRight } from 'lucide-react'
+import { ArrowRight, Check, ChevronDown, ChevronRight } from 'lucide-react'
 import type { CardStyle } from '@/lib/card-styles'
-
-type Phase = 'form' | 'generating' | 'edit'
 
 type Align = 'left' | 'center' | 'right'
 type Zone = { x: number; y: number; w: number; align: Align }
@@ -18,18 +16,17 @@ type Zone = { x: number; y: number; w: number; align: Align }
 // server-only lib/card-styles module (which pulls in the Supabase admin client).
 const FALLBACK_ZONE: Zone = { x: 15, y: 42, w: 70, align: 'center' }
 
-function countWords(s: string) { return s.trim() ? s.trim().split(/\s+/).length : 0 }
+// Customers write their own message — no AI drafting (removed 2026-08-14, Emily:
+// let people say it in their own words). Short by design: the note is written on
+// the physical card, and 70 characters stays legible at pen-written size.
+const CHAR_LIMIT = 70
 
 export default function CardPage() {
   const isEs = useIsEs()
   const router = useRouter()
   const [recipientName, setRecipientName] = useState('')
   const [senderName, setSenderName] = useState('')
-  const [phase, setPhase] = useState<Phase>('form')
-  const [letters, setLetters] = useState<string[]>([])
-  const [chosenIndex, setChosenIndex] = useState(0)
-  const [editedContent, setEditedContent] = useState('')
-  const [genError, setGenError] = useState('')
+  const [message, setMessage] = useState('')
 
   const [styles, setStyles] = useState<CardStyle[]>([])
   const [styleId, setStyleId] = useState<string | null>(null)
@@ -56,54 +53,12 @@ export default function CardPage() {
     setZone(z ? { x: z.x, y: z.y, w: z.w, align: (z.align ?? 'center') as Align } : FALLBACK_ZONE)
   }, [styleId]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // With a printed-card style: honor its stored limit (min 160). With no
-  // styles active (plain pen-written card), ~80 words is what the Cricut can
-  // write at a readable size on the 11.7×7.5cm card.
-  const wordLimit = selectedStyle ? Math.max(selectedStyle.word_limit ?? 160, 160) : 80
-  const words = countWords(editedContent)
-  const overLimit = words > wordLimit
-
-  // Auto-generate when user enters both names
-  useEffect(() => {
-    if (!recipientName.trim() || !senderName.trim() || phase !== 'form') return
-    const timer = setTimeout(async () => {
-      setPhase('generating')
-      try {
-        const res = await fetch('/api/ai/letter', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ recipientName, senderName, cardName: selectedStyle?.name, cardTheme: selectedStyle?.meta?.theme, wordLimit }),
-        })
-        const data = await res.json()
-        if (data.letters?.length === 2) {
-          setGenError('')
-          setLetters(data.letters)
-          setChosenIndex(0)
-          setEditedContent(data.letters[0])
-          setPhase('edit')
-        } else {
-          setGenError(res.status === 429
-            ? 'You’ve drafted a lot already — wait a few minutes, or write your own message below.'
-            : (data.error || 'Couldn’t draft right now — you can write your own message below.'))
-          setPhase('form')
-        }
-      } catch (e) {
-        console.error('Generation error:', e)
-        setGenError('Couldn’t connect — please try again, or write your own message below.')
-        setPhase('form')
-      }
-    }, 800)
-    return () => clearTimeout(timer)
-  }, [recipientName, senderName, phase])
-
-  function switchVersion(index: 0 | 1) {
-    setChosenIndex(index)
-    setEditedContent(letters[index])
-  }
+  const chars = message.length
+  const overLimit = chars > CHAR_LIMIT
 
   function persist(content: string) {
     sessionStorage.setItem('pl_letter', content)
-    sessionStorage.setItem('pl_letter_version', String((chosenIndex + 1) as 1 | 2))
+    sessionStorage.removeItem('pl_letter_version') // no AI versions anymore
     sessionStorage.setItem('pl_sender_name', senderName)
     sessionStorage.setItem('pl_recipient_name', recipientName)
     sessionStorage.setItem('pl_card_style', selectedStyle?.name ?? '')
@@ -114,7 +69,7 @@ export default function CardPage() {
 
   function handleContinue() {
     if (overLimit) return
-    persist(editedContent)
+    persist(message)
     router.push(isEs ? '/es/checkout' : '/checkout')
   }
 
@@ -154,7 +109,6 @@ export default function CardPage() {
                         </div>
                         <div className="pt-1.5">
                           <p className="font-sans text-xs font-medium text-bark-600 truncate">{s.name}</p>
-                          <p className="font-sans text-[11px] text-bark-400">{Math.max(s.word_limit, 160)} words max</p>
                         </div>
                       </button>
                     )
@@ -171,165 +125,129 @@ export default function CardPage() {
               </div>
             )}
 
-            {/* Right — write the letter */}
+            {/* Right — write the message */}
             <div className="flex-1 min-w-0">
 
-          {/* Step 1 — Names */}
-          {phase === 'form' && (
-            <div className="bg-cream-50 rounded-2xl border border-cream-200 p-6 sm:p-8 mb-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-sans text-xs font-semibold uppercase tracking-wider text-bark-400 mb-1.5">{isEs ? 'Nombre de quien lo recibe' : 'Recipient Name'}</label>
-                  <input type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)} placeholder={isEs ? 'p. ej. Sarah' : 'e.g. Sarah'} className={inputClass} />
-                </div>
-                <div>
-                  <label className="block font-sans text-xs font-semibold uppercase tracking-wider text-bark-400 mb-1.5">{isEs ? 'Tu nombre' : 'Your Name'}</label>
-                  <input type="text" value={senderName} onChange={e => setSenderName(e.target.value)} placeholder={isEs ? 'p. ej. Emily' : 'e.g. Emily'} className={inputClass} />
-                </div>
+          {/* Names */}
+          <div className="bg-cream-50 rounded-2xl border border-cream-200 p-6 sm:p-8 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block font-sans text-xs font-semibold uppercase tracking-wider text-bark-400 mb-1.5">{isEs ? 'Nombre de quien lo recibe' : 'Recipient Name'}</label>
+                <input type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)} placeholder={isEs ? 'p. ej. Sarah' : 'e.g. Sarah'} className={inputClass} />
               </div>
-              <p className="font-sans text-xs text-bark-400 mt-4">{isEs ? 'Redactamos dos versiones automáticamente mientras escribes — puedes editarlas o reescribirlas.' : <>We&rsquo;ll draft two versions automatically as you type — you can edit or rewrite them.</>}</p>
-              {genError && (
-                <div className="mt-4 border border-cream-300 bg-cream-100 rounded-xl p-4 text-center">
-                  <p className="font-sans text-xs text-bark-500 mb-3">{genError}</p>
-                  <button
-                    type="button"
-                    onClick={() => { setLetters(['', '']); setChosenIndex(0); setEditedContent(''); setGenError(''); setPhase('edit') }}
-                    className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-600 underline underline-offset-2 hover:text-bark-800"
+              <div>
+                <label className="block font-sans text-xs font-semibold uppercase tracking-wider text-bark-400 mb-1.5">{isEs ? 'Tu nombre' : 'Your Name'}</label>
+                <input type="text" value={senderName} onChange={e => setSenderName(e.target.value)} placeholder={isEs ? 'p. ej. Emily' : 'e.g. Emily'} className={inputClass} />
+              </div>
+            </div>
+          </div>
+
+          {/* Message — the customer's own words */}
+          <div className="bg-cream-50 rounded-2xl border border-cream-200 p-6 sm:p-8 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-serif text-xl text-bark-600">{isEs ? 'Tu mensaje' : 'Your Message'}</h2>
+              <span className={`font-sans text-xs ${overLimit ? 'text-red-500 font-semibold' : 'text-bark-400'}`}>{chars} / {CHAR_LIMIT}</span>
+            </div>
+            <textarea
+              value={message}
+              onChange={e => setMessage(e.target.value.slice(0, CHAR_LIMIT))}
+              maxLength={CHAR_LIMIT}
+              rows={3}
+              placeholder={isEs ? 'p. ej. Bienvenida al mundo, pequeña — con todo nuestro amor.' : 'e.g. Welcome to the world, little one — with all our love.'}
+              className={`w-full px-4 py-3 rounded-xl border bg-cream-100 font-sans text-sm text-bark-600 focus:outline-none transition-colors resize-none leading-relaxed ${overLimit ? 'border-red-300 focus:border-red-400' : 'border-cream-300 focus:border-gold-400'}`}
+            />
+            <p className="font-sans text-xs text-bark-400 mt-3">{selectedStyle
+              ? <>We&rsquo;ll print exactly what you see here on the {selectedStyle.name} card{selectedStyle.size_label ? ` (${selectedStyle.size_label})` : ''}.</>
+              : (isEs ? <>Tus palabras se escribirán a pluma, en letra fluida, en la tarjeta dentro de la canastilla.</> : <>Your words will be written in pen, in a flowing script, on the card inside the box.</>)}</p>
+          </div>
+
+          {/* Live preview — the message set on the chosen card, positioned
+              and styled to match it. The customer can nudge the placement. */}
+          {selectedStyle && message.trim() && (() => {
+            const isScript = (selectedStyle.meta?.font ?? 'serif') === 'script'
+            const setZ = (patch: Partial<Zone>) => setZone(z => ({ ...z, ...patch }))
+            return (
+              <div className="mb-6">
+                <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400 mb-3 text-center">{isEs ? 'Vista previa en tu tarjeta' : 'Preview on your card'}</p>
+                <div className="relative mx-auto w-full max-w-sm border border-cream-300 shadow-sm bg-white overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={selectedStyle.image_url} alt={selectedStyle.name} className="w-full h-auto block" />
+                  <div
+                    className="absolute"
+                    style={{
+                      left: `${zone.x}%`, top: `${zone.y}%`, width: `${zone.w}%`,
+                      textAlign: zone.align,
+                      fontFamily: 'var(--font-cormorant)',
+                      fontStyle: isScript ? 'italic' : 'normal',
+                      color: '#5a5147',
+                      lineHeight: 1.45,
+                      fontSize: 'clamp(7px, 2.3vw, 14px)',
+                      whiteSpace: 'pre-wrap',
+                      overflowWrap: 'break-word',
+                    }}
                   >
-                    Write my own message
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Step 2 — Generating */}
-          {phase === 'generating' && (
-            <div className="bg-cream-50 rounded-2xl border border-cream-200 p-12 text-center">
-              <RefreshCw size={32} className="animate-spin text-gold-400 mx-auto mb-4" />
-              <p className="font-sans text-sm text-bark-600">{isEs ? 'Redactando dos versiones con cariño, solo para ti…' : 'Drafting two heartfelt versions just for you…'}</p>
-            </div>
-          )}
-
-          {/* Step 3 — Edit with version picker */}
-          {phase === 'edit' && (
-            <>
-              <div className="grid grid-cols-2 gap-3 mb-6">
-                <button onClick={() => switchVersion(0)} className={`py-3 px-4 rounded-xl border-2 font-sans text-sm font-semibold uppercase tracking-wide transition-colors ${chosenIndex === 0 ? 'border-gold-400 bg-gold-50 text-gold-600' : 'border-cream-200 bg-cream-50 text-bark-400 hover:border-cream-300'}`}>{isEs ? 'Cálida y cercana' : <>Warm &amp; Casual</>}</button>
-                <button onClick={() => switchVersion(1)} className={`py-3 px-4 rounded-xl border-2 font-sans text-sm font-semibold uppercase tracking-wide transition-colors ${chosenIndex === 1 ? 'border-gold-400 bg-gold-50 text-gold-600' : 'border-cream-200 bg-cream-50 text-bark-400 hover:border-cream-300'}`}>{isEs ? 'Elegante y formal' : <>Elegant &amp; Formal</>}</button>
-              </div>
-
-              <div className="bg-cream-50 rounded-2xl border border-cream-200 p-6 sm:p-8 mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-serif text-xl text-bark-600">{isEs ? 'Tu mensaje' : 'Your Message'}</h2>
-                  <span className={`font-sans text-xs ${overLimit ? 'text-red-500 font-semibold' : 'text-bark-400'}`}>{words} / {wordLimit} words</span>
-                </div>
-                <textarea
-                  value={editedContent}
-                  onChange={e => setEditedContent(e.target.value)}
-                  rows={12}
-                  className={`w-full px-4 py-3 rounded-xl border bg-cream-100 font-sans text-sm text-bark-600 focus:outline-none transition-colors resize-none leading-relaxed ${overLimit ? 'border-red-300 focus:border-red-400' : 'border-cream-300 focus:border-gold-400'}`}
-                />
-                {overLimit
-                  ? <p className="font-sans text-xs text-red-500 mt-3">Your message is {words - wordLimit} word{words - wordLimit === 1 ? '' : 's'} over the limit for this card. Please shorten it.</p>
-                  : <p className="font-sans text-xs text-bark-400 mt-3">{selectedStyle
-                      ? <>We&rsquo;ll print exactly what you see here on the {selectedStyle.name} card{selectedStyle.size_label ? ` (${selectedStyle.size_label})` : ''}.</>
-                      : (isEs ? <>Tus palabras se escribirán a pluma, en letra fluida, en la tarjeta dentro de la canastilla.</> : <>Your words will be written in pen, in a flowing script, on the card inside the box.</>)}</p>}
-              </div>
-
-              {/* Live preview — the message set on the chosen card, positioned
-                  and styled to match it. The customer can nudge the placement. */}
-              {selectedStyle && (() => {
-                const isScript = (selectedStyle.meta?.font ?? 'serif') === 'script'
-                const setZ = (patch: Partial<Zone>) => setZone(z => ({ ...z, ...patch }))
-                return (
-                  <div className="mb-6">
-                    <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400 mb-3 text-center">{isEs ? 'Vista previa en tu tarjeta' : 'Preview on your card'}</p>
-                    <div className="relative mx-auto w-full max-w-sm border border-cream-300 shadow-sm bg-white overflow-hidden">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={selectedStyle.image_url} alt={selectedStyle.name} className="w-full h-auto block" />
-                      <div
-                        className="absolute"
-                        style={{
-                          left: `${zone.x}%`, top: `${zone.y}%`, width: `${zone.w}%`,
-                          textAlign: zone.align,
-                          fontFamily: 'var(--font-cormorant)',
-                          fontStyle: isScript ? 'italic' : 'normal',
-                          color: '#5a5147',
-                          lineHeight: 1.45,
-                          fontSize: 'clamp(7px, 2.3vw, 14px)',
-                          whiteSpace: 'pre-wrap',
-                          overflowWrap: 'break-word',
-                        }}
-                      >
-                        {editedContent}
-                      </div>
-                    </div>
-
-                    {/* Placement control — move the note over the card's empty area */}
-                    <div className="mx-auto w-full max-w-sm mt-3 bg-cream-50 border border-cream-200 rounded-xl p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400">{isEs ? 'Ubicación del mensaje' : 'Message placement'}</p>
-                        <button
-                          type="button"
-                          onClick={() => { const z = selectedStyle.meta?.textZone; setZone(z ? { x: z.x, y: z.y, w: z.w, align: (z.align ?? 'center') as Align } : FALLBACK_ZONE) }}
-                          className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-600 underline underline-offset-2"
-                        >
-                          Reset
-                        </button>
-                      </div>
-                      {([
-                        { label: 'Left', key: 'x' as const, min: 0, max: 80 },
-                        { label: 'Top', key: 'y' as const, min: 0, max: 85 },
-                        { label: 'Width', key: 'w' as const, min: 30, max: 95 },
-                      ]).map(s => (
-                        <div key={s.key} className="flex items-center gap-3 mb-2">
-                          <span className="font-sans text-[11px] text-bark-500 w-12 shrink-0">{s.label}</span>
-                          <input
-                            type="range" min={s.min} max={s.max} value={zone[s.key]}
-                            onChange={e => setZ({ [s.key]: Number(e.target.value) } as Partial<Zone>)}
-                            className="flex-1 accent-[#7b876a]"
-                          />
-                          <span className="font-sans text-[11px] text-bark-400 w-9 text-right tabular-nums">{zone[s.key]}%</span>
-                        </div>
-                      ))}
-                      <div className="flex items-center gap-3 mt-3">
-                        <span className="font-sans text-[11px] text-bark-500 w-12 shrink-0">{isEs ? 'Alinear' : 'Align'}</span>
-                        <div className="flex gap-1">
-                          {(['left', 'center', 'right'] as Align[]).map(a => (
-                            <button
-                              key={a} type="button" onClick={() => setZ({ align: a })}
-                              className={`font-sans text-[11px] tracking-[0.1em] uppercase px-3 py-1.5 rounded border transition-colors ${zone.align === a ? 'bg-[#7b876a] text-white border-[#7b876a]' : 'bg-white text-bark-500 border-cream-300 hover:border-bark-400'}`}
-                            >
-                              {a}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <p className="font-sans text-[11px] text-bark-400 text-center mt-2">{isEs ? 'Mueve el área punteada sobre el espacio libre de la tarjeta — ahí se escribe tu nota.' : <>Move the dashed area over the card&rsquo;s empty space — that&rsquo;s where your note prints.</>}</p>
+                    {message}
                   </div>
-                )
-              })()}
-            </>
-          )}
+                </div>
+
+                {/* Placement control — move the note over the card's empty area */}
+                <div className="mx-auto w-full max-w-sm mt-3 bg-cream-50 border border-cream-200 rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400">{isEs ? 'Ubicación del mensaje' : 'Message placement'}</p>
+                    <button
+                      type="button"
+                      onClick={() => { const z = selectedStyle.meta?.textZone; setZone(z ? { x: z.x, y: z.y, w: z.w, align: (z.align ?? 'center') as Align } : FALLBACK_ZONE) }}
+                      className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-600 underline underline-offset-2"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                  {([
+                    { label: 'Left', key: 'x' as const, min: 0, max: 80 },
+                    { label: 'Top', key: 'y' as const, min: 0, max: 85 },
+                    { label: 'Width', key: 'w' as const, min: 30, max: 95 },
+                  ]).map(s => (
+                    <div key={s.key} className="flex items-center gap-3 mb-2">
+                      <span className="font-sans text-[11px] text-bark-500 w-12 shrink-0">{s.label}</span>
+                      <input
+                        type="range" min={s.min} max={s.max} value={zone[s.key]}
+                        onChange={e => setZ({ [s.key]: Number(e.target.value) } as Partial<Zone>)}
+                        className="flex-1 accent-[#7b876a]"
+                      />
+                      <span className="font-sans text-[11px] text-bark-400 w-9 text-right tabular-nums">{zone[s.key]}%</span>
+                    </div>
+                  ))}
+                  <div className="flex items-center gap-3 mt-3">
+                    <span className="font-sans text-[11px] text-bark-500 w-12 shrink-0">{isEs ? 'Alinear' : 'Align'}</span>
+                    <div className="flex gap-1">
+                      {(['left', 'center', 'right'] as Align[]).map(a => (
+                        <button
+                          key={a} type="button" onClick={() => setZ({ align: a })}
+                          className={`font-sans text-[11px] tracking-[0.1em] uppercase px-3 py-1.5 rounded border transition-colors ${zone.align === a ? 'bg-[#7b876a] text-white border-[#7b876a]' : 'bg-white text-bark-500 border-cream-300 hover:border-bark-400'}`}
+                        >
+                          {a}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <p className="font-sans text-[11px] text-bark-400 text-center mt-2">{isEs ? 'Mueve el área punteada sobre el espacio libre de la tarjeta — ahí se escribe tu nota.' : <>Move the dashed area over the card&rsquo;s empty space — that&rsquo;s where your note prints.</>}</p>
+              </div>
+            )
+          })()}
 
           <div className="flex flex-col sm:flex-row gap-3 justify-end">
             <Button variant="outline" size="md" onClick={() => router.back()}>← Back to Box</Button>
-            {phase === 'edit' && (
-              <Button variant="gold" size="lg" onClick={handleContinue} disabled={!editedContent.trim() || overLimit}>
-                Continue to Checkout <ArrowRight size={16} className="ml-1" />
-              </Button>
-            )}
+            <Button variant="gold" size="lg" onClick={handleContinue} disabled={!message.trim() || overLimit}>
+              Continue to Checkout <ArrowRight size={16} className="ml-1" />
+            </Button>
           </div>
 
-          {phase === 'edit' && (
-            <div className="mt-6 text-center">
-              <button onClick={skipCard} className="font-sans text-xs text-bark-400 hover:text-bark-600 transition-colors underline underline-offset-2">
-                Skip the card and continue to checkout
-              </button>
-            </div>
-          )}
+          <div className="mt-6 text-center">
+            <button onClick={skipCard} className="font-sans text-xs text-bark-400 hover:text-bark-600 transition-colors underline underline-offset-2">
+              Skip the card and continue to checkout
+            </button>
+          </div>
             </div>{/* right column */}
           </div>{/* two-column flex */}
         </div>
