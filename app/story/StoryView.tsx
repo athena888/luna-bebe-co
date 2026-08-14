@@ -137,12 +137,14 @@ export default async function StoryView({ locale = 'en' }: { locale?: 'en' | 'es
             <div className="bg-[#76927E] flex flex-col items-center justify-center text-center px-8 sm:px-14 lg:px-20 py-16 md:py-12">
               <ScrollFlyIn from="down">
                 <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-white/70 mb-6">{content.hero.eyebrow}</p>
-                <h2
+                {/* h1 (was h2): the page's only top-level heading — Bing flagged
+                    /story and /es/historia for missing h1. Styling unchanged. */}
+                <h1
                   className="text-3xl sm:text-4xl text-white leading-tight mb-10"
                   style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400 }}
                 >
                   {content.hero.heading}
-                </h2>
+                </h1>
               </ScrollFlyIn>
               <ScrollFlyIn from="down">
                 <div className="max-w-md mx-auto">

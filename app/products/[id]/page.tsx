@@ -24,7 +24,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const description = (p.seo_description || p.description || `${p.name} — a premium organic baby gift from Petite Lavande.`).slice(0, 155)
   const img = productImage(p)
   return {
-    title: p.seo_title ? { absolute: p.seo_title } : p.name,
+    // Names that already carry the brand skip the "| Petite Lavande" template
+    // suffix (Bing "title too long": brand doubled to 73 chars on such names).
+    title: p.seo_title ? { absolute: p.seo_title } : /petite lavande/i.test(p.name) ? { absolute: p.name } : p.name,
     description,
     alternates: {
       canonical: url,

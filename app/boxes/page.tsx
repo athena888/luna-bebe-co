@@ -51,6 +51,10 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
       <Header />
       <main className="min-h-screen bg-white">
 
+        {/* Visually hidden page heading — the design is card-first, but every
+            indexable page needs exactly one h1 (Bing site scan). */}
+        <h1 className="sr-only">{isEs ? 'Canastillas de regalo para bebé y mamá' : 'Baby & New-Mama Gift Boxes'}</h1>
+
         {catalogProducts.length > 0 && (
           <SlotBackground slotKey="boxes.page_bg" scrim="" className="min-h-screen">
           <section className="max-w-6xl mx-auto px-6 py-8 min-h-[88vh] flex items-center">

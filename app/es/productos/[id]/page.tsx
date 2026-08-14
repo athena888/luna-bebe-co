@@ -73,7 +73,10 @@ export default async function EsProductPage({ params }: { params: Promise<{ id: 
           url: `${BASE}/es/productos/${id}`,
         },
       }} />
-      <ProductDetailClient related={related} locale="es" />
+      {/* initialProduct = full SSR (name/h1/price in the HTML) — without it the
+          server renders only the loading spinner and crawlers see no content
+          (same Phase 8 lesson as the EN pages; Bing flagged missing H1s). */}
+      <ProductDetailClient related={related} locale="es" initialProduct={p} />
     </>
   )
 }
