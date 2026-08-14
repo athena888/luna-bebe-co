@@ -16,12 +16,13 @@ import type { SizeOption } from '@/lib/catalog-db'
 
 export interface BuyContent { item: Product; qty: number; colorChoice: boolean }
 
-export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, needsColor, sizesByItem = {} }: {
+export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, variantLabel, needsColor, sizesByItem = {} }: {
   contents: BuyContent[]
   price: number
   boxName?: string
   boxSlug?: string
   variantKey?: string
+  variantLabel?: string
   needsColor: boolean
   sizesByItem?: Record<string, SizeOption[]>
 }) {
@@ -64,8 +65,11 @@ export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, nee
     })
     // An untouched prebuilt box sells at the BOX price, not summed item
     // retail — the ref survives until any cart edit (see lib/cart.ts).
+    // The display name carries the FULL box identity incl. variant
+    // ("Mama et Bébé — Strawberry"), matching the Stripe line item.
+    const fullName = `${boxName ?? 'Gift Box'}${variantLabel ? ` — ${variantLabel}` : ''}`
     writeCart(items, boxSlug && variantKey
-      ? { slug: boxSlug, variantKey, name: boxName ?? 'Gift Box', price }
+      ? { slug: boxSlug, variantKey, name: fullName, price }
       : undefined)
     router.push(isEs ? '/es/checkout' : '/checkout')
   }

@@ -206,6 +206,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                 boxName={box.name}
                 boxSlug={box.slug}
                 variantKey={variant.key}
+                variantLabel={box.variants.length > 1 ? variant.label : undefined}
                 needsColor={variant.contents.some(c => c.colorChoice)}
                 sizesByItem={sizesByItem}
               />

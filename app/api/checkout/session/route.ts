@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
             price_data: {
               currency: stripeCurrency,
               product_data: {
-                name: `${box.name}${box.variants.length > 1 ? ` (${variant.label})` : ''}`,
+                name: `${box.name}${box.variants.length > 1 ? ` — ${variant.label}` : ''}`,
                 description: `${variant.contents.map(c => c.item.name).join(', ')} — hand-packed, ribbon-tied, with your personalized card`,
               },
               unit_amount: variant.price,
