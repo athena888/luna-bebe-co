@@ -88,6 +88,11 @@ export function feedTitle(item: FeedItem): string {
 
 const clean = (s: string) => s.replace(/[\t\n\r]+/g, ' ').trim()
 
+// GOTS wording is held out of the FEED until the Transaction Certificate
+// confirms per-product certification (gots_certified, §49). Site copy is
+// handled separately.
+const scrubGots = (s: string) => s.replace(/GOTS[- ]certified/gi, 'certified organic').replace(/\bGOTS\b/g, 'certified organic')
+
 const HEADER = [
   'id', 'title', 'description', 'link', 'image_link', 'price', 'availability',
   'condition', 'brand', 'identifier_exists', 'google_product_category',
@@ -115,7 +120,7 @@ export async function buildProductTsv(): Promise<string> {
     const nameColor = splitNameColor(item.title).color
     const base = {
       title: clean(feedTitle(item)),
-      description: clean(item.description).slice(0, 5000),
+      description: scrubGots(clean(item.description)).slice(0, 5000),
       link: canonical(item.link),
       image_link: item.imageLink ?? '',
       price: item.price,
