@@ -5,13 +5,6 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 const nextConfig: NextConfig = {
-  // The lookbook PDF renderer reads fonts AND brand art (lavender divider,
-  // botanical illustration) from assets/ at runtime — make sure the serverless
-  // bundles for those routes include them.
-  outputFileTracingIncludes: {
-    '/api/portal/lookbook/render': ['./assets/**/*'],
-    '/api/portal/lookbook/publish': ['./assets/**/*'],
-  },
   // hersheytext (Cricut card writer) reads its font files with __dirname at
   // runtime — bundling breaks those paths, so load it from node_modules.
   serverExternalPackages: ['hersheytext'],

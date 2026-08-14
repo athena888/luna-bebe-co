@@ -12,7 +12,7 @@ const NAV = [
   { href: '/portal/reviews', label: 'Reviews', icon: <Star size={16} /> },
   { href: '/portal/contacts', label: 'Marketing', icon: <Send size={16} /> },
   { href: '/portal/ugc', label: 'Customer Photos', icon: <ImageIcon size={16} /> },
-  { href: '/portal/lookbook/images', label: 'Lookbook', icon: <BookOpen size={16} /> },
+  { href: '/portal/lookbook', label: 'Lookbook', icon: <BookOpen size={16} /> },
   { href: '/portal/discounts', label: 'Discount Codes', icon: <Tag size={16} /> },
   { href: '/portal/content', label: 'Pages & Content', icon: <LayoutTemplate size={16} /> },
   { href: '/portal/cert-icons', label: 'Cert Library', icon: <ShieldCheck size={16} /> },
@@ -42,7 +42,7 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
             || (href === '/portal/content' && contentPaths.some(p => pathname.startsWith(p)))
             || (href === '/portal/analytics' && (pathname.startsWith('/portal/stock-insights') || pathname.startsWith('/portal/economics')))
             || (href === '/portal/contacts' && pathname.startsWith('/portal/campaigns'))
-            || (href === '/portal/lookbook/images' && pathname.startsWith('/portal/lookbook'))
+            || (href === '/portal/lookbook' && pathname.startsWith('/portal/lookbook'))
           return (
             <Link
               key={href}

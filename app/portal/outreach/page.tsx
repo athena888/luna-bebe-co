@@ -275,7 +275,7 @@ export default function ReviewPage() {
       {lb && !lb.published && lb.waiting > 0 && (
         <div className="flex items-center gap-2 bg-rose-200/70 border border-rose-300 text-bark-700 rounded-xl px-4 py-3 mb-4 font-sans text-sm">
           <AlertTriangle size={16} className="shrink-0" />
-          Lookbook requested — {lb.waiting} interested {lb.waiting === 1 ? 'reply is' : 'replies are'} waiting. <Link href="/portal/lookbook/builder" className="underline">Publish the lookbook</Link>
+          Lookbook requested — {lb.waiting} interested {lb.waiting === 1 ? 'reply is' : 'replies are'} waiting. <Link href="/portal/lookbook" className="underline">Upload the lookbook</Link>
         </div>
       )}
 

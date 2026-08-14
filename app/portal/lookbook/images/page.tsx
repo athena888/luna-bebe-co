@@ -100,8 +100,8 @@ export default function LookbookImagesPage() {
     <div className="p-4 md:p-8 max-w-5xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
         <h1 className="font-serif text-2xl text-bark-700">Lookbook — Image Library</h1>
-        <Link href="/portal/lookbook/builder" className="inline-flex items-center gap-1.5 bg-bark-700 text-cream-50 hover:bg-bark-600 font-sans text-xs px-4 py-2.5 rounded-xl transition-colors">
-          <BookOpen size={13} /> Open builder
+        <Link href="/portal/lookbook" className="inline-flex items-center gap-1.5 bg-bark-700 text-cream-50 hover:bg-bark-600 font-sans text-xs px-4 py-2.5 rounded-xl transition-colors">
+          <BookOpen size={13} /> Pricing &amp; PDF
         </Link>
       </div>
       <p className="font-sans text-xs text-bark-400 mb-5">jpg / png / webp / heic, up to 15MB. Images are auto-tagged by AI — you can re-tag anything. “Off palette” is a soft warning, never blocking.</p>

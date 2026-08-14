@@ -1,27 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { publishLookbook, listVersions, type ImageMap } from '@/lib/lookbook/versions'
-import type { LookbookCopy } from '@/lib/lookbook/copy'
+import { createLookbookUploadTarget, finalizeLookbookUpload, listVersions } from '@/lib/lookbook/versions'
 
 export const dynamic = 'force-dynamic'
-export const maxDuration = 120
+export const maxDuration = 60
 
-// Publish + version history (portal-authed).
-// POST { copy, imageMap } → banned-phrase gate → render → store vN → flip
-//   is_current. 422 with violations when the gate blocks.
+// Lookbook versions (portal-authed). Emily uploads her own PDF — no generator.
+// POST { action: 'sign' } → { path, token, version } (browser then PUTs the
+//   PDF straight to Supabase Storage via uploadToSignedUrl)
+// POST { action: 'finalize', path, version } → records it as current
 // GET → all versions, newest first, each with a signed download URL.
 
 export async function POST(req: NextRequest) {
   try {
-    const { copy, imageMap } = (await req.json()) as { copy: LookbookCopy; imageMap: ImageMap }
-    if (!copy) return NextResponse.json({ error: 'copy required' }, { status: 400 })
-    const result = await publishLookbook(copy, imageMap ?? {})
-    if (!result.ok) {
-      return NextResponse.json({ error: 'Blocked by compliance check', violations: result.violations }, { status: 422 })
+    const b = (await req.json()) as { action?: string; path?: string; version?: number }
+    if (b.action === 'sign') {
+      return NextResponse.json(await createLookbookUploadTarget())
     }
-    return NextResponse.json({ ok: true, version: result.version, stableUrl: '/corporate/lookbook.pdf' })
+    if (b.action === 'finalize') {
+      if (!b.path || !b.version) return NextResponse.json({ error: 'path + version required' }, { status: 400 })
+      await finalizeLookbookUpload(b.path, b.version)
+      return NextResponse.json({ ok: true, version: b.version, stableUrl: '/corporate/lookbook.pdf' })
+    }
+    return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
   } catch (e) {
-    console.error('publish error:', e)
-    return NextResponse.json({ error: e instanceof Error ? e.message : 'Publish failed' }, { status: 500 })
+    console.error('lookbook upload error:', e)
+    return NextResponse.json({ error: e instanceof Error ? e.message : 'Upload failed' }, { status: 500 })
   }
 }
 
