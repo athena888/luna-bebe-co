@@ -143,7 +143,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                       >
                         {v.images[0] && (
                           <span className="relative w-9 h-9 shrink-0 overflow-hidden">
-                            <Image src={v.images[0]} alt="" fill className="object-cover" unoptimized />
+                            <Image src={v.images[0]} alt={`${box.name} — ${v.label} option`} fill className="object-cover" unoptimized />
                           </span>
                         )}
                         {v.label} · ${(v.price / 100).toFixed(0)}

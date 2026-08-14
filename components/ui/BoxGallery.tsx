@@ -52,7 +52,7 @@ export function BoxGallery({ images, alt }: { images: string[]; alt: string }) {
         <div className="flex flex-col gap-2 w-16">
           {images.map((src, i) => (
             <button key={i} type="button" onClick={() => setIdx(i)} className={`relative aspect-square border transition-colors ${i === idx ? 'border-espresso' : 'border-cream-300 hover:border-espresso-light'}`}>
-              <Image src={src} alt="" fill className="object-cover" unoptimized />
+              <Image src={src} alt={`${alt} — photo ${i + 1}`} fill className="object-cover" unoptimized />
             </button>
           ))}
         </div>

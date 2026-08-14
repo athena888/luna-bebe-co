@@ -23,6 +23,15 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // Canonical host: everything on www permanently redirects to the bare
+      // apex (requires www.petitelavande.com to be attached to the Vercel
+      // project + a DNS record — without those, www doesn't resolve at all).
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.petitelavande.com' }],
+        destination: 'https://petitelavande.com/:path*',
+        permanent: true,
+      },
       // Box slugs -> keyword URLs (Emily, 2026-07-29)
       { source: '/boxes/signature', destination: '/boxes/signature-baby-gift-box', permanent: true },
       { source: '/boxes/la-collection', destination: '/boxes/themed-baby-gift-box', permanent: true },

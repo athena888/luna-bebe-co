@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "setup:welcome-code": "node scripts/setup-welcome-code.js",
-    "decor:split": "node scripts/split-botanical.mjs"
+    "decor:split": "node scripts/split-botanical.mjs",
+    "indexnow": "node scripts/indexnow-ping.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.96.0",

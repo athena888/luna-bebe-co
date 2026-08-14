@@ -326,7 +326,7 @@ function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => 
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={cells[lightbox]?.src ?? ''}
-            alt=""
+            alt={cells[lightbox]?.label ?? `${item.name} — enlarged photo`}
             className="max-h-[92vh] max-w-[calc(100vw-2rem)] sm:max-w-[92vw] w-auto h-auto object-contain shadow-2xl"
             onClick={e => e.stopPropagation()}
           />

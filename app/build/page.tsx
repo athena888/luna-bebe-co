@@ -728,7 +728,7 @@ export default function BuildPage() {
                             style={{ aspectRatio: '3/4' }}
                             aria-label={`Photo ${i + 1}`}
                           >
-                            <Image src={src} alt="" fill className="object-cover" sizes="80px" />
+                            <Image src={src} alt={`${modalProduct.name} — photo ${i + 1}`} fill className="object-cover" sizes="80px" />
                           </button>
                         ))}
                         {modalVideo && (
@@ -965,7 +965,7 @@ export default function BuildPage() {
           onClick={() => setLightbox(null)}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={lightbox} alt="" className="max-h-[92vh] max-w-[92vw] w-auto h-auto object-contain shadow-2xl" />
+          <img src={lightbox} alt={modalProduct ? `${modalProduct.name} — enlarged photo` : 'Enlarged product photo'} className="max-h-[92vh] max-w-[92vw] w-auto h-auto object-contain shadow-2xl" />
           <button
             onClick={() => setLightbox(null)}
             className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center text-cream-50/80 hover:text-cream-50 bg-bark-900/40 rounded-full"

@@ -44,7 +44,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(BASE),
     title: { default: "Petite Lavande — Luxury Curated Baby Gift Boxes", template: "%s | Petite Lavande" },
-    description: "Build a bespoke luxury baby shower gift box. Choose 5 premium organic items, add a personalized printed card, and deliver an unforgettable unboxing experience.",
+    description: "French-inspired newborn & postpartum gift boxes — organic cotton, hand-packed with care. Thoughtful luxury for new mothers and babies.",
     keywords: ["baby gift box", "luxury baby shower gift", "organic baby gifts", "newborn gift basket", "custom baby box"],
     openGraph: {
       type: "website",
