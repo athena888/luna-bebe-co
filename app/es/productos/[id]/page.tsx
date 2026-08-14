@@ -29,7 +29,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (!p || !p.active) return {}
   const es = (await getTranslations('product', [id])).get(id) ?? {}
   return {
-    title: p.name,
+    // Skip the "| Petite Lavande" template suffix when the name already
+    // carries the brand (same doubled-title fix as the EN page).
+    title: /petite lavande/i.test(p.name) ? { absolute: p.name } : p.name,
     description: (es.description ?? p.description ?? '').slice(0, 155),
     alternates: {
       canonical: `/es/productos/${id}`,
