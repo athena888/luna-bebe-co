@@ -53,8 +53,8 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
 
         {catalogProducts.length > 0 && (
           <SlotBackground slotKey="boxes.page_bg" scrim="" className="min-h-screen">
-          <section className="max-w-6xl mx-auto px-6 pt-5 pb-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <section className="max-w-6xl mx-auto px-6 py-8 min-h-[88vh] flex items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
               {catalogProducts.map(p => {
                 const { low, high } = priceRange(p)
                 const cover = ((p.story as { hub_image?: string })?.hub_image) || p.variants[0]?.images[0]
