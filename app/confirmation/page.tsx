@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button'
 import { VatNotice } from '@/components/ui/VatNotice'
 import { CheckCircle, Package, Pen, Truck, Phone } from 'lucide-react'
 import { trackPurchase } from '@/lib/analytics-events'
+import { GcrOptIn } from '@/components/ui/GcrOptIn'
 
 const NEXT_STEPS = [
   { icon: <Package size={20} className="text-gold-400" />, title: 'Box Assembly', body: 'Our team begins handpicking and assembling your items within 24 hours of your order.' },
@@ -20,6 +21,8 @@ function ConfirmationInner() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
   const [orderId, setOrderId] = useState<string | null>(null)
+  // Google Customer Reviews opt-in data — set only for a verified-paid session.
+  const [gcr, setGcr] = useState<{ orderId: string; email: string; createdAt?: string | null } | null>(null)
 
   useEffect(() => {
     // Clear session storage after successful order
@@ -38,8 +41,9 @@ function ConfirmationInner() {
     if (!sessionId) return
     fetch(`/api/checkout/order-summary?session_id=${encodeURIComponent(sessionId)}`)
       .then(r => (r.ok ? r.json() : null))
-      .then((s: { paid?: boolean; orderId?: string | null; value?: number; currency?: string; contentIds?: string[] } | null) => {
+      .then((s: { paid?: boolean; orderId?: string | null; value?: number; currency?: string; contentIds?: string[]; email?: string | null; createdAt?: string | null } | null) => {
         if (!s?.paid || !s.orderId) return
+        if (s.email) setGcr({ orderId: s.orderId, email: s.email, createdAt: s.createdAt })
         const flag = `pl_purchase_fired_${s.orderId}`
         try { if (sessionStorage.getItem(flag)) return } catch { /* ignore */ }
         trackPurchase({ orderId: s.orderId, value: s.value ?? 0, currency: s.currency ?? 'USD', contentIds: s.contentIds })
@@ -50,6 +54,8 @@ function ConfirmationInner() {
 
   return (
     <>
+      {/* Google Customer Reviews survey opt-in — only once real order data exists */}
+      {gcr && <GcrOptIn orderId={gcr.orderId} email={gcr.email} orderDateIso={gcr.createdAt} />}
       <Header />
       <main className="min-h-screen bg-cream-100 py-16 px-4 sm:px-6">
         <div className="max-w-2xl mx-auto text-center">

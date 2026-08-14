@@ -90,6 +90,44 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
     variant.contents.filter(c => (c.item as { has_variants?: boolean }).has_variants).map(c => c.item.id)
   )
 
+  // Approved reviews (pooled per box, §47) feed the Product JSON-LD:
+  // aggregateRating + up to 10 review objects, emitted ONLY when at least one
+  // approved review exists. Incentivized reviews are excluded here for the
+  // same reason they're excluded from the Google review feed (reward-based
+  // exclusion, never star-based). Fail-soft: a DB hiccup drops the fields,
+  // never the page.
+  let reviewLd: Record<string, unknown> = {}
+  try {
+    const { supabaseAdmin } = await import('@/lib/supabase')
+    const { data } = await supabaseAdmin
+      .from('reviews')
+      .select('customer_name, rating, body, created_at, incentivized')
+      .eq('product_id', `box-${box.slug}`)
+      .eq('approved', true)
+      .order('created_at', { ascending: false })
+    const rs = ((data ?? []) as Array<{ customer_name: string; rating: number; body: string; created_at: string; incentivized?: boolean }>)
+      .filter(r => !r.incentivized && typeof r.rating === 'number' && r.rating >= 1 && r.rating <= 5)
+    if (rs.length > 0) {
+      const avg = rs.reduce((s, r) => s + r.rating, 0) / rs.length
+      reviewLd = {
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: (Math.round(avg * 10) / 10).toString(),
+          reviewCount: rs.length,
+          bestRating: '5',
+          worstRating: '1',
+        },
+        review: rs.slice(0, 10).map(r => ({
+          '@type': 'Review',
+          author: { '@type': 'Person', name: r.customer_name || 'Verified customer' },
+          datePublished: (r.created_at ?? '').slice(0, 10),
+          reviewRating: { '@type': 'Rating', ratingValue: r.rating.toString(), bestRating: '5', worstRating: '1' },
+          reviewBody: (r.body ?? '').slice(0, 1500),
+        })),
+      }
+    }
+  } catch { /* fields omitted */ }
+
   return (
     <>
       <JsonLd data={{
@@ -99,9 +137,12 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
         description: box.subtitle || box.name,
         ...(variant.images[0] ? { image: variant.images } : {}),
         brand: { '@type': 'Brand', name: 'Petite Lavande' },
+        sku: box.slug,
+        mpn: box.slug,
         offers: low === high
           ? { '@type': 'Offer', price: (low / 100).toFixed(2), priceCurrency: 'USD', url, availability: 'https://schema.org/InStock' }
           : { '@type': 'AggregateOffer', lowPrice: (low / 100).toFixed(2), highPrice: (high / 100).toFixed(2), priceCurrency: 'USD', offerCount: box.variants.length, url },
+        ...reviewLd,
       }} />
       <JsonLd data={{
         '@context': 'https://schema.org',

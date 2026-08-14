@@ -1,19 +1,14 @@
-// Submit every sitemap URL to IndexNow (Bing, Seznam, Yandex, …).
-// Run manually after a deploy:  npm run indexnow
-// Key file lives at public/<KEY>.txt (served from the site root), which is
-// how IndexNow verifies we own the host.
-
+// Manual IndexNow submission: reads the LIVE sitemap and submits every URL.
+// Run after a deploy that changes many pages:  npm run indexnow
+// (Portal product/catalog saves already ping automatically via lib/indexnow.ts;
+// this is the run-it-yourself blast for everything else.)
 const HOST = 'petitelavande.com'
-const KEY = '181324090eb5ecf18848ef249e7d325a'
-const SITEMAP = `https://${HOST}/sitemap.xml`
+const KEY = process.env.INDEXNOW_KEY || '62f21e010db55da6a7b1725da6787cc4'
 
-const xml = await (await fetch(SITEMAP)).text()
-const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)]
-  .map(m => m[1].trim())
-  .filter(u => u.startsWith(`https://${HOST}`))
-
-if (!urls.length) {
-  console.error(`No URLs found in ${SITEMAP} — aborting`)
+const sitemap = await fetch(`https://${HOST}/sitemap.xml`).then(r => r.text())
+const urlList = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1])
+if (!urlList.length) {
+  console.error('No URLs found in sitemap — aborting')
   process.exit(1)
 }
 
@@ -24,10 +19,7 @@ const res = await fetch('https://api.indexnow.org/indexnow', {
     host: HOST,
     key: KEY,
     keyLocation: `https://${HOST}/${KEY}.txt`,
-    urlList: urls,
+    urlList,
   }),
 })
-
-console.log(`Submitted ${urls.length} URLs from ${SITEMAP}`)
-console.log(`IndexNow response: ${res.status} ${res.statusText}`)
-if (!res.ok) console.log(await res.text())
+console.log(`Submitted ${urlList.length} URLs → HTTP ${res.status} ${res.status === 200 || res.status === 202 ? '(ok)' : '(check key/quota)'}`)

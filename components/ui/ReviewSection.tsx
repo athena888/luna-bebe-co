@@ -115,7 +115,9 @@ export function ReviewSection({ productId }: { productId: string }) {
   const inputClass = "w-full px-4 py-3 border border-cream-300 bg-cream-50 font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-bark-400 transition-colors"
 
   return (
-    <div className="mt-12 pt-10 border-t border-cream-200">
+    // id anchors the review-request email's deep links (…#reviews).
+    // scroll-mt clears the fixed header when the browser jumps here.
+    <div id="reviews" className="mt-12 pt-10 border-t border-cream-200 scroll-mt-28">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h3 className="font-serif text-2xl text-espresso mb-1">Customer Reviews</h3>

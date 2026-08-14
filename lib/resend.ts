@@ -626,13 +626,17 @@ export async function sendReviewRequestEmail({
   const { reviewToken } = await import('./review-token')
   const rt = `&rt=${encodeURIComponent(reviewToken(orderId, customerEmail))}`
   const productPath = (id: string) => es ? `/es/productos/${id}` : `/products/${id}`
+  // #reviews jumps straight to the review form on the product page.
   const itemLinks = selectedItems.slice(0, 3).map(item =>
-    `<li style="margin-bottom:8px;"><a href="${utm(productPath(item.id), 'postpurchase')}${rt}" style="font-family:sans-serif;font-size:14px;color:#ffffff;text-decoration:underline;">${item.name}</a></li>`
+    `<li style="margin-bottom:8px;"><a href="${utm(productPath(item.id), 'postpurchase')}${rt}#reviews" style="font-family:sans-serif;font-size:14px;color:#ffffff;text-decoration:underline;">${item.name}</a></li>`
   ).join('')
   // CTA goes to the first item's product page — the review form lives there.
   const reviewHref = selectedItems[0]
-    ? utm(productPath(selectedItems[0].id), 'postpurchase') + rt
+    ? utm(productPath(selectedItems[0].id), 'postpurchase') + rt + '#reviews'
     : utm(`/track?ref=${orderId.slice(-8).toUpperCase()}`, 'postpurchase')
+  // Google Business Profile review link — env-configurable, literal fallback.
+  const gbpReviewUrl = process.env.GBP_REVIEW_URL
+    || 'https://search.google.com/local/writereview?placeid=ChIJRUi8mUFkEygRvoBZgJi_-Tg'
 
   return sendEmail({
     from: FROM,
@@ -658,6 +662,10 @@ export async function sendReviewRequestEmail({
               ${es ? 'Escribir una reseña' : 'Leave a Review'}
             </a>
           </div>
+          <p style="font-family:sans-serif;font-size:12px;line-height:1.6;color:#ffffff;text-align:center;margin:18px 0 0;">
+            ${es ? 'O si prefieres,' : 'Or if you prefer,'}
+            <a href="${gbpReviewUrl}" style="color:#ffffff;text-decoration:underline;">${es ? 'déjanos una reseña en Google' : 'review us on Google'}</a>.
+          </p>
         </div>
         ${flowFooter(customerEmail)}
       </div>

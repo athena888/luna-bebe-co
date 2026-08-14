@@ -36,6 +36,10 @@ export async function GET(req: NextRequest) {
       value: (session.amount_total ?? 0) / 100,
       currency: (session.currency ?? 'usd').toUpperCase(),
       contentIds,
+      // For the Google Customer Reviews opt-in on the confirmation page.
+      // Only the session_id holder (the purchaser) can reach this.
+      email: session.customer_details?.email ?? null,
+      createdAt: session.created ? new Date(session.created * 1000).toISOString() : null,
     })
   } catch (err) {
     console.error('Order summary error:', err)
