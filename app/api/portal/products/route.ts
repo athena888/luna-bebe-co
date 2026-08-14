@@ -42,6 +42,9 @@ export async function POST(req: NextRequest) {
     }
 
     const product = await createProduct(input)
+    // Tell search engines the new URL exists — fire-and-forget.
+    import('@/lib/indexnow').then(({ submitToIndexNow }) =>
+      submitToIndexNow([`/products/${product.id}`, `/es/productos/${product.id}`])).catch(() => {})
     return NextResponse.json({ product })
   } catch (error) {
     console.error('Create product error:', error)

@@ -37,6 +37,8 @@ export async function POST(req: NextRequest) {
       if (error) throw error
       import('@/lib/auto-translate').then(({ autoTranslate }) =>
         autoTranslate('catalog_product', slug, { name: clean.name as string, subtitle: clean.subtitle as string })).catch(() => {})
+      import('@/lib/indexnow').then(({ submitToIndexNow }) =>
+        submitToIndexNow([`/boxes/${slug}`, `/es/canastillas/${slug}`])).catch(() => {})
       return NextResponse.json({ success: true })
     }
 
@@ -55,6 +57,8 @@ export async function POST(req: NextRequest) {
       if (error) throw error
       import('@/lib/auto-translate').then(({ autoTranslate }) =>
         autoTranslate('catalog_variant', row.product_slug + ':' + row.key, { label: row.label, adds: row.adds })).catch(() => {})
+      import('@/lib/indexnow').then(({ submitToIndexNow }) =>
+        submitToIndexNow([`/boxes/${row.product_slug}`, `/es/canastillas/${row.product_slug}`])).catch(() => {})
       return NextResponse.json({ success: true })
     }
 

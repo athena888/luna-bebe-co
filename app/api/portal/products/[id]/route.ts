@@ -81,6 +81,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     // Phase 7: English edits auto-queue Spanish (unapproved) — fire-and-forget
     import('@/lib/auto-translate').then(({ autoTranslate }) =>
       autoTranslate('product', id, { description, name })).catch(() => {})
+    // IndexNow ping for the changed product URLs — fire-and-forget.
+    import('@/lib/indexnow').then(({ submitToIndexNow }) =>
+      submitToIndexNow([`/products/${id}`, `/es/productos/${id}`])).catch(() => {})
   } catch {
     return NextResponse.json({ error: 'Failed to save product details' }, { status: 500 })
   }
