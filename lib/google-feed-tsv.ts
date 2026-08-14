@@ -1,5 +1,6 @@
 import { buildFeed, FEED_BRAND, type FeedItem } from './google-feed'
 import { supabaseAdmin } from './supabase'
+import { getBoxProducts } from './catalog-db'
 
 // Google Merchant TSV feed (/product-feed.tsv) — built ON TOP of the XML
 // feed's buildFeed(), so price ("95.00 USD" from the same cents shown on the
@@ -110,6 +111,35 @@ export async function buildProductTsv(): Promise<string> {
         item.availability, base.condition, base.brand, base.identifier_exists,
         base.google_product_category, base.age_group, gender(item), '',
         base.product_type, base.custom_label_0, base.sale_price,
+      ].join('\t'))
+    }
+  }
+  // ── Gift boxes: every active+visible box, one row per variant, pooled under
+  // a shared item_group_id. Category 5394 (gift baskets); always in stock —
+  // boxes are packed to order from live inventory.
+  const BOX_KEYWORDS: Record<string, string> = {
+    'signature-baby-gift-box': 'Organic Newborn Gift Basket',
+    'themed-baby-gift-box': 'Baby Shower Gift Box',
+    'new-mom-gift-box': 'New Mom Postpartum Gift Box',
+    'baby-first-christmas-gift-box': "Baby's First Christmas Gift Box",
+  }
+  const boxes = await getBoxProducts()
+  for (const b of boxes) {
+    const kw = BOX_KEYWORDS[b.slug] ?? 'Organic Baby Gift Box'
+    const many = b.variants.length > 1
+    for (const v of b.variants) {
+      const title = clean(`${kw} – Hand-Packed & Personalized – ${b.name}${many ? ` (${v.label})` : ''}`).slice(0, 150)
+      const g = /girl|pink|strawberry/i.test(v.label) ? 'female' : /boy|blue/i.test(v.label) ? 'male' : 'unisex'
+      const link = many
+        ? `https://www.petitelavande.com/boxes/${b.slug}?${b.variantParam}=${encodeURIComponent(v.key)}`
+        : `https://www.petitelavande.com/boxes/${b.slug}`
+      lines.push([
+        `box-${b.slug}--${v.key}`, title,
+        clean(`${b.name} — a hand-packed organic baby gift box from Petite Lavande: ${v.contents.map(c => c.item.name).join(', ')}. Personalized card included, sealed by hand.`).slice(0, 5000),
+        link, v.images[0] ?? '', `${(v.price / 100).toFixed(2)} USD`,
+        'in_stock', 'new', FEED_BRAND, 'false', '5394',
+        b.slug === 'new-mom-gift-box' ? '' : 'newborn', g,
+        many ? `box-${b.slug}` : '', 'Baby Gifts > Gift Boxes', tier(v.price / 100), '',
       ].join('\t'))
     }
   }
