@@ -41,6 +41,13 @@ const CATEGORY_SUBTITLES: Record<string, string> = {
   keepsake: 'A gift that stays long after babyhood ends.',
   mom: 'Because the mama deserves to be celebrated too.',
 }
+const CATEGORY_SUBTITLES_ES: Record<string, string> = {
+  swaddle: 'Suavidad desde el primer día.',
+  garment: 'El primer conjunto que siempre recordarán.',
+  bath: 'Ingredientes puros, seguros desde el primer baño.',
+  keepsake: 'Un regalo que se queda mucho después de la infancia.',
+  mom: 'Porque la mamá también merece ser celebrada.',
+}
 
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
 
@@ -492,7 +499,7 @@ export default function BuildPage() {
             <section key={cat} id={`cat-${cat}`}>
               <div className="pl-6 sm:pl-9 pr-6 sm:pr-8 mb-8">
                 <p className="font-sans text-[11px] tracking-[0.3em] uppercase font-bold text-gold-500 mb-1">{(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[cat]}</p>
-                <h2 className="font-serif text-lg sm:text-xl text-terra-500">{CATEGORY_SUBTITLES[cat]}</h2>
+                <h2 className="font-serif text-lg sm:text-xl text-terra-500">{(isEs ? CATEGORY_SUBTITLES_ES : CATEGORY_SUBTITLES)[cat]}</h2>
               </div>
               <div className="relative">
                 <div

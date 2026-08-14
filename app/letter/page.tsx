@@ -237,15 +237,15 @@ export default function CardPage() {
           })()}
 
           <div className="flex flex-col sm:flex-row gap-3 justify-end">
-            <Button variant="outline" size="md" onClick={() => router.back()}>← Back to Box</Button>
+            <Button variant="outline" size="md" onClick={() => router.back()}>{isEs ? '← Volver a la canastilla' : '← Back to Box'}</Button>
             <Button variant="gold" size="lg" onClick={handleContinue} disabled={!message.trim() || overLimit}>
-              Continue to Checkout <ArrowRight size={16} className="ml-1" />
+              {isEs ? 'Continuar al pago' : 'Continue to Checkout'} <ArrowRight size={16} className="ml-1" />
             </Button>
           </div>
 
           <div className="mt-6 text-center">
             <button onClick={skipCard} className="font-sans text-xs text-bark-400 hover:text-bark-600 transition-colors underline underline-offset-2">
-              Skip the card and continue to checkout
+              {isEs ? 'Omitir la tarjeta y continuar al pago' : 'Skip the card and continue to checkout'}
             </button>
           </div>
             </div>{/* right column */}

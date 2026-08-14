@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { X, Minus, Plus } from 'lucide-react'
 import { readCart, writeCart, type CartItem } from '@/lib/cart'
 import { BOX_BASE_PRICE, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
+import { useIsEs } from '@/lib/use-is-es'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
@@ -17,6 +18,7 @@ function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
 export function BagDrawer() {
   const pathname = usePathname()
   const router = useRouter()
+  const isEs = useIsEs()
   const [open, setOpen] = useState(false)
   const [items, setItems] = useState<CartItem[]>([])
 
@@ -67,8 +69,8 @@ export function BagDrawer() {
       <div className={`fixed top-0 right-0 bottom-0 z-[53] w-[92vw] sm:w-[460px] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out ${open ? 'translate-x-0' : 'translate-x-full'}`}>
 
         <div className="flex items-center justify-between px-6 h-[68px] border-b border-cream-300 shrink-0">
-          <h2 className="font-serif text-xl text-bark-600">Your Bag</h2>
-          <button onClick={() => setOpen(false)} className="text-bark-400 hover:text-bark-600 transition-colors" aria-label="Close bag">
+          <h2 className="font-serif text-xl text-bark-600">{isEs ? 'Tu bolsa' : 'Your Bag'}</h2>
+          <button onClick={() => setOpen(false)} className="text-bark-400 hover:text-bark-600 transition-colors" aria-label={isEs ? 'Cerrar bolsa' : 'Close bag'}>
             <X size={18} />
           </button>
         </div>
@@ -78,8 +80,10 @@ export function BagDrawer() {
           <div className="shrink-0 px-6 pt-4 pb-3 border-b border-cream-100">
             <p className="font-sans text-[11px] text-center text-bark-500 mb-3">
               {earned
-                ? 'Congratulations — you earned free shipping!'
-                : <><span className="text-bark-600 font-medium">{formatPrice(threshold - towardFree)}</span> away from free shipping</>
+                ? (isEs ? '¡Felicidades — tu envío es gratis!' : 'Congratulations — you earned free shipping!')
+                : isEs
+                  ? <>Te faltan <span className="text-bark-600 font-medium">{formatPrice(threshold - towardFree)}</span> para envío gratis</>
+                  : <><span className="text-bark-600 font-medium">{formatPrice(threshold - towardFree)}</span> away from free shipping</>
               }
             </p>
             <div className="relative h-1.5 rounded-full bg-cream-200 border border-cream-300 mx-1">
@@ -97,7 +101,7 @@ export function BagDrawer() {
         {/* Items */}
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           {!hasItems ? (
-            <p className="font-sans text-xs text-bark-400/60 tracking-wide text-center pt-10">Your bag is empty — add a box or build your own to get started.</p>
+            <p className="font-sans text-xs text-bark-400/60 tracking-wide text-center pt-10">{isEs ? 'Tu bolsa está vacía — agrega una canastilla o arma la tuya para empezar.' : 'Your bag is empty — add a box or build your own to get started.'}</p>
           ) : (
             items.map(product => {
               const src = product.image ?? (SUPABASE_URL
@@ -136,7 +140,7 @@ export function BagDrawer() {
                         onClick={() => removeItem(key)}
                         className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-700 transition-colors"
                       >
-                        Remove
+                        {isEs ? 'Quitar' : 'Remove'}
                       </button>
                     </div>
                   </div>
@@ -153,13 +157,13 @@ export function BagDrawer() {
             <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">Subtotal</span>
             <span className="font-sans text-base font-medium text-bark-600">{formatPrice(subtotal)}</span>
           </div>
-          <p className="font-sans text-[11px] text-bark-400/60 mb-4">Box fee &amp; shipping calculated at checkout</p>
+          <p className="font-sans text-[11px] text-bark-400/60 mb-4">{isEs ? 'Canastilla y envío se calculan al pagar' : <>Box fee &amp; shipping calculated at checkout</>}</p>
           <button
-            onClick={() => { setOpen(false); router.push('/checkout') }}
+            onClick={() => { setOpen(false); router.push(isEs ? '/es/checkout' : '/checkout') }}
             disabled={!hasItems}
             className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.25em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            Check Out
+            {isEs ? 'Pagar' : 'Check Out'}
           </button>
         </div>
       </div>

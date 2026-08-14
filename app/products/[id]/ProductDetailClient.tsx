@@ -12,7 +12,6 @@ import { CATEGORY_LABELS, CATEGORY_LABELS_ES, FREE_SHIPPING_THRESHOLD } from '@/
 import { trackViewItem } from '@/lib/analytics-events'
 import { RelatedProducts, type RelatedItem } from '@/components/ui/RelatedProducts'
 import { ReviewSection } from '@/components/ui/ReviewSection'
-import { OrganicBadge } from '@/components/ui/OrganicBadge'
 import { CertBadges } from '@/components/ui/CertBadges'
 import type { Product } from '@/types'
 
@@ -240,10 +239,6 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
                 <p className="font-sans text-base text-bark-400 mb-4">
                   {formatPrice(product.price)}
                 </p>
-                {(product as { organic?: boolean }).organic && (
-                  <div className="mb-4"><OrganicBadge /></div>
-                )}
-
                 {/* Tag badge */}
                 {product.tag && (
                   <div className="mb-4">
@@ -402,7 +397,7 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
           </div>
         )}
       </main>
-      <RelatedProducts items={related} />
+      <RelatedProducts items={related} isEs={esPath} />
       <Footer />
 
       {/* Lightbox */}
