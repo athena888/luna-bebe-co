@@ -54,7 +54,6 @@ const nextConfig: NextConfig = {
         destination: '/products/mulberry-silk-sleep-mask',
         permanent: true,
       },
-      { source: '/guide', destination: '/gifts', permanent: true },
       { source: '/wishlist', destination: '/build', permanent: true },
     ]
   },
@@ -77,7 +76,13 @@ const nextConfig: NextConfig = {
           // and Crisp live chat (script + websocket relay), scripts otherwise same-origin
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://js.stripe.com https://client.crisp.chat; style-src 'self' 'unsafe-inline' https://client.crisp.chat; img-src 'self' https: data:; font-src 'self' https: https://client.crisp.chat; media-src 'self' https://client.crisp.chat; connect-src 'self' https://api.stripe.com https://www.google-analytics.com https://www.googletagmanager.com https://*.supabase.co https://api.anthropic.com https://api.gemini.com https://client.crisp.chat wss://client.relay.crisp.chat wss://stream.relay.crisp.chat; frame-src 'self' blob: https://js.stripe.com https://game.crisp.chat; base-uri 'self'; form-action 'self'",
+            // Google Customer Reviews (components/ui/GcrOptIn.tsx) needs three
+            // extra hosts: apis.google.com serves platform.js, and the survey
+            // opt-in itself renders in — and posts back to — www.google.com.
+            // Without them the CSP blocks platform.js, window.gapi never
+            // exists, and the opt-in silently never renders (it is written to
+            // fail quietly, so the block left no trace).
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://js.stripe.com https://client.crisp.chat https://apis.google.com; style-src 'self' 'unsafe-inline' https://client.crisp.chat; img-src 'self' https: data:; font-src 'self' https: https://client.crisp.chat; media-src 'self' https://client.crisp.chat; connect-src 'self' https://api.stripe.com https://www.google-analytics.com https://www.googletagmanager.com https://*.supabase.co https://api.anthropic.com https://api.gemini.com https://client.crisp.chat wss://client.relay.crisp.chat wss://stream.relay.crisp.chat https://www.google.com; frame-src 'self' blob: https://js.stripe.com https://game.crisp.chat https://www.google.com; base-uri 'self'; form-action 'self'",
           },
         ],
       },
