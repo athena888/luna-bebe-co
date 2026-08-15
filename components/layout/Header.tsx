@@ -213,28 +213,19 @@ function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) 
 function MobileMenu({ onClose }: { onClose: () => void }) {
   const isEs = useIsEs()
   const boxProducts = useBoxProducts()
-  const [boxesOpen, setBoxesOpen] = useState(false)
   const linkCls = 'uppercase text-espresso hover:text-gold-500 transition-colors'
   return (
     <div className="md:hidden bg-cream-white border-b border-cream-300 px-6 py-8 flex flex-col gap-6 font-playfair text-[15px] tracking-[0.14em]">
-      {/* Boxes accordion — same links as the desktop dropdown, tap to expand */}
+      {/* Boxes — sub-links always expanded (Emily 2026-08-15: no accordion,
+          every tap target visible the moment the menu opens) */}
       <div>
-        <div className="flex items-center justify-between">
-          <Link href={isEs ? '/es/canastillas' : '/boxes'} className={linkCls} onClick={onClose}>{isEs ? 'Canastillas' : 'Gift Boxes'}</Link>
-          <button onClick={() => setBoxesOpen(o => !o)} aria-expanded={boxesOpen} aria-label="Show collections"
-            className="w-9 h-9 flex items-center justify-center text-bark-400">
-            <ChevronDown size={16} className={`transition-transform ${boxesOpen ? 'rotate-180' : ''}`} />
-          </button>
+        <Link href={isEs ? '/es/canastillas' : '/boxes'} className={linkCls} onClick={onClose}>{isEs ? 'Canastillas' : 'Gift Boxes'}</Link>
+        <div className="mt-3 pl-3 flex flex-col gap-2.5 font-sans text-[13px] tracking-normal normal-case">
+          {boxProducts.map(p => (
+            <Link key={p.slug} href={isEs ? `/es/canastillas/${p.slug}` : `/boxes/${p.slug}`} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{p.name}</Link>
+          ))}
+          <Link href="/corporate" onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{isEs ? 'Regalos corporativos' : 'Corporate Gifting'}</Link>
         </div>
-        {boxesOpen && (
-          <div className="mt-3 pl-3 flex flex-col gap-2.5 font-sans text-[13px] tracking-normal normal-case">
-            {boxProducts.map(p => (
-              <Link key={p.slug} href={isEs ? `/es/canastillas/${p.slug}` : `/boxes/${p.slug}`} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{p.name}</Link>
-            ))}
-            <Link href="/corporate" onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{isEs ? 'Regalos corporativos' : 'Corporate Gifting'}</Link>
-
-          </div>
-        )}
       </div>
       <Link href={isEs ? '/es/build' : '/build'} className={linkCls} onClick={onClose}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
       <Link href={isEs ? '/es/tarjetas-regalo' : '/gift-cards'} className={linkCls} onClick={onClose}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
