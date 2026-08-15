@@ -662,3 +662,13 @@ Worth knowing: `/checkout` (English) currently has **both**, which is the same s
 4. **Bing Webmaster Tools:** re-request indexing for the flagged `/boxes/*` URL(s), and send me the §1.4 `curl` output.
 5. **Merchant Center:** verify GCR is enabled for merchant `5829406914`. Then place a test order and confirm the opt-in prompt appears on `/confirmation` — **it should now render for the first time.**
 6. **Consider** Vercel Deployment Protection on Preview so preview URLs aren't indexable.
+
+---
+
+## ADDENDUM — 2026-08-15, post-Phase-2 answers from Emily
+
+- **Q5 ✅ resolved:** GCR merchant ID `5829406914` confirmed correct.
+- **Q2 ✅ resolved & applied:** keep `/guide` → `/gift-guides`; the dead duplicate `/guide` → `/gifts` line was deleted from `next.config.ts` (it was unreachable — first match wins — so live behavior is unchanged).
+- **Q1 update:** flagged URL is `/boxes/signature-baby-gift-box`, and Bing's crawl was **fresh (2026-08-15 10:18), not cached** — which rules out explanation #1 (stale verdict). Emily is verifying the `visible` flag and Vercel settings herself; no further investigation from this side. Note for that check: nothing in the codebase can emit noindex for a visible box, and Vercel auto-injects `X-Robots-Tag: noindex` on **preview** deployment URLs — so confirm the apex domain is serving the production deployment.
+- **§5 data correction:** the §5.3/§5.4 tables were built from `scripts/seed-catalog.mjs`, **not the live DB** (no DB access in this environment). Emily reports the live data differs — e.g. **The Petite is live at $65–95** (the seed says `active: false`, $50). Treat every current-state cell in those tables as indicative only; if §5 is ever approved, re-derive titles from the live `products` table first.
+- **§5 remains NOT applied**, per explicit instruction.
