@@ -122,7 +122,7 @@ export function CertBadges({ certs, organic }: { certs: ResolvedCert[]; organic?
                   ) : (
                     <a href={opened.certificateUrl} target="_blank" rel="noopener noreferrer">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={opened.certificateUrl} alt="certificate" className="w-full max-h-48 object-contain p-2" />
+                      <img src={opened.certificateUrl} alt={`${label(opened)} certificate`} className="w-full max-h-48 object-contain p-2" />
                     </a>
                   )}
                 </div>

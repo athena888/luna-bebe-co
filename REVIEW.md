@@ -604,3 +604,61 @@ No files were modified. `REVIEW.md` is the only file created.
 - answers to **Q1** and **Q4** (these two actually gate conclusions),
 - an explicit **"approve section 5"** if you want the feed titles changed (I will not touch them otherwise),
 - any edits to the table in §11.
+
+---
+---
+
+# PHASE 2 — APPLIED
+
+**Approved scope:** "fix the CSP, /es/checkout, /account, and the alts."
+**Not approved, not touched:** §5 feed titles, the §2.3 `/guide` duplicate redirect (Q2 unanswered), `.env.local.example` documentation.
+
+## Changelog — every file changed
+
+| File | Change |
+|---|---|
+| `next.config.ts` | CSP: `+https://apis.google.com` to `script-src`; `+https://www.google.com` to `connect-src` and `frame-src`. Comment explains why. **Unblocks Google Customer Reviews.** |
+| `app/es/checkout/layout.tsx` | **New file.** `robots: { index: false }` + Spanish title. Fixes the indexable Spanish checkout. |
+| `app/account/layout.tsx` | Added `robots: { index: false }` to existing metadata. |
+| `components/ui/ProductCarousel.tsx:298` | Lightbox `alt=""` → `` alt={`${product.name} — full size view`} `` |
+| `app/build/page.tsx:474,476,480` | 3× `alt="Build Your Box"` → `"Build your own organic baby gift box — Petite Lavande keepsake basket"` |
+| `components/ui/CertBadges.tsx:125` | `alt="certificate"` → `` alt={`${label(opened)} certificate`} `` |
+
+## Verification actually performed
+
+Full production build, then a real server with headers and HTML inspected:
+
+- ✅ `next build` → **exit 0**, `Compiled successfully`, `Finished TypeScript` clean. (Required placeholder env vars — the repo instantiates Supabase/Resend/Stripe clients at module load, so page-data collection cannot run without them. Same failure existed on the untouched baseline, so it is environmental, not a regression.)
+- ✅ Both `/account` and `/es/checkout` appear in the built route table.
+- ✅ **CSP live** — `curl -D -` confirms all three hosts present in the served header.
+- ✅ `/account` → `<meta name="robots" content="noindex">`
+- ✅ `/es/checkout` **with `SPANISH_ACTIVE=true`** → HTTP **200** + `<meta name="robots" content="noindex">` (the state where the bug actually mattered)
+- ✅ Controls unaffected: `/` and `/es` both still `<meta name="robots" content="index, follow">`
+- ✅ Alt rescan: **0** missing / bare-empty alts remain on public pages
+- ✅ `X-Robots-Tag` still fires on `/test.js.map` and is **absent** on `/` — empirically confirms the §1.2 finding that the rule does not over-match
+
+⚠️ No ESLint run: the repo has no `eslint.config.*`, so `npm run lint` cannot execute (pre-existing, unrelated).
+
+## ⚠️ One approved item I deliberately did NOT apply
+
+§11 listed `Disallow: /es/checkout` in `public/robots.txt` alongside the noindex. **I left robots.txt unchanged, on purpose.**
+
+A `Disallow` stops crawlers from *fetching* the page — which means they never see the `noindex` meta tag, and the URL can still surface as a bare link. Adding it would have undermined the fix I just made. The meta `noindex` is the correct and sufficient mechanism.
+
+Worth knowing: `/checkout` (English) currently has **both**, which is the same self-defeating combination. It is harmless in practice — neither checkout URL is externally linked — so I left it alone as out of scope. Say the word if you want `Disallow: /checkout` removed so its noindex can actually be read.
+
+## Still open — unchanged from Phase 1
+
+- **Q1 — the Bing `/boxes/*` question is NOT resolved.** No code change was made, correctly: nothing in the codebase can noindex a *visible* box. Still needs the flagged URL or the §1.4 `curl` output.
+- **Q4 — `_RUN_ALL_PENDING.sql`.** If unapplied, box reviews can't be written and `aggregateRating` silently never renders. **This gates whether §6 works at all.**
+- **Q3 — feed inventory** (`petite-baby-gift-box` inactive, `mama-et-bebe` redirected away).
+- **Q2 — `/guide` duplicate redirect** left in place pending your answer.
+
+## Manual steps for you
+
+1. **Vercel env:** set `GBP_REVIEW_URL` and `INDEXNOW_KEY` (both currently fallback-only). Confirm `NEXT_PUBLIC_BASE_URL` is exactly `https://petitelavande.com`.
+2. **Vercel → Settings → Domains:** confirm `petitelavande.com` is **Primary** and `www.petitelavande.com` is attached — the `next.config` www→apex redirect only fires if www actually resolves to the project.
+3. **After deploy:** `npm run indexnow`
+4. **Bing Webmaster Tools:** re-request indexing for the flagged `/boxes/*` URL(s), and send me the §1.4 `curl` output.
+5. **Merchant Center:** verify GCR is enabled for merchant `5829406914`. Then place a test order and confirm the opt-in prompt appears on `/confirmation` — **it should now render for the first time.**
+6. **Consider** Vercel Deployment Protection on Preview so preview URLs aren't indexable.
