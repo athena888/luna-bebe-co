@@ -260,19 +260,26 @@ export function PerksMarquee() {
   const shown = isEs
     ? perks.map(pk => ({ label: pk.es?.label || pk.label, sub: pk.es?.sub || pk.sub }))
     : perks
+  // Static strip (Emily 2026-08-15: no scrolling) — every promise on one
+  // evenly-spaced line on sm+; phones show a 2×2 grid because four
+  // label+sub pairs can't fit a phone width legibly.
   return (
-    <div className="bg-[#4A3B30] py-2.5 overflow-hidden" aria-label="Our promises">
-      <div className="flex w-max animate-[pl-marquee_18s_linear_infinite]">
-        {[0, 1].map(copy => (
-          <div key={copy} className="flex shrink-0 items-baseline" aria-hidden={copy === 1}>
-            {shown.map(({ label, sub }) => (
-              <span key={`${copy}-${label}`} className="flex items-baseline whitespace-nowrap px-8 sm:px-12">
-                <span className="font-sans text-[11px] tracking-[0.25em] uppercase font-semibold text-cream-50">{label}</span>
-                <span className="font-cormorant text-[15px] text-cream-200 ml-3">{sub}</span>
-                <span className="w-1 h-1 rounded-full pl-round-full bg-gold-400 ml-8 sm:ml-12 self-center" />
-              </span>
-            ))}
-          </div>
+    <div className="bg-[#4A3B30] py-2.5" aria-label="Our promises">
+      <div className="hidden sm:flex items-baseline justify-center px-6">
+        {shown.map(({ label, sub }, i) => (
+          <span key={label} className="flex items-baseline whitespace-nowrap">
+            {i > 0 && <span className="w-1 h-1 rounded-full bg-gold-400 mx-6 lg:mx-10 self-center shrink-0" />}
+            <span className="font-sans text-[11px] tracking-[0.25em] uppercase font-semibold text-cream-50">{label}</span>
+            <span className="font-cormorant text-[15px] text-cream-200 ml-3">{sub}</span>
+          </span>
+        ))}
+      </div>
+      <div className="sm:hidden grid grid-cols-2 gap-y-1.5 gap-x-4 px-4 text-center">
+        {shown.map(({ label, sub }) => (
+          <span key={label} className="flex flex-col">
+            <span className="font-sans text-[10px] tracking-[0.2em] uppercase font-semibold text-cream-50">{label}</span>
+            <span className="font-cormorant text-[13px] text-cream-200 leading-snug">{sub}</span>
+          </span>
         ))}
       </div>
     </div>

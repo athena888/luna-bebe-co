@@ -67,7 +67,7 @@ async function getCollectionsData(locale: 'en' | 'es' = 'en') {
 const ES: Record<string, string> = {
   'hero.h1a': 'Vemos a la mamá,',
   'hero.h1b': 'no solo al bebé.',
-  'hero.sub': 'La canastilla que cuida al bebé — y honra a mamá.',  // pending native review ('honra a mamá')
+  'hero.sub': 'La canastilla de baby shower que cuida al bebé — y honra a mamá.',  // pending native review ('honra a mamá'); 'baby shower' stays in English per es-US glossary
   'hero.cta': 'Ver las canastillas',
   'cat.eyebrow': 'Sets curados para cada nuevo comienzo — o arma la tuya desde cero.',
   'cat.title': 'Compra por categoría',
@@ -105,7 +105,7 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
                 {s('hero.h1a', 'We see the mother,')}<br />{s('hero.h1b', 'not just the baby.')}
               </h1>
               <p className="font-serif text-cream-200/90 text-base sm:text-xl leading-relaxed mb-6">
-                {s('hero.sub', 'Luxury organic gift boxes — hand-packed and delivered with love.')}
+                {s('hero.sub', 'Luxury organic baby shower gift boxes — hand-packed and delivered with love.')}
               </p>
               <Link
                 href={isEs ? '/es/canastillas' : '/boxes'}
