@@ -122,6 +122,9 @@ export async function runPressProspector(opts: { dry?: boolean; timeBudgetMs?: n
 
   const cfg = await getPressConfig()
   if (!cfg) return null   // press config not migrated/seeded yet — press mode inactive
+  // Manual press mode (§52): Emily hand-pitches via Portal → Press; the robot
+  // stands down so the same outlet is never double-pitched. Reversible flag.
+  if ((cfg as { manual_mode?: boolean }).manual_mode) return stats
 
   const slice = pressSlice(cfg)
   if (!slice.length) return stats

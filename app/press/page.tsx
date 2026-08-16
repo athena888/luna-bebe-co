@@ -1,6 +1,7 @@
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { SlotBackground } from '@/components/ui/SlotBackground'
+import { SlotImage } from '@/components/ui/SlotImage'
 import { listPressImages } from '@/lib/lookbook/images'
 import { getTiers } from '@/lib/lookbook/copy'
 import { getConfig } from '@/lib/pipeline/config'
@@ -20,7 +21,7 @@ export const metadata = {
 // zero tagged images it renders a minimal holding version — and the drafter
 // independently refuses to queue pitches until a kit exists.
 
-interface PressConfig { brand_one_liner?: string }
+interface PressConfig { brand_one_liner?: string; boilerplate?: string }
 
 export default async function PressPage() {
   const [images, tiers, press] = await Promise.all([
@@ -30,6 +31,14 @@ export default async function PressPage() {
   ])
   const oneLiner = press?.brand_one_liner
     || 'Organic newborn & postpartum gift boxes, finished by hand in Seattle — every material traced to source.'
+  // Two-sentence boilerplate for editors to lift verbatim (config-overridable).
+  const boilerplate = press?.boilerplate
+    || 'Petite Lavande makes French-countryside-inspired gift boxes for newborns and new mothers — organic cotton garments, hand-knit blankets, and own-designed crochet dolls, hand-packed in woven seagrass baskets. Every box includes gifts for the mother, not just the baby.'
+  // Price range from the live line sheet (falls back to the standing range).
+  const prices = tiers.map(t => t.price).filter(p => p > 0)
+  const priceRange = prices.length
+    ? `$${Math.min(...prices)}–$${Math.max(...prices)}`
+    : '$65–$165'
 
   return (
     <>
@@ -41,11 +50,27 @@ export default async function PressPage() {
             <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-3">Press Kit</p>
             <h1 className="font-serif text-4xl text-espresso mb-4">Petite Lavande</h1>
             <p className="font-cormorant text-xl italic text-espresso-light max-w-2xl mx-auto">{oneLiner}</p>
-            <p className="font-sans text-sm text-bark-500 mt-6">
+            {/* Boilerplate — copy-ready for editors */}
+            <p className="font-sans text-sm text-bark-600 leading-relaxed max-w-2xl mx-auto mt-5">{boilerplate}</p>
+            <p className="font-sans text-xs tracking-[0.15em] uppercase text-bark-400 mt-4">Gift boxes {priceRange} · ships nationwide</p>
+            <p className="font-sans text-sm text-bark-500 mt-4">
               Press inquiries &amp; samples: <a className="underline" href="mailto:hello@petitelavande.com">hello@petitelavande.com</a>
             </p>
           </section>
         </SlotBackground>
+
+        {/* Founder — photo slot uploadable via Portal → Site Images (press.founder) */}
+        <section className="max-w-3xl mx-auto px-6 py-10">
+          <div className="flex flex-col sm:flex-row items-center gap-6 bg-white rounded-2xl border border-cream-300 p-6">
+            <div className="w-36 h-36 shrink-0 rounded-full overflow-hidden bg-cream-200">
+              <SlotImage slotKey="press.founder" className="w-full h-full" />
+            </div>
+            <div className="text-center sm:text-left">
+              <p className="font-serif text-xl text-espresso mb-1">Emily Liu, Founder</p>
+              <p className="font-sans text-sm text-bark-500 leading-relaxed">Available for interviews and background on sourcing, small-batch production, and building for the mother as much as the baby. Hi-res founder photo available on request.</p>
+            </div>
+          </div>
+        </section>
 
         {images.length > 0 ? (
           <>

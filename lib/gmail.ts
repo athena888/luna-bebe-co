@@ -6,6 +6,10 @@ import { google } from 'googleapis'
 // a real mailbox and fails with invalid_grant). Server-only.
 
 const SCOPES = ['https://www.googleapis.com/auth/gmail.send']
+// Drafts (manual press outreach) use a SEPARATE, narrower grant: compose lets
+// us create drafts; press code never imports sendEmail. Requires the scope to
+// be added to the service account's domain-wide delegation in Google Admin.
+const DRAFT_SCOPES = ['https://www.googleapis.com/auth/gmail.compose']
 
 export function gmailSender(): string {
   return (process.env.GMAIL_SENDER || 'hello@petitelavande.com').trim()
@@ -21,9 +25,9 @@ function loadServiceAccount(): { client_email: string; private_key: string } {
   return { client_email: key.client_email, private_key: key.private_key.replace(/\\n/g, '\n') }
 }
 
-function jwtClient() {
+function jwtClient(scopes: string[] = SCOPES) {
   const { client_email, private_key } = loadServiceAccount()
-  return new google.auth.JWT({ email: client_email, key: private_key, scopes: SCOPES, subject: gmailSender() })
+  return new google.auth.JWT({ email: client_email, key: private_key, scopes, subject: gmailSender() })
 }
 
 function toBase64Url(s: string): string {
@@ -60,4 +64,16 @@ export async function sendEmail(opts: { to: string; subject: string; text: strin
 /** True when the sender is configured (key + sender present). */
 export function gmailConfigured(): boolean {
   return Boolean(process.env.GOOGLE_SA_KEY && (process.env.GMAIL_SENDER || true))
+}
+
+export interface DraftResult { draftId: string; messageId: string }
+
+/** Create a Gmail DRAFT (never sends) in GMAIL_SENDER's Drafts folder.
+ *  Used by the manual press-outreach system — Emily reviews and sends by hand. */
+export async function draftEmail(opts: { to: string; subject: string; text: string }): Promise<DraftResult> {
+  const from = gmailSender()
+  const gmail = google.gmail({ version: 'v1', auth: jwtClient(DRAFT_SCOPES) })
+  const raw = toBase64Url(buildRaw({ from, to: opts.to, subject: opts.subject, text: opts.text }))
+  const res = await gmail.users.drafts.create({ userId: 'me', requestBody: { message: { raw } } })
+  return { draftId: res.data.id ?? '', messageId: res.data.message?.id ?? '' }
 }

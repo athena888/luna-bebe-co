@@ -1534,3 +1534,128 @@ drop policy if exists lookbook_tier_overlay_service on public.lookbook_tier_over
 create policy lookbook_tier_overlay_service on public.lookbook_tier_overlay for all to service_role using (true) with check (true);
 
 -- Done.
+
+-- 51) Targeting v2: weekly city-x-industry rotation, frozen templates,
+--     batched Haiku qualification (180-day domain cache), Anthropic call
+--     ledger (3/day hard cap), per-combo metric tags, optional reply triage.
+--     Full file: supabase/migrations/outreach_targeting_v2.sql
+
+create table if not exists public.ai_call_log (
+  id            uuid primary key default gen_random_uuid(),
+  called_at     timestamptz not null default now(),
+  purpose       text not null,
+  model         text not null,
+  batch_size    int  not null default 0,
+  input_tokens  int  not null default 0,
+  output_tokens int  not null default 0,
+  est_cost_usd  numeric(10,6) not null default 0,
+  ok            boolean not null default true,
+  error         text
+);
+create index if not exists ai_call_log_called_at on public.ai_call_log (called_at);
+alter table public.ai_call_log enable row level security;
+drop policy if exists ai_call_log_service on public.ai_call_log;
+create policy ai_call_log_service on public.ai_call_log for all to service_role using (true) with check (true);
+
+create table if not exists public.qualification_cache (
+  domain        text primary key,
+  qualified     boolean not null,
+  industry_key  text not null,
+  persona_match boolean not null default false,
+  reason        text not null default '',
+  classified_at timestamptz not null default now()
+);
+alter table public.qualification_cache enable row level security;
+drop policy if exists qualification_cache_service on public.qualification_cache;
+create policy qualification_cache_service on public.qualification_cache for all to service_role using (true) with check (true);
+
+alter table prospects add column if not exists source_url            text;
+alter table prospects add column if not exists industry_key          text;
+alter table prospects add column if not exists persona_match         boolean;
+alter table prospects add column if not exists qualification_reason  text;
+alter table prospects add column if not exists qualification_via     text;
+alter table prospects add column if not exists reply_triage          text;
+
+alter table email_drafts add column if not exists combo_key       text;
+alter table email_drafts add column if not exists track_used      text;
+alter table email_drafts add column if not exists subject_variant text;
+create index if not exists email_drafts_combo_key on email_drafts (combo_key) where combo_key is not null;
+
+insert into outreach_config (key, value)
+values ('targeting_v2', '{"enabled": false, "reply_triage_enabled": false}'::jsonb)
+on conflict (key) do nothing;
+
+-- Done.
+
+-- 52) Manual press & gift-guide outreach (separate from the automated B2B
+--     pipeline). Contacts + status timeline for hand-personalized pitches that
+--     are generated into Gmail DRAFTS (never auto-sent). Also flips the §29
+--     automated press lane to manual mode so the robot never cold-pitches an
+--     outlet Emily is hand-pitching. Idempotent.
+--     PRE-CHECK (collision rule): this should return 0 rows before first run:
+--       select column_name from information_schema.columns
+--       where table_name = 'press_contacts' and table_schema = 'public';
+
+create table if not exists public.press_contacts (
+  id                   uuid primary key default gen_random_uuid(),
+  outlet               text not null,
+  contact_name         text,
+  email                text,              -- never invented; Emily fills these
+  role                 text,
+  outlet_tier          text not null check (outlet_tier in
+                         ('national-parenting','shopping-editorial','spanish-market','regional')),
+  recent_article_title text,
+  recent_article_url   text,
+  why_relevant_note    text,
+  language             text not null default 'en' check (language in ('en','es')),
+  status               text not null default 'new' check (status in
+                         ('new','drafted','sent','bumped','replied','sample_requested','declined','published')),
+  sample_sent          boolean not null default false,
+  drafted_at           timestamptz,
+  sent_at              timestamptz,
+  bumped_at            timestamptz,
+  replied_at           timestamptz,
+  declined_at          timestamptz,
+  published_at         timestamptz,
+  published_url        text,
+  gmail_draft_id       text,
+  draft_subject_a      text,
+  draft_subject_b      text,
+  draft_body           text,
+  notes                text,
+  created_at           timestamptz not null default now(),
+  updated_at           timestamptz not null default now()
+);
+alter table public.press_contacts enable row level security;
+drop policy if exists press_contacts_service on public.press_contacts;
+create policy press_contacts_service on public.press_contacts
+  for all to service_role using (true) with check (true);
+
+-- Seed target outlets (contact_name/email intentionally NULL — Emily fills).
+insert into public.press_contacts (outlet, outlet_tier, language)
+select * from (values
+  ('Babylist',                 'national-parenting', 'en'),
+  ('Motherly',                 'national-parenting', 'en'),
+  ('The Bump',                 'national-parenting', 'en'),
+  ('What to Expect',           'national-parenting', 'en'),
+  ('Romper',                   'national-parenting', 'en'),
+  ('NY Mag — The Strategist',  'shopping-editorial', 'en'),
+  ('Forbes Vetted',            'shopping-editorial', 'en'),
+  ('Good Housekeeping',        'shopping-editorial', 'en'),
+  ('BuzzFeed Shopping',        'shopping-editorial', 'en'),
+  ('Wirecutter',               'shopping-editorial', 'en'),
+  ('TodoBebé',                 'spanish-market',     'es'),
+  ('Ser Padres',               'spanish-market',     'es'),
+  ('BabyCenter en Español',    'spanish-market',     'es')
+) as seed(outlet, outlet_tier, language)
+where not exists (
+  select 1 from public.press_contacts p where p.outlet = seed.outlet
+);
+
+-- Pause the §29 AUTOMATED press lane (prospector + drafter skip channel=press
+-- while manual_mode is true; reversible by setting it false).
+insert into public.outreach_config (key, value)
+  values ('press', '{"manual_mode": true}'::jsonb)
+  on conflict (key) do update set value = public.outreach_config.value || '{"manual_mode": true}'::jsonb;
+
+-- Done.

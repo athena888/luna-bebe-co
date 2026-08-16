@@ -84,6 +84,9 @@ export async function runPressDrafter(opts: { dry?: boolean; deadline: number })
 
   const cfg = await getPressConfig()
   if (!cfg) return stats   // press not migrated/seeded yet
+  // Manual press mode (§52): hand-pitching via Portal → Press; automated
+  // press drafting stands down. Reversible flag on outreach_config.press.
+  if ((cfg as { manual_mode?: boolean }).manual_mode) return stats
   const templates = await getPipelineTemplates()
   const founder = founderStoryEnabled(cfg.founder_story_enabled)
   const kit = await getCurrentPressKit()
