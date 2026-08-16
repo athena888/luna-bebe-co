@@ -31,6 +31,46 @@ function Stars({ rating }: { rating: number }) {
   )
 }
 
+// Click the date to change it (manual entries default to "today"; the date
+// flows to JSON-LD + the Google review feed, so it should reflect when the
+// feedback really arrived). Never a future date.
+function EditableDate({ reviewId, createdAt }: { reviewId: string; createdAt: string }) {
+  const router = useRouter()
+  const [editing, setEditing] = useState(false)
+  const [busy, setBusy] = useState(false)
+
+  async function save(date: string) {
+    if (!date) { setEditing(false); return }
+    setBusy(true)
+    try {
+      const res = await fetch('/api/portal/reviews', {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: reviewId, date }),
+      })
+      if (res.ok) router.refresh()
+    } finally { setBusy(false); setEditing(false) }
+  }
+
+  if (editing) {
+    return (
+      <input
+        type="date" autoFocus disabled={busy}
+        defaultValue={createdAt.slice(0, 10)}
+        max={new Date().toISOString().slice(0, 10)}
+        onChange={e => save(e.target.value)}
+        onBlur={() => setEditing(false)}
+        className="px-1.5 py-0.5 border border-cream-300 rounded font-sans text-xs text-bark-600 focus:outline-none focus:border-bark-400"
+      />
+    )
+  }
+  return (
+    <button onClick={() => setEditing(true)} title="Click to edit the review date"
+      className="font-sans text-xs text-bark-400 underline decoration-dotted underline-offset-2 hover:text-bark-600">
+      {new Date(createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+    </button>
+  )
+}
+
 const chip = (on: boolean) =>
   `font-sans text-[10px] tracking-[0.15em] uppercase px-3 py-1.5 rounded-lg border transition-colors ${
     on ? 'bg-[#7A8E7C] border-[#7A8E7C] text-white' : 'border-cream-300 text-bark-500 hover:border-bark-400'
@@ -157,7 +197,7 @@ export function ReviewsBrowser({ reviews, productOptions = [] }: { reviews: Revi
                     <Stars rating={r.rating} />
                     <span className="font-sans text-xs font-semibold text-bark-600">{r.customerName}</span>
                     <span className="font-sans text-xs text-bark-400">{r.productName}</span>
-                    <span className="font-sans text-xs text-bark-400">{new Date(r.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                    <EditableDate reviewId={r.id} createdAt={r.createdAt} />
                     {!r.approved && <span className="font-sans text-[9px] tracking-[0.1em] uppercase bg-gold-400/20 text-gold-500 px-1.5 py-0.5 rounded">Pending</span>}
                   </div>
                   <p className="font-sans text-sm text-bark-500 leading-relaxed">{r.body}</p>

@@ -24,6 +24,11 @@ import { FEED_BRAND, productFeedUrl } from './google-feed'
 export interface ReviewFeedRow {
   id: string
   productId: string
+  /** The PRODUCT FEED's actual offer ids for this product — one per variant
+   *  (e.g. box-<slug>--<key>, item--1). Google matches review→listing by SKU
+   *  against offer ids; the bare group id matches nothing (the silent
+   *  zero-stars failure the validator flagged 2026-08-16). */
+  skus: string[]
   productUrl: string
   name: string
   rating: number
@@ -83,6 +88,7 @@ export async function buildReviewFeed(): Promise<{ rows: ReviewFeedRow[]; issues
     rows.push({
       id: r.id,
       productId: r.product_id,
+      skus: [r.product_id],   // refined below to the real offer ids
       productUrl: reviewProductUrl(r.product_id),
       name: r.customer_name?.trim() || '',
       rating: r.rating,
@@ -95,6 +101,38 @@ export async function buildReviewFeed(): Promise<{ rows: ReviewFeedRow[]; issues
       orderId: r.order_id?.trim() || null,
     })
   }
+  // Resolve each review's skus to the product feed's REAL offer ids, using
+  // the same id-shaping rules as the TSV: boxes → box-<slug>--<variantKey>
+  // per active variant; items with >1 variants → <id>--N; else the plain id.
+  // Fail-soft: on any lookup error the bare id stays (matches nothing new,
+  // breaks nothing old).
+  const slugs = [...new Set(rows.map(r => boxSlug(r.productId)).filter((s): s is string => Boolean(s)))]
+  const itemIds = [...new Set(rows.filter(r => !boxSlug(r.productId)).map(r => r.productId))]
+  const skusByProduct = new Map<string, string[]>()
+  if (slugs.length) {
+    try {
+      const { getBoxProducts } = await import('./catalog-db')
+      for (const b of await getBoxProducts()) {
+        if (slugs.includes(b.slug)) skusByProduct.set(`box-${b.slug}`, b.variants.map(v => `box-${b.slug}--${v.key}`))
+      }
+    } catch { /* bare id fallback */ }
+  }
+  if (itemIds.length) {
+    try {
+      const { data: vr } = await supabaseAdmin.from('product_variants').select('product_id').in('product_id', itemIds)
+      const counts = new Map<string, number>()
+      for (const v of (vr ?? []) as Array<{ product_id: string }>) counts.set(v.product_id, (counts.get(v.product_id) ?? 0) + 1)
+      for (const id of itemIds) {
+        const n = counts.get(id) ?? 0
+        skusByProduct.set(id, n > 1 ? Array.from({ length: n }, (_, i) => `${id}--${i + 1}`) : [id])
+      }
+    } catch { /* bare id fallback */ }
+  }
+  for (const row of rows) {
+    const skus = skusByProduct.get(row.productId)
+    if (skus?.length) row.skus = skus
+  }
+
   return { rows, issues, total: all.length }
 }
 
@@ -124,7 +162,7 @@ export function reviewFeedXml(rows: ReviewFeedRow[]): string {
         <product>
           <product_ids>
             <mpns><mpn>${esc(r.productId)}</mpn></mpns>
-            <skus><sku>${esc(r.productId)}</sku></skus>
+            <skus>${r.skus.map(s => `<sku>${esc(s)}</sku>`).join('')}</skus>
             <brands><brand>${cdata(FEED_BRAND)}</brand></brands>
           </product_ids>
           <product_url>${r.productUrl}</product_url>

@@ -8,6 +8,28 @@ import { supabaseAdmin } from '@/lib/supabase'
 // collected review that didn't come through the post-purchase ask).
 // verified_buyer is never set here: verification requires the signed token +
 // paid-order re-check and is not hand-assertable.
+// Edit a review's date (Emily 2026-08-16) — for correcting when off-site
+// feedback was actually received (manual entries default to "today"). Never a
+// future date. The date orders the on-page list and is reported in JSON-LD +
+// the Google review feed, so it must reflect when the review was really given.
+export async function PATCH(req: NextRequest) {
+  try {
+    const { id, date } = await req.json()
+    if (!id || !date) return NextResponse.json({ error: 'id and date are required' }, { status: 400 })
+    const d = new Date(date)
+    if (Number.isNaN(d.getTime()) || d.getTime() > Date.now()) {
+      return NextResponse.json({ error: 'Date must be valid and not in the future' }, { status: 400 })
+    }
+    const { error } = await supabaseAdmin.from('reviews')
+      .update({ created_at: d.toISOString() }).eq('id', id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    console.error('Portal review PATCH error:', err)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { product_id, customer_name, rating, body, date } = await req.json()
