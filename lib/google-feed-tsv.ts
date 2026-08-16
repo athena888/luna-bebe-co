@@ -98,11 +98,18 @@ const scrubGots = (s: string) => s
   .replace(/GOTS[- ]certified/gi, 'certified organic')
   .replace(/\bGOTS\b/g, 'certified organic')
 
+// Ad-spend control (Emily 2026-08-16): custom_label_0 = box | single-item so
+// campaigns can target boxes only; excluded_destination = Shopping_ads on ALL
+// single items (blankets included — "make it not consume my campaign") keeps
+// them out of paid ads while remaining in free listings. The old price-tier
+// label moved to custom_label_1. New columns are appended (additive) — no
+// existing column's position or values change except custom_label_0's value,
+// and custom labels never re-trigger Merchant review.
 const HEADER = [
   'id', 'title', 'description', 'link', 'image_link', 'price', 'availability',
   'condition', 'brand', 'identifier_exists', 'google_product_category',
   'age_group', 'gender', 'item_group_id', 'product_type', 'custom_label_0',
-  'sale_price', 'color', 'size',
+  'sale_price', 'color', 'size', 'custom_label_1', 'excluded_destination',
 ]
 
 export async function buildProductTsv(): Promise<string> {
@@ -135,7 +142,9 @@ export async function buildProductTsv(): Promise<string> {
       google_product_category: String(googleCategory(item)),
       age_group: item.category === 'mom' ? '' : 'newborn',
       product_type: `Baby Gifts > ${item.productType.replace(/^Gift Boxes > /, '')}`,
-      custom_label_0: tier(priceUsd),
+      custom_label_0: 'single-item',
+      custom_label_1: tier(priceUsd),
+      excluded_destination: 'Shopping_ads',   // free listings stay on
       sale_price: '',
     }
     const variants = variantsByProduct.get(item.id) ?? []
@@ -150,6 +159,7 @@ export async function buildProductTsv(): Promise<string> {
           base.condition, base.brand, base.identifier_exists, base.google_product_category,
           base.age_group, g, item.id, base.product_type, base.custom_label_0, base.sale_price,
           titleCase(clean(v.color)), feedSize(v.size),
+          base.custom_label_1, base.excluded_destination,
         ].join('\t'))
       })
     } else {
@@ -160,6 +170,7 @@ export async function buildProductTsv(): Promise<string> {
         base.google_product_category, base.age_group, gender(item.title), '',
         base.product_type, base.custom_label_0, base.sale_price,
         titleCase(clean(only?.color || nameColor)), only ? feedSize(only.size) : '',
+        base.custom_label_1, base.excluded_destination,
       ].join('\t'))
     }
   }
@@ -192,8 +203,9 @@ export async function buildProductTsv(): Promise<string> {
         link, v.images[0] ?? '', `${(v.price / 100).toFixed(2)} USD`,
         'in_stock', 'new', FEED_BRAND, 'false', '5859',
         b.slug === 'new-mom-gift-box' ? '' : 'newborn', g,
-        many ? `box-${b.slug}` : '', 'Baby Gifts > Gift Boxes', tier(v.price / 100), '',
+        many ? `box-${b.slug}` : '', 'Baby Gifts > Gift Boxes', 'box', '',
         '', '',
+        tier(v.price / 100), '',   // custom_label_1 = tier; boxes keep full ad eligibility
       ].join('\t'))
     }
   }

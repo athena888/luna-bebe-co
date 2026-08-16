@@ -127,6 +127,8 @@ export function feedXml(items: FeedItem[]): string {
     <g:mpn>${i.id}</g:mpn>
     <g:google_product_category>${i.categoryId}</g:google_product_category>
     <g:product_type>${cdata(i.productType)}</g:product_type>
+    <g:custom_label_0>single-item</g:custom_label_0>
+    <g:excluded_destination>Shopping_ads</g:excluded_destination>
   </item>`).join('')
 
   return `<?xml version="1.0" encoding="UTF-8"?>
