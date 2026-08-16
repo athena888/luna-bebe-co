@@ -3,38 +3,14 @@
 import Link from 'next/link'
 import { useIsEs } from '@/lib/use-is-es'
 import Image from 'next/image'
-import { BOX_BASE_PRICE } from '@/lib/products'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useState, useEffect, useRef } from 'react'
 
 // "The Collection" — full-bleed split: the "Create Something Unforgettable"
-// olive panel on the left (copy from Portal → Homepage), the box carousel on
-// the right with the name baked over the photo. Arrows + swipe + dots.
+// olive panel on the left (copy from Portal → Homepage), a single still brand
+// photo on the right (Emily 2026-08-15: no carousel — the closed ribboned box
+// on greenery, clicking through to /boxes).
 
 export function TheCollection({ title, body, items }: { title: string; body: string; items: string[] }) {
   const isEs = useIsEs()
-  const [boxes, setBoxes] = useState<Array<{ slug: string; name: string; image: string | null; low: number; href?: string }>>([])
-  const [idx, setIdx] = useState(0)
-  const [paused, setPaused] = useState(false)
-  const touchX = useRef<number | null>(null)
-
-  useEffect(() => {
-    fetch('/api/catalog-nav').then(r => r.json()).then(d => setBoxes((d.products ?? []).filter((b: { image: string | null }) => b.image))).catch(() => {})
-  }, [])
-
-  // Auto-advance every 4s. Keying on idx restarts the timer after any manual
-  // change (arrows, swipe), and hovering the photo pauses it.
-  useEffect(() => {
-    if (boxes.length < 2 || paused) return
-    const t = setTimeout(() => setIdx(i => (i + 1) % boxes.length), 4000)
-    return () => clearTimeout(t)
-  }, [idx, boxes.length, paused])
-
-  if (boxes.length === 0) return null
-
-  const box = boxes[idx % boxes.length]
-  const prev = () => setIdx(i => (i - 1 + boxes.length) % boxes.length)
-  const next = () => setIdx(i => (i + 1) % boxes.length)
 
   return (
     <section className="pt-4 pb-14 sm:pt-6">
@@ -44,7 +20,7 @@ export function TheCollection({ title, body, items }: { title: string; body: str
       </div>
 
       <div className="relative">
-        {/* Full-bleed split — olive panel left, carousel right (stacked
+        {/* Full-bleed split — olive panel left, photo right (stacked
             description-first with a little padding on phones), ~85vh like the
             Unforgettable section. No card border. */}
         <div className="relative sm:flex sm:items-stretch p-3 sm:p-0">
@@ -76,72 +52,16 @@ export function TheCollection({ title, body, items }: { title: string; body: str
             </div>
           </div>
 
-          <div
-            className="relative overflow-hidden bg-cream-100 h-[52vh] sm:h-auto sm:min-h-[85vh] sm:flex-1"
-            onMouseEnter={() => setPaused(true)}
-            onMouseLeave={() => setPaused(false)}
-            onTouchStart={e => { touchX.current = e.touches[0].clientX }}
-            onTouchEnd={e => {
-              if (touchX.current == null) return
-              const dx = e.changedTouches[0].clientX - touchX.current
-              touchX.current = null
-              if (dx > 40) prev()
-              else if (dx < -40) next()
-            }}
-          >
-            {/* Cross-fading photos — all mounted, active one visible */}
-            {boxes.map((b, i) => (
-              b.image && (
-                <Image
-                  key={b.slug}
-                  src={b.image}
-                  alt={b.name}
-                  fill
-                  className={`object-cover transition-opacity duration-700 ${i === idx ? 'opacity-100' : 'opacity-0'}`}
-                  unoptimized
-                  sizes="(max-width:640px) 100vw, 1024px"
-                />
-              )
-            ))}
-
-            {/* Legibility gradient */}
-            <div className="absolute inset-x-0 bottom-0 h-28 sm:h-36 bg-gradient-to-t from-black/55 to-transparent" aria-hidden="true" />
-
-            {/* Whole photo links to the box */}
-            <Link href={box.href ?? `/boxes/${box.slug}`} className="absolute inset-0 z-10" aria-label={box.name} />
-
-            {/* Name only — baked over the bottom of the image, rises in on swap */}
-            <div key={`name-${idx}`} className="absolute bottom-0 inset-x-0 pb-5 sm:pb-7 px-6 text-center pointer-events-none z-10" style={{ animation: 'slideUp 0.7s ease-out both' }}>
-              <p className="font-playfair text-white text-2xl sm:text-4xl drop-shadow-md">
-                {box.name}
-                <span className="text-lg sm:text-2xl text-white/90 ml-3">${(box.low / 100).toFixed(0)}</span>
-              </p>
-            </div>
-
-            {/* Quick add — drops the current box into the bag. Keyed per box so
-                the size-chooser state never carries over between slides. */}
-
-            {/* Arrows — just inside the photo's edges on every screen size */}
-            {boxes.length > 1 && (
-              <>
-                <button
-                  type="button"
-                  onClick={prev}
-                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center text-white/90 drop-shadow-md hover:text-white transition-colors"
-                  aria-label="Previous box"
-                >
-                  <ChevronLeft size={28} strokeWidth={1.5} />
-                </button>
-                <button
-                  type="button"
-                  onClick={next}
-                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center text-white/90 drop-shadow-md hover:text-white transition-colors"
-                  aria-label="Next box"
-                >
-                  <ChevronRight size={28} strokeWidth={1.5} />
-                </button>
-              </>
-            )}
+          {/* Right — still brand photo, whole image links to the boxes page */}
+          <div className="relative overflow-hidden bg-cream-100 h-[52vh] sm:h-auto sm:min-h-[85vh] sm:flex-1">
+            <Image
+              src="/home-collection.jpg"
+              alt={isEs ? 'Canastilla Petite Lavande con lazo, sobre boj' : 'Petite Lavande gift box tied with ribbon, resting on greenery'}
+              fill
+              className="object-cover"
+              sizes="(max-width:640px) 100vw, 1024px"
+            />
+            <Link href={isEs ? '/es/canastillas' : '/boxes'} className="absolute inset-0 z-10" aria-label={isEs ? 'Ver canastillas' : 'Shop gift boxes'} />
           </div>
         </div>
       </div>
