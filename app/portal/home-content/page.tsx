@@ -137,7 +137,8 @@ function HomepageEditor() {
       <section className="mb-12">
         <SectionTitle n="1" title="Hero" note="Full-width banner at the very top of the homepage. Add several photos to cross-fade them." />
         <div className="max-w-2xl">
-          <GallerySlot wide slot="hero" label="Hero Image(s)" description="Landscape — the box centered, lifestyle feel. ~2400×1350 (16:9). On narrow phones the sides crop; keep subject centered." />
+          <GallerySlot wide slot="hero" label="Hero Image(s) — Web" description="Landscape, shown on tablets & desktops. ~2400×1350 (16:9), box centered, lifestyle feel." />
+          <GallerySlot slot="hero.mobile" label="Hero Image(s) — Mobile" description="Portrait crops shown ONLY on phones (~1100×1600, 4:5 or taller). Optional: with none uploaded, phones show the web images (cropped)." />
           <ScrimControl scrimKey="home.hero" defaultScrim={{ hex: '#181716', opacity: 0.4 }} label="Hero colour overlay" note="darkens the bottom so the white headline stays readable" />
         </div>
       </section>

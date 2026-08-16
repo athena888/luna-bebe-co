@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 // on touch it's swipeable (drag left/right to advance). Renders absolutely-
 // positioned layers so it works as a section background. With one image it is
 // static; respects prefers-reduced-motion (then it just shows the first).
-export function RotatingImage({ urls, alt = '', className = '', intervalMs = 5000 }: {
+function RotatingImageCore({ urls, alt = '', className = '', intervalMs = 5000 }: {
   urls: string[]
   alt?: string
   className?: string
@@ -54,4 +54,27 @@ export function RotatingImage({ urls, alt = '', className = '', intervalMs = 500
       ))}
     </div>
   )
+}
+
+/** RotatingImage with an optional separate PHONE gallery. When `mobileUrls`
+ *  has images, phones (< sm) rotate through those portrait crops while
+ *  desktop keeps the landscape set — no more bad crops of wide heroes on
+ *  mobile. With no mobile set, all screens share `urls` (old behavior). */
+export function RotatingImage({ urls, mobileUrls, alt = '', className = '', intervalMs = 5000 }: {
+  urls: string[]
+  mobileUrls?: string[]
+  alt?: string
+  className?: string
+  intervalMs?: number
+}) {
+  const mobile = (mobileUrls ?? []).filter(Boolean)
+  if (mobile.length > 0) {
+    return (
+      <>
+        <RotatingImageCore urls={urls} alt={alt} className={`${className} hidden sm:block`} intervalMs={intervalMs} />
+        <RotatingImageCore urls={mobile} alt={alt} className={`${className} sm:hidden`} intervalMs={intervalMs} />
+      </>
+    )
+  }
+  return <RotatingImageCore urls={urls} alt={alt} className={className} intervalMs={intervalMs} />
 }

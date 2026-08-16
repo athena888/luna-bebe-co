@@ -62,7 +62,10 @@ export async function getHomeGalleries(slots: string[]): Promise<Record<string, 
     // fall through to legacy fallbacks
   }
   for (const s of slots) {
-    if (!out[s]?.length) out[s] = [legacyHomeUrl(s)]
+    // Legacy single-file fallback applies only to base slots. Variant slots
+    // like 'hero.mobile' stay empty when unset — callers then fall back to
+    // the desktop gallery instead of requesting a file that never existed.
+    if (!out[s]?.length) out[s] = s.includes('.') ? [] : [legacyHomeUrl(s)]
   }
   return out
 }

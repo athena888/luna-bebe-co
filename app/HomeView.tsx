@@ -84,7 +84,7 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
   const isEs = locale === 'es'
   const s = (key: string, english: string) => (isEs ? ES[key] ?? english : english)
   const [collectionsData, content, galleries, igPosts, story] = await Promise.all([
-    getCollectionsData(locale), getHomeContent(), getHomeGalleries(['hero']), getActiveSocialPosts(6), getStoryContent(),
+    getCollectionsData(locale), getHomeContent(), getHomeGalleries(['hero', 'hero.mobile']), getActiveSocialPosts(6), getStoryContent(),
   ])
 
   return (
@@ -95,7 +95,7 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
         {/* ── 1. Hero ── */}
         <section className="relative w-full min-h-[85vh] sm:min-h-[92vh] bg-cream-200 overflow-hidden">
           <ParallaxLayer>
-            <RotatingImage urls={galleries.hero} alt="Petite Lavande — Timeless Moments, Made With Love" className="hero-fade" />
+            <RotatingImage urls={galleries.hero} mobileUrls={galleries['hero.mobile']} alt="Petite Lavande — Timeless Moments, Made With Love" className="hero-fade" />
           </ParallaxLayer>
           <ScrimOverlay scrimKey="home.hero" defaultHex="#181716" defaultOpacity={0.4} variant="gradient-top" />
           {/* pt reserves a safe zone for the overlaid header so the copy never rides under it */}
