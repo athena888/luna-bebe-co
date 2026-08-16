@@ -1180,9 +1180,13 @@ begin
 end; $$ language plpgsql security definer;
 --     c) Widen the email_events flow CHECK so the confirmation-email retry
 --        (flow='transactional') can insert — §31's check didn't allow it.
+-- NOTE: constraint list kept at the FINAL superset (see §42 restock) — earlier
+-- narrower lists are not re-applied on re-runs, because live rows now include
+-- later flows ('cart' arrived when the store reopened 2026-08) and re-adding a
+-- narrow check fails the whole run with 23514.
 alter table email_events drop constraint if exists email_events_flow_check;
 alter table email_events add constraint email_events_flow_check
-  check (flow in ('welcome','postpurchase','winback','transactional'));
+  check (flow in ('welcome','postpurchase','winback','transactional','occasion','cart','campaign','restock'));
 
 -- 35) The live reviews table predates §30 (created by hand), so it's missing
 --     the products foreign key — add it if absent. Deletes any orphaned rows
@@ -1274,7 +1278,7 @@ create policy contact_occasions_service_all on public.contact_occasions for all 
 -- Widen the email_events flow CHECK to allow occasion sends.
 alter table email_events drop constraint if exists email_events_flow_check;
 alter table email_events add constraint email_events_flow_check
-  check (flow in ('welcome','postpurchase','winback','transactional','occasion'));
+  check (flow in ('welcome','postpurchase','winback','transactional','occasion','cart','campaign','restock'));
 
 -- 40) Cart sequence (Build 1 upgrade) + campaigns (Build 8) — allow the
 --     'cart' flow (second abandoned-cart touch) and the 'campaign' flow
@@ -1282,7 +1286,7 @@ alter table email_events add constraint email_events_flow_check
 --     (Also in supabase/migrations/cart_sequence.sql)
 alter table email_events drop constraint if exists email_events_flow_check;
 alter table email_events add constraint email_events_flow_check
-  check (flow in ('welcome','postpurchase','winback','transactional','occasion','cart','campaign'));
+  check (flow in ('welcome','postpurchase','winback','transactional','occasion','cart','campaign','restock'));
 
 -- 41) Personal welcome codes — replaces the shared WELCOME10 (which was never
 --     created in live Stripe and would be reusable by the same customer).
