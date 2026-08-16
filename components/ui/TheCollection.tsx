@@ -2,15 +2,41 @@
 
 import Link from 'next/link'
 import { useIsEs } from '@/lib/use-is-es'
-import Image from 'next/image'
+import { useState, useEffect } from 'react'
 
 // "The Collection" — full-bleed split: the "Create Something Unforgettable"
 // olive panel on the left (copy from Portal → Homepage), a single still brand
-// photo on the right (Emily 2026-08-15: no carousel — the closed ribboned box
-// on greenery, clicking through to /boxes).
+// photo on the right (Emily 2026-08-15: no carousel). The photo comes from the
+// home.collection image slot (+ optional home.collection.mobile for phones,
+// both managed in Portal → Home Content) and is shown FULL — w-full h-auto,
+// never object-cover — falling back to the committed /home-collection.jpg
+// until a slot image is uploaded. Clicking the photo goes to the boxes page.
+
+type Img = { public_url: string; alt_text?: string }
 
 export function TheCollection({ title, body, items }: { title: string; body: string; items: string[] }) {
   const isEs = useIsEs()
+  const [web, setWeb] = useState<Img | null>(null)
+  const [mobile, setMobile] = useState<Img | null>(null)
+
+  useEffect(() => {
+    let alive = true
+    fetch('/api/site-images?keys=home.collection,home.collection.mobile')
+      .then(r => r.json())
+      .then(d => {
+        if (!alive) return
+        setWeb(d.images?.['home.collection'] ?? null)
+        setMobile(d.images?.['home.collection.mobile'] ?? null)
+      })
+      .catch(() => {})
+    return () => { alive = false }
+  }, [])
+
+  const fallbackAlt = isEs
+    ? 'Canastilla Petite Lavande con lazo, sobre boj'
+    : 'Petite Lavande gift box tied with ribbon, resting on greenery'
+  const webImg: Img = web ?? { public_url: '/home-collection.jpg', alt_text: fallbackAlt }
+  const mobileImg: Img = mobile ?? webImg
 
   return (
     <section className="pt-4 pb-14 sm:pt-6">
@@ -21,8 +47,8 @@ export function TheCollection({ title, body, items }: { title: string; body: str
 
       <div className="relative">
         {/* Full-bleed split — olive panel left, photo right (stacked
-            description-first with a little padding on phones), ~85vh like the
-            Unforgettable section. No card border. */}
+            description-first with a little padding on phones). No card
+            border. The row's height follows whichever side is taller. */}
         <div className="relative sm:flex sm:items-stretch p-3 sm:p-0">
           {/* Left — the "Create Something Unforgettable" panel (static copy,
               editable in Portal → Homepage), frame inset like the homepage one */}
@@ -52,16 +78,17 @@ export function TheCollection({ title, body, items }: { title: string; body: str
             </div>
           </div>
 
-          {/* Right — still brand photo, whole image links to the boxes page */}
-          <div className="relative overflow-hidden bg-cream-100 h-[52vh] sm:h-auto sm:min-h-[85vh] sm:flex-1">
-            <Image
-              src="/home-collection.jpg"
-              alt={isEs ? 'Canastilla Petite Lavande con lazo, sobre boj' : 'Petite Lavande gift box tied with ribbon, resting on greenery'}
-              fill
-              className="object-cover"
-              sizes="(max-width:640px) 100vw, 1024px"
-            />
-            <Link href={isEs ? '/es/canastillas' : '/boxes'} className="absolute inset-0 z-10" aria-label={isEs ? 'Ver canastillas' : 'Shop gift boxes'} />
+          {/* Right — still photo shown FULL (never cropped); the whole image
+              links to the boxes page. Phones use the mobile upload when one
+              exists. Cream backing shows if the image is shorter than the
+              panel on desktop. */}
+          <div className="relative bg-cream-100 sm:flex-1 sm:flex sm:items-center sm:justify-center sm:overflow-hidden">
+            <Link href={isEs ? '/es/canastillas' : '/boxes'} aria-label={isEs ? 'Ver canastillas' : 'Shop gift boxes'} className="block w-full">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={mobileImg.public_url} alt={mobileImg.alt_text || fallbackAlt} className="w-full h-auto sm:hidden" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={webImg.public_url} alt={webImg.alt_text || fallbackAlt} className="w-full h-auto hidden sm:block" />
+            </Link>
           </div>
         </div>
       </div>

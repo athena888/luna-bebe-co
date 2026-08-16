@@ -167,7 +167,13 @@ function HomepageEditor() {
 
       {/* 4 · The Collection — "Create Something Unforgettable" panel */}
       <section className="mb-12">
-        <SectionTitle n="4" title={'The Collection · "Create Something Unforgettable" panel'} note="The framed olive panel on the left of The Collection carousel. Script heading, paragraph, and the hyphenated list. Shop Now links to the boxes page. The photos on the right are your box cover photos (Portal → Prebuilt Boxes)." />
+        <SectionTitle n="4" title={'The Collection · "Create Something Unforgettable" panel'} note="The framed olive panel on the left, one still photo on the right (shown full, never cropped). Script heading, paragraph, and the hyphenated list. Shop Now and the photo both link to the boxes page." />
+        <div className="bg-white border border-cream-200 rounded-lg p-3 mb-5">
+          <p className="font-sans text-[10px] text-bark-400 mb-2">Photo next to the panel — shown uncropped on desktop</p>
+          <SiteImageUploader slotKey="home.collection" context="The still photo beside the Create Something Unforgettable panel" ratio="1:1" hint="shown full & uncropped · ~1500×1500" compact />
+          <p className="font-sans text-[10px] text-bark-400 mt-3 mb-2">Optional separate phone image — shown uncropped on small screens instead</p>
+          <SiteImageUploader slotKey="home.collection.mobile" context="Phone version of The Collection photo" ratio="1:1" hint="any shape — shown uncropped" compact />
+        </div>
         <div className="bg-white border border-cream-200 rounded-lg p-4 space-y-3">
           <Field label="Script heading (keeps to one line — keep it short)" value={c.unforgettable.title} onChange={v => setUnf({ title: v })} ai={{ kind: 'title', context: 'a short elegant script heading for the gift-box feature panel' }} />
           <Area label="Paragraph" value={c.unforgettable.body} onChange={v => setUnf({ body: v })} rows={3} ai={{ kind: 'body', context: 'the intro paragraph inside the framed feature panel about the mama gift box' }} />

@@ -52,6 +52,7 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   { key: 'boxes.custom_cta_bg', label: 'Build-your-own CTA background', group: 'Ready-Made Boxes', where: 'Background behind the "Prefer to choose yourself?" CTA', ratio: '21:9', hint: 'Wide & soft · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.70 } },
 
   // ── Homepage ────────────────────────────────────────────────────────────────
+  { key: 'home.collection', label: '"The Collection" photo', group: 'Homepage', where: 'Right half of The Collection split, next to the "Create Something Unforgettable" panel', ratio: '1:1', hint: 'Shown FULL and uncropped at the panel\'s width · ~1500×1500', mobile: { ratio: '1:1', hint: 'Separate phone image, also shown uncropped — any shape works' } },
   { key: 'home.special_bg', label: '"What makes it special" photo', group: 'Homepage', where: 'Full-bleed lifestyle photo behind the "What makes it special" heading (below Best Sellers)', ratio: '21:9', hint: 'Wide editorial lifestyle — text overlays the bottom · ~2200×950', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#181716', opacity: 0 } },
   { key: 'home.testimonials_bg', label: 'Testimonials background', group: 'Homepage', where: 'Background behind the reviews carousel section', ratio: '21:9', hint: 'Soft, light lifestyle · ~2000×860', mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' }, scrimDefault: { hex: '#FAF9F8', opacity: 0.85 } },
 
