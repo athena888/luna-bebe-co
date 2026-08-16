@@ -29,6 +29,9 @@ export default async function ReviewsPage() {
 
   const nameById = new Map((products ?? []).map(p => [p.id as string, p.name as string]))
   for (const b of boxes ?? []) nameById.set(`box-${b.slug}`, `${b.name} (box)`)
+  const productOptions = [...nameById.entries()]
+    .map(([id, name]) => ({ id, name }))
+    .sort((a, b) => a.name.localeCompare(b.name))
 
   const reviews: ReviewItem[] = (data ?? []).map(r => ({
     id: r.id as string,
@@ -49,7 +52,7 @@ export default async function ReviewsPage() {
           {pending} awaiting moderation · {reviews.length - pending} published. Approved reviews appear on their product or box page.
         </p>
       </div>
-      <ReviewsBrowser reviews={reviews} />
+      <ReviewsBrowser reviews={reviews} productOptions={productOptions} />
     </div>
   )
 }

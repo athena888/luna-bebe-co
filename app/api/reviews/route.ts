@@ -55,8 +55,9 @@ export async function POST(req: NextRequest) {
     const { isVerifiedBuyer, grantReviewReward, REVIEW_REWARD_ACTIVE } = await import('@/lib/review-rewards')
     const verified = email ? await isVerifiedBuyer(email) : false
 
-    // Rich insert needs §45; fall back to the legacy shape so a review is
-    // never lost to an unmigrated DB.
+    // Rich insert needs §45+§53; fall back to the legacy shape so a review is
+    // never lost to an unmigrated DB. Provenance (§53) comes ONLY from the
+    // signed token — a token means this arrived via the review-ask email.
     let insert = await supabaseAdmin.from('reviews').insert({
       product_id,
       customer_name: customer_name.trim(),
@@ -66,7 +67,21 @@ export async function POST(req: NextRequest) {
       reviewer_email: email,
       verified_buyer: verified,
       incentivized: false,
+      order_id: tokenData?.orderId ?? null,
+      collection_method: tokenData ? 'post_fulfillment' : 'unsolicited',
     }).select('id').maybeSingle()
+    if (insert.error) {
+      insert = await supabaseAdmin.from('reviews').insert({
+        product_id,
+        customer_name: customer_name.trim(),
+        rating,
+        body: body.trim(),
+        approved: false,
+        reviewer_email: email,
+        verified_buyer: verified,
+        incentivized: false,
+      }).select('id').maybeSingle()
+    }
     if (insert.error) {
       insert = await supabaseAdmin.from('reviews').insert({
         product_id,

@@ -1,10 +1,13 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Star } from 'lucide-react'
 import { ReviewActions } from '@/app/portal/reviews/ReviewActions'
 
 // Filterable review moderation list: status × product/box × star rating.
+// Plus a manual-entry form for genuine customer feedback received off-site
+// (email, DMs, notes) — entered verbatim under the real customer's name.
 
 export interface ReviewItem {
   id: string
@@ -15,6 +18,8 @@ export interface ReviewItem {
   approved: boolean
   createdAt: string
 }
+
+export interface ReviewProductOption { id: string; name: string }
 
 function Stars({ rating }: { rating: number }) {
   return (
@@ -31,7 +36,80 @@ const chip = (on: boolean) =>
     on ? 'bg-[#7A8E7C] border-[#7A8E7C] text-white' : 'border-cream-300 text-bark-500 hover:border-bark-400'
   }`
 
-export function ReviewsBrowser({ reviews }: { reviews: ReviewItem[] }) {
+function AddReviewForm({ products }: { products: ReviewProductOption[] }) {
+  const router = useRouter()
+  const [open, setOpen] = useState(false)
+  const [productId, setProductId] = useState('')
+  const [name, setName] = useState('')
+  const [rating, setRating] = useState(5)
+  const [body, setBody] = useState('')
+  const [date, setDate] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+
+  const submit = async () => {
+    setError('')
+    if (!productId || !name.trim() || !body.trim()) { setError('Product, name and text are required.'); return }
+    setBusy(true)
+    try {
+      const res = await fetch('/api/portal/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: productId, customer_name: name, rating, body, date: date || undefined }),
+      })
+      const json = await res.json()
+      if (!res.ok) { setError(json.error || 'Failed to save'); return }
+      setProductId(''); setName(''); setRating(5); setBody(''); setDate(''); setOpen(false)
+      router.refresh()
+    } catch {
+      setError('Network error')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const field = 'px-3 py-2 border border-cream-300 rounded-lg bg-white font-sans text-sm text-bark-600 focus:outline-none focus:border-bark-400'
+
+  return (
+    <div className="mb-6">
+      {!open ? (
+        <button onClick={() => setOpen(true)} className={chip(false)}>+ Add a review</button>
+      ) : (
+        <div className="bg-cream-50 rounded-2xl border border-cream-200 p-5">
+          <p className="font-sans text-xs text-bark-500 mb-4 leading-relaxed">
+            For <span className="font-semibold">genuine customer feedback you received off-site</span> (email, Instagram,
+            thank-you notes) — enter the customer&apos;s real name and their words as written. Published reviews feed the
+            product page, Google structured data and the Google review feed; invented reviews violate FTC rules and
+            Google policy and can suspend the Merchant Center account.
+          </p>
+          <div className="flex flex-wrap gap-3 mb-3">
+            <select value={productId} onChange={e => setProductId(e.target.value)} className={field}>
+              <option value="">Product or box…</option>
+              {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+            <input value={name} onChange={e => setName(e.target.value)} placeholder="Customer name" className={field} />
+            <select value={rating} onChange={e => setRating(Number(e.target.value))} className={field}>
+              {[5, 4, 3, 2, 1].map(n => <option key={n} value={n}>{'★'.repeat(n)}{'☆'.repeat(5 - n)}</option>)}
+            </select>
+            <input type="date" value={date} onChange={e => setDate(e.target.value)} max={new Date().toISOString().slice(0, 10)}
+              title="When the feedback was received (optional)" className={field} />
+          </div>
+          <textarea value={body} onChange={e => setBody(e.target.value)} rows={3}
+            placeholder="The customer's words, as written…" className={`${field} w-full mb-3`} />
+          {error && <p className="font-sans text-xs text-red-600 mb-3">{error}</p>}
+          <div className="flex gap-2">
+            <button onClick={submit} disabled={busy} className={`${chip(true)} disabled:opacity-50`}>
+              {busy ? 'Saving…' : 'Publish review'}
+            </button>
+            <button onClick={() => { setOpen(false); setError('') }} className={chip(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function ReviewsBrowser({ reviews, productOptions = [] }: { reviews: ReviewItem[]; productOptions?: ReviewProductOption[] }) {
   const [status, setStatus] = useState<'all' | 'pending' | 'published'>('all')
   const [product, setProduct] = useState('all')
   const [rating, setRating] = useState(0)
@@ -45,6 +123,7 @@ export function ReviewsBrowser({ reviews }: { reviews: ReviewItem[] }) {
 
   return (
     <div>
+      {productOptions.length > 0 && <AddReviewForm products={productOptions} />}
       <div className="flex flex-wrap items-center gap-2 mb-6">
         {(['all', 'pending', 'published'] as const).map(s => (
           <button key={s} onClick={() => setStatus(s)} className={chip(status === s)}>

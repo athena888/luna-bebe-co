@@ -12,43 +12,57 @@ import { FEED_BRAND, productFeedUrl } from './google-feed'
 //  - Deletion decision, documented: reviews are only ever hard-deleted from
 //    the DB for content-policy violations (spam/abuse), which Google allows
 //    removing from the feed. Legitimate reviews are never deleted.
-//  - collection_method is 'unsolicited' for all rows: the DB does not record
-//    whether a review came from the post-shipment ask, and claiming
-//    post_fulfillment without evidence would be fabrication.
+//  - collection_method (§53): 'post_fulfillment' only when the review arrived
+//    through the signed review-ask token — evidence, not assumption. Manual
+//    portal entries and tokenless form submissions export as 'unsolicited'.
+//  - transaction_id / is_verified_purchase are emitted only when the DB holds
+//    token-derived evidence (order_id / verified_buyer). Never fabricated.
 //  - brand/mpn/product URLs come from lib/google-feed exports so the two
-//    feeds cannot drift.
+//    feeds cannot drift. Box-pooled reviews (§47, product_id 'box-<slug>')
+//    point at the real /boxes/<slug> page, not a phantom /products URL.
 
 export interface ReviewFeedRow {
   id: string
   productId: string
+  productUrl: string
   name: string
   rating: number
   body: string
   createdAt: string
+  verified: boolean
+  collectionMethod: 'post_fulfillment' | 'unsolicited'
+  orderId: string | null
 }
 
 export interface ReviewFeedIssue { id: string; problems: string[] }
+
+const boxSlug = (productId: string) => productId.startsWith('box-') ? productId.slice(4) : null
+
+function reviewProductUrl(productId: string): string {
+  const base = (process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com').replace(/\/$/, '')
+  const slug = boxSlug(productId)
+  return slug ? `${base}/boxes/${slug}` : productFeedUrl(productId)
+}
+
+interface ReviewRecord {
+  id: string; product_id: string; customer_name: string | null; rating: number
+  body: string | null; created_at: string | null
+  incentivized?: boolean; verified_buyer?: boolean
+  order_id?: string | null; collection_method?: string | null
+}
 
 export async function buildReviewFeed(): Promise<{ rows: ReviewFeedRow[]; issues: ReviewFeedIssue[]; total: number }> {
   // Incentivized reviews (review thank-you code, §45) are excluded from the
   // FEED ONLY — Google bars incentivized reviews from Product Ratings. This is
   // not rating-gating: the exclusion is reward-based, never star-based, and
-  // the reviews still show on site with their disclosure. Falls back to the
-  // legacy select pre-§45.
-  let { data, error } = await supabaseAdmin
+  // the reviews still show on site with their disclosure. select('*') tolerates
+  // every migration state (§45/§53 columns may not exist yet).
+  const { data } = await supabaseAdmin
     .from('reviews')
-    .select('id, product_id, customer_name, rating, body, approved, created_at, incentivized')
+    .select('*')
     .eq('approved', true)
     .order('created_at', { ascending: true })
-  if (error) {
-    const legacy = await supabaseAdmin
-      .from('reviews')
-      .select('id, product_id, customer_name, rating, body, approved, created_at')
-      .eq('approved', true)
-      .order('created_at', { ascending: true })
-    data = legacy.data as typeof data
-  }
-  const all = (data ?? []).filter(r => !(r as { incentivized?: boolean }).incentivized)
+  const all = ((data ?? []) as ReviewRecord[]).filter(r => !r.incentivized)
   const rows: ReviewFeedRow[] = []
   const issues: ReviewFeedIssue[] = []
   const seen = new Set<string>()
@@ -69,10 +83,16 @@ export async function buildReviewFeed(): Promise<{ rows: ReviewFeedRow[]; issues
     rows.push({
       id: r.id,
       productId: r.product_id,
+      productUrl: reviewProductUrl(r.product_id),
       name: r.customer_name?.trim() || '',
       rating: r.rating,
-      body: r.body.trim(),
-      createdAt: new Date(r.created_at).toISOString(),
+      body: (r.body as string).trim(),
+      createdAt: new Date(r.created_at as string).toISOString(),
+      verified: !!r.verified_buyer,
+      // Only token-evidenced reviews claim post_fulfillment; 'manual' portal
+      // entries and pre-§53 rows (NULL) export as unsolicited.
+      collectionMethod: r.collection_method === 'post_fulfillment' ? 'post_fulfillment' : 'unsolicited',
+      orderId: r.order_id?.trim() || null,
     })
   }
   return { rows, issues, total: all.length }
@@ -83,6 +103,11 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 
 export function reviewFeedXml(rows: ReviewFeedRow[]): string {
   const base = (process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com').replace(/\/$/, '')
+  // Schema 2.4. Element order follows the 2.4 XSD sequence. review_url is
+  // type="group": the #reviews anchor shows ALL of a product's reviews
+  // together (Google requires 'group' for shared review pages, 'singleton'
+  // only for one-review-per-page URLs). is_incentivized_review is always
+  // false BY CONSTRUCTION — incentivized rows are filtered out upstream.
   const items = rows.map(r => `
     <review>
       <review_id>${esc(r.id)}</review_id>
@@ -91,26 +116,30 @@ export function reviewFeedXml(rows: ReviewFeedRow[]): string {
       </reviewer>
       <review_timestamp>${r.createdAt}</review_timestamp>
       <content>${cdata(r.body)}</content>
-      <review_url type="singleton">${productFeedUrl(r.productId)}#reviews</review_url>
+      <review_url type="group">${r.productUrl}#reviews</review_url>
       <ratings>
         <overall min="1" max="5">${r.rating}</overall>
       </ratings>
       <products>
         <product>
           <product_ids>
-            <brands><brand>${cdata(FEED_BRAND)}</brand></brands>
             <mpns><mpn>${esc(r.productId)}</mpn></mpns>
+            <skus><sku>${esc(r.productId)}</sku></skus>
+            <brands><brand>${cdata(FEED_BRAND)}</brand></brands>
           </product_ids>
-          <product_url>${productFeedUrl(r.productId)}</product_url>
+          <product_url>${r.productUrl}</product_url>
         </product>
-      </products>
-      <collection_method>unsolicited</collection_method>
+      </products>${r.verified ? `
+      <is_verified_purchase>true</is_verified_purchase>` : ''}
+      <is_incentivized_review>false</is_incentivized_review>
+      <collection_method>${r.collectionMethod}</collection_method>${r.orderId ? `
+      <transaction_id>${esc(r.orderId)}</transaction_id>` : ''}
     </review>`).join('')
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="http://www.google.com/shopping/reviews/schema/product/2.3/product_reviews.xsd">
-  <version>2.3</version>
+      xsi:noNamespaceSchemaLocation="http://www.google.com/shopping/reviews/schema/product/2.4/product_reviews.xsd">
+  <version>2.4</version>
   <publisher>
     <name>Petite Lavande</name>
     <favicon>${base}/favicon-32.png</favicon>
