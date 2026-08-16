@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { LayoutDashboard, ShoppingBag, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, ShieldCheck, LayoutTemplate, Tag, Sunrise, BookOpen, Star, Users, Send, Image as ImageIcon, Newspaper } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, BarChart2, Target, TrendingUp, Webhook, PackageSearch, Menu, X, ShieldCheck, LayoutTemplate, Tag, Sunrise, BookOpen, Star, Users, Send, Image as ImageIcon } from 'lucide-react'
 
 const NAV = [
   { href: '/portal', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
@@ -13,7 +13,6 @@ const NAV = [
   { href: '/portal/contacts', label: 'Marketing', icon: <Send size={16} /> },
   { href: '/portal/ugc', label: 'Customer Photos', icon: <ImageIcon size={16} /> },
   { href: '/portal/lookbook', label: 'Lookbook', icon: <BookOpen size={16} /> },
-  { href: '/portal/press', label: 'Press', icon: <Newspaper size={16} /> },
   { href: '/portal/discounts', label: 'Discount Codes', icon: <Tag size={16} /> },
   { href: '/portal/content', label: 'Pages & Content', icon: <LayoutTemplate size={16} /> },
   { href: '/portal/cert-icons', label: 'Cert Library', icon: <ShieldCheck size={16} /> },

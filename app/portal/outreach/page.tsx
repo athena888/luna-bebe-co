@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { Loader, Check, CheckCheck, SkipForward, Ban, ExternalLink, RefreshCw, BookOpen, AlertTriangle, Gauge, Newspaper, ChevronDown, ChevronRight, Trash2, Trophy } from 'lucide-react'
+import { PressOutreach } from '@/components/portal/PressOutreach'
 
 // Morning review — one page, review pre-drafted cold emails over coffee.
 // Approve & queue / Edit (saves on approve) / Skip (recycle) / Reject (suppress).
@@ -93,6 +94,13 @@ function Sparkline({ runs }: { runs: Run[] }) {
 }
 
 export default function ReviewPage() {
+  // One tab for all outreach (Emily 2026-08-15): Corporate = the automated
+  // B2B pipeline review; Press = the manual drafts-only press system.
+  // Initialized from ?tab=press via window (no useSearchParams → no Suspense).
+  const [tab, setTab] = useState<'corporate' | 'press'>('corporate')
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('tab') === 'press') setTab('press')
+  }, [])
   const [data, setData] = useState<Payload | null>(null)
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState<string | null>(null)   // draftId / prospectId / 'all'
@@ -229,9 +237,20 @@ export default function ReviewPage() {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
         <div className="flex items-baseline gap-4">
           <h1 className="font-serif text-2xl text-bark-700">Morning Review</h1>
-          <Link href="/portal/outreach/creators" className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
-            Creators →
-          </Link>
+          {/* Outreach-kind toggle — one tab, two systems */}
+          <div className="flex rounded-lg border border-cream-300 overflow-hidden">
+            {(['corporate', 'press'] as const).map(t => (
+              <button key={t} onClick={() => setTab(t)}
+                className={`font-sans text-[10px] tracking-[0.15em] uppercase px-3 py-1.5 transition-colors ${tab === t ? 'bg-bark-700 text-cream-50' : 'bg-white text-bark-500 hover:bg-cream-100'}`}>
+                {t === 'corporate' ? 'Corporate' : <span className="inline-flex items-center gap-1"><Newspaper size={10} /> Press</span>}
+              </button>
+            ))}
+          </div>
+          {tab === 'corporate' && (
+            <Link href="/portal/outreach/creators" className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
+              Creators →
+            </Link>
+          )}
         </div>
         <div className="flex items-center gap-2">
           {data && (
@@ -245,9 +264,8 @@ export default function ReviewPage() {
           {lb && (lb.published
             ? <span className="inline-flex items-center gap-1 bg-sage-100 text-sage-600 font-sans text-[10px] tracking-[0.1em] uppercase px-2 py-1 rounded-lg"><BookOpen size={11} /> Lookbook v{lb.published.version}</span>
             : <span className="inline-flex items-center gap-1 bg-rose-100 text-bark-600 font-sans text-[10px] tracking-[0.1em] uppercase px-2 py-1 rounded-lg"><BookOpen size={11} /> Not published{lb.waiting > 0 ? ` — ${lb.waiting} waiting` : ''}</span>)}
-          {press && (press.kit
-            ? <span className="inline-flex items-center gap-1 font-sans text-[10px] tracking-[0.1em] uppercase px-2 py-1 rounded-lg text-bark-700" style={{ backgroundColor: LAVENDER }}><Newspaper size={11} /> Press kit · {press.kit.imageCount}</span>
-            : <span className="inline-flex items-center gap-1 bg-cream-200 text-bark-500 font-sans text-[10px] tracking-[0.1em] uppercase px-2 py-1 rounded-lg"><Newspaper size={11} /> No press kit{press.awaitingKit > 0 ? ` — ${press.awaitingKit} waiting` : ''}</span>)}
+          {/* Press-kit chip removed (Emily 2026-08-15) — press outreach is
+              manual now; the kit indicator belonged to the automated lane. */}
           {data?.quota && (
             <span className={`inline-flex items-center gap-1 font-sans text-[10px] tracking-[0.1em] uppercase px-2 py-1 rounded-lg ${data.quota.paceWarning ? 'bg-gold-100 text-gold-600' : 'bg-cream-200 text-bark-500'}`}
               title={data.quota.providers.map(p => `${p.name}: ${p.configured ? `${p.remaining}/${p.quota}` : 'no key'}`).join(' · ')}>
@@ -256,6 +274,7 @@ export default function ReviewPage() {
           )}
         </div>
       </div>
+      {tab === 'press' ? <PressOutreach /> : <>
       <p className="font-sans text-xs text-bark-400 mb-4">Approved drafts send at 9–10am PT. Nothing sends without your click.</p>
 
       {error && (
@@ -410,6 +429,7 @@ export default function ReviewPage() {
           {running === 'draft' ? <Loader size={11} className="animate-spin" /> : <RefreshCw size={11} />} Run drafter now
         </button>
       </div>
+      </>}
     </div>
   )
 }
