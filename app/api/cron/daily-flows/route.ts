@@ -39,6 +39,30 @@ export async function GET(req: NextRequest) {
     result.flows = 'error'
   }
 
+  // Payment reconciliation — Stripe is the source of truth for money. If a
+  // customer was charged but no order landed (the webhook failure that went
+  // unnoticed for ~10 weeks in 2026), nothing on the site can notice it, so
+  // check the money against the orders table and alert only on a real gap.
+  // Silence = healthy; this never emails on a clean day.
+  try {
+    const { reconcilePayments, formatGapAlert } = await import('@/lib/payment-reconcile')
+    const rec = await reconcilePayments(7)
+    result.paymentsChecked = rec.checked
+    result.paymentGaps = rec.gaps.length
+    if (rec.gaps.length) {
+      await resend.emails.send({
+        from: `Petite Lavande <${CONTACT_EMAIL}>`,
+        to: process.env.ADMIN_EMAIL || CONTACT_EMAIL,
+        subject: `⚠️ ${rec.gaps.length} paid order${rec.gaps.length === 1 ? '' : 's'} missing from your shop`,
+        text: formatGapAlert(rec.gaps),
+      })
+      result.paymentGapAlertSent = true
+    }
+  } catch (e) {
+    console.error('Payment reconciliation failed:', e)
+    result.paymentGaps = 'error'
+  }
+
   // Friday: snapshot the week + email the digest.
   if (new Date().getUTCDay() === 5) {
     try {
