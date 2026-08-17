@@ -123,11 +123,22 @@ const OCCASION_BY_SLUG: Record<string, { en: string; es: string }> = {
   'baby-first-christmas-gift-box': { en: 'Christmas Gifts For Little Ones', es: 'Regalos de Navidad para los más pequeños' },
 }
 
+// Kept OUT of the Gift Boxes dropdown (Emily 2026-08-16): the fixed-price
+// starter box exists so Google Shopping has something to list — the /build
+// configurator has no single price to advertise. In the nav it sat one line
+// above "Build Your Own Box" with almost the same label and a different
+// destination. Its page, /boxes hub card and feed row are all unaffected.
+const NAV_HIDDEN_SLUGS = new Set(['build-your-own-gift-box'])
+
 function useBoxProducts() {
   const [products, setProducts] = useState(DEFAULT_BOX_PRODUCTS)
   useEffect(() => {
     fetch('/api/catalog-nav').then(r => r.json())
-      .then(d => { if (Array.isArray(d.products) && d.products.length) setProducts(d.products) })
+      .then(d => {
+        if (!Array.isArray(d.products) || !d.products.length) return
+        const shown = (d.products as Array<{ slug: string; name: string }>).filter(p => !NAV_HIDDEN_SLUGS.has(p.slug))
+        if (shown.length) setProducts(shown)
+      })
       .catch(() => {})
   }, [])
   return products
