@@ -194,6 +194,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     trackingNumber: order.tracking_number,
     referralCode,
     locale: (order as { locale?: string }).locale === 'es' ? 'es' : 'en',
+    // Estimated-arrival line: the buyer's own ZIP + chosen service, anchored
+    // to when the order was placed.
+    shippingZip: order.shipping_address?.zip ?? null,
+    shippingType: order.shipping_type ?? null,
+    orderedAt: (order as { created_at?: string }).created_at ?? null,
     items: await resolveOrderItemImages((order.selected_items ?? []).map(i => ({
       id: i.id, name: i.name, price: i.price, qty: (i as { qty?: number }).qty ?? 1,
       image: (i as { image?: string | null }).image ?? null,

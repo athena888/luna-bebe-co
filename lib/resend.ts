@@ -921,6 +921,9 @@ export async function sendOrderConfirmationEmail({
   items,
   referralCode,
   locale = 'en',
+  shippingZip,
+  shippingType,
+  orderedAt,
 }: {
   customerName: string
   customerEmail: string
@@ -932,8 +935,34 @@ export async function sendOrderConfirmationEmail({
   items?: Array<{ id?: string; name: string; price?: number; qty?: number; image?: string | null }>
   referralCode?: string | null
   locale?: EmailLocale
+  /** Destination ZIP + service, for the estimated-arrival line. Omit either
+   *  and the line falls back to the national window (or is dropped). */
+  shippingZip?: string | null
+  shippingType?: 'standard' | 'premium' | 'sameday' | null
+  /** When the order was placed — the estimate is anchored to that moment, not
+   *  to when this email happens to be sent (retries can be a day later). */
+  orderedAt?: string | Date | null
 }) {
   const es = locale === 'es'
+
+  // Estimated arrival — the same date math the product pages and checkout use
+  // (lib/delivery.ts: 1 PM PT cutoff, business days, federal holidays).
+  // Fail-soft: any problem just drops the line rather than the email.
+  let arrivalLine = ''
+  try {
+    const { estimateDelivery, estimateWithTransit, formatDeliveryWindow } = await import('./delivery')
+    const placed = orderedAt ? new Date(orderedAt) : new Date()
+    const at = Number.isNaN(placed.getTime()) ? new Date() : placed
+    if (shippingType === 'sameday') {
+      arrivalLine = es ? 'Esta noche entre 5 y 9 PM' : 'This evening, 5–9 PM'
+    } else {
+      const est = shippingType === 'premium'
+        ? estimateWithTransit([1, 2], at)
+        : estimateDelivery(shippingZip ?? null, at)
+      arrivalLine = formatDeliveryWindow(est, es ? 'es' : 'en')
+    }
+  } catch { /* line omitted */ }
+
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`
   const ref = (trackingNumber ?? orderId).slice(-8).toUpperCase()
   // Only render images the caller resolved (guessed storage URLs 404 — real
@@ -982,7 +1011,14 @@ export async function sendOrderConfirmationEmail({
               <td style="font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.75);padding:6px 0;">${es ? 'Referencia del pedido' : 'Order reference'}</td>
               <td style="font-family:monospace;font-size:13px;color:#ffffff;text-align:right;padding:6px 0;">${ref}</td>
             </tr>
+            ${arrivalLine ? `
+            <tr>
+              <td style="font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.75);padding:6px 0;">${es ? 'Llegada estimada' : 'Estimated arrival'}</td>
+              <td style="font-family:Georgia,serif;font-size:15px;color:#ffffff;text-align:right;padding:6px 0;">${arrivalLine}</td>
+            </tr>` : ''}
           </table>
+          ${arrivalLine && shippingType !== 'sameday' ? `
+          <p style="font-family:sans-serif;font-size:11px;line-height:1.6;color:rgba(255,255,255,0.7);margin:10px 0 0;">${es ? 'Días hábiles, sin contar fines de semana ni días festivos. Te confirmamos la fecha exacta con el número de rastreo.' : 'Business days, weekends and holidays not counted. We\'ll confirm the exact date with your tracking number.'}</p>` : ''}
           ${trackingUrl ? `
           <div style="text-align:center;margin-top:26px;">
             <a href="${trackingUrl}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">${es ? 'Rastrear tu pedido' : 'Track Your Order'}</a>

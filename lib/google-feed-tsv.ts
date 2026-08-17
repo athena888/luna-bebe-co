@@ -182,6 +182,9 @@ export async function buildProductTsv(): Promise<string> {
     'themed-baby-gift-box': 'Baby Shower Gift Box',
     'new-mom-gift-box': 'New Mom Postpartum Gift Box',
     'baby-first-christmas-gift-box': "Baby's First Christmas Gift Box",
+    // The builder's Shopping listing: a fixed, buyable starter set (a
+    // configurator page can't carry a feed price — it has no single price).
+    'build-your-own-gift-box': 'Customizable Organic Baby Gift Set',
   }
   const boxes = await getBoxProducts()
   for (const b of boxes) {
