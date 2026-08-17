@@ -171,9 +171,13 @@ export async function POST(req: NextRequest) {
       },
     ]
 
-    // Generate tracking number (UUID)
-    const crypto = await import('crypto')
-    const trackingNumber = crypto.randomUUID()
+    // Empty, NOT a random UUID. This used to be seeded with crypto.randomUUID(),
+    // so /track showed every unshipped order a "Tracking Number" that meant
+    // nothing to the customer, and the confirmation email built its order
+    // reference from it. Empty string (not null — the column is NOT NULL) reads
+    // as falsy everywhere tracking is rendered, so those blocks stay hidden
+    // until orders/[id]/ship writes the real carrier number from Shippo.
+    const trackingNumber = ''
 
     // Save order to database first (pending)
     const { data: order, error: orderError } = await supabaseAdmin
@@ -268,7 +272,6 @@ export async function POST(req: NextRequest) {
       cancel_url: `${baseUrl}/checkout`,
       metadata: {
         order_id: order.id,
-        tracking_number: trackingNumber,
         recipient_name: recipientName || '',
         locale,
         currency,

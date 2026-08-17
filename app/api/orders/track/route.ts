@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { matchesOrderRef } from '@/lib/order-ref'
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,10 +22,10 @@ export async function POST(req: NextRequest) {
 
     let orders = data || []
 
-    // If reference provided, filter to that specific order
-    if (reference) {
-      const ref = reference.trim().toUpperCase()
-      orders = orders.filter(o => o.id.slice(-8).toUpperCase() === ref || o.id.toUpperCase().includes(ref))
+    // If reference provided, filter to that specific order. Tolerates a pasted
+    // "#" so a code copied straight out of the confirmation email works.
+    if (reference && String(reference).trim()) {
+      orders = orders.filter(o => matchesOrderRef(o.id, String(reference)))
     }
 
     return NextResponse.json({ orders: orders.slice(0, 5) })

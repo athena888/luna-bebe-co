@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase'
+import { orderRef } from '@/lib/order-ref'
 import type { Order, Product } from '@/types'
 import { PrintButton } from './PrintButton'
 
@@ -24,7 +25,9 @@ export default async function PackingSlipPage({ params }: { params: Promise<{ id
   const isGift = !!order.ship_to_recipient
   const addr = order.shipping_address
   const items = (order.selected_items ?? []) as LineItem[]
-  const ref = (order.tracking_number ?? order.id).slice(-8).toUpperCase()
+  // The one customer-facing reference — same code the buyer sees on the
+  // confirmation page, in their email, and types into /track.
+  const ref = orderRef(order.id)
 
   return (
     <div className="min-h-screen bg-white text-[#3d2c1e] print:bg-white">

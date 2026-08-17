@@ -1,6 +1,7 @@
 import { Resend } from 'resend'
 import { CONTACT_EMAIL } from '@/lib/site-config'
 import { unsubscribeUrl } from '@/lib/unsubscribe'
+import { orderRef } from '@/lib/order-ref'
 
 export const resend = new Resend(process.env.RESEND_API_KEY!)
 
@@ -633,7 +634,7 @@ export async function sendReviewRequestEmail({
   // CTA goes to the first item's product page — the review form lives there.
   const reviewHref = selectedItems[0]
     ? utm(productPath(selectedItems[0].id), 'postpurchase') + rt + '#reviews'
-    : utm(`/track?ref=${orderId.slice(-8).toUpperCase()}`, 'postpurchase')
+    : utm(`/track?ref=${orderRef(orderId)}`, 'postpurchase')
   // Google Business Profile review link — env-configurable, literal fallback.
   const gbpReviewUrl = process.env.GBP_REVIEW_URL
     || 'https://search.google.com/local/writereview?placeid=ChIJRUi8mUFkEygRvoBZgJi_-Tg'
@@ -875,7 +876,7 @@ export async function sendRefundEmail({
           </p>
           <div style="border-top:1px solid rgba(255,255,255,0.25);padding-top:16px;">
             <p style="font-family:sans-serif;font-size:12px;color:rgba(255,255,255,0.75);margin:0 0 4px;text-transform:uppercase;letter-spacing:1px;">${es ? 'Referencia del pedido' : 'Order Reference'}</p>
-            <p style="font-family:monospace;font-size:14px;color:#ffffff;margin:0;">#${orderId.slice(-8).toUpperCase()}</p>
+            <p style="font-family:monospace;font-size:14px;color:#ffffff;margin:0;">#${orderRef(orderId)}</p>
           </div>
         </div>
         ${brandFooter}
@@ -895,7 +896,7 @@ export async function sendDisputeAlertEmail(dispute: {
   const text = [
     '⚠️  A payment dispute (chargeback) was opened.',
     '',
-    `Order:     ${dispute.orderId ? `#${dispute.orderId.slice(-8).toUpperCase()}` : '— (not matched to an order)'}`,
+    `Order:     ${dispute.orderId ? `#${orderRef(dispute.orderId)}` : '— (not matched to an order)'}`,
     `Amount:    $${(dispute.amount / 100).toFixed(2)}`,
     `Reason:    ${dispute.reason || '—'}`,
     `Customer:  ${dispute.customerEmail || '—'}`,
@@ -964,7 +965,10 @@ export async function sendOrderConfirmationEmail({
   } catch { /* line omitted */ }
 
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`
-  const ref = (trackingNumber ?? orderId).slice(-8).toUpperCase()
+  // Always the ORDER reference — never the tracking number. It used to be
+  // `trackingNumber ?? orderId`, which printed the last 8 of a random UUID
+  // that /track could never match.
+  const ref = orderRef(orderId)
   // Only render images the caller resolved (guessed storage URLs 404 — real
   // files carry timestamp suffixes; the webhook looks them up from products).
   const imgOf = (i: { id?: string; image?: string | null }) => i.image || null

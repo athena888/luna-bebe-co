@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { CONTACT_EMAIL } from '@/lib/site-config'
+import { orderRef } from '@/lib/order-ref'
 import { Package, Truck, CheckCircle, Clock, ExternalLink } from 'lucide-react'
 
 // Styled to match the account sign-in: serif espresso labels, white inputs,
@@ -87,6 +88,9 @@ export default function TrackPage() {
             <div>
               <label className={labelClass}>Order Reference (optional)</label>
               <input type="text" value={reference} onChange={e => setReference(e.target.value.toUpperCase())} placeholder="e.g. A1B2C3D4" className={inputClass} />
+              <p className="font-sans text-xs text-bark-400 mt-1.5">
+                The 8-character code on your confirmation email and order page. Leave it blank to see every order for your email.
+              </p>
             </div>
             <button
               type="submit"
@@ -109,7 +113,7 @@ export default function TrackPage() {
                     <div className="px-6 py-5 border-b border-cream-200 flex items-start justify-between gap-4">
                       <div>
                         <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-1">Order Reference</p>
-                        <p className="font-sans text-sm font-medium text-bark-600">#{order.id.slice(-8).toUpperCase()}</p>
+                        <p className="font-sans text-sm font-medium text-bark-600">#{orderRef(order.id)}</p>
                         <p className="font-sans text-xs text-bark-400 mt-0.5">{formatDate(order.created_at)}</p>
                       </div>
                       <div className={`flex items-center gap-1.5 font-sans text-xs font-medium ${statusCfg.color}`}>
