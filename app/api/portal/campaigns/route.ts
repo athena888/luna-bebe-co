@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { campaignRecipients, sendCampaign, listCampaigns, type CampaignInput } from '@/lib/campaigns'
 import { sendCampaignEmail } from '@/lib/resend'
 import { supabaseAdmin } from '@/lib/supabase'
-import { CONTACT_EMAIL } from '@/lib/site-config'
+import { adminRecipients } from '@/lib/site-config'
 
 export const dynamic = 'force-dynamic'
 
@@ -34,7 +34,9 @@ export async function POST(req: NextRequest) {
     }
 
     if (mode === 'test') {
-      const to = process.env.ADMIN_EMAIL || CONTACT_EMAIL
+      // Single recipient by design — a campaign preview goes to one inbox even
+      // when ADMIN_EMAIL lists several alert addresses.
+      const to = adminRecipients()[0]
       await sendCampaignEmail({
         customerEmail: to,
         subject: `[TEST] ${body.subject}`,

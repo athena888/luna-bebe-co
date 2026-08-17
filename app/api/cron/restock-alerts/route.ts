@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { computeReorderStatus } from '@/lib/reorder'
 import { resend } from '@/lib/resend'
-import { CONTACT_EMAIL } from '@/lib/site-config'
+import { CONTACT_EMAIL, adminRecipients } from '@/lib/site-config'
 
 // Vercel Cron — runs daily (vercel.json: /api/cron/restock-alerts at 09:00 UTC).
 // Flags every active product at or below its reorder point
@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
       `
       await resend.emails.send({
         from: `Petite Lavande <${CONTACT_EMAIL}>`,
-        to: process.env.ADMIN_EMAIL || CONTACT_EMAIL,
+        to: adminRecipients(),
         subject: `Restock alert: ${low.length} item(s) at reorder point`,
         html: emailHtml,
       })

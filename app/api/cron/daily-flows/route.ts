@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { processDueEmails, scheduleWinBacks } from '@/lib/email-flows'
 import { snapshotCurrentWeek } from '@/lib/scorecard'
 import { resend } from '@/lib/resend'
-import { CONTACT_EMAIL } from '@/lib/site-config'
+import { CONTACT_EMAIL, adminRecipients } from '@/lib/site-config'
 
 // Vercel Cron — daily 15:00 UTC (vercel.json). One route on purpose: Hobby
 // crons must stay ≤ once/day, so this drains the email-flow queue, enrolls
@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
     if (rec.gaps.length) {
       await resend.emails.send({
         from: `Petite Lavande <${CONTACT_EMAIL}>`,
-        to: process.env.ADMIN_EMAIL || CONTACT_EMAIL,
+        to: adminRecipients(),
         subject: `⚠️ ${rec.gaps.length} paid order${rec.gaps.length === 1 ? '' : 's'} missing from your shop`,
         text: formatGapAlert(rec.gaps),
       })
@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
       ].join('\n')
       await resend.emails.send({
         from: `Petite Lavande <${CONTACT_EMAIL}>`,
-        to: process.env.ADMIN_EMAIL || CONTACT_EMAIL,
+        to: adminRecipients(),
         subject: `Weekly scorecard — ${fmt(week.revenue)}, ${week.orders} orders`,
         text: lines,
       })
