@@ -30,10 +30,10 @@ function ConfirmationInner() {
     sessionStorage.removeItem('pl_letter')
     sessionStorage.removeItem('pl_recommended')
 
-    // Could fetch order details from sessionId if needed
-    if (sessionId) {
-      setOrderId(sessionId.slice(-8).toUpperCase())
-    }
+    // NOTE: the reference shown below is the last 8 of the ORDER id, resolved
+    // from the session just below. It must never be derived from the Stripe
+    // session id — /track and the confirmation email both key off the order
+    // id, so a session-derived code looks official but matches nothing.
 
     // Meta Pixel Purchase — fetch the real value/currency for this session and
     // fire once per order (a refresh re-fires, but the shared eventID lets Meta
@@ -42,7 +42,10 @@ function ConfirmationInner() {
     fetch(`/api/checkout/order-summary?session_id=${encodeURIComponent(sessionId)}`)
       .then(r => (r.ok ? r.json() : null))
       .then((s: { paid?: boolean; orderId?: string | null; value?: number; currency?: string; contentIds?: string[]; email?: string | null; createdAt?: string | null } | null) => {
-        if (!s?.paid || !s.orderId) return
+        if (!s?.orderId) return
+        // Same code the customer gets by email and types into /track.
+        setOrderId(s.orderId.slice(-8).toUpperCase())
+        if (!s.paid) return
         if (s.email) setGcr({ orderId: s.orderId, email: s.email, createdAt: s.createdAt })
         const flag = `pl_purchase_fired_${s.orderId}`
         try { if (sessionStorage.getItem(flag)) return } catch { /* ignore */ }

@@ -119,21 +119,8 @@ function CardItem({
 }
 
 // ── Default front-of-card letter ─────────────────────────────────────────────
-function DefaultLetter() {
-  return (
-    <>
-      <p className="font-serif italic text-3xl text-bark-600 text-center mb-8">We see you.</p>
-      <div className="space-y-4 font-sans text-[15px] text-bark-700 leading-relaxed max-w-xl mx-auto">
-        <p>You are doing one of the hardest, most loving things a person can do. You are running on broken sleep and feeding schedules and a love so big it doesn&rsquo;t fit in your chest.</p>
-        <p>You deserve warm tea. You deserve ten minutes in a bath. You deserve a few hours of dark, quiet sleep with silk against your eyes. You deserve scent and softness and the small luxury of being thought of.</p>
-        <p>This box is here to remind you: <span className="font-semibold">you are not invisible in your own story.</span></p>
-        <p>Welcome to this new chapter. We hope it starts well.</p>
-      </div>
-      <p className="font-serif italic text-bark-500 text-center mt-8">— Petite Lavande</p>
-      <p className="font-serif italic text-gold-500 text-center mt-2 text-sm">Fait avec amour, pour vous.</p>
-    </>
-  )
-}
+// (The house "standard note" fallback was removed 2026-08-16 at Emily's
+// request: a card carries the customer's words or nothing at all.)
 
 // ── Main component (needs Suspense for useSearchParams) ───────────────────────
 function InsideCardContent() {
@@ -271,7 +258,9 @@ function InsideCardContent() {
         </div>
         {order && (
           <p className="font-sans text-xs text-bark-400 mt-2 max-w-2xl">
-            Uses the <strong>{order.letter_content ? "customer's personal letter" : "standard note"}</strong>.
+            {order.letter_content
+              ? <>Uses the <strong>customer&rsquo;s personal letter</strong>.</>
+              : <>The customer left no message, so this card <strong>prints blank</strong>.</>}{' '}
             Prints one portrait card at <strong>{cardW} × {cardH} in</strong>{cardStyle ? ', with the chosen card design as the background' : ''}.
           </p>
         )}
@@ -297,9 +286,11 @@ function InsideCardContent() {
             {cardStyle && (
               <div className="absolute inset-0 bg-[#f5efe1]/45 pointer-events-none" style={{ WebkitPrintColorAdjust: 'exact' } as React.CSSProperties} />
             )}
-            {/* When the customer chose a placement, print the note exactly where
-                they put it on the card (matches the /letter preview). Otherwise
-                fall back to the centered Dear/signature layout. */}
+            {/* Customer's words or nothing (Emily 2026-08-16): a blank note
+                prints a blank card — never a house-written message in the
+                buyer's place. With a chosen placement the note prints exactly
+                where they put it (matches the /letter preview); without one it
+                falls back to the centered Dear/signature layout. */}
             {order?.letter_content && order.letter_zone ? (
               <div
                 className="absolute"
@@ -316,25 +307,25 @@ function InsideCardContent() {
               >
                 {order.letter_content}
               </div>
-            ) : (
+            ) : order?.letter_content ? (
+              /* Customer's personal letter — centered fallback (no placement) */
               <div className="relative">
-                {order?.letter_content ? (
-                  /* Customer's personal letter — centered fallback (no placement) */
-                  <>
-                    <p className="font-serif italic text-2xl text-espresso text-center mb-8">
-                      {order.recipient_name ? `Dear ${order.recipient_name},` : 'To You,'}
-                    </p>
-                    <div className="space-y-4 font-cormorant text-[17px] text-bark-700 leading-relaxed max-w-xl mx-auto whitespace-pre-line text-center">
-                      {order.letter_content}
-                    </div>
-                    {order.customer_name && (
-                      <p className="font-serif italic text-bark-500 text-center mt-8">— {order.customer_name}</p>
-                    )}
-                  </>
-                ) : (
-                  <DefaultLetter />
+                <p className="font-serif italic text-2xl text-espresso text-center mb-8">
+                  {order.recipient_name ? `Dear ${order.recipient_name},` : 'To You,'}
+                </p>
+                <div className="space-y-4 font-cormorant text-[17px] text-bark-700 leading-relaxed max-w-xl mx-auto whitespace-pre-line text-center">
+                  {order.letter_content}
+                </div>
+                {order.customer_name && (
+                  <p className="font-serif italic text-bark-500 text-center mt-8">— {order.customer_name}</p>
                 )}
               </div>
+            ) : (
+              /* No message from the customer → the card face stays empty (the
+                 chosen design still prints). Screen-only hint, never printed. */
+              <p className="print:hidden font-sans text-xs text-bark-400 text-center italic">
+                No message from the customer — this card prints blank.
+              </p>
             )}
           </article>
         </div>
