@@ -190,6 +190,13 @@ export default function CheckoutPage() {
     dropBoxPricing()
     updateSelection({ ...(selection as object), [key]: null } as unknown as BoxSelection)
   }
+  /** Remove the whole prebuilt box — it's one line, so this empties the bag
+   *  (every slot nulled) and drops box pricing with it. */
+  function removeBox() {
+    dropBoxPricing()
+    const cleared = Object.fromEntries(Object.keys(selection as object).map(k => [k, null]))
+    updateSelection(cleared as unknown as BoxSelection)
+  }
   // Is `size` in stock for this line? Uses the per-variant rows when the
   // product has them; products without variant rows stay permissive.
   function sizeAvailability(item: CartItem, size: string): { ok: boolean; msg?: string } {
@@ -293,7 +300,37 @@ export default function CheckoutPage() {
                 <div>
                   <h1 className="font-playfair text-3xl sm:text-4xl text-espresso mb-6">{isEs ? 'Tu bolsa' : 'Shopping Bag'}</h1>
                   <div className="space-y-4">
-                    {entries.map(([key, item]) => {
+                    {boxRef ? (
+                      /* Prebuilt box → ONE line (box + chosen size + box price).
+                         The pieces are what's inside it, not separate purchases.
+                         Removing it empties the bag and clears box pricing. */
+                      <div className="bg-white p-4 sm:p-6 flex flex-wrap sm:flex-nowrap gap-4 sm:gap-5">
+                        <div className="relative w-20 sm:w-24 aspect-[3/4] shrink-0 bg-cream-100 overflow-hidden">
+                          {boxRef.image
+                            ? <Image src={boxRef.image} alt={boxRef.name} fill className="object-cover" unoptimized sizes="96px" />
+                            : <span className="absolute inset-0 flex items-center justify-center text-2xl">🎁</span>}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-bark-400 mb-1.5">Petite Lavande</p>
+                          <p className="font-sans text-[15px] text-espresso leading-snug">{boxRef.name}</p>
+                          <p className="font-sans text-sm text-bark-500 mt-1.5">{formatPrice(boxRef.price)}</p>
+                          {boxRef.size && (
+                            <p className="font-sans text-[12px] text-bark-400 mt-2">
+                              <span className="tracking-[0.15em] uppercase text-[11px]">{isEs ? 'Talla' : 'Size'}</span> {boxRef.size} m
+                            </p>
+                          )}
+                          <p className="font-sans text-[12px] text-bark-400 mt-1">
+                            {entries.reduce((s, [, i]) => s + (i.qty ?? 1), 0)} {isEs ? 'piezas incluidas' : 'pieces included'}
+                          </p>
+                          <button
+                            onClick={removeBox}
+                            className="mt-3 font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-700 transition-colors"
+                          >
+                            {isEs ? 'Quitar' : 'Remove'}
+                          </button>
+                        </div>
+                      </div>
+                    ) : entries.map(([key, item]) => {
                       const src = productImage(item)
                       const qty = item.qty ?? 1
                       return (
@@ -526,17 +563,15 @@ export default function CheckoutPage() {
                       <span className="text-bark-600">Shipping · {SHIPPING[shippingType].label}</span>
                       <span className="text-espresso">{shipFree ? (isEs ? 'Gratis' : 'Free') : formatPrice(shippingCost)}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-bark-600">Taxes (estimated)</span>
-                      <span className="text-bark-400">Calculated at payment</span>
-                    </div>
                   </div>
 
                   {/* Arrives-by note — display only, never part of the Stripe
-                      session. Same-day courier has its own evening promise;
-                      rush ships in 1–2 business days; standard uses the ground
-                      estimator against the ZIP typed above. */}
-                  <div className="mt-4">
+                      session. Hidden until the shopper has actually entered a
+                      shipping ZIP (Emily 2026-08-17: no arrival promise before
+                      we know where it's going). Same-day courier has its own
+                      evening promise; rush ships in 1–2 business days; standard
+                      uses the ground estimator against the ZIP typed above. */}
+                  <div className={/^\d{5}$/.test((address.zip ?? '').trim()) ? 'mt-4' : 'hidden'}>
                     {shippingType === 'sameday' ? (
                       <p className="font-sans text-[12px] text-bark-500">
                         {isEs

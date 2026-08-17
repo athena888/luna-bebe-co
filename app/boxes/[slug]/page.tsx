@@ -256,6 +256,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                 variantLabel={box.variants.length > 1 ? variant.label : undefined}
                 needsColor={variant.contents.some(c => c.colorChoice)}
                 sizesByItem={sizesByItem}
+                boxImage={variant.images[0] ?? null}
               />
 
               <p className="font-sans text-sm text-bark-500 mt-6">

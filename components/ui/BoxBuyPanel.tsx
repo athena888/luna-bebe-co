@@ -18,7 +18,7 @@ import type { SizeOption } from '@/lib/catalog-db'
 
 export interface BuyContent { item: Product; qty: number; colorChoice: boolean }
 
-export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, variantLabel, needsColor, sizesByItem = {} }: {
+export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, variantLabel, needsColor, sizesByItem = {}, boxImage = null }: {
   contents: BuyContent[]
   price: number
   boxName?: string
@@ -27,6 +27,8 @@ export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, var
   variantLabel?: string
   needsColor: boolean
   sizesByItem?: Record<string, SizeOption[]>
+  /** Cover photo for the single bag line. */
+  boxImage?: string | null
 }) {
   const router = useRouter()
   const isEs = useIsEs()
@@ -70,8 +72,10 @@ export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, var
     // The display name carries the FULL box identity incl. variant
     // ("Mama et Bébé — Strawberry"), matching the Stripe line item.
     const fullName = `${boxName ?? 'Gift Box'}${variantLabel ? ` — ${variantLabel}` : ''}`
+    // size/image ride along so the bag can show the BOX as one line (with the
+    // size the buyer picked) instead of listing the pieces inside it.
     writeCart(items, boxSlug && variantKey
-      ? { slug: boxSlug, variantKey, name: fullName, price }
+      ? { slug: boxSlug, variantKey, name: fullName, price, ...(needsSize && size ? { size } : {}), image: boxImage }
       : undefined)
     router.push(isEs ? '/es/checkout' : '/checkout')
   }

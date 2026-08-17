@@ -107,6 +107,34 @@ export function BagDrawer() {
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           {!hasItems ? (
             <p className="font-sans text-xs text-bark-400/60 tracking-wide text-center pt-10">{isEs ? 'Tu bolsa está vacía — agrega una canastilla o arma la tuya para empezar.' : 'Your bag is empty — add a box or build your own to get started.'}</p>
+          ) : boxRef ? (
+            /* An untouched prebuilt box is ONE line: the box, its size and its
+               price — not the pieces inside it. Removing it empties the bag,
+               which also clears the box ref (see lib/cart.ts). */
+            <div className="flex gap-4 items-start py-1">
+              <div className="w-24 h-28 bg-cream-100 relative shrink-0 overflow-hidden">
+                {boxRef.image
+                  ? <Image src={boxRef.image} alt={boxRef.name} fill className="object-cover" unoptimized sizes="96px" />
+                  : <div className="w-full h-full flex items-center justify-center text-3xl">🎁</div>}
+              </div>
+              <div className="flex-1 min-w-0 pt-1">
+                <p className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 mb-0.5">Petite Lavande</p>
+                <p className="font-sans text-sm text-bark-700 leading-snug mb-1.5">{boxRef.name}</p>
+                {boxRef.size && (
+                  <p className="font-sans text-[11px] text-bark-400 mb-1">{isEs ? 'Talla' : 'Size'} {boxRef.size} m</p>
+                )}
+                <p className="font-sans text-[11px] text-bark-400/80 mb-1">
+                  {items.reduce((s, i) => s + (i.qty ?? 1), 0)} {isEs ? 'piezas incluidas' : 'pieces included'}
+                </p>
+                <p className="font-sans text-sm text-bark-500 mb-3">{formatPrice(boxRef.price)}</p>
+                <button
+                  onClick={() => update([])}
+                  className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-700 transition-colors"
+                >
+                  {isEs ? 'Quitar' : 'Remove'}
+                </button>
+              </div>
+            </div>
           ) : (
             items.map(product => {
               const src = product.image ?? (SUPABASE_URL
@@ -162,7 +190,7 @@ export function BagDrawer() {
             <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">Subtotal</span>
             <span className="font-sans text-base font-medium text-bark-600">{formatPrice(subtotal)}</span>
           </div>
-          <p className="font-sans text-[11px] text-bark-400/60 mb-2">{isEs ? 'Canastilla y envío se calculan al pagar' : <>Box fee &amp; shipping calculated at checkout</>}</p>
+          <p className="font-sans text-[11px] text-bark-400/60 mb-2">{isEs ? 'Envío se calcula al pagar' : 'Shipping calculated at checkout'}</p>
           {hasItems && <DeliveryEstimate variant="compact" className="mb-4" />}
           <button
             onClick={() => { setOpen(false); router.push(isEs ? '/es/checkout' : '/checkout') }}

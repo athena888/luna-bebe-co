@@ -90,19 +90,61 @@ export function DeliveryEstimate({
   const window_ = formatDeliveryWindow(est, locale)
   const known = isValidZip(activeZip)
 
+  // NO arrival date without a destination (Emily 2026-08-17). Previously an
+  // unknown ZIP still printed a "national estimate", which promised a date we
+  // had no basis for. Quiet variants render nothing; the product-page variant
+  // keeps only its ZIP prompt, so the shopper can still ask for a date.
+  if (!known) {
+    if (variant !== 'full') return null
+    return (
+      <div className={`font-sans text-[12px] text-bark-500 ${className}`}>
+        {editing ? null : (
+          <button
+            type="button"
+            onClick={() => { setDraft(''); setEditing(true) }}
+            className="underline underline-offset-2 decoration-dotted text-bark-400 hover:text-bark-600 transition-colors"
+          >
+            {isEs ? 'Ingresa tu código postal para la fecha de entrega' : 'Enter ZIP for delivery date'}
+          </button>
+        )}
+        {editing && (
+          <form onSubmit={e => { e.preventDefault(); save(draft) }} className="flex items-center gap-2 mt-1.5">
+            <input
+              autoFocus
+              inputMode="numeric"
+              maxLength={5}
+              value={draft}
+              onChange={e => {
+                const v = e.target.value.replace(/\D/g, '').slice(0, 5)
+                setDraft(v)
+                if (v.length === 5) save(v)
+              }}
+              placeholder={isEs ? 'Código postal' : 'ZIP code'}
+              aria-label={isEs ? 'Código postal de entrega' : 'Delivery ZIP code'}
+              className="w-24 px-2 py-1 border border-cream-300 bg-white font-sans text-[12px] text-bark-600 placeholder:text-bark-400/50 focus:outline-none focus:border-bark-400"
+            />
+            <button type="button" onClick={() => setEditing(false)}
+              className="font-sans text-[11px] text-bark-400 hover:text-bark-600 transition-colors">
+              {isEs ? 'Cancelar' : 'Cancel'}
+            </button>
+          </form>
+        )}
+      </div>
+    )
+  }
+
   if (variant === 'arrives-by') {
     return (
       <p className={`font-sans text-[12px] text-bark-500 ${className}`}>
         {isEs ? 'Llega antes del ' : 'Arrives by '}
         <span className="text-bark-600">{formatDeliveryDate(est.latest, locale)}</span>
-        {known ? '' : isEs ? ' (estimado nacional)' : ' (national estimate)'}
       </p>
     )
   }
 
-  const line = known
-    ? (isEs ? `Llega ${window_} al ${activeZip.slice(0, 5)}` : `Arrives ${window_} to ${activeZip.slice(0, 5)}`)
-    : (isEs ? `Llega ${window_} a la mayoría de las direcciones en EE. UU.` : `Arrives ${window_} to most US addresses`)
+  const line = isEs
+    ? `Llega ${window_} al ${activeZip.slice(0, 5)}`
+    : `Arrives ${window_} to ${activeZip.slice(0, 5)}`
 
   if (variant === 'compact') {
     return <p className={`font-sans text-[12px] text-bark-500 ${className}`}>{line}</p>
@@ -119,9 +161,7 @@ export function DeliveryEstimate({
             onClick={() => { setDraft(activeZip); setEditing(true) }}
             className="underline underline-offset-2 decoration-dotted text-bark-400 hover:text-bark-600 transition-colors"
           >
-            {known
-              ? (isEs ? 'Cambiar' : 'Change')
-              : (isEs ? 'Ingresa tu código postal' : 'Enter ZIP for exact date')}
+            {isEs ? 'Cambiar' : 'Change'}
           </button>
         )}
       </p>

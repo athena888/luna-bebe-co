@@ -16,11 +16,22 @@ const KEY = 'pl_box_selection'
 const BOX_REF_KEY = 'pl_box_ref'
 
 /** Set when the cart is an UNMODIFIED prebuilt box: the whole cart sells at
- *  the box's own price, never the sum of item retail. `price`/`name` are for
- *  display only — checkout re-derives the authoritative price server-side
- *  from slug+variantKey. Any cart mutation clears the ref (a customized box
- *  goes back to per-item pricing). */
-export interface BoxRef { slug: string; variantKey: string; name: string; price: number }
+ *  the box's own price, never the sum of item retail. `price`/`name`/`size`/
+ *  `image` are for display only — checkout re-derives the authoritative price
+ *  server-side from slug+variantKey. Any cart mutation clears the ref (a
+ *  customized box goes back to per-item pricing).
+ *  While the ref is set the bag shows ONE line — the box itself, with its
+ *  chosen size — instead of the pieces inside it. */
+export interface BoxRef {
+  slug: string
+  variantKey: string
+  name: string
+  price: number
+  /** The one size chosen for the whole box (e.g. '0-3'); absent when the box has no sized pieces. */
+  size?: string
+  /** Box cover photo, for the single bag line. */
+  image?: string | null
+}
 
 export function readBoxRef(): BoxRef | null {
   if (typeof window === 'undefined') return null
