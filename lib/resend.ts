@@ -651,11 +651,6 @@ export async function sendReviewRequestEmail({
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             ${es ? `Hola ${customerName}, esperamos que tu canastilla haya llegado hermosa y traído un poquito de alegría. Tu reseña ayuda a otras familias a descubrir estas piezas — significaría muchísimo para nosotros.` : `Hi ${customerName}, we hope your Petite Lavande box arrived beautifully and brought a little joy. Your review helps other families discover these products — it would mean the world to us.`}
           </p>
-          <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
-            ${es
-              ? 'Y para darte las gracias: cada reseña recibe un código único de 20% de descuento para tu próxima caja, sin importar la calificación.'
-              : 'And as a thank-you, every review earns a one-time 20% code for your next box — whatever the rating.'}
-          </p>
           ${selectedItems.length > 0 ? `<ul style="padding-left:20px;margin:0 0 24px;">${itemLinks}</ul>` : ''}
           <div style="text-align:center;">
             <a href="${reviewHref}" style="display:inline-block;border:1px solid #ffffff;color:#ffffff;background:transparent;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 34px;">
