@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react'
 
 type Review = {
@@ -35,33 +35,66 @@ function StarRating({ value, onChange }: { value: number; onChange?: (n: number)
   )
 }
 
-// One review per slide in a FIXED-HEIGHT frame, so the page never jumps as
-// reviews of different lengths rotate through. Advances every 2s; pauses while
-// the pointer (or keyboard focus) is on the carousel and for reduced-motion
-// visitors, who page through with the arrows instead.
+// A FIXED-HEIGHT sliding track, so the page never jumps as reviews of
+// different lengths rotate through. Desktop shows 3 reviews with a half-card
+// of the fourth peeking in (the peek is what tells visitors there's more to
+// scroll); phones show one at a time. Advances one card every 2s and loops
+// seamlessly — the track carries clones of the first cards, and the jump back
+// to the start happens with the animation off, so it reads as endless. Pauses
+// while the pointer (or keyboard focus) is on it, and reduced-motion visitors
+// get the arrows without the movement.
 const ROTATE_MS = 2000
+const PER_VIEW_DESKTOP = 3.5   // 3 full cards + the half-peek
+const PER_VIEW_MOBILE = 1
 
 function ReviewCarousel({ reviews }: { reviews: Review[] }) {
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
-  const reduced = useRef(false)
+  const [animate, setAnimate] = useState(true)
+  const [perView, setPerView] = useState(PER_VIEW_MOBILE)
+  const [reducedMotion, setReducedMotion] = useState(false)
+  const n = reviews.length
 
   useEffect(() => {
-    reduced.current = typeof window !== 'undefined'
-      && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    setReducedMotion(!!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
+    const mq = window.matchMedia('(min-width: 640px)')
+    const apply = () => setPerView(mq.matches ? PER_VIEW_DESKTOP : PER_VIEW_MOBILE)
+    apply()
+    mq.addEventListener('change', apply)
+    return () => mq.removeEventListener('change', apply)
   }, [])
 
-  useEffect(() => { setIndex(0) }, [reviews.length])
+  useEffect(() => { setIndex(0) }, [n, perView])
+
+  // Only slide when there's more than a screenful; 3 reviews on desktop just sit there.
+  const loops = n > Math.ceil(perView)
+  const cardPct = 100 / perView
+
+  const step = (delta: number) => {
+    if (!loops) return
+    if (delta > 0) {
+      setIndex(index + 1)          // index === n lands on the clones, then snaps back
+    } else if (index === 0) {
+      // Going back off the front: jump (unanimated) to the matching clone
+      // position, then slide left from there.
+      setAnimate(false)
+      setIndex(n)
+      requestAnimationFrame(() => requestAnimationFrame(() => { setAnimate(true); setIndex(n - 1) }))
+    } else {
+      setIndex(index - 1)
+    }
+  }
 
   useEffect(() => {
-    if (paused || reduced.current || reviews.length < 2) return
-    const t = setInterval(() => setIndex(i => (i + 1) % reviews.length), ROTATE_MS)
+    if (paused || reducedMotion || !loops) return
+    const t = setInterval(() => setIndex(i => i + 1), ROTATE_MS)
     return () => clearInterval(t)
-  }, [paused, reviews.length, index])
+  }, [paused, reducedMotion, loops, index])
 
-  const go = (delta: number) => setIndex(i => (i + delta + reviews.length) % reviews.length)
-  const current = reviews[index]
-  if (!current) return null
+  // Enough clones to fill the window past the last real card.
+  const track = loops ? [...reviews, ...reviews.slice(0, Math.ceil(perView) + 1)] : reviews
+  const active = n ? index % n : 0
+  if (!n) return null
 
   return (
     <div
@@ -73,51 +106,60 @@ function ReviewCarousel({ reviews }: { reviews: Review[] }) {
       aria-roledescription="carousel"
       aria-label="Customer reviews"
     >
-      {/* Fixed height — the tallest slide sets it, shorter ones just sit inside */}
-      <div className="h-[300px] sm:h-[240px] border border-cream-200 bg-cream-50/50 overflow-hidden">
-        <div className="h-full flex items-stretch">
-          {current.image_url && (
-            <div className="hidden sm:block w-[240px] shrink-0 bg-cream-100">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={current.image_url} alt={`Photo from ${current.customer_name}'s review`} className="w-full h-full object-cover" />
+      {/* Fixed height — the frame never grows, long reviews scroll inside their card */}
+      <div className="h-[320px] overflow-hidden">
+        <div
+          className={`flex h-full ${animate && !reducedMotion ? 'transition-transform duration-500 ease-out' : ''}`}
+          style={{ transform: `translateX(-${index * cardPct}%)` }}
+          onTransitionEnd={() => {
+            if (index >= n) {
+              setAnimate(false)
+              setIndex(0)
+              requestAnimationFrame(() => requestAnimationFrame(() => setAnimate(true)))
+            }
+          }}
+        >
+          {track.map((r, i) => (
+            <div key={`${r.id}-${i}`} className="shrink-0 h-full pr-4" style={{ width: `${cardPct}%` }}>
+              <div className="h-full flex flex-col border border-cream-200 bg-cream-50/50 overflow-hidden">
+                {r.image_url && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={r.image_url} alt={`Photo from ${r.customer_name}'s review`} className="w-full h-32 object-cover shrink-0" />
+                )}
+                <div className="flex-1 min-h-0 p-5 flex flex-col">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <StarRating value={r.rating} />
+                    <span className="font-sans text-xs font-medium text-bark-600">{r.customer_name}</span>
+                  </div>
+                  <span className="font-sans text-[11px] text-bark-400 mb-2">
+                    {new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  </span>
+                  <p className="font-sans text-sm text-bark-500 leading-relaxed overflow-y-auto">{r.body}</p>
+                </div>
+              </div>
             </div>
-          )}
-          <div className="flex-1 min-w-0 p-6 sm:p-7 flex flex-col overflow-hidden">
-            <div className="flex items-center gap-3 mb-3 flex-wrap">
-              <StarRating value={current.rating} />
-              <span className="font-sans text-xs font-medium text-bark-600">{current.customer_name}</span>
-              <span className="font-sans text-[11px] text-bark-400">
-                {new Date(current.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-              </span>
-            </div>
-            {current.image_url && (
-              // Phones show the photo inline above the words (no side panel).
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={current.image_url} alt={`Photo from ${current.customer_name}'s review`} className="sm:hidden w-full h-24 object-cover mb-3" />
-            )}
-            <p className="font-sans text-sm text-bark-500 leading-relaxed overflow-y-auto">{current.body}</p>
-          </div>
+          ))}
         </div>
       </div>
 
-      {reviews.length > 1 && (
+      {loops && (
         <div className="flex items-center justify-between mt-3">
           <div className="flex gap-1.5">
             {reviews.map((r, i) => (
               <button
                 key={r.id}
-                onClick={() => setIndex(i)}
-                aria-label={`Show review ${i + 1} of ${reviews.length}`}
-                className={`w-1.5 h-1.5 rounded-full transition-colors ${i === index ? 'bg-bark-500' : 'bg-cream-300 hover:bg-bark-300'}`}
+                onClick={() => { setAnimate(true); setIndex(i) }}
+                aria-label={`Show review ${i + 1} of ${n}`}
+                className={`w-1.5 h-1.5 rounded-full transition-colors ${i === active ? 'bg-bark-500' : 'bg-cream-300 hover:bg-bark-300'}`}
               />
             ))}
           </div>
           <div className="flex gap-2">
-            <button onClick={() => go(-1)} aria-label="Previous review"
+            <button onClick={() => step(-1)} aria-label="Previous reviews"
               className="border border-cream-300 p-1.5 text-bark-400 hover:text-bark-600 hover:border-bark-400 transition-colors">
               <ChevronLeft size={16} />
             </button>
-            <button onClick={() => go(1)} aria-label="Next review"
+            <button onClick={() => step(1)} aria-label="Next reviews"
               className="border border-cream-300 p-1.5 text-bark-400 hover:text-bark-600 hover:border-bark-400 transition-colors">
               <ChevronRight size={16} />
             </button>
