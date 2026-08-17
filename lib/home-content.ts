@@ -56,10 +56,10 @@ export interface HomeContent {
 
 export const DEFAULT_HOME_CONTENT: HomeContent = {
   perks: [
-    { label: 'Free Shipping', sub: `On orders over $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}`, es: { label: 'Envío gratis', sub: `En pedidos desde $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}` } },
-    { label: 'Personalized Card', sub: 'Hand-finished for every box', es: { label: 'Tarjeta personalizada', sub: 'Terminada a mano para cada canastilla' } },
-    { label: 'Organic Cotton', sub: 'From GOTS-certified makers', es: { label: 'Algodón orgánico', sub: 'De talleres certificados GOTS' } },
-    { label: 'Same-Day Shipping', sub: 'Hand-packed and out the same day', es: { label: 'Envío el mismo día', sub: 'Empacada a mano y enviada el mismo día' } },
+    { label: `Free Shipping Over $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}`, sub: '', es: { label: `Envío gratis desde $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}`, sub: '' } },
+    { label: 'Organic Cotton', sub: '', es: { label: 'Algodón orgánico', sub: '' } },
+    { label: 'Personalized Card', sub: '', es: { label: 'Tarjeta personalizada', sub: '' } },
+    { label: 'Same-Day Shipping', sub: '', es: { label: 'Envío el mismo día', sub: '' } },
   ],
   why: {
     eyebrow: 'Why Petite Lavande',

@@ -239,11 +239,14 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
 // page. Perks come from Portal → Homepage (falls back to the defaults until
 // the fetch lands).
 type Perk = { label: string; sub: string; es?: { label?: string; sub?: string } }
+// Labels only, no sub-lines (Emily 2026-08-16): four short promises fit one
+// line at any desktop width. A perk with a `sub` still renders it — the field
+// stays editable in Portal → Home Content.
 const DEFAULT_PERKS: Perk[] = [
-  { label: 'Free Shipping', sub: `On orders over $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}`, es: { label: 'Envío gratis', sub: `En pedidos desde $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}` } },
-  { label: 'Personalized Card', sub: 'Hand-finished for every box', es: { label: 'Tarjeta personalizada', sub: 'Terminada a mano para cada canastilla' } },
-  { label: 'Organic Cotton', sub: 'From GOTS-certified makers', es: { label: 'Algodón orgánico', sub: 'De talleres certificados GOTS' } },
-  { label: 'Same-Day Shipping', sub: 'Hand-packed and out the same day', es: { label: 'Envío el mismo día', sub: 'Empacada a mano y enviada el mismo día' } },
+  { label: `Free Shipping Over $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}`, sub: '', es: { label: `Envío gratis desde $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}`, sub: '' } },
+  { label: 'Organic Cotton', sub: '', es: { label: 'Algodón orgánico', sub: '' } },
+  { label: 'Personalized Card', sub: '', es: { label: 'Tarjeta personalizada', sub: '' } },
+  { label: 'Same-Day Shipping', sub: '', es: { label: 'Envío el mismo día', sub: '' } },
 ]
 export function PerksMarquee() {
   const [perks, setPerks] = useState<Perk[]>(DEFAULT_PERKS)
@@ -273,7 +276,7 @@ export function PerksMarquee() {
           <span key={label} className="flex items-baseline whitespace-nowrap">
             {i > 0 && <span className="w-1 h-1 rounded-full bg-gold-400 mx-3 md:mx-5 lg:mx-8 self-center shrink-0" />}
             <span className="font-sans text-[10px] md:text-[11px] tracking-[0.16em] md:tracking-[0.22em] lg:tracking-[0.25em] uppercase font-semibold text-cream-50">{label}</span>
-            <span className="font-cormorant text-[13px] md:text-[15px] text-cream-200 ml-2 md:ml-3">{sub}</span>
+            {sub && <span className="font-cormorant text-[13px] md:text-[15px] text-cream-200 ml-2 md:ml-3">{sub}</span>}
           </span>
         ))}
       </div>
@@ -281,7 +284,7 @@ export function PerksMarquee() {
         {shown.map(({ label, sub }) => (
           <span key={label} className="flex flex-col">
             <span className="font-sans text-[10px] tracking-[0.2em] uppercase font-semibold text-cream-50">{label}</span>
-            <span className="font-cormorant text-[13px] text-cream-200 leading-snug">{sub}</span>
+            {sub && <span className="font-cormorant text-[13px] text-cream-200 leading-snug">{sub}</span>}
           </span>
         ))}
       </div>
