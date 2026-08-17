@@ -1,6 +1,7 @@
 import { buildFeed, FEED_BRAND, type FeedItem } from './google-feed'
 import { supabaseAdmin } from './supabase'
 import { getBoxProducts, pieceCount } from './catalog-db'
+import { scrubGots, scrubHardship } from './feed-copy'
 
 // Google Merchant TSV feed (/product-feed.tsv) — built ON TOP of the XML
 // feed's buildFeed(), so price and availability can never disagree with the
@@ -26,7 +27,7 @@ const FEED_KEYWORDS: Record<string, string> = {
   garment: 'Organic Cotton Newborn Clothing',
   bath: 'Calming Baby Bath Gift',
   keepsake: 'Baby Shower Keepsake Gift',
-  mom: 'New Mom Postpartum Care Gift',
+  mom: 'New Mom Self-Care Gift',
 }
 
 // Verified taxonomy ids (see header comment). Most-specific match wins.
@@ -88,16 +89,6 @@ export function feedTitle(item: FeedItem): string {
 
 const clean = (s: string) => s.replace(/[\t\n\r]+/g, ' ').trim()
 
-// GOTS wording is held out of the FEED until the Transaction Certificate
-// confirms per-product certification (gots_certified, §49). Site copy is
-// handled separately.
-// "GOTS-certified organic cotton" must become "certified organic cotton" —
-// the eager first replacement alone produced "certified organic organic".
-const scrubGots = (s: string) => s
-  .replace(/GOTS[- ]certified\s+organic\b/gi, 'certified organic')
-  .replace(/GOTS[- ]certified/gi, 'certified organic')
-  .replace(/\bGOTS\b/g, 'certified organic')
-
 // Ad-spend control (Emily 2026-08-16): custom_label_0 = box | single-item so
 // campaigns can target boxes only; excluded_destination = Shopping_ads on ALL
 // single items (blankets included — "make it not consume my campaign") keeps
@@ -131,8 +122,8 @@ export async function buildProductTsv(): Promise<string> {
     const priceUsd = parseFloat(item.price)
     const nameColor = splitNameColor(item.title).color
     const base = {
-      title: clean(feedTitle(item)),
-      description: scrubGots(clean(item.description)).slice(0, 5000),
+      title: scrubHardship(clean(feedTitle(item))),
+      description: scrubHardship(scrubGots(clean(item.description))).slice(0, 5000),
       link: canonical(item.link),
       image_link: item.imageLink ?? '',
       price: item.price,
@@ -180,7 +171,7 @@ export async function buildProductTsv(): Promise<string> {
   const BOX_KEYWORDS: Record<string, string> = {
     'signature-baby-gift-box': 'Organic Newborn Gift Basket',
     'themed-baby-gift-box': 'Baby Shower Gift Box',
-    'new-mom-gift-box': 'New Mom Postpartum Gift Box',
+    'new-mom-gift-box': 'New Mom Gift Box',
     'baby-first-christmas-gift-box': "Baby's First Christmas Gift Box",
     // The builder's Shopping listing: a fixed, buyable starter set (a
     // configurator page can't carry a feed price — it has no single price).
@@ -201,8 +192,8 @@ export async function buildProductTsv(): Promise<string> {
       const pieces = pieceCount(v)
       lines.push([
         `box-${b.slug}--${v.key}`,
-        clean(`${pieces}-Piece ${kw} – Hand-Packed & Personalized – ${b.name}`).slice(0, 150),
-        clean(`${b.name}${many ? ` (${v.label})` : ''} — ${pieces} hand-packed pieces: ${contents}. Personalized card included, sealed by hand.`).slice(0, 5000),
+        scrubHardship(clean(`${pieces}-Piece ${kw} – Hand-Packed & Personalized – ${b.name}`)).slice(0, 150),
+        scrubHardship(clean(`${b.name}${many ? ` (${v.label})` : ''} — ${pieces} hand-packed pieces: ${contents}. Personalized card included, sealed by hand.`)).slice(0, 5000),
         link, v.images[0] ?? '', `${(v.price / 100).toFixed(2)} USD`,
         'in_stock', 'new', FEED_BRAND, 'false', '5859',
         b.slug === 'new-mom-gift-box' ? '' : 'newborn', g,
