@@ -69,6 +69,26 @@ export const IMAGE_SLOTS: ImageSlot[] = [
 
 export const SLOT_BUCKET = 'home-images'
 
+// Box detail pages (/boxes/<slug> and its /es twin) each get their own optional
+// background photo. These aren't in IMAGE_SLOTS because the box lineup lives in
+// the catalog — the portal builds them from the live product list so a new box
+// gets its slot automatically. The scrim keeps the product copy readable; Emily
+// can tune it per box from the same card.
+export const boxSlotKey = (slug: string) => `box.${slug}.bg`
+
+export function boxPageSlot(slug: string, name: string): ImageSlot {
+  return {
+    key: boxSlotKey(slug),
+    label: name,
+    group: 'Box Pages',
+    where: `Background behind the whole /boxes/${slug} page (and its Spanish twin)`,
+    ratio: '16:9',
+    hint: 'Soft, light lifestyle — product copy sits on top · ~2000×1130',
+    mobile: { ratio: '4:5', hint: 'Taller phone crop · ~1000×1250' },
+    scrimDefault: { hex: '#FFFFFF', opacity: 0.88 },
+  }
+}
+
 export function slotsByGroup(): Record<string, ImageSlot[]> {
   const out: Record<string, ImageSlot[]> = {}
   for (const s of IMAGE_SLOTS) (out[s.group] ??= []).push(s)

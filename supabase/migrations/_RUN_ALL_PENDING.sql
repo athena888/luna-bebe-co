@@ -1680,3 +1680,16 @@ alter table reviews add column if not exists collection_method text
   check (collection_method in ('post_fulfillment', 'unsolicited', 'manual'));
 
 -- Done.
+
+-- 54) Review photos: a customer photo attached to a review, shown in the
+--     on-site review carousel and the Portal moderation list. Uploads go to a
+--     PUBLIC bucket (unlike the private `ugc` bucket in §43) because these are
+--     rendered directly on product pages. Idempotent.
+
+alter table reviews add column if not exists image_url text;
+
+insert into storage.buckets (id, name, public)
+values ('review-images', 'review-images', true)
+on conflict (id) do nothing;
+
+-- Done.

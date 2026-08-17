@@ -8,6 +8,8 @@ import { JsonLd } from '@/components/ui/JsonLd'
 import { BoxBuyPanel } from '@/components/ui/BoxBuyPanel'
 import { BoxGallery } from '@/components/ui/BoxGallery'
 import { ReviewSection } from '@/components/ui/ReviewSection'
+import { SlotBackground } from '@/components/ui/SlotBackground'
+import { boxSlotKey } from '@/lib/image-slots'
 import { getBoxProduct, getItemSizeOptions, pieceCount, priceRange } from '@/lib/catalog-db'
 import { CATEGORY_LABELS, CATEGORY_LABELS_ES } from '@/lib/products'
 
@@ -155,6 +157,10 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
       }} />
       <Header />
       <main className="bg-white min-h-screen">
+        {/* Optional per-box background (Portal → Site Images → Box Pages).
+            Viewport-anchored so a long page doesn't stretch the photo; the
+            scrim keeps the product copy readable and is tunable per box. */}
+        <SlotBackground slotKey={boxSlotKey(box.slug)} scrim="bg-white/88" attach="fixed">
         <div className="max-w-5xl mx-auto px-6 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             {/* 1 — Gallery: the selected variant's set only */}
@@ -326,6 +332,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
           )}
 
         </div>
+        </SlotBackground>
       </main>
       <Footer />
     </>

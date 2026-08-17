@@ -7,14 +7,23 @@ export default async function ReviewsPage() {
   // Product names mapped in code (no FK join — §47 dropped the constraint so
   // box reviews can pool under box-<slug> ids). Box names resolve from the
   // catalog; unknown ids fall back to the raw id.
-  const [{ data, error }, { data: products }, { data: boxes }] = await Promise.all([
+  let [{ data, error }, { data: products }, { data: boxes }] = await Promise.all([
     supabaseAdmin
       .from('reviews')
-      .select('id, product_id, customer_name, rating, body, approved, created_at')
+      .select('id, product_id, customer_name, rating, body, approved, created_at, image_url')
       .order('created_at', { ascending: false }),
     supabaseAdmin.from('products').select('id, name'),
     supabaseAdmin.from('catalog_products').select('slug, name'),
   ])
+  // image_url only exists after §54 — fall back so the list still loads.
+  if (error) {
+    const legacy = await supabaseAdmin
+      .from('reviews')
+      .select('id, product_id, customer_name, rating, body, approved, created_at')
+      .order('created_at', { ascending: false })
+    data = legacy.data as typeof data
+    error = legacy.error
+  }
 
   if (error) {
     return (
@@ -41,6 +50,7 @@ export default async function ReviewsPage() {
     body: r.body as string,
     approved: !!r.approved,
     createdAt: r.created_at as string,
+    imageUrl: (r as { image_url?: string | null }).image_url ?? null,
   }))
   const pending = reviews.filter(r => !r.approved).length
 

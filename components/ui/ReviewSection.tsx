@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Star } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Star, ChevronLeft, ChevronRight } from 'lucide-react'
 
 type Review = {
   id: string
@@ -9,6 +9,7 @@ type Review = {
   rating: number
   body: string
   created_at: string
+  image_url?: string | null
 }
 
 function StarRating({ value, onChange }: { value: number; onChange?: (n: number) => void }) {
@@ -30,6 +31,99 @@ function StarRating({ value, onChange }: { value: number; onChange?: (n: number)
           />
         </button>
       ))}
+    </div>
+  )
+}
+
+// One review per slide in a FIXED-HEIGHT frame, so the page never jumps as
+// reviews of different lengths rotate through. Advances every 2s; pauses while
+// the pointer (or keyboard focus) is on the carousel and for reduced-motion
+// visitors, who page through with the arrows instead.
+const ROTATE_MS = 2000
+
+function ReviewCarousel({ reviews }: { reviews: Review[] }) {
+  const [index, setIndex] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const reduced = useRef(false)
+
+  useEffect(() => {
+    reduced.current = typeof window !== 'undefined'
+      && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  }, [])
+
+  useEffect(() => { setIndex(0) }, [reviews.length])
+
+  useEffect(() => {
+    if (paused || reduced.current || reviews.length < 2) return
+    const t = setInterval(() => setIndex(i => (i + 1) % reviews.length), ROTATE_MS)
+    return () => clearInterval(t)
+  }, [paused, reviews.length, index])
+
+  const go = (delta: number) => setIndex(i => (i + delta + reviews.length) % reviews.length)
+  const current = reviews[index]
+  if (!current) return null
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
+      aria-roledescription="carousel"
+      aria-label="Customer reviews"
+    >
+      {/* Fixed height — the tallest slide sets it, shorter ones just sit inside */}
+      <div className="h-[300px] sm:h-[240px] border border-cream-200 bg-cream-50/50 overflow-hidden">
+        <div className="h-full flex items-stretch">
+          {current.image_url && (
+            <div className="hidden sm:block w-[240px] shrink-0 bg-cream-100">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={current.image_url} alt={`Photo from ${current.customer_name}'s review`} className="w-full h-full object-cover" />
+            </div>
+          )}
+          <div className="flex-1 min-w-0 p-6 sm:p-7 flex flex-col overflow-hidden">
+            <div className="flex items-center gap-3 mb-3 flex-wrap">
+              <StarRating value={current.rating} />
+              <span className="font-sans text-xs font-medium text-bark-600">{current.customer_name}</span>
+              <span className="font-sans text-[11px] text-bark-400">
+                {new Date(current.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+              </span>
+            </div>
+            {current.image_url && (
+              // Phones show the photo inline above the words (no side panel).
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={current.image_url} alt={`Photo from ${current.customer_name}'s review`} className="sm:hidden w-full h-24 object-cover mb-3" />
+            )}
+            <p className="font-sans text-sm text-bark-500 leading-relaxed overflow-y-auto">{current.body}</p>
+          </div>
+        </div>
+      </div>
+
+      {reviews.length > 1 && (
+        <div className="flex items-center justify-between mt-3">
+          <div className="flex gap-1.5">
+            {reviews.map((r, i) => (
+              <button
+                key={r.id}
+                onClick={() => setIndex(i)}
+                aria-label={`Show review ${i + 1} of ${reviews.length}`}
+                className={`w-1.5 h-1.5 rounded-full transition-colors ${i === index ? 'bg-bark-500' : 'bg-cream-300 hover:bg-bark-300'}`}
+              />
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => go(-1)} aria-label="Previous review"
+              className="border border-cream-300 p-1.5 text-bark-400 hover:text-bark-600 hover:border-bark-400 transition-colors">
+              <ChevronLeft size={16} />
+            </button>
+            <button onClick={() => go(1)} aria-label="Next review"
+              className="border border-cream-300 p-1.5 text-bark-400 hover:text-bark-600 hover:border-bark-400 transition-colors">
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -207,18 +301,7 @@ export function ReviewSection({ productId }: { productId: string }) {
       ) : reviews.length === 0 ? (
         <p className="font-sans text-sm text-bark-400">No reviews yet — be the first!</p>
       ) : (
-        <div className="space-y-6">
-          {reviews.map(r => (
-            <div key={r.id} className="border-b border-cream-200 pb-6 last:border-0">
-              <div className="flex items-center gap-3 mb-2">
-                <StarRating value={r.rating} />
-                <span className="font-sans text-xs font-medium text-bark-600">{r.customer_name}</span>
-                <span className="font-sans text-[11px] text-bark-400">{new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
-              </div>
-              <p className="font-sans text-sm text-bark-500 leading-relaxed">{r.body}</p>
-            </div>
-          ))}
-        </div>
+        <ReviewCarousel reviews={reviews} />
       )}
     </div>
   )

@@ -5,11 +5,11 @@ export async function GET(req: NextRequest) {
   const productId = req.nextUrl.searchParams.get('product_id')
   if (!productId) return NextResponse.json({ error: 'product_id required' }, { status: 400 })
 
-  // verified_buyer only exists after §45 — fall back to the legacy shape so
-  // review display never breaks on an unmigrated DB.
+  // verified_buyer only exists after §45 (image_url after §54) — fall back to
+  // the legacy shape so review display never breaks on an unmigrated DB.
   let { data, error } = await supabaseAdmin
     .from('reviews')
-    .select('id, customer_name, rating, body, created_at, verified_buyer')
+    .select('id, customer_name, rating, body, created_at, verified_buyer, image_url')
     .eq('product_id', productId)
     .eq('approved', true)
     .order('created_at', { ascending: false })

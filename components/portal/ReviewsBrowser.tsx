@@ -1,9 +1,10 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Star } from 'lucide-react'
+import { Star, ImagePlus, Loader, Trash2 } from 'lucide-react'
 import { ReviewActions } from '@/app/portal/reviews/ReviewActions'
+import { resizeImage } from '@/lib/image-resize'
 
 // Filterable review moderation list: status × product/box × star rating.
 // Plus a manual-entry form for genuine customer feedback received off-site
@@ -17,6 +18,24 @@ export interface ReviewItem {
   body: string
   approved: boolean
   createdAt: string
+  imageUrl?: string | null
+}
+
+// Uploads a photo to the public review-images bucket and hands back its URL.
+// Resized client-side first — customer phone photos are far bigger than a
+// review card needs.
+async function uploadReviewPhoto(file: File): Promise<{ url?: string; error?: string }> {
+  try {
+    const resized = await resizeImage(file, 1400, 0.85)
+    const form = new FormData()
+    form.append('file', resized)
+    const res = await fetch('/api/portal/reviews/upload', { method: 'POST', body: form })
+    const json = await res.json()
+    if (!res.ok || !json.url) return { error: json.error || 'Upload failed' }
+    return { url: json.url as string }
+  } catch {
+    return { error: 'Upload failed' }
+  }
 }
 
 export interface ReviewProductOption { id: string; name: string }
@@ -71,6 +90,61 @@ function EditableDate({ reviewId, createdAt }: { reviewId: string; createdAt: st
   )
 }
 
+// Attach / replace / remove the photo on an existing review (customers often
+// send the photo separately from the words). Shown on every row; the photo
+// appears in the on-site review carousel once the review is published.
+function PhotoControl({ reviewId, imageUrl }: { reviewId: string; imageUrl?: string | null }) {
+  const router = useRouter()
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+
+  async function save(url: string | '') {
+    setBusy(true); setError('')
+    try {
+      const res = await fetch('/api/portal/reviews', {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: reviewId, image_url: url }),
+      })
+      if (!res.ok) { const d = await res.json().catch(() => ({})); setError(d.error || 'Failed'); return }
+      router.refresh()
+    } finally { setBusy(false) }
+  }
+
+  async function pick(file: File) {
+    setBusy(true); setError('')
+    const { url, error: upErr } = await uploadReviewPhoto(file)
+    setBusy(false)
+    if (!url) { setError(upErr || 'Upload failed'); return }
+    await save(url)
+  }
+
+  return (
+    <div className="mt-2">
+      <input ref={inputRef} type="file" accept="image/*" className="hidden"
+        onChange={e => { const f = e.target.files?.[0]; if (f) pick(f); e.target.value = '' }} />
+      {imageUrl ? (
+        <div className="flex items-center gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={imageUrl} alt="" className="w-16 h-16 object-cover rounded-lg border border-cream-200" />
+          <button onClick={() => inputRef.current?.click()} disabled={busy}
+            className="font-sans text-[10px] tracking-[0.12em] uppercase text-bark-400 hover:text-bark-600 disabled:opacity-40">Replace</button>
+          <button onClick={() => save('')} disabled={busy}
+            className="inline-flex items-center gap-1 font-sans text-[10px] tracking-[0.12em] uppercase text-bark-400 hover:text-red-500 disabled:opacity-40">
+            <Trash2 size={10} /> Remove
+          </button>
+        </div>
+      ) : (
+        <button onClick={() => inputRef.current?.click()} disabled={busy}
+          className="inline-flex items-center gap-1.5 font-sans text-[10px] tracking-[0.12em] uppercase text-bark-400 hover:text-bark-600 disabled:opacity-40">
+          {busy ? <Loader size={11} className="animate-spin" /> : <ImagePlus size={11} />} Add photo
+        </button>
+      )}
+      {error && <p className="font-sans text-[10px] text-red-600 mt-1">{error}</p>}
+    </div>
+  )
+}
+
 const chip = (on: boolean) =>
   `font-sans text-[10px] tracking-[0.15em] uppercase px-3 py-1.5 rounded-lg border transition-colors ${
     on ? 'bg-[#7A8E7C] border-[#7A8E7C] text-white' : 'border-cream-300 text-bark-500 hover:border-bark-400'
@@ -84,8 +158,18 @@ function AddReviewForm({ products }: { products: ReviewProductOption[] }) {
   const [rating, setRating] = useState(5)
   const [body, setBody] = useState('')
   const [date, setDate] = useState('')
+  const [photoUrl, setPhotoUrl] = useState('')
+  const [uploading, setUploading] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+
+  const pickPhoto = async (file: File) => {
+    setUploading(true); setError('')
+    const { url, error: upErr } = await uploadReviewPhoto(file)
+    setUploading(false)
+    if (!url) { setError(upErr || 'Photo upload failed'); return }
+    setPhotoUrl(url)
+  }
 
   const submit = async () => {
     setError('')
@@ -95,11 +179,11 @@ function AddReviewForm({ products }: { products: ReviewProductOption[] }) {
       const res = await fetch('/api/portal/reviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ product_id: productId, customer_name: name, rating, body, date: date || undefined }),
+        body: JSON.stringify({ product_id: productId, customer_name: name, rating, body, date: date || undefined, image_url: photoUrl || undefined }),
       })
       const json = await res.json()
       if (!res.ok) { setError(json.error || 'Failed to save'); return }
-      setProductId(''); setName(''); setRating(5); setBody(''); setDate(''); setOpen(false)
+      setProductId(''); setName(''); setRating(5); setBody(''); setDate(''); setPhotoUrl(''); setOpen(false)
       router.refresh()
     } catch {
       setError('Network error')
@@ -136,6 +220,22 @@ function AddReviewForm({ products }: { products: ReviewProductOption[] }) {
           </div>
           <textarea value={body} onChange={e => setBody(e.target.value)} rows={3}
             placeholder="The customer's words, as written…" className={`${field} w-full mb-3`} />
+          <div className="flex items-center gap-3 mb-3">
+            <label className="inline-flex items-center gap-1.5 font-sans text-[10px] tracking-[0.12em] uppercase text-bark-400 hover:text-bark-600 cursor-pointer">
+              {uploading ? <Loader size={11} className="animate-spin" /> : <ImagePlus size={11} />}
+              {photoUrl ? 'Replace photo' : 'Add a photo (optional)'}
+              <input type="file" accept="image/*" className="hidden"
+                onChange={e => { const f = e.target.files?.[0]; if (f) pickPhoto(f); e.target.value = '' }} />
+            </label>
+            {photoUrl && (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={photoUrl} alt="" className="w-14 h-14 object-cover rounded-lg border border-cream-200" />
+                <button type="button" onClick={() => setPhotoUrl('')}
+                  className="font-sans text-[10px] tracking-[0.12em] uppercase text-bark-400 hover:text-red-500">Remove</button>
+              </>
+            )}
+          </div>
           {error && <p className="font-sans text-xs text-red-600 mb-3">{error}</p>}
           <div className="flex gap-2">
             <button onClick={submit} disabled={busy} className={`${chip(true)} disabled:opacity-50`}>
@@ -201,6 +301,7 @@ export function ReviewsBrowser({ reviews, productOptions = [] }: { reviews: Revi
                     {!r.approved && <span className="font-sans text-[9px] tracking-[0.1em] uppercase bg-gold-400/20 text-gold-500 px-1.5 py-0.5 rounded">Pending</span>}
                   </div>
                   <p className="font-sans text-sm text-bark-500 leading-relaxed">{r.body}</p>
+                  <PhotoControl reviewId={r.id} imageUrl={r.imageUrl} />
                 </div>
                 <ReviewActions reviewId={r.id} approved={r.approved} />
               </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Loader, Upload, Check, Sparkles, Trash2 } from 'lucide-react'
-import { IMAGE_SLOTS, slotsByGroup, type ImageSlot } from '@/lib/image-slots'
+import { IMAGE_SLOTS, slotsByGroup, boxPageSlot, type ImageSlot } from '@/lib/image-slots'
 import { resizeImage } from '@/lib/image-resize'
 import { ScrimControl } from '@/components/portal/ScrimControl'
 
@@ -164,10 +164,21 @@ function SlotCard({ slot, images, onSaved }: {
 export default function SiteImagesPage() {
   const [images, setImages] = useState<Record<string, Current>>({})
   const [loading, setLoading] = useState(true)
-  const groups = slotsByGroup()
+  // One background slot per live box, built from the catalog so a newly added
+  // box shows up here without a code change.
+  const [boxSlots, setBoxSlots] = useState<ImageSlot[]>([])
+  const groups = { ...slotsByGroup(), ...(boxSlots.length ? { 'Box Pages': boxSlots } : {}) }
 
   useEffect(() => {
     fetch('/api/portal/site-images').then(r => r.json()).then(d => setImages(d.images ?? {})).catch(() => {}).finally(() => setLoading(false))
+    fetch('/api/portal/catalog')
+      .then(r => r.json())
+      .then(d => setBoxSlots(
+        ((d.products ?? []) as Array<{ slug: string; name: string; active?: boolean }>)
+          .filter(p => p.active !== false)
+          .map(p => boxPageSlot(p.slug, p.name))
+      ))
+      .catch(() => {})
   }, [])
 
   return (
@@ -193,7 +204,7 @@ export default function SiteImagesPage() {
           </div>
         ))
       )}
-      <p className="font-sans text-[10px] text-bark-400/70 mt-2">{IMAGE_SLOTS.length} slots · stored in the home-images bucket · resized to ~2000px before upload.</p>
+      <p className="font-sans text-[10px] text-bark-400/70 mt-2">{IMAGE_SLOTS.length + boxSlots.length} slots · stored in the home-images bucket · resized to ~2000px before upload.</p>
     </div>
   )
 }
