@@ -37,7 +37,16 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
   // linking to /boxes/[slug]. Empty until §46 runs + seeds — the legacy
   // prebuilt grid keeps the page alive either way.
   const { getBoxProducts, priceRange } = await import('@/lib/catalog-db')
-  const catalogProducts = await getBoxProducts()
+  // Kept OFF the hub (Emily 2026-08-17), same reasoning as the nav exclusion in
+  // components/layout/Header.tsx: the fixed-price starter box exists so Google
+  // Shopping has something to list (the /build configurator has no single price
+  // to advertise). On the hub its $29.97 card of loose wooden pieces sat beside
+  // the $165 gift boxes and read as an off-brand product. Hidden HERE rather
+  // than via `visible` in the DB, because `visible=false` would also drop it
+  // from the product feed and defeat the whole point. Its own page, /es twin,
+  // JSON-LD, reviews and feed row are all unaffected.
+  const HUB_HIDDEN_SLUGS = new Set(['build-your-own-gift-box'])
+  const catalogProducts = (await getBoxProducts()).filter(p => !HUB_HIDDEN_SLUGS.has(p.slug))
   const { getScrims } = await import('@/lib/scrims')
   const scrims = await getScrims().catch(() => ({}))
   const shadow = (scrims as Record<string, { hex: string; opacity: number }>)['boxes.card_shadow'] ?? { hex: '#FFFFFF', opacity: 0.95 }
