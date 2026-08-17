@@ -7,6 +7,7 @@ import { X, Minus, Plus } from 'lucide-react'
 import { readCart, writeCart, readBoxRef, type CartItem, type BoxRef } from '@/lib/cart'
 import { BOX_BASE_PRICE, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
 import { useIsEs } from '@/lib/use-is-es'
+import { DeliveryEstimate } from '@/components/ui/DeliveryEstimate'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
@@ -161,7 +162,8 @@ export function BagDrawer() {
             <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">Subtotal</span>
             <span className="font-sans text-base font-medium text-bark-600">{formatPrice(subtotal)}</span>
           </div>
-          <p className="font-sans text-[11px] text-bark-400/60 mb-4">{isEs ? 'Canastilla y envío se calculan al pagar' : <>Box fee &amp; shipping calculated at checkout</>}</p>
+          <p className="font-sans text-[11px] text-bark-400/60 mb-2">{isEs ? 'Canastilla y envío se calculan al pagar' : <>Box fee &amp; shipping calculated at checkout</>}</p>
+          {hasItems && <DeliveryEstimate variant="compact" className="mb-4" />}
           <button
             onClick={() => { setOpen(false); router.push(isEs ? '/es/checkout' : '/checkout') }}
             disabled={!hasItems}

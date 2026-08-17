@@ -13,6 +13,7 @@ import { trackViewItem } from '@/lib/analytics-events'
 import { RelatedProducts, type RelatedItem } from '@/components/ui/RelatedProducts'
 import { ReviewSection } from '@/components/ui/ReviewSection'
 import { CertBadges } from '@/components/ui/CertBadges'
+import { DeliveryEstimate } from '@/components/ui/DeliveryEstimate'
 import type { Product } from '@/types'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
@@ -311,6 +312,8 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
                     {(product as Product & { preorder?: boolean }).preorder ? (isEs ? 'Reservar ahora' : 'Preorder Now') : (isEs ? 'Agregar a tu canastilla' : 'Add to Box')}
                   </button>
                 )}
+
+                <DeliveryEstimate className="mb-4 -mt-1" />
 
                 {/* Trust badges */}
                 <div className="flex items-start justify-between border-t border-b border-cream-300 py-4 mb-4">

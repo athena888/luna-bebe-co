@@ -14,6 +14,7 @@ import Link from 'next/link'
 import { storeCheckoutEnabled } from '@/lib/store-flags'
 import { trackBeginCheckout } from '@/lib/analytics-events'
 import { AddonRow } from '@/components/ui/AddonRow'
+import { DeliveryEstimate } from '@/components/ui/DeliveryEstimate'
 import { useIsEs } from '@/lib/use-is-es'
 
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
@@ -529,6 +530,26 @@ export default function CheckoutPage() {
                       <span className="text-bark-600">Taxes (estimated)</span>
                       <span className="text-bark-400">Calculated at payment</span>
                     </div>
+                  </div>
+
+                  {/* Arrives-by note — display only, never part of the Stripe
+                      session. Same-day courier has its own evening promise;
+                      rush ships in 1–2 business days; standard uses the ground
+                      estimator against the ZIP typed above. */}
+                  <div className="mt-4">
+                    {shippingType === 'sameday' ? (
+                      <p className="font-sans text-[12px] text-bark-500">
+                        {isEs
+                          ? 'Llega esta noche entre 5 y 9 PM si ordenas antes de la 1 PM PT (después: mañana por la noche)'
+                          : 'Arrives this evening 5–9 PM if ordered by 1 PM PT (after: tomorrow evening)'}
+                      </p>
+                    ) : (
+                      <DeliveryEstimate
+                        variant="arrives-by"
+                        zip={address.zip}
+                        transit={shippingType === 'premium' ? [1, 2] : undefined}
+                      />
+                    )}
                   </div>
 
                   <div className="flex justify-between items-baseline border-t border-cream-300 mt-5 pt-5">
