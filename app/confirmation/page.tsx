@@ -100,18 +100,9 @@ function ConfirmationInner() {
             </div>
           </div>
 
-          {/* A Note to the New Mother — the note tucked inside every box */}
-          <div className="rounded-2xl border border-[#d8c7a8] bg-[#f3ecdc] p-7 sm:p-10 text-left mb-8">
-            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-bark-400 mb-4 text-center">Tucked inside your box</p>
-            <p className="font-serif italic text-2xl text-espresso text-center mb-6">We see you.</p>
-            <div className="space-y-4 font-sans text-sm text-bark-600 leading-relaxed">
-              <p>You are doing one of the hardest, most loving things a person can do. You are running on broken sleep and feeding schedules and a love so big it doesn&rsquo;t fit in your chest.</p>
-              <p>You deserve warm tea. You deserve ten minutes in a bath. You deserve a few hours of dark, quiet sleep with silk against your eyes. You deserve scent and softness and the small luxury of being thought of.</p>
-              <p>This box is here to remind you: <span className="font-medium">you are not invisible in your own story.</span></p>
-              <p>Welcome to this new chapter. We hope it starts well.</p>
-            </div>
-            <p className="font-serif italic text-bark-500 mt-6">— Petite Lavande</p>
-          </div>
+          {/* The "Tucked inside your box" house note was removed 2026-08-16:
+              no such note is physically included, and a blank customer message
+              now prints a blank card — so promising it here was untrue. */}
 
           <div className="bg-bark-600 rounded-2xl p-6 sm:p-8 mb-8 text-left flex flex-col sm:flex-row items-center gap-4">
             <div className="shrink-0 w-12 h-12 rounded-full bg-gold-400/20 flex items-center justify-center">
