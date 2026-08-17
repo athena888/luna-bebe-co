@@ -86,5 +86,8 @@ export function addToCart(product: Product, qty = 1): number {
 }
 
 export function cartCount(): number {
+  // An untouched prebuilt box is ONE thing in the bag, not its piece count —
+  // the header badge has to agree with the single line the bag shows.
+  if (readBoxRef()) return 1
   return readCart().reduce((s, i) => s + (i.qty ?? 1), 0)
 }

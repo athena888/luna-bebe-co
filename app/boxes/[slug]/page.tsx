@@ -201,11 +201,10 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                 </div>
               )}
 
-              {story.variant_stories?.[variant.key] && (
-                <p className="font-serif italic text-[15px] text-bark-500 leading-relaxed mt-6">
-                  {story.variant_stories[variant.key]}
-                </p>
-              )}
+              {/* The per-variant italic story was removed from the buy column
+                  (Emily 2026-08-17). The copy still lives in the box's `story`
+                  JSON, so it can be restored by re-rendering
+                  story.variant_stories[variant.key] here. */}
 
               <div className="mt-8">
                 <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-3">{t.inside}</p>
