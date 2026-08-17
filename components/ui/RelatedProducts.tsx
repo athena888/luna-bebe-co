@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { formatDollars } from '@/lib/products'
 
 export interface RelatedItem { id: string; name: string; price: number; image: string }
 
@@ -20,7 +21,7 @@ export function RelatedProducts({ items, isEs = false }: { items?: RelatedItem[]
                 {p.image && <Image src={p.image} alt={p.name} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-500" unoptimized sizes="(max-width:640px) 30vw, 280px" />}
               </div>
               <p className="font-serif text-sm sm:text-base text-espresso leading-snug group-hover:text-gold-500 transition-colors">{p.name}</p>
-              <p className="font-sans text-xs text-bark-400 mt-1">${(p.price / 100).toFixed(0)}</p>
+              <p className="font-sans text-xs text-bark-400 mt-1">{formatDollars(p.price)}</p>
             </Link>
           ))}
         </div>

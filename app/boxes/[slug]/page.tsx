@@ -11,7 +11,7 @@ import { ReviewSection } from '@/components/ui/ReviewSection'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { boxSlotKey } from '@/lib/image-slots'
 import { getBoxProduct, getItemSizeOptions, pieceCount, priceRange } from '@/lib/catalog-db'
-import { CATEGORY_LABELS, CATEGORY_LABELS_ES } from '@/lib/products'
+import { CATEGORY_LABELS, CATEGORY_LABELS_ES, formatDollars } from '@/lib/products'
 
 // Phase 3 box product page — one data-driven template for every parent
 // product. Variants live in a query param (?tier=/?theme=); canonical strips
@@ -174,7 +174,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
               <p className="font-sans text-[13px] tracking-[0.08em] text-bark-500 mt-2">
                 {pieceCount(variant)} {isEs ? 'piezas, empacadas a mano' : 'pieces, hand-packed'}
               </p>
-              <p className="font-sans text-2xl text-espresso mt-4">${(variant.price / 100).toFixed(0)}</p>
+              <p className="font-sans text-2xl text-espresso mt-4">{formatDollars(variant.price)}</p>
 
               {box.variants.length > 1 && (
                 <div className="mt-6">
@@ -193,7 +193,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                             <Image src={v.images[0]} alt={`${box.name} — ${v.label} option`} fill className="object-cover" unoptimized />
                           </span>
                         )}
-                        {v.label} · ${(v.price / 100).toFixed(0)}
+                        {v.label} · {formatDollars(v.price)}
                       </Link>
                     ))}
                   </div>

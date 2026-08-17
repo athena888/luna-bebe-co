@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Eye, Leaf } from 'lucide-react'
 import type { Product } from '@/types'
 import { QuickViewModal } from './QuickViewModal'
+import { formatDollars } from '@/lib/products'
 
 // Organic if explicitly flagged, else inferred from tag/ingredients/name.
 function isOrganic(p: Product): boolean {
@@ -115,7 +116,7 @@ export function ProductGridCard({ product, primarySrc, secondarySrc }: {
       {/* Title + price → PDP. */}
       <Link href={pdp} className="block group/info">
         <h3 className="font-serif text-base text-bark-600 leading-snug mb-0.5 group-hover/info:text-bark-800 transition-colors">{product.name}</h3>
-        <p className="font-sans text-xs text-bark-400">${(product.price / 100).toFixed(0)}</p>
+        <p className="font-sans text-xs text-bark-400">{formatDollars(product.price)}</p>
       </Link>
 
       {quick && <QuickViewModal product={product} onClose={() => setQuick(false)} />}

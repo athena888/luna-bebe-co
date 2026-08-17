@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useIsEs } from '@/lib/use-is-es'
 import { writeCart, type CartItem } from '@/lib/cart'
 import { BLANKET_COLORS } from '@/lib/box-colors'
+import { formatDollars } from '@/lib/products'
 import { DeliveryEstimate } from '@/components/ui/DeliveryEstimate'
 import type { Product } from '@/types'
 import type { SizeOption } from '@/lib/catalog-db'
@@ -128,7 +129,7 @@ export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, var
         disabled={!canBuy}
         className="w-full sm:w-auto bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
-        {isEs ? 'Agregar al carrito' : 'Add to Cart'} — ${(price / 100).toFixed(0)}
+        {isEs ? 'Agregar al carrito' : 'Add to Cart'} — {formatDollars(price)}
       </button>
 
       <DeliveryEstimate className="mt-3" />

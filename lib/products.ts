@@ -57,6 +57,15 @@ export const CATEGORY_LABELS_ES: Record<ProductCategory, string> = {
 }
 
 export const CATEGORY_ORDER: ProductCategory[] = ['swaddle', 'garment', 'bath', 'keepsake', 'mom']
+
+// Storefront price label. Whole dollars stay clean ($95), anything with cents
+// shows them ($29.97). Rounding cents away used to be harmless when every box
+// was a round number — it stops being harmless the moment a price like $29.97
+// reaches the Merchant feed, because Google compares the feed price against
+// the price printed on the landing page and disapproves a mismatch.
+export function formatDollars(cents: number): string {
+  return cents % 100 === 0 ? `$${Math.round(cents / 100)}` : `$${(cents / 100).toFixed(2)}`
+}
 // 2026-08-14 (Emily): the separate box fee is retired — packaging is part of
 // the product price. Kept as a constant so the checkout math stays in one place.
 export const BOX_BASE_PRICE = 0

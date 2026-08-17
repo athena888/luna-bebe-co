@@ -5,6 +5,7 @@ import { useIsEs } from '@/lib/use-is-es'
 import Image from 'next/image'
 import { Package } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { formatDollars } from '@/lib/products'
 
 // ── Section ──────────────────────────────────────────────────────────────────
 export function PrebuiltBoxesSection() {
@@ -37,7 +38,7 @@ export function PrebuiltBoxesSection() {
             {/* Caption below the image — espresso, turns gold on hover */}
             <div className="pt-4 text-espresso transition-colors duration-300 group-hover:text-gold-500">
               <h3 className="font-serif text-xl font-semibold leading-tight">{box.name}</h3>
-              <p className="font-serif text-lg font-semibold mt-1">{box.low === box.high ? `$${(box.low / 100).toFixed(0)}` : `$${(box.low / 100).toFixed(0)} – $${(box.high / 100).toFixed(0)}`}</p>
+              <p className="font-serif text-lg font-semibold mt-1">{box.low === box.high ? formatDollars(box.low) : `${formatDollars(box.low)} – ${formatDollars(box.high)}`}</p>
             </div>
           </Link>
         ))}

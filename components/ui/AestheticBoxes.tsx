@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Leaf, X, ZoomIn, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react'
 import { CertBadges } from '@/components/ui/CertBadges'
 import type { ResolvedBox, BoxItem } from '@/lib/prebuilt-boxes-db'
-import { BOX_BASE_PRICE } from '@/lib/products'
+import { BOX_BASE_PRICE, formatDollars } from '@/lib/products'
 import { writeCart, type CartItem } from '@/lib/cart'
 
 const BOX_SIZES = ['0–3 mo', '3–6 mo'] as const
@@ -14,7 +14,7 @@ const isGarment = (i: BoxItem) => /garment|swaddle|romper|kimono|clothes|onesie|
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 const SHOW_BOTANICAL = process.env.NEXT_PUBLIC_CARD_BOTANICAL_BG === 'true'
-function fmt(c: number) { return `$${(c / 100).toFixed(0)}` }
+const fmt = (c: number) => formatDollars(c)
 function productImg(p: { id: string; image?: string | null }): string | null {
   return p.image ?? (SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${p.id}.jpg` : null)
 }
