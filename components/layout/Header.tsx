@@ -243,7 +243,7 @@ const DEFAULT_PERKS: Perk[] = [
   { label: 'Free Shipping', sub: `On orders over $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}`, es: { label: 'Envío gratis', sub: `En pedidos desde $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}` } },
   { label: 'Personalized Card', sub: 'Hand-finished for every box', es: { label: 'Tarjeta personalizada', sub: 'Terminada a mano para cada canastilla' } },
   { label: 'Organic Cotton', sub: 'From GOTS-certified makers', es: { label: 'Algodón orgánico', sub: 'De talleres certificados GOTS' } },
-  { label: 'Gift-Ready', sub: 'Ships within 3 days', es: { label: 'Lista para regalar', sub: 'Se envía en 3 días' } },
+  { label: 'Same-Day Shipping', sub: 'Hand-packed and out the same day', es: { label: 'Envío el mismo día', sub: 'Empacada a mano y enviada el mismo día' } },
 ]
 export function PerksMarquee() {
   const [perks, setPerks] = useState<Perk[]>(DEFAULT_PERKS)
@@ -263,14 +263,17 @@ export function PerksMarquee() {
   // Static strip (Emily 2026-08-15: no scrolling) — every promise on one
   // evenly-spaced line on sm+; phones show a 2×2 grid because four
   // label+sub pairs can't fit a phone width legibly.
+  // ALL FOUR must stay on screen (Emily 2026-08-16): the row wraps and its
+  // spacing/type tighten on narrower windows rather than running off both
+  // edges, which is what clipped the first and last promise before.
   return (
     <div className="bg-[#4A3B30] py-2.5" aria-label="Our promises">
-      <div className="hidden sm:flex items-baseline justify-center px-6">
+      <div className="hidden sm:flex flex-wrap items-baseline justify-center gap-y-1 px-4">
         {shown.map(({ label, sub }, i) => (
           <span key={label} className="flex items-baseline whitespace-nowrap">
-            {i > 0 && <span className="w-1 h-1 rounded-full bg-gold-400 mx-6 lg:mx-10 self-center shrink-0" />}
-            <span className="font-sans text-[11px] tracking-[0.25em] uppercase font-semibold text-cream-50">{label}</span>
-            <span className="font-cormorant text-[15px] text-cream-200 ml-3">{sub}</span>
+            {i > 0 && <span className="w-1 h-1 rounded-full bg-gold-400 mx-3 md:mx-5 lg:mx-8 self-center shrink-0" />}
+            <span className="font-sans text-[10px] md:text-[11px] tracking-[0.16em] md:tracking-[0.22em] lg:tracking-[0.25em] uppercase font-semibold text-cream-50">{label}</span>
+            <span className="font-cormorant text-[13px] md:text-[15px] text-cream-200 ml-2 md:ml-3">{sub}</span>
           </span>
         ))}
       </div>

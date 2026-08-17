@@ -155,6 +155,13 @@ function PageBackgrounds() {
     const d = await r.json()
     if (d.error) window.alert(d.error); else { setMsg('Uploaded'); setTimeout(() => setMsg(''), 1500); load() }
   }
+  // Clear a background — the page falls back to its plain cream backdrop.
+  async function remove(slotKey: string) {
+    if (!window.confirm('Remove this background? The page goes back to its plain backdrop.')) return
+    const r = await fetch(`/api/portal/site-images?slotKey=${encodeURIComponent(slotKey)}`, { method: 'DELETE' })
+    if (!r.ok) { const d = await r.json().catch(() => ({})); window.alert(d.error || 'Remove failed'); return }
+    setMsg('Removed'); setTimeout(() => setMsg(''), 1500); load()
+  }
   async function saveScrim(slotKey: string, hex: string, opacity: number) {
     await fetch('/api/portal/site-scrims', { method: 'PUT', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ slotKey, hex, opacity }) })
@@ -179,10 +186,16 @@ function PageBackgrounds() {
                       ? <img src={images[v.k].public_url} alt="" className="w-16 h-10 object-cover rounded border border-cream-300" />
                       : <span className="w-16 h-10 rounded border border-dashed border-cream-300" />}
                     <label className="font-sans text-[10px] uppercase tracking-wide text-bark-500 border border-cream-300 rounded px-2 py-1.5 cursor-pointer hover:border-bark-400">
-                      Upload
+                      {images[v.k]?.public_url ? 'Replace' : 'Upload'}
                       <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
                         onChange={e => { const f = e.target.files?.[0]; if (f) upload(v.k, f); e.target.value = '' }} />
                     </label>
+                    {images[v.k]?.public_url && (
+                      <button type="button" onClick={() => remove(v.k)} title="Remove this background"
+                        className="font-sans text-[10px] uppercase tracking-wide text-bark-400 hover:text-red-500 transition-colors">
+                        Remove
+                      </button>
+                    )}
                   </div>
                 ))}
                 <div className="flex items-center gap-2">

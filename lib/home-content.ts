@@ -59,7 +59,7 @@ export const DEFAULT_HOME_CONTENT: HomeContent = {
     { label: 'Free Shipping', sub: `On orders over $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}`, es: { label: 'Envío gratis', sub: `En pedidos desde $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}` } },
     { label: 'Personalized Card', sub: 'Hand-finished for every box', es: { label: 'Tarjeta personalizada', sub: 'Terminada a mano para cada canastilla' } },
     { label: 'Organic Cotton', sub: 'From GOTS-certified makers', es: { label: 'Algodón orgánico', sub: 'De talleres certificados GOTS' } },
-    { label: 'Gift-Ready', sub: 'Ships within 3 days', es: { label: 'Lista para regalar', sub: 'Se envía en 3 días' } },
+    { label: 'Same-Day Shipping', sub: 'Hand-packed and out the same day', es: { label: 'Envío el mismo día', sub: 'Empacada a mano y enviada el mismo día' } },
   ],
   why: {
     eyebrow: 'Why Petite Lavande',
