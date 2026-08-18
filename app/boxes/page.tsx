@@ -5,6 +5,7 @@ import { Footer } from '@/components/layout/Footer'
 import { getBoxes } from '@/lib/prebuilt-boxes-db'
 import { AestheticBoxes } from '@/components/ui/AestheticBoxes'
 import { SlotBackground } from '@/components/ui/SlotBackground'
+import { isShoppingOnly } from '@/lib/catalog-visibility'
 
 export const dynamic = 'force-dynamic'
 
@@ -45,8 +46,7 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
   // than via `visible` in the DB, because `visible=false` would also drop it
   // from the product feed and defeat the whole point. Its own page, /es twin,
   // JSON-LD, reviews and feed row are all unaffected.
-  const HUB_HIDDEN_SLUGS = new Set(['build-your-own-gift-box'])
-  const catalogProducts = (await getBoxProducts()).filter(p => !HUB_HIDDEN_SLUGS.has(p.slug))
+  const catalogProducts = (await getBoxProducts()).filter(p => !isShoppingOnly(p.slug))
   const { getScrims } = await import('@/lib/scrims')
   const scrims = await getScrims().catch(() => ({}))
   const shadow = (scrims as Record<string, { hex: string; opacity: number }>)['boxes.card_shadow'] ?? { hex: '#FFFFFF', opacity: 0.95 }

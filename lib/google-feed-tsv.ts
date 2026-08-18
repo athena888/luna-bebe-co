@@ -118,7 +118,16 @@ export async function buildProductTsv(): Promise<string> {
   }
 
   const lines: string[] = [HEADER.join('\t')]
-  for (const item of items) {
+  // BOXES ONLY (Emily 2026-08-18). Single items stayed Approved-then-Limited in
+  // Merchant Center because their landing page — /products/<id> — offers only
+  // "Add to Box", which routes into the builder rather than selling the item at
+  // the listed price, and Google requires a feed landing page to allow direct
+  // purchase. They were already barred from paid Shopping (excluded_destination
+  // since 2026-08-16), so the only loss is free listings on $5–20 items; the
+  // alternative was rebuilding cart/checkout around standalone single items.
+  // Flip this to true if product pages ever gain a real Add to Cart.
+  const INCLUDE_SINGLE_ITEMS = false
+  for (const item of INCLUDE_SINGLE_ITEMS ? items : []) {
     const priceUsd = parseFloat(item.price)
     const nameColor = splitNameColor(item.title).color
     const base = {

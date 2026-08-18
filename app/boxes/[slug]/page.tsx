@@ -11,7 +11,8 @@ import { ReviewSection } from '@/components/ui/ReviewSection'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { TrackViewItem } from '@/components/ui/TrackViewItem'
 import { boxSlotKey } from '@/lib/image-slots'
-import { getBoxProduct, getItemSizeOptions, pieceCount, priceRange } from '@/lib/catalog-db'
+import { isShoppingOnly } from '@/lib/catalog-visibility'
+import { getBoxProduct, getItemSizeOptions, pieceCount, piecesPerItem, priceRange } from '@/lib/catalog-db'
 import { CATEGORY_LABELS, CATEGORY_LABELS_ES, formatDollars } from '@/lib/products'
 
 // Phase 3 box product page — one data-driven template for every parent
@@ -52,7 +53,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       ...(box.variants[0]?.images[0] ? { images: [{ url: box.variants[0].images[0], alt: box.name }] } : {}),
     },
     twitter: { card: 'summary_large_image' },
-    ...(box.visible ? {} : { robots: { index: false, follow: true } }),
+    // Seasonally hidden boxes keep their route but leave the index; so do
+    // Shopping-only boxes, which exist purely as an ad landing page.
+    ...(box.visible && !isShoppingOnly(slug) ? {} : { robots: { index: false, follow: true } }),
   }
 }
 
@@ -228,9 +231,20 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                               )}
                               <span className="font-sans text-sm text-bark-600">
                                 {c.qty > 1 ? `${c.qty} × ` : ''}{c.item.name}
-                                {c.item.id === 'swaddle-botanical-bath-melt-set' && (
-                                  <span className="text-bark-400"> ({c.pieces ?? 5} {isEs ? 'bombas de baño' : 'bath bombs'})</span>
-                                )}
+                                {/* The heading counts PIECES, this list shows
+                                    ITEMS, and a set counts as its pieces — so
+                                    "12 pieces" over 10 rows looked like a bug.
+                                    Both now read from the same piecesPerItem
+                                    rule, and any multi-piece row says so. */}
+                                {(() => {
+                                  const per = c.pieces ?? piecesPerItem(c.item.id, c.item.name)
+                                  if (c.item.id === 'swaddle-botanical-bath-melt-set') {
+                                    return <span className="text-bark-400"> ({c.pieces ?? 5} {isEs ? 'bombas de baño' : 'bath bombs'})</span>
+                                  }
+                                  return per > 1
+                                    ? <span className="text-bark-400"> ({per} {isEs ? 'piezas' : 'pieces'})</span>
+                                    : null
+                                })()}
                                 {c.colorChoice ? ` — ${t.color}` : ''}
                                 {(c.item as { organic?: boolean }).organic && (
                                   <span className="ml-2 font-sans text-[11px] tracking-[0.12em] uppercase border border-[#7A8E7C] text-[#7A8E7C] px-1.5 py-0.5 align-middle">{isEs ? 'orgánico' : 'organic'}</span>

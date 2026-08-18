@@ -36,7 +36,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // keep their route but leave the sitemap off-season.
   try {
     const { getBoxProducts } = await import('@/lib/catalog-db')
+    const { isShoppingOnly } = await import('@/lib/catalog-visibility')
     for (const p of await getBoxProducts()) {
+      // Shopping-only boxes stay live for their ad landing page but are kept
+      // out of organic discovery — they sit below the brand's price floor.
+      if (isShoppingOnly(p.slug)) continue
       urls.push({ url: `${base}/boxes/${p.slug}`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 })
     }
   } catch { /* §46 not run yet */ }
