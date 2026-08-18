@@ -109,11 +109,16 @@ function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
 // products first, occasion collections second. The static list is the SSR
 // fallback so crawlers always see the links; /api/catalog-nav refreshes it so
 // the seasonal hide toggle (e.g. Noël off-season) drops items without a deploy.
+// PUBLISHED boxes only. Noël (baby-first-christmas-gift-box) was removed
+// 2026-08-18: it is an unpublished draft (catalog_products.active = false), so
+// getBoxProduct 404s it — and because this list is the pre-hydration fallback,
+// every page in both locales shipped a header link to a 404 until the API
+// answered. `npm run check:nav` re-verifies this list against the live catalog;
+// re-add Noël the moment it's published.
 const DEFAULT_BOX_PRODUCTS: Array<{ slug: string; name: string }> = [
   { slug: 'signature-baby-gift-box', name: 'The Petite' },
   { slug: 'themed-baby-gift-box', name: 'Mama et Bébé' },
   { slug: 'new-mom-gift-box', name: 'The Mama Box' },
-  { slug: 'baby-first-christmas-gift-box', name: 'Noël' },
 ]
 
 // SHOP BY OCCASION column — Emily's exact format (2026-07-29).

@@ -10,7 +10,9 @@
     "test": "node --test \"lib/**/*.test.ts\"",
     "setup:welcome-code": "node scripts/setup-welcome-code.js",
     "decor:split": "node scripts/split-botanical.mjs",
-    "indexnow": "node scripts/indexnow-ping.mjs"
+    "indexnow": "node scripts/indexnow-ping.mjs",
+    "check:nav": "node scripts/check-nav.mjs",
+    "check:copy": "node scripts/check-product-copy.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.96.0",

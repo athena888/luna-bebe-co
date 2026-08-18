@@ -329,27 +329,38 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
                   ))}
                 </div>
 
-                {/* Description — collapsible */}
-                <div className="border-t border-cream-300">
-                  <button
-                    onClick={() => setDescOpen(o => !o)}
-                    className="w-full flex items-center justify-between py-3.5 group"
-                  >
-                    <span className="font-serif text-sm text-bark-600">Description</span>
-                    <ChevronDown
-                      size={14}
-                      className={`text-bark-400 transition-transform duration-200 ${descOpen ? 'rotate-180' : ''}`}
-                    />
-                  </button>
-                  {descOpen && (
-                    <p
-                      className="pb-4 text-base text-bark-600 leading-relaxed"
-                      style={{ fontFamily: 'var(--font-cormorant)' }}
-                    >
-                      {clean(isEs && esDescription ? esDescription : product.description)}
-                    </p>
-                  )}
-                </div>
+                {/* Description — collapsible. Two fixes from the 2026-08-18
+                    audit: the whole block is skipped when there's no copy (it
+                    used to render a heading with nothing behind it), and the
+                    text is always IN the DOM, hidden with CSS rather than
+                    unmounted. Unmounting meant the description existed only
+                    after a click — so crawlers, and any audit reading the
+                    HTML, saw a product page with no product copy at all. */}
+                {(() => {
+                  const body = clean(isEs && esDescription ? esDescription : product.description)
+                  if (!body) return null
+                  return (
+                    <div className="border-t border-cream-300">
+                      <button
+                        onClick={() => setDescOpen(o => !o)}
+                        aria-expanded={descOpen}
+                        className="w-full flex items-center justify-between py-3.5 group"
+                      >
+                        <span className="font-serif text-sm text-bark-600">Description</span>
+                        <ChevronDown
+                          size={14}
+                          className={`text-bark-400 transition-transform duration-200 ${descOpen ? 'rotate-180' : ''}`}
+                        />
+                      </button>
+                      <p
+                        className={`pb-4 text-base text-bark-600 leading-relaxed ${descOpen ? '' : 'hidden'}`}
+                        style={{ fontFamily: 'var(--font-cormorant)' }}
+                      >
+                        {body}
+                      </p>
+                    </div>
+                  )
+                })()}
 
                 {/* Certifications — compact, single line, below the description */}
                 {(() => {
