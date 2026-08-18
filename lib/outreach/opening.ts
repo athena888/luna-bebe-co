@@ -13,7 +13,7 @@
 // and the prospect does NOT get a first-touch draft. An opening that says
 // nothing is worse than no email, because it proves we did not look.
 
-import type { Segment } from './icp.ts'
+import { SIGNAL_WEIGHTS, type Segment } from './icp.ts'
 import type { ScoringSignal } from './scoring.ts'
 
 export interface OpeningInput {
@@ -114,20 +114,34 @@ const OPENING_PRIORITY: Array<{ type: string; render: (company: string) => strin
  * the first touch rather than sending a hollow one.
  */
 export function buildOpening(input: OpeningInput): string | null {
+  const t = relevantType(input)
+  if (!t) return null
+  return OPENING_PRIORITY.find(c => c.type === t)!.render(input.company.trim())
+}
+
+/**
+ * The opening must belong to the SEGMENT'S motion, not merely be the strongest
+ * signal on file. A wealth firm with an employee-recognition programme once
+ * produced "I saw CV Advisors runs an employee recognition programme" attached
+ * to a body pitching CLIENT gifting — two different arguments in one email.
+ *
+ * SIGNAL_WEIGHTS defines which evidence counts for a segment, so it is also the
+ * correct filter for which evidence may open the email.
+ */
+function relevantType(input: OpeningInput): string | null {
+  const weights = SIGNAL_WEIGHTS[input.segment] ?? {}
   const have = new Set(input.signals.map(s => String(s.signal_type)))
   for (const candidate of OPENING_PRIORITY) {
-    if (have.has(candidate.type)) return candidate.render(input.company.trim())
+    if (!have.has(candidate.type)) continue
+    if (!(candidate.type in weights)) continue   // wrong motion for this segment
+    return candidate.type
   }
   return null
 }
 
 /** The signal type an opening was derived from — stored for auditability. */
 export function openingSource(input: OpeningInput): string | null {
-  const have = new Set(input.signals.map(s => String(s.signal_type)))
-  for (const candidate of OPENING_PRIORITY) {
-    if (have.has(candidate.type)) return candidate.type
-  }
-  return null
+  return relevantType(input)
 }
 
 /** Signal types that can never justify a first touch on their own. */

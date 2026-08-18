@@ -358,6 +358,10 @@ export interface SignalWeight { points: number; group: string }
 
 export const SIGNAL_WEIGHTS: Record<Segment, Partial<Record<SignalType, SignalWeight>>> = {
   EMPLOYEE_GIFTING: {
+    // A company already running a gifting programme has the budget line and
+    // the habit — that is directly relevant to employee gifting, not only to
+    // the client motion. (Remitly is a real example.)
+    corporate_gifting_page:   { points: 10, group: 'gifting_program' },
     parental_leave_benefit:   { points: 10, group: 'benefits' },
     new_parent_support:       { points: 10, group: 'benefits' },
     employee_benefits_page:   { points: 6,  group: 'benefits' },

@@ -35,15 +35,16 @@ test('the strongest signal wins regardless of input order', () => {
 })
 
 test('every opening names the real company and states only the observed fact', () => {
-  const cases: Array<[string, RegExp]> = [
-    ['parental_leave_benefit', /paid parental leave policy/],
-    ['family_office', /family office/],
-    ['platform_team', /platform team/],
-    ['family_law_practice', /family law practice/],
-    ['concierge_service', /concierge/],
+  // Signal paired with the segment whose motion it belongs to.
+  const cases: Array<[string, RegExp, 'EMPLOYEE_GIFTING'|'WEALTH_CLIENT'|'VC_PLATFORM'|'LAW_PROFESSIONAL']> = [
+    ['parental_leave_benefit', /paid parental leave policy/, 'EMPLOYEE_GIFTING'],
+    ['family_office', /family office/, 'WEALTH_CLIENT'],
+    ['platform_team', /platform team/, 'VC_PLATFORM'],
+    ['family_law_practice', /family law practice/, 'LAW_PROFESSIONAL'],
+    ['concierge_service', /concierge/, 'WEALTH_CLIENT'],
   ]
-  for (const [type, expect] of cases) {
-    const out = buildOpening({ company: 'Northgate Systems', segment: 'EMPLOYEE_GIFTING', signals: [sig(type)] })
+  for (const [type, expect, segment] of cases) {
+    const out = buildOpening({ company: 'Northgate Systems', segment, signals: [sig(type)] })
     assert.ok(out, `${type} should produce an opening`)
     assert.match(out!, /Northgate Systems/)
     assert.match(out!, expect)
@@ -53,9 +54,13 @@ test('every opening names the real company and states only the observed fact', (
 })
 
 test('openings survive the banned-content guard', () => {
-  const types = ['corporate_gifting_page', 'parental_leave_benefit', 'family_office', 'platform_team', 'estate_planning_practice']
-  for (const t of types) {
-    const out = buildOpening({ company: 'Acme', segment: 'EMPLOYEE_GIFTING', signals: [sig(t)] })!
+  const cases = [
+    ['corporate_gifting_page', 'EMPLOYEE_GIFTING'], ['parental_leave_benefit', 'EMPLOYEE_GIFTING'],
+    ['family_office', 'WEALTH_CLIENT'], ['platform_team', 'VC_PLATFORM'],
+    ['estate_planning_practice', 'LAW_PROFESSIONAL'],
+  ] as const
+  for (const [t, segment] of cases) {
+    const out = buildOpening({ company: 'Acme', segment, signals: [sig(t)] })!
     assert.equal(findBannedContent(out), null, `${t}: ${out}`)
   }
 })
@@ -162,4 +167,27 @@ test('QUALIFIED requires a deliverable address — grade C/D becomes contact res
     assert.equal(r.status, 'NEEDS_CONTACT_RESEARCH', `grade ${grade} must not be QUALIFIED`)
     assert.equal(r.draftEligible, false)
   }
+})
+
+test('the opening must match the segment motion, not just be the strongest signal', () => {
+  // Real incident: a wealth firm with an employee-recognition programme got
+  // "I saw CV Advisors runs an employee recognition programme" attached to a
+  // body pitching CLIENT gifting — two arguments in one email.
+  const wealthWithEmployeeSignal = buildOpening({
+    company: 'CV Advisors', segment: 'WEALTH_CLIENT',
+    signals: [sig('employee_recognition'), sig('people_hr_function')],
+  })
+  assert.equal(wealthWithEmployeeSignal, null, 'employee evidence cannot open a client-gifting email')
+
+  // The same signals are perfectly valid for the employee motion.
+  assert.ok(buildOpening({
+    company: 'CV Advisors', segment: 'EMPLOYEE_GIFTING',
+    signals: [sig('employee_recognition')],
+  }))
+
+  // And a wealth firm with wealth evidence still opens correctly.
+  assert.match(
+    buildOpening({ company: 'CV Advisors', segment: 'WEALTH_CLIENT', signals: [sig('family_office')] }) ?? '',
+    /family office/,
+  )
 })
