@@ -1,4 +1,4 @@
-import { CONTACT_EMAIL } from './site-config'
+import { CONTACT_EMAIL, RETURNS_SUMMARY } from './site-config'
 import { FREE_SHIPPING_THRESHOLD } from './products'
 
 // Shared customer-assistant system prompt, used by the on-site AI chat route
@@ -18,7 +18,7 @@ About Petite Lavande:
 
 Pre-curated boxes available at /boxes. Customers can build their own at /build.
 
-Returns: We accept returns within 14 days of delivery for unopened items. Email us to initiate.
+Returns: ${RETURNS_SUMMARY} Never offer a return window or a change-of-mind return.
 Orders: Customers can track at /track using their email and order reference.
 Accounts: Customers can create an account and view order history at /account
 Gift cards: Available at /gift-cards ($50, $100, $150, $200)

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useIsEs } from '@/lib/use-is-es'
 
 type Review = {
   id: string
@@ -171,6 +172,7 @@ function ReviewCarousel({ reviews }: { reviews: Review[] }) {
 }
 
 export function ReviewSection({ productId }: { productId: string }) {
+  const isEs = useIsEs()
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -256,7 +258,7 @@ export function ReviewSection({ productId }: { productId: string }) {
     <div id="reviews" className="mt-12 pt-10 border-t border-cream-200 scroll-mt-28">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h3 className="font-serif text-2xl text-espresso mb-1">Customer Reviews</h3>
+          <h3 className="font-serif text-2xl text-espresso mb-1">{isEs ? 'Opiniones de clientes' : 'Customer Reviews'}</h3>
           {reviews.length > 0 && (
             <div className="flex items-center gap-2">
               <StarRating value={Math.round(avgRating)} />
@@ -269,25 +271,25 @@ export function ReviewSection({ productId }: { productId: string }) {
             onClick={() => setShowForm(true)}
             className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 hover:text-bark-600 border border-cream-300 px-4 py-2 transition-colors"
           >
-            Write a Review
+            {isEs ? 'Escribir una opinión' : 'Write a Review'}
           </button>
         )}
       </div>
 
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-cream-100 border border-cream-300 p-6 mb-8 space-y-4">
-          <p className="font-serif text-lg text-bark-600 mb-4">Share Your Experience</p>
+          <p className="font-serif text-lg text-bark-600 mb-4">{isEs ? 'Comparte tu experiencia' : 'Share Your Experience'}</p>
           <div>
-            <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">Your Rating</p>
+            <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">{isEs ? 'Tu calificación' : 'Your Rating'}</p>
             <StarRating value={rating} onChange={setRating} />
           </div>
           <div>
-            <label className="block font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">Your Name</label>
-            <input required type="text" value={name} onChange={e => setName(e.target.value)} placeholder="First name or initials" className={inputClass} />
+            <label className="block font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">{isEs ? 'Tu nombre' : 'Your Name'}</label>
+            <input required type="text" value={name} onChange={e => setName(e.target.value)} placeholder={isEs ? 'Nombre o iniciales' : 'First name or initials'} className={inputClass} />
           </div>
           <div>
-            <label className="block font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">Your Review</label>
-            <textarea required rows={4} value={body} onChange={e => setBody(e.target.value)} placeholder="Tell others what you loved about this product..." className={`${inputClass} resize-none`} />
+            <label className="block font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">{isEs ? 'Tu opinión' : 'Your Review'}</label>
+            <textarea required rows={4} value={body} onChange={e => setBody(e.target.value)} placeholder={isEs ? 'Cuéntales qué te encantó de este producto…' : 'Tell others what you loved about this product…'} className={`${inputClass} resize-none`} />
           </div>
           <div>
             <label className="block font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">Add a Photo (optional)</label>
@@ -339,7 +341,7 @@ export function ReviewSection({ productId }: { productId: string }) {
       )}
 
       {loading ? (
-        <p className="font-sans text-sm text-bark-400">Loading reviews...</p>
+        <p className="font-sans text-sm text-bark-400">{isEs ? 'Cargando opiniones…' : 'Loading reviews…'}</p>
       ) : reviews.length === 0 ? (
         <p className="font-sans text-sm text-bark-400">No reviews yet — be the first!</p>
       ) : (

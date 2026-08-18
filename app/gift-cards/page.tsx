@@ -171,7 +171,7 @@ export default function GiftCardsPage() {
                 )}
                 <div className="mt-6 pt-6 border-t border-bark-600/60">
                   <p className="font-sans text-[11px] text-cream-200/90 leading-relaxed tracking-wide">
-                    Delivered instantly by email · Valid forever · Redeemable at checkout
+                    {isEs ? 'Se entrega al instante por correo electrónico · Sin vencimiento · Se canjea al pagar' : 'Delivered instantly by email · Valid forever · Redeemable at checkout'}
                   </p>
                 </div>
                 </div>

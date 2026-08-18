@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { CONTACT_EMAIL } from '@/lib/site-config'
+import { CONTACT_EMAIL, CANCELLATION_WINDOW_HOURS } from '@/lib/site-config'
 
 export const metadata: Metadata = {
   title: 'Returns & Refund Policy',
@@ -27,7 +27,7 @@ export default function ReturnsPage() {
       </Section>
 
       <Section title="Change of Mind Returns">
-        Because each box is assembled to order, we are unable to accept returns for change of mind once your box has been shipped. If you need to cancel, please contact us within <strong>24 hours</strong> of placing your order.
+        Because each box is assembled to order, we are unable to accept returns for change of mind once your box has been shipped. If you need to cancel, please contact us within <strong>{CANCELLATION_WINDOW_HOURS} hours</strong> of placing your order.
       </Section>
 
       <Section title="Return Shipping">

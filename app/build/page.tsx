@@ -597,8 +597,10 @@ export default function BuildPage() {
             <div className="shrink-0 px-6 pt-4 pb-3 border-b border-cream-100">
               <p className="font-sans text-[11px] text-center text-bark-500 mb-3">
                 {earned
-                  ? 'Congratulations — you earned free shipping!'
-                  : <><span className="text-bark-600 font-medium">{formatPrice(remaining)}</span> away from free shipping</>
+                  ? (isEs ? '¡Felicidades — tu envío es gratis!' : 'Congratulations — you earned free shipping!')
+                  : isEs
+                    ? <>Te faltan <span className="text-bark-600 font-medium">{formatPrice(remaining)}</span> para obtener envío gratis.</>
+                    : <><span className="text-bark-600 font-medium">{formatPrice(remaining)}</span> away from free shipping</>
                 }
               </p>
               <div className="relative h-1.5 rounded-full bg-cream-200 border border-cream-300 mx-1">
@@ -617,7 +619,7 @@ export default function BuildPage() {
         {/* Items list */}
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           {!hasItems ? (
-            <p className="font-sans text-xs text-bark-400/60 tracking-wide text-center pt-10">Your box is empty — add items to get started.</p>
+            <p className="font-sans text-xs text-bark-400/60 tracking-wide text-center pt-10">{isEs ? 'Tu caja está vacía — añade productos para empezar.' : 'Your box is empty — add items to get started.'}</p>
           ) : (
             selectedList.map(product => {
               const src = product.image ?? (SUPABASE_URL

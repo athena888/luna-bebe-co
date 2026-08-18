@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { CONTACT_EMAIL } from '@/lib/site-config'
+import { CONTACT_EMAIL, CANCELLATION_WINDOW_HOURS } from '@/lib/site-config'
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
@@ -35,7 +35,7 @@ export default function TermsPage() {
       </Section>
 
       <Section title="6. Cancellations">
-        Orders may be cancelled within 2 hours of placement by contacting us immediately. Because each box is assembled by hand, we cannot cancel orders once assembly has begun.
+        Orders may be cancelled within {CANCELLATION_WINDOW_HOURS} hours of placement by contacting us immediately. Because each box is assembled by hand, we cannot cancel orders once assembly has begun.
       </Section>
 
       <Section title="7. Returns & Refunds">
