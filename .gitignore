@@ -31,3 +31,6 @@ scripts/out/
 
 # targeting-v2 dry-run output
 outreach-preview/
+
+# scratch artifacts
+*.tmp
