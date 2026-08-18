@@ -138,7 +138,7 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
     if (sentToday.has(to)) { await skip('already emailed today (stays queued)', false); continue }
     if (!(await hasMx(emailDomain(to)))) { await skip('no MX record (would bounce)'); continue }
 
-    const body = withFooter(r.draft.body)   // CAN-SPAM footer at send time, never in the draft
+    const body = withFooter(r.draft.body, to)   // CAN-SPAM footer at send time, never in the draft
     if (dry) { stats.sent++; if (isPress) pressSent++; sentToday.add(to); continue }
 
     try {

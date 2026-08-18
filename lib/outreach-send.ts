@@ -88,7 +88,7 @@ export async function planOutreach(
 
     // For previews, show a representative code instead of the raw {{code}} token
     // (no real Stripe code is minted until an actual send).
-    let body = withFooter(rendered.result.body)
+    let body = withFooter(rendered.result.body, email)
     if (opts.sampleCode) body = fillCode(body, 'PL30-SAMPLE')
 
     planned.push({

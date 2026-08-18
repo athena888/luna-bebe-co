@@ -28,3 +28,6 @@ npm-debug.log*
 # Generated docs / one-off artifacts
 *.pdf
 scripts/out/
+
+# targeting-v2 dry-run output
+outreach-preview/

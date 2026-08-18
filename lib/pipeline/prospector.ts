@@ -100,7 +100,7 @@ Return a JSON array of objects with exactly these keys:
 const EMAIL_RE = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi
 const PAGES = ['', '/contact', '/contact-us', '/about', '/about-us', '/press', '/team']
 
-async function findPublishedEmail(domain: string, personName: string): Promise<string | null> {
+export async function findPublishedEmail(domain: string, personName: string): Promise<string | null> {
   const first = personName.split(/\s+/)[0]?.toLowerCase() ?? ''
   const found = new Set<string>()
   for (const path of PAGES) {

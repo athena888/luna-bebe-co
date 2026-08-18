@@ -1,12 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { verifyUnsubscribeToken } from '@/lib/unsubscribe'
+import { addSuppression } from '@/lib/outreach'
 
 // One-click unsubscribe from customer flow emails (linked in every flow email
 // footer + RFC 8058 List-Unsubscribe headers). Signed link — see lib/unsubscribe.ts.
+// k=o marks a COLD OUTREACH link: the address also goes onto the permanent
+// outreach suppression list (never contacted again), not just flow opt-outs.
+async function suppressOutreach(email: string): Promise<void> {
+  await addSuppression(email, 'stop')
+  await supabaseAdmin.from('prospects')
+    .update({ status: 'suppressed', updated_at: new Date().toISOString() })
+    .eq('email', email)
+}
+
 export async function GET(req: NextRequest) {
   const email = (req.nextUrl.searchParams.get('e') || '').trim().toLowerCase()
   const token = req.nextUrl.searchParams.get('t') || ''
+  const isOutreach = req.nextUrl.searchParams.get('k') === 'o'
 
   const page = (title: string, body: string, status = 200) => new NextResponse(
     `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title></head>
@@ -33,6 +44,8 @@ export async function GET(req: NextRequest) {
     return page('Something went wrong', 'We couldn’t process that just now. Reply to any of our emails and we’ll unsubscribe you by hand.', 500)
   }
 
+  if (isOutreach) await suppressOutreach(email).catch(e => console.error('outreach suppression failed:', e))
+
   return page('You’re unsubscribed', 'You won’t receive any more marketing emails from us. Order and shipping confirmations still arrive as usual.')
 }
 
@@ -48,5 +61,8 @@ export async function POST(req: NextRequest) {
     .from('email_optouts')
     .upsert({ email, source: 'one-click' }, { onConflict: 'email' })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (req.nextUrl.searchParams.get('k') === 'o') {
+    await suppressOutreach(email).catch(e => console.error('outreach suppression failed:', e))
+  }
   return NextResponse.json({ ok: true })
 }

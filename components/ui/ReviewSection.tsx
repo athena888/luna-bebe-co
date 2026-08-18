@@ -124,7 +124,7 @@ function ReviewCarousel({ reviews }: { reviews: Review[] }) {
               <div className="h-full flex flex-col border border-cream-200 bg-cream-50/50 overflow-hidden">
                 {r.image_url && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={r.image_url} alt={`Photo from ${r.customer_name}'s review`} className="w-full h-32 object-cover shrink-0" />
+                  <img src={r.image_url} alt={`Photo from ${r.customer_name}'s review`} className="w-full aspect-[4/3] object-contain bg-cream-100 shrink-0" />
                 )}
                 <div className="flex-1 min-h-0 p-5 flex flex-col">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">

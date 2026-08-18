@@ -141,7 +141,7 @@ export async function runDrafter(opts: { dry?: boolean; timeBudgetMs?: number } 
 
 const PRESS_FOLLOWUP_AFTER_DAYS = 7   // press waits a little longer (7–10 day window)
 
-async function draftFollowups(templates: PipelineTemplate[], dry: boolean, deadline: number): Promise<number> {
+export async function draftFollowups(templates: PipelineTemplate[], dry: boolean, deadline: number): Promise<number> {
   const tpl = templates.find(t => t.key === 'followup')
   const pressTpl = templates.find(t => t.key === 'press-followup')
   if (!tpl && !pressTpl) return 0

@@ -2,6 +2,7 @@
 // Rendering FAILS (returns null) if any {{field}} is left unresolved, so we never
 // send "Hi {{first_name}}". Every send appends a CAN-SPAM footer (postal address
 // + opt-out) built from BUSINESS_ADDRESS.
+import { unsubscribeUrl } from './unsubscribe'
 
 export type OutreachTrack = 'A' | 'C'
 
@@ -81,8 +82,13 @@ export function renderTemplate(tpl: OutreachTemplate, fields: MergeFields): { ok
 
 // CAN-SPAM footer: a contact email, a physical postal address (legally required
 // for commercial email — use a PO Box in BUSINESS_ADDRESS to keep a home address
-// private), and a clear opt-out. Appended to every send.
-export function withFooter(body: string): string {
+// private), and a clear opt-out. Appended to every send. When the recipient is
+// known, a signed one-click unsubscribe link is included (k=o routes it to the
+// outreach suppression list, not just the customer-flow opt-outs).
+export function withFooter(body: string, recipientEmail?: string): string {
   const address = (process.env.BUSINESS_ADDRESS || 'Petite Lavande LLC').replace(/[\r\n]+/g, ', ')
-  return `${body}\n\n—\nhello@petitelavande.com\n${address}\nReply STOP to opt out and we won't email you again.`
+  const unsub = recipientEmail
+    ? `Unsubscribe: ${unsubscribeUrl(recipientEmail)}&k=o\nOr reply STOP and we won't email you again.`
+    : `Reply STOP to opt out and we won't email you again.`
+  return `${body}\n\n—\nhello@petitelavande.com\n${address}\n${unsub}`
 }
