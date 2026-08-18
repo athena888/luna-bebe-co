@@ -14,6 +14,7 @@ import { BagDrawer } from '@/components/ui/BagDrawer'
 // opens the bag drawer in place; elsewhere it goes to the Shopping Bag.
 function CartButton({ light }: { light: boolean }) {
   const pathname = usePathname()
+  const isEs = useIsEs()
   const [count, setCount] = useState(0)
   useEffect(() => {
     const update = () => setCount(cartCount())
@@ -31,7 +32,10 @@ function CartButton({ light }: { light: boolean }) {
 
   return (
     <Link
-      href="/checkout"
+      // The click opens the drawer, so this href is the no-JS / crawler path —
+      // and it sent Spanish visitors to the English checkout. /es/checkout
+      // re-exports the same component, so the Spanish route is a real page.
+      href={isEs ? '/es/checkout' : '/checkout'}
       onClick={e => { e.preventDefault(); window.dispatchEvent(new Event('pl:open-bag')) }}
       className={`relative w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50 hover:text-white' : 'text-gold-500 hover:text-espresso'}`}
       title="Shopping bag"
