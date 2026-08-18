@@ -152,7 +152,10 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
           <p className="font-sans text-[12px] tracking-[0.18em] uppercase font-bold text-[#7A8E7C] mb-4">{s('story.eyebrow', 'Our Story')}</p>
           <h2 className="font-playfair text-2xl sm:text-3xl text-espresso leading-snug max-w-2xl mx-auto mb-6">{s('story.heading', story.hero.heading)}</h2>
           <Link
-            href="/story"
+            // A Spanish reader clicking "Lee nuestra historia" landed on the
+            // ENGLISH story page, even though /es/historia exists and the
+            // footer already linked it correctly.
+            href={isEs ? '/es/historia' : '/story'}
             className="inline-block font-sans text-[12px] tracking-[0.18em] uppercase text-espresso border-b border-espresso pb-1 hover:text-gold-500 hover:border-gold-500 transition-colors"
           >
             {s('story.cta', 'Read Our Story')}

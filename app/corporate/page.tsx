@@ -6,6 +6,7 @@ import { SlotImage } from '@/components/ui/SlotImage'
 import { HandHeart, Leaf, Phone } from 'lucide-react'
 import { ScrollFlyIn } from '@/components/ui/ScrollFlyIn'
 import { CONTACT_EMAIL } from '@/lib/site-config'
+import { ogImages } from '@/lib/og-image'
 import { CorporateForm } from './CorporateForm'
 
 // Closing line at the bottom of the three-points band — the low-friction
@@ -22,16 +23,24 @@ function ContactLine({ className = '', olive = false }: { className?: string; ol
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
-export const metadata: Metadata = {
-  title: { absolute: 'Corporate Baby Gifts for Employees | Petite Lavande' },
-  description: "Thoughtful organic newborn gift boxes for your employees' growing families. Hand-packed, traceable, delivered. Volume pricing for People & HR teams.",
-  alternates: { canonical: `${BASE}/corporate` },
-  openGraph: {
-    title: 'Corporate & Team Baby Gifts',
-    description: "Thoughtful organic newborn gift boxes for your employees' growing families. Hand-packed, traceable, delivered. Volume pricing for People & HR teams.",
-    url: `${BASE}/corporate`,
-    type: 'website',
-  },
+const DESCRIPTION = "Thoughtful organic newborn gift boxes for your employees' growing families. Hand-packed, traceable, delivered. Volume pricing for People & HR teams."
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: { absolute: 'Corporate Baby Gifts for Employees | Petite Lavande' },
+    description: DESCRIPTION,
+    alternates: { canonical: `${BASE}/corporate` },
+    openGraph: {
+      title: 'Corporate & Team Baby Gifts',
+      description: DESCRIPTION,
+      url: `${BASE}/corporate`,
+      type: 'website',
+      // Declaring openGraph drops the root layout's image, so this page had
+      // none at all — it shared as a bare link. Uses the corporate hero if one
+      // is uploaded, else the brand default.
+      images: await ogImages('corporate.hero_bg'),
+    },
+  }
 }
 
 const POINTS = [
@@ -63,7 +72,14 @@ function Points({ className = '', variant = 'photo' }: { className?: string; var
         <ScrollFlyIn key={title} from="up" delay={i * 160}>
           <Icon size={26} strokeWidth={1.5} className={`${olive ? 'text-white' : 'text-gold-300'} mx-auto mb-4`} />
           <div className={`w-8 h-px ${olive ? 'bg-white/70' : 'bg-gold-400'} mb-5 mx-auto`} />
-          <h2 className={`font-serif text-xl ${olive ? 'text-white' : 'text-cream-50'} mb-3 leading-snug`}>{title}</h2>
+          {/* The desktop and mobile bands are mutually exclusive (hidden md:block
+              / md:hidden), so a visitor never sees these twice — but BOTH are in
+              the HTML, which gave the document six <h2>s for three points. The
+              phone copy renders the same text as a <p>, so the outline has one
+              heading per point while the page looks identical. */}
+          {olive
+            ? <p className="font-serif text-xl text-white mb-3 leading-snug">{title}</p>
+            : <h2 className="font-serif text-xl text-cream-50 mb-3 leading-snug">{title}</h2>}
           <p className={`${olive ? 'font-playfair text-[15px] text-white/95' : 'font-sans text-sm text-cream-100/85'} leading-relaxed`}>{body}</p>
         </ScrollFlyIn>
       ))}

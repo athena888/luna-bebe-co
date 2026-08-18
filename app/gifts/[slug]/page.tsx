@@ -7,6 +7,7 @@ import { JsonLd } from '@/components/ui/JsonLd'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { LANDING_PAGES } from '@/lib/landing-pages'
 import { getLandingContent } from '@/lib/landing-content'
+import { ogImages } from '@/lib/og-image'
 import { getCatalog } from '@/lib/products-db'
 import { CATEGORY_LABELS } from '@/lib/products'
 import { supabaseAdmin } from '@/lib/supabase'
@@ -36,7 +37,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     description: lp.metaDescription,
     keywords: [lp.keyword],
     alternates: { canonical: url },
-    openGraph: { title: lp.title, description: lp.metaDescription, url, type: 'website' },
+    // Same trap as /corporate: declaring openGraph drops the root image, so
+    // all 15 guides shared with none. Prefers the guide's own hero slot.
+    openGraph: { title: lp.title, description: lp.metaDescription, url, type: 'website', images: await ogImages(`gifts.${lp.slug}.hero`) },
     twitter: { card: 'summary_large_image' },
   }
 }
