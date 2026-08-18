@@ -3,6 +3,7 @@ import { runProspector } from '@/lib/pipeline/prospector'
 import { runPressProspector } from '@/lib/pipeline/press-prospector'
 import { runProspectorV2 } from '@/lib/outreach/prospector-v2'
 import { getConfig } from '@/lib/pipeline/config'
+import { runCycleV3 } from '@/lib/outreach/cycle-v3'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
@@ -30,9 +31,16 @@ export async function GET(req: NextRequest) {
     const stats = v2
       ? await runProspectorV2({ dry, timeBudgetMs: 160_000 })
       : await runProspector({ dry, timeBudgetMs: 160_000 })
+    // v3 cycle: enrich → qualify → discover contacts. This is what makes the
+    // quality layer actually run on a schedule; without it the v3 modules only
+    // ever executed by hand from scripts/. Runs AFTER discovery so tonight's
+    // finds are enriched and scored in the same pass. Fail-soft: a research
+    // error must never take down discovery.
+    const cycle = await runCycleV3({ dry })
+      .catch(e => { console.error('v3 cycle failed:', e); return null })
     const press = await runPressProspector({ dry, startedAt: started, timeBudgetMs: 260_000 })
       .catch(e => { console.error('press prospector failed:', e); return null })
-    return NextResponse.json({ ok: true, mode: v2 ? 'v2' : 'v1', ...stats, press })
+    return NextResponse.json({ ok: true, mode: v2 ? 'v2' : 'v1', ...stats, cycle, press })
   } catch (e) {
     console.error('outreach-prospect cron error:', e)
     return NextResponse.json({ error: e instanceof Error ? e.message : 'Prospector failed' }, { status: 500 })

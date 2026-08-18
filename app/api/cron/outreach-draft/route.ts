@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { runDrafter } from '@/lib/pipeline/drafter'
 import { runPressDrafter } from '@/lib/pipeline/press-drafter'
 import { runDrafterV2 } from '@/lib/outreach/drafter-v2'
+import { runDrafterV3 } from '@/lib/outreach/drafter-v3'
 import { runReplyTriage } from '@/lib/outreach/reply-triage'
 import { maybeSendWeeklySummary } from '@/lib/outreach/metrics'
 import { getConfig } from '@/lib/pipeline/config'
@@ -36,10 +37,16 @@ export async function GET(req: NextRequest) {
     // No-ops safely when gmail.readonly has not been granted.
     const sync = await runGmailSync({ dry })
       .catch(e => { console.error('gmail sync failed:', e); return null })
+    // v3 takes precedence: it drafts ONLY prospects passing every hard gate,
+    // ranked by tier and score rather than FIFO. v2/v1 remain as fallbacks, so
+    // turning the flag off restores the previous behaviour exactly.
+    const v3 = (await getConfig<{ drafting_enabled?: boolean }>('quality_v3'))?.drafting_enabled === true
     const v2 = (await getConfig<{ enabled?: boolean }>('targeting_v2'))?.enabled === true
-    const stats = v2
-      ? await runDrafterV2({ dry, timeBudgetMs: 200_000 })
-      : await runDrafter({ dry, timeBudgetMs: 200_000 })
+    const stats = v3
+      ? await runDrafterV3({ dry })
+      : v2
+        ? await runDrafterV2({ dry, timeBudgetMs: 200_000 })
+        : await runDrafter({ dry, timeBudgetMs: 200_000 })
     const triage = v2
       ? await runReplyTriage({ dry }).catch(e => { console.error('reply triage failed:', e); return null })
       : null
@@ -48,7 +55,7 @@ export async function GET(req: NextRequest) {
       : null
     const press = await runPressDrafter({ dry, deadline: started + 270_000 })
       .catch(e => { console.error('press drafter failed:', e); return null })
-    return NextResponse.json({ ok: true, mode: v2 ? 'v2' : 'v1', ...stats, sync, triage, weekly, press })
+    return NextResponse.json({ ok: true, mode: v3 ? 'v3' : v2 ? 'v2' : 'v1', ...stats, sync, triage, weekly, press })
   } catch (e) {
     console.error('outreach-draft cron error:', e)
     return NextResponse.json({ error: e instanceof Error ? e.message : 'Drafter failed' }, { status: 500 })
