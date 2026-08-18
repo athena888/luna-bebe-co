@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { getCatalogProduct, getProductStock } from '@/lib/products-db'
 import { CATEGORY_LABELS } from '@/lib/products'
 import { JsonLd } from '@/components/ui/JsonLd'
-import { SPANISH_ACTIVE } from '@/lib/i18n'
+import { SPANISH_ACTIVE, esProductComplete } from '@/lib/i18n'
 import ProductDetailClient from './ProductDetailClient'
 import { getCatalog } from '@/lib/products-db'
 import type { RelatedItem } from '@/components/ui/RelatedProducts'
@@ -23,6 +23,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   // seo_title is a complete tag → use absolute so the "| Petite Lavande" template doesn't double up.
   const description = (p.seo_description || p.description || `${p.name} — a premium organic baby gift from Petite Lavande.`).slice(0, 155)
   const img = productImage(p)
+  // Only claim a Spanish alternate once that page is actually translated —
+  // otherwise /es/productos/<id> serves English copy and the pair is a
+  // duplicate, not a locale variant. Same gate the sitemap applies.
+  const esLive = SPANISH_ACTIVE && await esProductComplete(id)
   return {
     // Names that already carry the brand skip the "| Petite Lavande" template
     // suffix (Bing "title too long": brand doubled to 73 chars on such names).
@@ -30,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     description,
     alternates: {
       canonical: url,
-      ...(SPANISH_ACTIVE ? { languages: { en: url, 'es-US': `${BASE}/es/productos/${id}`, 'x-default': url } } : {}),
+      ...(esLive ? { languages: { en: url, 'es-US': `${BASE}/es/productos/${id}`, 'x-default': url } } : {}),
     },
     openGraph: {
       title: `${p.name} | Petite Lavande`,

@@ -112,3 +112,19 @@ export async function translationCoverage(entityType: string, required: string[]
   }
   return { complete, fallingBack }
 }
+
+/**
+ * Fields a product needs before /es/productos/<id> is a real translation
+ * rather than an English fallback. Below this bar the page still renders (the
+ * route is reachable and the description falls back to English), but it must
+ * not be listed in the sitemap, must not be advertised as an es-US alternate,
+ * and must not be indexed — otherwise it is a near-duplicate of the English
+ * page sitting on a Spanish URL.
+ */
+export const ES_PRODUCT_REQUIRED = ['description']
+
+/** Single-id form of translationCoverage() for the two product routes. */
+export async function esProductComplete(id: string): Promise<boolean> {
+  const { complete } = await translationCoverage('product', ES_PRODUCT_REQUIRED, [id])
+  return complete.length > 0
+}

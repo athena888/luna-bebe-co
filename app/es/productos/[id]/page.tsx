@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { JsonLd } from '@/components/ui/JsonLd'
 import ProductDetailClient from '@/app/products/[id]/ProductDetailClient'
 import { getCatalog, getCatalogProduct, getProductStock } from '@/lib/products-db'
-import { getTranslations } from '@/lib/i18n'
+import { getTranslations, ES_PRODUCT_REQUIRED } from '@/lib/i18n'
 import type { RelatedItem } from '@/components/ui/RelatedProducts'
 
 export const dynamic = 'force-dynamic'
@@ -28,14 +28,21 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const p = await getCatalogProduct(id)
   if (!p || !p.active) return {}
   const es = (await getTranslations('product', [id])).get(id) ?? {}
+  // Below the translation bar this route still renders (the description falls
+  // back to English), but it must not advertise itself as the es-US alternate
+  // or get indexed — that would put a near-duplicate of the English page on a
+  // Spanish URL. Same gate the sitemap applies.
+  const translated = ES_PRODUCT_REQUIRED.every(f => es[f])
   return {
     // Skip the "| Petite Lavande" template suffix when the name already
     // carries the brand (same doubled-title fix as the EN page).
     title: /petite lavande/i.test(p.name) ? { absolute: p.name } : p.name,
     description: (es.description ?? p.description ?? '').slice(0, 155),
+    ...(translated ? {} : { robots: { index: false, follow: true } }),
     alternates: {
       canonical: `/es/productos/${id}`,
-      languages: { en: `/products/${id}`, 'es-US': `/es/productos/${id}`, 'x-default': `/products/${id}` },
+      ...(translated
+        ? { languages: { en: `/products/${id}`, 'es-US': `/es/productos/${id}`, 'x-default': `/products/${id}` } } : {}),
     },
   }
 }

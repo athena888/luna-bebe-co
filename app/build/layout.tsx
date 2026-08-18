@@ -1,12 +1,19 @@
 import type { Metadata } from 'next'
 import { getSiteImages } from '@/lib/site-images'
 import { getScrims } from '@/lib/scrims'
+import { SPANISH_ACTIVE } from '@/lib/i18n'
 
 export const metadata: Metadata = {
   title: 'Build Your Own Organic Baby Gift Box',
   description: 'Curate your own luxury baby gift box — choose soft organic-cotton clothing, gentle botanical care, keepsakes and a mama gift, then add a personalized printed card. Built item by item, finished by hand.',
   openGraph: { title: 'Build Your Own Organic Baby Gift Box | Petite Lavande', description: 'Choose swaddles, garments, bath & body, keepsakes and mama gifts — then add a personalized printed card.' },
-  alternates: { canonical: '/build' },
+  alternates: {
+    canonical: '/build',
+    // /es/build already points back here; hreflang only counts when both
+    // sides declare the pair.
+    ...(SPANISH_ACTIVE
+      ? { languages: { en: '/build', 'es-US': '/es/build', 'x-default': '/build' } } : {}),
+  },
 }
 
 // Fresh hero data on every request so a re-uploaded photo shows immediately.

@@ -15,6 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/boxes`,       lastModified: now, changeFrequency: 'weekly',  priority: 0.9 },
     { url: `${base}/journal`,     lastModified: now, changeFrequency: 'weekly',  priority: 0.7 },
     { url: `${base}/story`,       lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${base}/our-cotton`,  lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${base}/gift-cards`,  lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${base}/corporate`,   lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${base}/same-day-delivery`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
@@ -49,7 +50,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   } catch { /* §42 not run yet */ }
   // Spanish locale — only when live, only pages with complete translations.
   try {
-    const { SPANISH_ACTIVE, getTranslations } = await import('@/lib/i18n')
+    const { SPANISH_ACTIVE, translationCoverage, ES_PRODUCT_REQUIRED } = await import('@/lib/i18n')
     if (SPANISH_ACTIVE) {
       urls.push({ url: `${base}/es`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 })
       urls.push({ url: `${base}/es/legal/devoluciones`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 })
@@ -57,16 +58,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       urls.push({ url: `${base}/es/canastillas`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 })
       urls.push({ url: `${base}/es/tarjetas-regalo`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 })
       urls.push({ url: `${base}/es/build`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 })
+      urls.push({ url: `${base}/es/nuestro-algodon`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 })
       const { getLiveCollections } = await import('@/lib/collections')
       for (const c of await getLiveCollections()) {
         urls.push({ url: `${base}/es/colecciones/${c.slug}`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 })
       }
       const products = await getCatalog({ activeOnly: true })
-      const t = await getTranslations('product', products.map(p => p.id))
-      for (const p of products) {
-        if (t.get(p.id)?.description) {
-          urls.push({ url: `${base}/es/productos/${p.id}`, lastModified: now, changeFrequency: 'weekly', priority: 0.6 })
-        }
+      const { complete } = await translationCoverage('product', ES_PRODUCT_REQUIRED, products.map(p => p.id))
+      for (const id of complete) {
+        urls.push({ url: `${base}/es/productos/${id}`, lastModified: now, changeFrequency: 'weekly', priority: 0.6 })
       }
     }
   } catch { /* §44 not run yet */ }
