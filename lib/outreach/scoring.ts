@@ -17,7 +17,7 @@ import {
   type SignalType, type QualificationStatus,
   SEGMENTS, SIGNAL_WEIGHTS, gradeRole, roleFamilyForTitle,
   isGenericEmail, isHedgedTitle, splitTitle, recurringPotential, bandMidpoint,
-  looksLikeRoleNotName,
+  looksLikeRoleNotName, looksLikeMachineAddress,
 } from './icp.ts'
 
 export type Confidence = 'HIGH' | 'MEDIUM' | 'LOW'
@@ -215,13 +215,18 @@ function scoreContactFit(
   }
 
   // HARD FAIL — generic inbox, unless a human approved the exception (§8).
-  const emailIsGeneric = isGenericEmail(input.email)
+  // A machine/relay address reaches no human, so it fails for the same reason
+  // a role inbox does — there is no direct path to the named person.
+  const machine = looksLikeMachineAddress(input.email)
+  const emailIsGeneric = isGenericEmail(input.email) || machine
   if (emailIsGeneric) {
     if (input.genericOverrideApproved) {
       reasons.push('Generic inbox accepted under an explicit manual override')
     } else {
       hardFail = true
-      disq.push(`Generic inbox (${(input.email || '').split('@')[0]}@) — no direct path to the named person`)
+      disq.push(machine
+        ? `Machine-generated address (${(input.email || '').split('@')[0]}@…) — reaches no human`
+        : `Generic inbox (${(input.email || '').split('@')[0]}@) — no direct path to the named person`)
     }
   } else if (input.email) {
     points += 10

@@ -267,6 +267,31 @@ export function isGenericEmail(email: string | null | undefined): boolean {
   return /^(info|hello|contact|office|admin|team|sales|support)\d*$/.test(normalized)
 }
 
+// ── Machine-generated addresses (hard gate) ─────────────────────────────────
+// The published-email scraper grades any address found on a company's own site
+// as A, including machine addresses that reach no human. A real example:
+//   015d5ce7dd3142cd8fca094a50adbf69@d.dropbox.com
+// picked up for a Chief People Officer. It is not a role account, so the
+// generic-inbox check misses it entirely — it is a relay/tracking hash.
+export function looksLikeMachineAddress(email: string | null | undefined): boolean {
+  const e = (email || '').toLowerCase().trim()
+  const [local, domain] = e.split('@')
+  if (!local || !domain) return false
+
+  // A long hex run is the classic generated-identifier shape.
+  if (/^[0-9a-f]{16,}$/.test(local)) return true
+  // UUID, with or without dashes.
+  if (/^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$/.test(local)) return true
+  // Long, vowel-free and unpronounceable — no human picks this.
+  if (local.length >= 14 && !/[aeiou]/.test(local.replace(/[._-]/g, ''))) return true
+  // Mostly digits.
+  if (local.length >= 10 && (local.replace(/\D/g, '').length / local.length) > 0.6) return true
+  // Bounce/relay subdomains used by transactional infrastructure.
+  if (/^(d|em|mail|bounce|bounces|reply|replies|mailer|smtp|notifications?|no-?reply)\./.test(domain)) return true
+
+  return false
+}
+
 // ── Hedged-contact detection (§9, hard gate) ─────────────────────────────────
 // The old prospector wrote its own uncertainty into the title field, e.g.
 // "CFO (closest to Platform/Operations lead)". Those must never auto-draft.

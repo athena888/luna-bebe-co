@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { Loader, Check, CheckCheck, SkipForward, Ban, ExternalLink, RefreshCw, BookOpen, AlertTriangle, Gauge, Newspaper, ChevronDown, ChevronRight, Trash2, Trophy } from 'lucide-react'
 import { PressOutreach } from '@/components/portal/PressOutreach'
+import { OutreachDashboard } from '@/components/portal/OutreachDashboard'
 
 // Morning review — one page, review pre-drafted cold emails over coffee.
 // Approve & queue / Edit (saves on approve) / Skip (recycle) / Reject (suppress).
@@ -547,6 +548,8 @@ export default function ReviewPage() {
           </div>
         </div>
       )}
+
+      <OutreachDashboard />
 
       {/* Queue */}
       {loading ? (

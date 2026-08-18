@@ -100,7 +100,7 @@ test('openings differ across segments so the copy is never one-size-fits-all', (
 // The v1 prospector stored real rows with person_name = "People Operations
 // Manager". That is a role, not a person: we do not know who we are writing to.
 import { scoreProspect, type ScoringInput } from './scoring.ts'
-import { looksLikeRoleNotName } from './icp.ts'
+import { looksLikeRoleNotName, looksLikeMachineAddress } from './icp.ts'
 
 test('role strings stored as names are detected', () => {
   for (const bad of [
@@ -190,4 +190,31 @@ test('the opening must match the segment motion, not just be the strongest signa
     buildOpening({ company: 'CV Advisors', segment: 'WEALTH_CLIENT', signals: [sig('family_office')] }) ?? '',
     /family office/,
   )
+})
+
+test('machine-generated addresses reach no human and cannot qualify', () => {
+  // Real row: a Chief People Officer "reachable" at a Dropbox relay hash.
+  for (const bad of [
+    '015d5ce7dd3142cd8fca094a50adbf69@d.dropbox.com',
+    'a3f9c1e4b7d24a8e@example.com',
+    '550e8400-e29b-41d4-a716-446655440000@example.com',
+    'noreply@mail.example.com',
+    'x7k9m2p4q8w1z5@example.com',
+  ]) assert.equal(looksLikeMachineAddress(bad), true, `${bad} should be machine-generated`)
+
+  for (const good of [
+    'melanie.collins@dropbox.com', 'jeri@justworks.com',
+    'a.chen@example.com', 'skip.schipper@yext.com',
+  ]) assert.equal(looksLikeMachineAddress(good), false, `${good} should be a real address`)
+
+  const r = scoreProspect({
+    segment: 'EMPLOYEE_GIFTING', company: 'Dropbox', domain: 'dropbox.com',
+    title: 'Chief People Officer', personName: 'Melanie Collins',
+    email: '015d5ce7dd3142cd8fca094a50adbf69@d.dropbox.com', emailGrade: 'A',
+    sizeBand: '1001-5000', sizeConfidence: 'HIGH',
+    officialSourceEvidence: true, researchAgeDays: 0,
+    signals: [{ signal_type: 'parental_leave_benefit', confidence: 'HIGH' }],
+  })
+  assert.equal(r.draftEligible, false, 'a relay hash must never be draftable')
+  assert.equal(r.status, 'NEEDS_CONTACT_RESEARCH')
 })
