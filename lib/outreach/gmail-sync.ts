@@ -133,6 +133,38 @@ export async function runGmailSync(opts: { dry?: boolean; limit?: number } = {})
   const gmail = readClient()
   const ourDomain = emailDomain(gmailSender())
 
+  // Backfill thread ids for sends made BEFORE gmail_thread_id existed.
+  // The historical 75 recorded only gmail_message_id, so without this they are
+  // invisible to the sync and their replies/bounces can never be measured.
+  // A message id resolves to its thread, so the history is recoverable.
+  if (!dry) {
+    const { data: legacy } = await supabaseAdmin.from('sends')
+      .select('id, gmail_message_id, draft:email_drafts!inner(prospect:prospects!inner(email))')
+      .eq('status', 'sent')
+      .is('gmail_thread_id', null)
+      .not('gmail_message_id', 'is', null)
+      .limit(300)
+
+    for (const row of ((legacy ?? []) as unknown as Array<{
+      id: string; gmail_message_id: string; draft: { prospect: { email: string | null } }
+    }>)) {
+      try {
+        const msg = await gmail.users.messages.get({
+          userId: 'me', id: row.gmail_message_id, format: 'metadata',
+        })
+        const threadId = msg.data.threadId
+        if (!threadId) continue
+        await supabaseAdmin.from('sends').update({
+          gmail_thread_id: threadId,
+          recipient_email: row.draft?.prospect?.email?.toLowerCase() ?? null,
+        }).eq('id', row.id)
+      } catch (e) {
+        // A message deleted from the mailbox simply stays unmeasurable.
+        stats.errors.push(`thread backfill ${row.id}: ${e instanceof Error ? e.message : String(e)}`)
+      }
+    }
+  }
+
   // Sends that have a thread and no terminal outcome recorded yet.
   const { data } = await supabaseAdmin.from('sends')
     .select('id, gmail_thread_id, gmail_message_id, recipient_email, sent_at, draft:email_drafts!inner(prospect:prospects!inner(id, email, status))')
