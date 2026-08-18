@@ -156,7 +156,19 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
     if (sentToday.has(to)) { await skip('already emailed today (stays queued)', false); continue }
     if (!(await hasMx(emailDomain(to)))) { await skip('no MX record (would bounce)'); continue }
 
-    const body = withFooter(r.draft.body, to)   // CAN-SPAM footer at send time, never in the draft
+    // CAN-SPAM footer at send time, never in the draft.
+    //
+    // withFooter() falls back to the bare string "Petite Lavande LLC" when
+    // BUSINESS_ADDRESS is unset — a company name is NOT a physical postal
+    // address, so that fallback would ship a non-compliant commercial email.
+    // Refuse instead: a missing address is a configuration error, and the
+    // right failure is to send nothing.
+    const postal = (process.env.BUSINESS_ADDRESS || '').trim()
+    if (!postal || /\[.*\]/.test(postal)) {
+      await skip('BUSINESS_ADDRESS not configured — refusing to send without a postal address (CAN-SPAM)', false)
+      continue
+    }
+    const body = withFooter(r.draft.body, to)
     if (dry) { stats.sent++; if (isPress) pressSent++; sentToday.add(to); continue }
 
     // ATOMIC CLAIM — the fix for concurrent double-sends.
