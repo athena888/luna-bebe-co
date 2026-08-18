@@ -1,10 +1,12 @@
 import { getCatalog, getProductStock, type DbProduct } from './products-db'
+import { scrubHardship } from './feed-copy'
 
 // Google Merchant Center feed (US-PRIMARY, USD). One source of truth: the
 // same getCatalog the sitemap and product pages use. In-house assembled
-// products have no GTIN — identifier_exists:no + mpn (never invent GTINs;
-// that's an account-level policy violation). When a product gains a real GS1
-// barcode, add a `gtin` column and it will be emitted automatically.
+// products have no GTIN — identifier_exists:no, and no MPN either (never
+// invent GTINs; that's an account-level policy violation). When a product
+// gains a real GS1 barcode, add a `gtin` column and it will be emitted
+// automatically.
 
 const BASE = (process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com').replace(/\/$/, '')
 
@@ -111,12 +113,19 @@ export async function buildFeed(): Promise<{ items: FeedItem[]; issues: FeedIssu
 
 const cdata = (s: string) => `<![CDATA[${s.replace(/\]\]>/g, ']]]]><![CDATA[>')}]]>`
 
+// Merchant Center fetches the TSV, not this (its second source was deleted
+// 2026-08-17). The route stays because an RSS-shaped feed is what Meta and
+// Pinterest catalogs consume, so it must carry the same copy rules the TSV
+// does — otherwise a catalog wired up here would republish the postpartum /
+// pain wording Google flagged. identifier_exists also no longer contradicts
+// itself: claiming "no identifiers" while sending an MPN was never coherent,
+// and with nothing registered against this feed it is finally safe to fix.
 export function feedXml(items: FeedItem[]): string {
   const rows = items.map(i => `
   <item>
     <g:id>${i.id}</g:id>
-    <g:title>${cdata(i.title)}</g:title>
-    <g:description>${cdata(i.description)}</g:description>
+    <g:title>${cdata(scrubHardship(i.title))}</g:title>
+    <g:description>${cdata(scrubHardship(i.description))}</g:description>
     <g:link>${i.link}</g:link>
     <g:image_link>${i.imageLink}</g:image_link>
     <g:availability>${i.availability}</g:availability>
@@ -124,7 +133,6 @@ export function feedXml(items: FeedItem[]): string {
     <g:condition>new</g:condition>
     <g:brand>${FEED_BRAND}</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
-    <g:mpn>${i.id}</g:mpn>
     <g:google_product_category>${i.categoryId}</g:google_product_category>
     <g:product_type>${cdata(i.productType)}</g:product_type>
     <g:custom_label_0>single-item</g:custom_label_0>
