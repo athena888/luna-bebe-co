@@ -100,7 +100,8 @@ Rules:
 - Do NOT open or scrape linkedin.com pages. If a search RESULT snippet surfaces a LinkedIn URL you may record it, nothing more.
 - company_description: one factual sentence about what the company does, from their own site or a directory listing. Never speculate.
 - source_url: the page where you found the company (directory listing, award list, their site).
-- Prefer companies plausibly senior enough to send client or employee gifts (10+ people, established).
+- HEADCOUNT BAND (hard filter): only companies with roughly 100–1000 employees. Skip anything clearly under ~100 people and anything enterprise-scale (1000+). Use the company's own site, directory listings, or "about/careers" pages for size signals.
+- The person must plausibly own or influence a gifting budget: Head/Director/VP/Manager of People, HR, Talent, Culture, Operations, Office, Marketing, or a Partner/Principal/Owner. Never an intern or junior individual contributor.
 - Output ONLY a JSON array, no prose.`,
     messages: [{
       role: 'user',

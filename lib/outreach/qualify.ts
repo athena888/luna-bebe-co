@@ -189,9 +189,9 @@ export async function qualifyProspects(
           max_tokens: 4000,
           output_config: { format: { type: 'json_schema', schema: OUTPUT_SCHEMA } },
           system: `You qualify B2B prospects for Petite Lavande (organic newborn & postpartum gift boxes sold to companies as employee/client gifts). For each prospect decide:
-- qualified: is this a real operating company that plausibly fits one of our target industries?
+- qualified: is this a real operating company that plausibly fits one of our target industries AND has roughly 100–1000 employees? Disqualify companies that are clearly smaller than ~100 people or clearly enterprise-scale (1000+). When headcount is genuinely unknown, judge from signals (office count, leadership team size, "Fortune 500" style language) and disqualify only if the evidence points outside the band.
 - industry_key: the best-matching key below, or "none".
-- persona_match: does the person's title match that industry's target persona?
+- persona_match: does the person's title match that industry's target persona AND suggest budget authority for a gifting program (Head/Director/VP/Manager of People, HR, Ops, Marketing, Partner, Principal, Owner)? An intern or individual contributor is not a match.
 - reason: under 10 words.
 
 Industries:

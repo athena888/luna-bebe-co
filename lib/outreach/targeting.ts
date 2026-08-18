@@ -1,5 +1,7 @@
 // B2B outreach targeting config — plain data, no model calls.
-// One combo (city × industry set) per week; all 25/day come from that combo.
+// One combo (city × industry set) per week; the whole daily batch comes from
+// that combo. Volume is OUTREACH_DAILY_CAP (50 sends/day, 60 fetched).
+// Company-size band across every industry: ~100–1000 employees.
 // Combos never mix within a day. After each full 8-week rotation, the 3
 // worst combos by reply rate get replaced (see weekly summary; replacements
 // are a human edit to ROTATION, reviewed like any code change).
@@ -25,7 +27,7 @@ export interface IndustryConfig {
 export const INDUSTRIES: Record<string, IndustryConfig> = {
   tech_50_500: {
     key: 'tech_50_500',
-    label: 'Tech companies, 50–500 employees',
+    label: 'Tech companies (100–1000 employees)',
     track: 'EMPLOYEE_GIFTING',
     persona: 'People Ops / HR',
   },
@@ -33,7 +35,7 @@ export const INDUSTRIES: Record<string, IndustryConfig> = {
     key: 'law_firms',
     label: 'Law firms',
     track: 'BOTH',
-    persona: 'Office manager (<100 staff) or HR (100+ staff)',
+    persona: 'HR / People lead or firm administrator',
   },
   accounting_consulting: {
     key: 'accounting_consulting',
