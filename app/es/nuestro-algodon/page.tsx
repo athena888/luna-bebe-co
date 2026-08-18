@@ -2,12 +2,14 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { esOpenGraph } from '@/lib/es-meta'
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
 export const metadata: Metadata = {
   title: 'Nuestro algodón — orgánico certificado',
   description: 'Cada set de regalo bebé orgánico se hace con algodón orgánico certificado: puro y suave para la piel del bebé, trazable del campo a la prenda.',
+  openGraph: esOpenGraph({ path: '/es/nuestro-algodon', title: 'Nuestro algodón — orgánico certificado | Petite Lavande', description: 'Cada set de regalo bebé orgánico se hace con algodón orgánico certificado: puro y suave para la piel del bebé, trazable del campo a la prenda.' }),
   alternates: {
     canonical: `${BASE}/es/nuestro-algodon`,
     languages: { en: `${BASE}/our-cotton`, 'es-US': `${BASE}/es/nuestro-algodon`, 'x-default': `${BASE}/our-cotton` },

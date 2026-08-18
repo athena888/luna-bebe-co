@@ -60,6 +60,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       urls.push({ url: `${base}/es/legal/devoluciones`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 })
       urls.push({ url: `${base}/es/historia`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 })
       urls.push({ url: `${base}/es/canastillas`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 })
+      // Spanish box DETAIL pages. They render, they carry hreflang, and they
+      // were absent from the sitemap entirely — only the /es/canastillas index
+      // was listed, so no Spanish box page was ever submitted for indexing.
+      try {
+        const { getBoxProducts } = await import('@/lib/catalog-db')
+        const { isShoppingOnly } = await import('@/lib/catalog-visibility')
+        for (const p of await getBoxProducts()) {
+          if (isShoppingOnly(p.slug)) continue
+          urls.push({ url: `${base}/es/canastillas/${p.slug}`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 })
+        }
+      } catch { /* box table unavailable — EN sitemap still returns */ }
       urls.push({ url: `${base}/es/tarjetas-regalo`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 })
       urls.push({ url: `${base}/es/build`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 })
       urls.push({ url: `${base}/es/nuestro-algodon`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 })

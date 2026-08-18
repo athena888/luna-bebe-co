@@ -17,6 +17,7 @@ import { SlotBackground } from '@/components/ui/SlotBackground'
 import { ScrimOverlay } from '@/components/ui/ScrimOverlay'
 import { ParallaxLayer } from '@/components/ui/ParallaxLayer'
 import type { ProductCert, CertDef } from '@/lib/certifications'
+import { CartFeeNote } from '@/components/ui/CartFeeNote'
 
 type ResolvedCert = ProductCert & Partial<CertDef>
 
@@ -680,7 +681,7 @@ export default function BuildClient({ initialCatalog }: { initialCatalog?: Recor
             <span className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400">{isEs ? 'Subtotal' : 'Subtotal'}</span>
             <span className="font-sans text-base font-medium text-bark-600">{formatPrice(subtotal)}</span>
           </div>
-          <p className="font-sans text-[11px] text-bark-400/60 mb-4">{isEs ? 'Canastilla y envío se calculan al pagar' : <>Box fee &amp; shipping calculated at checkout</>}</p>
+          <CartFeeNote className="mb-4" />
           <button
             onClick={handleCheckout}
             disabled={!hasItems}

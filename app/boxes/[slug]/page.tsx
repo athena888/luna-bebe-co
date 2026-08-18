@@ -12,6 +12,7 @@ import { SlotBackground } from '@/components/ui/SlotBackground'
 import { TrackViewItem } from '@/components/ui/TrackViewItem'
 import { boxSlotKey } from '@/lib/image-slots'
 import { isShoppingOnly } from '@/lib/catalog-visibility'
+import { SPANISH_ACTIVE } from '@/lib/i18n'
 import { getBoxProduct, getItemSizeOptions, pieceCount, piecesPerItem, priceRange } from '@/lib/catalog-db'
 import { CATEGORY_LABELS, CATEGORY_LABELS_ES, formatDollars } from '@/lib/products'
 
@@ -44,7 +45,15 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return {
     title: `${box.name} — Baby Gift Box (${priceText})`,
     description: `${box.subtitle || box.name} — hand-packed organic gift box from Petite Lavande. ${box.variants.length} ${box.variantLabel.toLowerCase() || 'option'}${box.variants.length !== 1 ? 's' : ''}, ${priceText}.`,
-    alternates: { canonical: `${BASE}/boxes/${slug}` },
+    alternates: {
+      canonical: `${BASE}/boxes/${slug}`,
+      // The /es twin declared this pair but the English side did not, and
+      // hreflang is discarded unless BOTH sides confirm it — so box pages had
+      // no locale pairing at all.
+      ...(SPANISH_ACTIVE
+        ? { languages: { en: `${BASE}/boxes/${slug}`, 'es-US': `${BASE}/es/canastillas/${slug}`, 'x-default': `${BASE}/boxes/${slug}` } }
+        : {}),
+    },
     openGraph: {
       title: `${box.name} | Petite Lavande`,
       description: box.subtitle || box.name,

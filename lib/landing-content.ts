@@ -68,6 +68,25 @@ function merge(base: LandingPage, ov: LandingOverride | undefined): ResolvedGuid
 const KEY = (slug: string) => `landing.${slug}`
 
 /** One guide, merged over its in-code default. Returns null for unknown slugs. */
+// Landing copy carries {PRICE_LOW}/{PRICE_HIGH} instead of hardcoded prices —
+// 7 of the 15 guides advertised "$85 to $200" long after the lineup moved to
+// $65–$165. Resolving here, at the single point every guide (page metadata,
+// body, FAQs, hub cards) reads through, means portal-authored overrides can use
+// the tokens too and no surface can drift again.
+async function resolvePrices<T>(guide: T): Promise<T> {
+  const { boxPriceRange, fillPrices } = await import('./box-price-range')
+  const range = await boxPriceRange()
+  const walk = (v: unknown): unknown => {
+    if (typeof v === 'string') return fillPrices(v, range)
+    if (Array.isArray(v)) return v.map(walk)
+    if (v && typeof v === 'object') {
+      return Object.fromEntries(Object.entries(v as Record<string, unknown>).map(([k, val]) => [k, walk(val)]))
+    }
+    return v
+  }
+  return walk(guide) as T
+}
+
 export async function getLandingContent(slug: string): Promise<ResolvedGuide | null> {
   const base = LANDING_PAGES.find(p => p.slug === slug)
   if (!base) return null
@@ -75,9 +94,9 @@ export async function getLandingContent(slug: string): Promise<ResolvedGuide | n
     const { data, error } = await supabaseAdmin
       .from('site_content').select('value').eq('key', KEY(slug)).maybeSingle()
     if (error) throw error
-    return merge(base, (data?.value as LandingOverride | undefined) ?? undefined)
+    return resolvePrices(merge(base, (data?.value as LandingOverride | undefined) ?? undefined))
   } catch {
-    return merge(base, undefined)
+    return resolvePrices(merge(base, undefined))
   }
 }
 
@@ -89,9 +108,9 @@ export async function getAllGuides(): Promise<ResolvedGuide[]> {
       .in('key', LANDING_PAGES.map(p => KEY(p.slug)))
     if (error) throw error
     const map = new Map((data ?? []).map(r => [r.key as string, r.value as LandingOverride]))
-    return LANDING_PAGES.map(p => merge(p, map.get(KEY(p.slug))))
+    return Promise.all(LANDING_PAGES.map(p => resolvePrices(merge(p, map.get(KEY(p.slug))))))
   } catch {
-    return LANDING_PAGES.map(p => merge(p, undefined))
+    return Promise.all(LANDING_PAGES.map(p => resolvePrices(merge(p, undefined))))
   }
 }
 

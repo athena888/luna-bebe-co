@@ -8,6 +8,7 @@ import { readCart, writeCart, readBoxRef, type CartItem, type BoxRef } from '@/l
 import { BOX_BASE_PRICE, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
 import { useIsEs } from '@/lib/use-is-es'
 import { DeliveryEstimate } from '@/components/ui/DeliveryEstimate'
+import { CartFeeNote } from '@/components/ui/CartFeeNote'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
@@ -190,7 +191,7 @@ export function BagDrawer() {
             <span className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400">Subtotal</span>
             <span className="font-sans text-base font-medium text-bark-600">{formatPrice(subtotal)}</span>
           </div>
-          <p className="font-sans text-[11px] text-bark-400/60 mb-2">{isEs ? 'Envío se calcula al pagar' : 'Shipping calculated at checkout'}</p>
+          <CartFeeNote className="mb-2" />
           {hasItems && <DeliveryEstimate variant="compact" className="mb-4" />}
           <button
             onClick={() => { setOpen(false); router.push(isEs ? '/es/checkout' : '/checkout') }}
