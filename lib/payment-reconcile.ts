@@ -29,11 +29,33 @@ const PROBLEM_TEXT: Record<PaymentProblem, string> = {
 }
 
 /**
+ * Fully refunded? Then there is nothing to fulfil and it is NOT a gap.
+ * Added 2026-08-17 after the guard cried wolf: a refunded test purchase whose
+ * order row had since been deleted was reported as an unfulfilled payment
+ * every single day. An alert that fires daily on a non-problem trains you to
+ * ignore it, which would hide the real gap it exists to catch.
+ * PARTIAL refunds still count as gaps — money was kept, so something is owed.
+ */
+async function fullyRefunded(paymentIntentId: string | null): Promise<boolean> {
+  if (!paymentIntentId) return false
+  try {
+    const pi = await stripe.paymentIntents.retrieve(paymentIntentId, { expand: ['latest_charge'] })
+    const charge = pi.latest_charge
+    if (!charge || typeof charge === 'string') return false
+    return charge.refunded === true || (charge.amount_refunded ?? 0) >= (charge.amount ?? 0)
+  } catch {
+    // Never let a Stripe hiccup silence a real gap — fail towards alerting.
+    return false
+  }
+}
+
+/**
  * Compare Stripe's paid checkout sessions against the orders table.
  * Gift-card sessions are excluded: they intentionally create no order row
  * (they mint a coupon + email instead), so they'd be false positives.
+ * Fully refunded payments are skipped — see fullyRefunded() above.
  */
-export async function reconcilePayments(days = 7): Promise<{ checked: number; giftCards: number; gaps: PaymentGap[] }> {
+export async function reconcilePayments(days = 7): Promise<{ checked: number; giftCards: number; gaps: PaymentGap[]; refundedSkipped: number }> {
   const since = Math.floor(Date.now() / 1000) - days * 86_400
   const sessions = await stripe.checkout.sessions.list({ limit: 100, created: { gte: since } })
 
@@ -42,7 +64,12 @@ export async function reconcilePayments(days = 7): Promise<{ checked: number; gi
   const orders = paid.filter(s => s.metadata?.type !== 'gift_card')
 
   const gaps: PaymentGap[] = []
+  let refundedSkipped = 0
   for (const s of orders) {
+    // Refunded in full → the money went back; by definition nothing to fulfil.
+    const pi = typeof s.payment_intent === 'string' ? s.payment_intent : s.payment_intent?.id ?? null
+    if (await fullyRefunded(pi)) { refundedSkipped++; continue }
+
     const orderId = s.metadata?.order_id ?? null
     const base = {
       sessionId: s.id,
@@ -69,7 +96,7 @@ export async function reconcilePayments(days = 7): Promise<{ checked: number; gi
     }
   }
 
-  return { checked: orders.length, giftCards, gaps }
+  return { checked: orders.length - refundedSkipped, giftCards, gaps, refundedSkipped }
 }
 
 /** Plain-text alert body. Written to be actionable at a glance. */
