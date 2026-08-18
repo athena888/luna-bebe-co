@@ -17,6 +17,20 @@ interface Prospect {
   email: string | null; email_grade: string | null; verifier_score: number | null; fit_reason: string | null; status: string
   channel?: string | null; outlet?: string | null; tier?: number | null
   guide_title?: string | null; guide_url?: string | null; freelancer?: boolean
+  // v3 qualification — why this lead is here at all.
+  segment?: string | null
+  qualification_score?: number | null
+  qualification_tier?: 'EXCELLENT' | 'GOOD' | 'WEAK' | 'BAD' | null
+  qualification_status?: string | null
+  recurring_potential?: 'HIGH' | 'MEDIUM' | 'LOW' | null
+  company_size_band?: string | null
+  company_size_confidence?: string | null
+  contact_confidence?: string | null
+  email_is_generic?: boolean | null
+  role_family?: string | null
+  qualification_reasons?: string[] | null
+  disqualification_reasons?: string[] | null
+  qualification_summary?: string | null
 }
 interface Draft {
   id: string; subject: string; body: string; is_followup: boolean; draft_kind: string
@@ -165,6 +179,7 @@ export default function ReviewPage() {
   // B2B pipeline review; Press = the manual drafts-only press system.
   // Initialized from ?tab=press via window (no useSearchParams → no Suspense).
   const [tab, setTab] = useState<'corporate' | 'press'>('corporate')
+  const [filter, setFilter] = useState<string>('all')
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get('tab') === 'press') setTab('press')
   }, [])
@@ -233,11 +248,84 @@ export default function ReviewPage() {
   }
 
   const q = data?.queue ?? []
-  const corporate = q.filter(d => d.prospect?.channel !== 'press')
+  // Quality first: Excellent before Good, then by score. created_at ordering
+  // told you nothing about which lead deserved attention.
+  const TIER_RANK: Record<string, number> = { EXCELLENT: 0, GOOD: 1, WEAK: 2, BAD: 3 }
+  const corporate = q
+    .filter(d => d.prospect?.channel !== 'press')
+    .filter(d => {
+      const p = d.prospect
+      if (filter === 'all') return true
+      if (filter === 'excellent') return p?.qualification_tier === 'EXCELLENT'
+      if (filter === 'excellent_good') return p?.qualification_tier === 'EXCELLENT' || p?.qualification_tier === 'GOOD'
+      return p?.segment === filter
+    })
+    .slice()
+    .sort((a, b) => {
+      const pa = a.prospect, pb = b.prospect
+      const t = (TIER_RANK[pa?.qualification_tier ?? 'BAD'] ?? 3) - (TIER_RANK[pb?.qualification_tier ?? 'BAD'] ?? 3)
+      if (t) return t
+      return (pb?.qualification_score ?? 0) - (pa?.qualification_score ?? 0)
+    })
   const pressQ = q.filter(d => d.prospect?.channel === 'press')
   const s = data?.stats
   const lb = data?.lookbook
   const press = data?.press
+
+  /**
+   * Why this lead is in the queue. The scorer already computes and stores all
+   * of this; before now none of it reached the screen, so approving a draft
+   * meant trusting the pipeline blind.
+   */
+  const QualificationPanel = ({ p }: { p: Prospect | null }) => {
+    if (!p || p.qualification_score == null) return null
+    const tier = p.qualification_tier ?? 'BAD'
+    const tierStyle: Record<string, string> = {
+      EXCELLENT: 'bg-sage-600 text-white',
+      GOOD: 'bg-sage-100 text-sage-700 border border-sage-300',
+      WEAK: 'bg-gold-100 text-bark-600 border border-gold-300',
+      BAD: 'bg-red-100 text-red-700 border border-red-300',
+    }
+    const recur = p.recurring_potential ?? 'LOW'
+    const reasons = p.qualification_reasons ?? []
+    const risks = p.disqualification_reasons ?? []
+    return (
+      <div className="bg-cream-50 border border-cream-300 rounded-xl px-3 py-2.5 mb-3">
+        <div className="flex flex-wrap items-center gap-2 mb-1.5">
+          <span className={`font-sans text-[10px] tracking-[0.12em] uppercase px-2 py-0.5 rounded ${tierStyle[tier]}`}>
+            {tier} · {p.qualification_score}
+          </span>
+          {p.segment && (
+            <span className="font-sans text-[10px] tracking-[0.1em] uppercase text-bark-500 bg-cream-200 px-2 py-0.5 rounded">
+              {p.segment.replace(/_/g, ' ').toLowerCase()}
+            </span>
+          )}
+          <span className="font-sans text-xs text-bark-500">
+            {p.company_size_band ? `${p.company_size_band} employees` : 'size unknown'}
+            {p.company_size_confidence ? ` (${p.company_size_confidence.toLowerCase()})` : ''}
+          </span>
+          <span className={`font-sans text-xs ${recur === 'HIGH' ? 'text-sage-700' : recur === 'MEDIUM' ? 'text-bark-500' : 'text-red-600'}`}>
+            · repeat: {recur.toLowerCase()}
+          </span>
+          {p.email_is_generic && (
+            <span className="font-sans text-[10px] tracking-[0.1em] uppercase bg-red-100 text-red-700 border border-red-300 px-2 py-0.5 rounded">
+              generic inbox
+            </span>
+          )}
+        </div>
+        {reasons.length > 0 && (
+          <ul className="font-sans text-xs text-bark-500 space-y-0.5">
+            {reasons.slice(0, 4).map((r, i) => <li key={i}>· {r}</li>)}
+          </ul>
+        )}
+        {risks.length > 0 && (
+          <ul className="font-sans text-xs text-red-600 mt-1 space-y-0.5">
+            {risks.slice(0, 3).map((r, i) => <li key={i}>⚠ {r}</li>)}
+          </ul>
+        )}
+      </div>
+    )
+  }
 
   const DraftCard = ({ d }: { d: Draft }) => {
     const p = d.prospect
@@ -266,6 +354,7 @@ export default function ReviewPage() {
               : <>“{p.guide_title}”</>}
           </p>
         )}
+        {!isPress && <QualificationPanel p={p} />}
         {!isPress && p?.fit_reason && <p className="font-sans text-xs italic text-bark-400 mb-3">“{p.fit_reason}”</p>}
 
         <input
@@ -469,6 +558,32 @@ export default function ReviewPage() {
         </div>
       ) : (
         <div className="space-y-4">
+          {/* Filters — default view is quality-ranked, not chronological. */}
+          <div className="flex flex-wrap gap-1.5">
+            {([
+              ['all', 'All'],
+              ['excellent', 'Excellent only'],
+              ['excellent_good', 'Excellent + Good'],
+              ['EMPLOYEE_GIFTING', 'Employee'],
+              ['WEALTH_CLIENT', 'Wealth'],
+              ['VC_PLATFORM', 'VC'],
+              ['LAW_PROFESSIONAL', 'Law'],
+            ] as const).map(([key, label]) => (
+              <button
+                key={key}
+                onClick={() => setFilter(key)}
+                className={`font-sans text-[11px] tracking-[0.08em] uppercase px-3 py-1.5 rounded-full border transition-colors ${
+                  filter === key
+                    ? 'bg-bark-700 text-cream-50 border-bark-700'
+                    : 'bg-white text-bark-500 border-cream-300 hover:border-bark-300'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+            <span className="font-sans text-xs text-bark-400 self-center ml-1">{corporate.length} shown</span>
+          </div>
+
           {corporate.map(d => <DraftCard key={d.id} d={d} />)}
 
           {pressQ.length > 0 && (

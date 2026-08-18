@@ -36,7 +36,9 @@ export async function GET() {
 
     const [{ data: queue }, cap, quota, runs, lookbook, pressKit] = await Promise.all([
       supabaseAdmin.from('email_drafts')
-        .select('id, subject, body, is_followup, draft_kind, status, created_at, prospect:prospects(id, company, domain, person_name, title, metro, category, linkedin_url, email, email_grade, verifier_score, fit_reason, status, channel, outlet, tier, guide_title, guide_url, freelancer)')
+        // v3 qualification fields included so the reviewer can see WHY a lead
+        // qualified without querying the database.
+        .select('id, subject, body, is_followup, draft_kind, status, created_at, template_key, prospect:prospects(id, company, domain, person_name, title, metro, category, linkedin_url, email, email_grade, verifier_score, fit_reason, status, channel, outlet, tier, guide_title, guide_url, freelancer, segment, qualification_score, qualification_tier, qualification_status, recurring_potential, company_size_band, company_size_confidence, contact_confidence, email_is_generic, role_family, qualification_reasons, disqualification_reasons, qualification_summary)')
         .eq('status', 'pending_review').order('created_at', { ascending: true }).limit(100),
       getDailySendCap(),
       quotaStatus(),
