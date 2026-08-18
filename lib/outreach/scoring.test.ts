@@ -11,7 +11,7 @@ import {
   isGenericEmail, isHedgedTitle, splitTitle, roleFamilyForTitle, gradeRole,
   bandForRange, recurringPotential,
 } from './icp.ts'
-import { followupDecision, classifyReply, looksLikeBounce, isHardBounce, extractReferredContact } from './reply-rules.ts'
+import { followupDecision, classifyReply, looksLikeBounce, isHardBounce, extractReferredContact, stripQuoted } from './reply-rules.ts'
 import { extractHeadcount, classifySegment, extractEvidence, qualifyRecord } from './qualify-v3.ts'
 import { renderTemplateV3, templateFor, findBannedContent } from './templates-v3.ts'
 
@@ -578,4 +578,38 @@ test('fame is worth nothing — two identical profiles score identically', () =>
   const famous = scoreProspect(base({ company: 'Stripe', domain: 'stripe.com' }))
   const unknown = scoreProspect(base({ company: 'Northgate Systems', domain: 'northgatesystems.com' }))
   assert.equal(famous.score, unknown.score)
+})
+
+// ── Quoted-history stripping (real incident, 2026-08-18) ────────────────────
+// A reply reading "Thanks for sharing will reach out if the need arises!" was
+// classified UNSUBSCRIBE and the prospect auto-suppressed, because our own
+// CAN-SPAM footer ("Unsubscribe: ...") was quoted underneath their text.
+test('our own footer quoted in a reply cannot trigger an unsubscribe', () => {
+  const realReply = `Thanks for sharing will reach out if the need arises!
+
+On Sat, Aug 15, 2026 at 9:02 AM Petite Lavande <hello@petitelavande.com> wrote:
+> Hi Dana,
+> ...
+> —
+> Petite Lavande · 123 Example St
+> Unsubscribe: https://petitelavande.com/u?e=x&k=o
+> Or just reply STOP and we won't email you again.`
+  assert.equal(classifyReply('Re: new-parent gifts', realReply), 'NOT_NOW')
+})
+
+test('a genuine unsubscribe is still caught', () => {
+  assert.equal(classifyReply('', 'Please unsubscribe me from this list.'), 'UNSUBSCRIBE')
+  assert.equal(
+    classifyReply('', 'take me off your list\n\nOn Mon, someone wrote:\n> Unsubscribe: http://x'),
+    'UNSUBSCRIBE',
+  )
+})
+
+test('quoted history never supplies the classification', () => {
+  const body = `Sounds great, please send pricing.
+
+On Mon, Aug 10, 2026 someone wrote:
+> not interested
+> unsubscribe`
+  assert.equal(classifyReply('', body), 'POSITIVE')
 })

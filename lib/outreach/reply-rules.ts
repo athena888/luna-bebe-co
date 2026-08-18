@@ -34,8 +34,39 @@ const AUTO_REPLY = /\b(out of (the )?office|automatic reply|auto-?reply|autoresp
 const UNSUB = /\b(unsubscribe|remove me|take me off|opt out|opt-out|stop emailing|do not (contact|email)|no longer wish)/i
 const WRONG_PERSON = /\b(wrong person|not the right person|i don'?t handle|i no longer|you (may |might )?want to (contact|speak|talk)|forwarded (this )?to|better (person|contact)|not my (area|department)|please contact|reach out to)\b/i
 const NOT_INTERESTED = /\b(not interested|no thanks|no thank you|we'?re all set|we have a vendor|already (have|work with)|not a fit|not for us)/i
-const NOT_NOW = /\b(not (right now|at this time)|maybe (later|next)|circle back|revisit|check back|budget (season|cycle)|next (quarter|year)|too early)/i
+// Includes the polite-deferral phrasings that are far more common than an
+// explicit "not now" — "will reach out if the need arises" is a real reply we
+// received and previously scored as UNKNOWN.
+const NOT_NOW = /\b(not (right now|at this time)|maybe (later|next)|circle back|revisit|check back|budget (season|cycle)|next (quarter|year)|too early|if (the |a )?need arises|when the need|will (reach out|be in touch|let you know|keep you)|keep (you|your (info|details|information)) (in mind|on file)|keep this in mind|file(d)? (this |it )?away|good to know|bear (it|this) in mind)/i
 const POSITIVE = /\b(interested|yes[,.!? ]|sounds (great|good|interesting)|love to|would like|please send|send (me |over |us )?(the |your )?(lookbook|pricing|info|details|sample)|let'?s (talk|chat|connect)|set up a (call|time)|happy to (chat|learn))/i
+
+/**
+ * Strip quoted history before classifying.
+ *
+ * A reply carries our original email underneath it — including our CAN-SPAM
+ * footer, which contains the word "Unsubscribe". Classifying the raw body
+ * therefore matched OUR text, not theirs: a real reply reading "Thanks for
+ * sharing, will reach out if the need arises!" was tagged UNSUBSCRIBE and the
+ * prospect was auto-suppressed. Only the part the human actually typed may be
+ * classified.
+ */
+export function stripQuoted(body: string): string {
+  const lines = (body || '').split(/\r?\n/)
+  const out: string[] = []
+  for (const line of lines) {
+    const t = line.trim()
+    // Gmail/Outlook attribution lines, then everything after them is history.
+    if (/^On .+ (wrote|schrieb|a écrit):?$/i.test(t)) break
+    if (/^-{2,}\s*(Original Message|Forwarded message)/i.test(t)) break
+    if (/^From:\s/i.test(t) && out.length) break
+    if (/^_{5,}$/.test(t)) break
+    // Our own signature/footer boundary.
+    if (/^—\s*$/.test(t) || /^--\s*$/.test(t)) break
+    if (/^>/.test(t)) continue                     // quoted line
+    out.push(line)
+  }
+  return out.join('\n').trim() || (body || '').trim()
+}
 
 /**
  * Order matters and is deliberate:
@@ -45,7 +76,8 @@ const POSITIVE = /\b(interested|yes[,.!? ]|sounds (great|good|interesting)|love 
  *    Dana" is a referral worth following, not a no.
  */
 export function classifyReply(subject: string, body: string): ReplyCategory {
-  const t = `${subject || ''}\n${body || ''}`
+  // Only what the human typed — never our quoted original (see stripQuoted).
+  const t = `${subject || ''}\n${stripQuoted(body)}`
   if (AUTO_REPLY.test(t)) return 'AUTO_REPLY'
   if (UNSUB.test(t)) return 'UNSUBSCRIBE'
   if (WRONG_PERSON.test(t)) return 'WRONG_PERSON'
