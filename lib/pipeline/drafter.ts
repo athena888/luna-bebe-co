@@ -1,6 +1,6 @@
 import { anthropic } from '../anthropic'
 import { supabaseAdmin } from '../supabase'
-import { getLookbookToggle, bumpDailyStats, pipelineEnabled } from './config'
+import { getLookbookToggle, bumpDailyStats, pipelineEnabled, followupsEnabled } from './config'
 import { getCurrentLookbook } from '../lookbook/current'
 
 // Stage 2 — drafter. For each discovered A/B prospect, assemble the email from
@@ -142,6 +142,11 @@ export async function runDrafter(opts: { dry?: boolean; timeBudgetMs?: number } 
 const PRESS_FOLLOWUP_AFTER_DAYS = 7   // press waits a little longer (7–10 day window)
 
 export async function draftFollowups(templates: PipelineTemplate[], dry: boolean, deadline: number): Promise<number> {
+  // DISABLED (Emily 2026-08-17): no automated follow-ups. Gated here rather
+  // than at the call sites so BOTH drafters (v1 runDrafter and
+  // lib/outreach/drafter-v2) are covered by the one switch. Re-enable by
+  // setting outreach_config.followups_enabled = true.
+  if (!(await followupsEnabled())) return 0
   const tpl = templates.find(t => t.key === 'followup')
   const pressTpl = templates.find(t => t.key === 'press-followup')
   if (!tpl && !pressTpl) return 0

@@ -102,6 +102,14 @@ export async function pipelineEnabled(): Promise<boolean> {
   return v !== false
 }
 
+// Automated follow-ups are OFF by default (Emily 2026-08-17: "No automated
+// follow-ups"). Unlike pipeline_enabled this defaults to FALSE, so the
+// feature stays dead unless the flag is explicitly set true.
+export async function followupsEnabled(): Promise<boolean> {
+  const v = await getConfig<boolean>('followups_enabled')
+  return v === true
+}
+
 export async function setPipelineEnabled(enabled: boolean): Promise<void> {
   await setConfig('pipeline_enabled', enabled)
 }
