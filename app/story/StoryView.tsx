@@ -105,7 +105,7 @@ export default async function StoryView({ locale = 'en' }: { locale?: 'en' | 'es
         <section className="bg-white overflow-hidden">
           <div className="pt-12 px-6 flex justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto rotate-180" />
+            <img src="/decor/lavender-divider.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" className="w-full max-w-xl h-auto rotate-180" />
           </div>
           <div className="max-w-5xl mx-auto px-6 py-14 sm:py-16 text-center">
             <p className="font-sans text-[12px] tracking-[0.35em] uppercase font-bold text-[#7A8E7C] mb-12">{isEs ? 'Lo que defendemos' : 'What We Stand For'}</p>
@@ -120,7 +120,7 @@ export default async function StoryView({ locale = 'en' }: { locale?: 'en' | 'es
           </div>
           <div className="pb-12 px-6 flex justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto" />
+            <img src="/decor/lavender-divider.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" className="w-full max-w-xl h-auto" />
           </div>
         </section>
 

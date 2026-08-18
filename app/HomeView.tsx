@@ -147,7 +147,7 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
         <section className="bg-white py-8 sm:py-10 px-6 text-center">
           <div className="flex justify-center mb-7 sm:mb-8">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto rotate-180" />
+            <img src="/decor/lavender-divider.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" className="w-full max-w-xl h-auto rotate-180" />
           </div>
           <p className="font-sans text-[12px] tracking-[0.18em] uppercase font-bold text-[#7A8E7C] mb-4">{s('story.eyebrow', 'Our Story')}</p>
           <h2 className="font-playfair text-2xl sm:text-3xl text-espresso leading-snug max-w-2xl mx-auto mb-6">{s('story.heading', story.hero.heading)}</h2>
@@ -164,7 +164,7 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
           </p>
           <div className="flex justify-center mt-7 sm:mt-8">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto" />
+            <img src="/decor/lavender-divider.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" className="w-full max-w-xl h-auto" />
           </div>
         </section>
 

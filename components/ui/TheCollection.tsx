@@ -84,10 +84,13 @@ export function TheCollection({ title, body, items }: { title: string; body: str
               panel on desktop. */}
           <div className="relative bg-cream-100 sm:flex-1 sm:flex sm:items-center sm:justify-center sm:overflow-hidden">
             <Link href={isEs ? '/es/canastillas' : '/boxes'} aria-label={isEs ? 'Ver canastillas' : 'Shop gift boxes'} className="block w-full">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={mobileImg.public_url} alt={mobileImg.alt_text || fallbackAlt} className="w-full h-auto sm:hidden" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={webImg.public_url} alt={webImg.alt_text || fallbackAlt} className="w-full h-auto hidden sm:block" />
+              {/* One <picture> so a phone fetches the phone crop only — two
+                  CSS-hidden <img>s download both. */}
+              <picture>
+                <source media="(max-width: 639px)" srcSet={mobileImg.public_url} />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={webImg.public_url} alt={webImg.alt_text || fallbackAlt} className="w-full h-auto" loading="lazy" decoding="async" />
+              </picture>
             </Link>
           </div>
         </div>
