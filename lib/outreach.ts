@@ -1,4 +1,4 @@
-import { supabaseAdmin } from './supabase'
+import { supabaseAdmin } from './supabase.ts'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 export type Track = 'A' | 'C'

@@ -1,6 +1,6 @@
-import { getCatalog } from './products-db'
-import { supabaseAdmin } from './supabase'
-import { FEATURED_IDS } from './products'
+import { getCatalog } from './products-db.ts'
+import { supabaseAdmin } from './supabase.ts'
+import { FEATURED_IDS } from './products.ts'
 import type { Product } from '@/types'
 
 // Single source of truth for the Bestsellers carousel, shared by the home page,

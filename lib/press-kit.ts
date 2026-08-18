@@ -1,4 +1,4 @@
-import { supabaseAdmin } from './supabase'
+import { supabaseAdmin } from './supabase.ts'
 
 // The press channel's one integration point: the public /press kit page URL,
 // or null while no image is tagged is_press — callers must degrade (press

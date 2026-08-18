@@ -1,5 +1,5 @@
-import { getCatalog, getProductStock, type DbProduct } from './products-db'
-import { scrubHardship } from './feed-copy'
+import { getCatalog, getProductStock, type DbProduct } from './products-db.ts'
+import { scrubHardship } from './feed-copy.ts'
 
 // Google Merchant Center feed (US-PRIMARY, USD). One source of truth: the
 // same getCatalog the sitemap and product pages use. In-house assembled

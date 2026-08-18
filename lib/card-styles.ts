@@ -1,4 +1,4 @@
-import { supabaseAdmin } from './supabase'
+import { supabaseAdmin } from './supabase.ts'
 
 // Auto-detected placement/styling for the personal message printed on the card.
 export interface CardMeta {

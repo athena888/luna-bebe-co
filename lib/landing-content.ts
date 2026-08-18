@@ -1,5 +1,5 @@
-import { supabaseAdmin } from './supabase'
-import { LANDING_PAGES, type LandingPage } from './landing-pages'
+import { supabaseAdmin } from './supabase.ts'
+import { LANDING_PAGES, type LandingPage } from './landing-pages.ts'
 import type { ProductCategory } from '@/types'
 
 // Admin-editable layer over the hardcoded gift-guide landing pages. Each guide's
@@ -74,7 +74,7 @@ const KEY = (slug: string) => `landing.${slug}`
 // body, FAQs, hub cards) reads through, means portal-authored overrides can use
 // the tokens too and no surface can drift again.
 async function resolvePrices<T>(guide: T): Promise<T> {
-  const { boxPriceRange, fillPrices } = await import('./box-price-range')
+  const { boxPriceRange, fillPrices } = await import('./box-price-range.ts')
   const range = await boxPriceRange()
   const walk = (v: unknown): unknown => {
     if (typeof v === 'string') return fillPrices(v, range)

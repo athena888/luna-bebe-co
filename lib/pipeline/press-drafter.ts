@@ -1,9 +1,9 @@
-import { anthropic } from '../anthropic'
-import { supabaseAdmin } from '../supabase'
-import { bumpDailyStats, pipelineEnabled } from './config'
-import { getPressConfig } from './press-prospector'
-import { getCurrentPressKit } from '../press-kit'
-import { renderPipelineTemplate, getPipelineTemplates } from './drafter'
+import { anthropic } from '../anthropic.ts'
+import { supabaseAdmin } from '../supabase.ts'
+import { bumpDailyStats, pipelineEnabled } from './config.ts'
+import { getPressConfig } from './press-prospector.ts'
+import { getCurrentPressKit } from '../press-kit.ts'
+import { renderPipelineTemplate, getPipelineTemplates } from './drafter.ts'
 
 // Press drafting. Two hard rules enforced in CODE, not prompts:
 //  1. No guide, no pitch — a prospect without a captured guide URL + title

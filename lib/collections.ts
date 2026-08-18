@@ -1,5 +1,5 @@
-import { supabaseAdmin } from './supabase'
-import { getCatalog, type DbProduct } from './products-db'
+import { supabaseAdmin } from './supabase.ts'
+import { getCatalog, type DbProduct } from './products-db.ts'
 
 // Collections — real indexable routes over the catalog (Collections PDF).
 // Membership = explicit pins (product_collections, wins) ∪ the JSONB filter

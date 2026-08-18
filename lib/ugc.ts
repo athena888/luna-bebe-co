@@ -1,5 +1,5 @@
 import { createHmac } from 'crypto'
-import { supabaseAdmin } from './supabase'
+import { supabaseAdmin } from './supabase.ts'
 
 // Build 9 — UGC + rights pipeline. Customers can attach a photo to their
 // review; the rights checkbox stores THIS text verbatim per asset so consent

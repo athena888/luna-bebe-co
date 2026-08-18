@@ -1,5 +1,5 @@
-import { supabaseAdmin } from './supabase'
-import { isGaConfigured, getDailySessions } from './ga'
+import { supabaseAdmin } from './supabase.ts'
+import { isGaConfigured, getDailySessions } from './ga.ts'
 
 // The weekly scorecard: 7 numbers per week, computed live from orders (+GA4
 // sessions when configured), shown on Portal → Analytics and snapshotted every

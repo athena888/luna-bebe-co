@@ -1,4 +1,4 @@
-import { supabaseAdmin } from './supabase'
+import { supabaseAdmin } from './supabase.ts'
 
 // Marketing contacts — OUR source of truth (§37). Captured only via checkout,
 // newsletter signup, or landing pages. Lives in marketing_contacts — the plain

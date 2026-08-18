@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '../supabase'
+import { supabaseAdmin } from '../supabase.ts'
 
 // The one integration point the outreach worker uses: the stable public route
 // of the currently-published lookbook, or null when nothing is published yet

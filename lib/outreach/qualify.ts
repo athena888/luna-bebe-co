@@ -1,7 +1,7 @@
-import { anthropic } from '../anthropic'
-import { supabaseAdmin } from '../supabase'
-import { INDUSTRIES, QUALIFY_CACHE_DAYS } from './targeting'
-import { apiBudgetRemaining, logApiCall } from './api-ledger'
+import { anthropic } from '../anthropic.ts'
+import { supabaseAdmin } from '../supabase.ts'
+import { INDUSTRIES, QUALIFY_CACHE_DAYS } from './targeting.ts'
+import { apiBudgetRemaining, logApiCall } from './api-ledger.ts'
 
 // PROSPECT QUALIFICATION — the one model-judged step in the pipeline.
 // ONE call per scraped batch (≤50 prospects, never per prospect), model

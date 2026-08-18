@@ -1,5 +1,5 @@
-import { supabaseAdmin } from '../supabase'
-import { MAX_API_CALLS_PER_DAY } from './targeting'
+import { supabaseAdmin } from '../supabase.ts'
+import { MAX_API_CALLS_PER_DAY } from './targeting.ts'
 
 // Ledger for every Anthropic API call the outreach machine makes (table
 // ai_call_log, §51). Hard cap: MAX_API_CALLS_PER_DAY (3) across ALL purposes —
@@ -7,7 +7,7 @@ import { MAX_API_CALLS_PER_DAY } from './targeting'
 // spent, callers queue their batch and retry next run; sending of
 // already-qualified prospects is never blocked by this cap.
 
-export type ApiPurpose = 'prospect_search' | 'qualification' | 'reply_triage'
+export type ApiPurpose = 'prospect_search' | 'qualification' | 'reply_triage' | 'enrichment' | 'contact_discovery'
 
 // $ per 1M tokens (input, output) by model prefix.
 const PRICES: Array<[prefix: string, inPerM: number, outPerM: number]> = [

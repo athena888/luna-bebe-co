@@ -1,4 +1,4 @@
-import { stripe } from './stripe'
+import { stripe } from './stripe.ts'
 import { randomUUID } from 'node:crypto'
 
 // Unique, single-use 30%-off codes for cold outreach. One reusable Stripe coupon

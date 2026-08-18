@@ -1,4 +1,4 @@
-import { supabaseAdmin } from './supabase'
+import { supabaseAdmin } from './supabase.ts'
 
 export interface CardLine { k: string; v: string }
 export interface CardItemContent {

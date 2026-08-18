@@ -1,8 +1,8 @@
-import { supabaseAdmin } from '../supabase'
-import { addSuppression, emailDomain } from '../outreach'
-import { bumpDailyStats } from './config'
-import { renderPipelineTemplate, getPipelineTemplates } from './drafter'
-import { getCurrentLookbook } from '../lookbook/current'
+import { supabaseAdmin } from '../supabase.ts'
+import { addSuppression, emailDomain } from '../outreach.ts'
+import { bumpDailyStats } from './config.ts'
+import { renderPipelineTemplate, getPipelineTemplates } from './drafter.ts'
+import { getCurrentLookbook } from '../lookbook/current.ts'
 
 // Pipeline feedback loops, called from the inbound-email webhook:
 //  • bounce NDRs → suppression + prospect 'bounced'
@@ -97,7 +97,7 @@ async function draftReplyAssist(p: ProspectRow): Promise<boolean> {
   const firstName = (p.person_name ?? '').trim().split(/\s+/)[0] || 'there'
 
   if (p.channel === 'press') {
-    const { getCurrentPressKit } = await import('../press-kit')
+    const { getCurrentPressKit } = await import('../press-kit.ts')
     const kit = await getCurrentPressKit().catch(() => null)
     const tpl = templates.find(t => t.key === 'press-sample-reply')
     if (!tpl || !kit) return false

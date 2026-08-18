@@ -1,6 +1,6 @@
-import { supabaseAdmin } from '../supabase'
-import { getConfig } from '../pipeline/config'
-import { getBoxProducts } from '../catalog-db'
+import { supabaseAdmin } from '../supabase.ts'
+import { getConfig } from '../pipeline/config.ts'
+import { getBoxProducts } from '../catalog-db.ts'
 
 // Corporate tier data for the lookbook price calculator, the press line sheet,
 // and image auto-tagging. (The AI copy-assist that used to live here was

@@ -1,6 +1,6 @@
 import { createHmac } from 'crypto'
-import { supabaseAdmin } from './supabase'
-import { isOptedOut } from './unsubscribe'
+import { supabaseAdmin } from './supabase.ts'
+import { isOptedOut } from './unsubscribe.ts'
 
 // Build 17 — recipient gift-note loop. When a gift order ships and the buyer
 // provided the recipient's email (optional checkout field, UI pending mock
@@ -49,7 +49,7 @@ export async function sendGiftNoteIfDue(orderId: string): Promise<boolean> {
   const email = (order.recipient_email as string).trim().toLowerCase()
   if (await isOptedOut(email)) return false
 
-  const { sendGiftNoteEmail } = await import('./resend')
+  const { sendGiftNoteEmail } = await import('./resend.ts')
   await sendGiftNoteEmail({
     recipientEmail: email,
     recipientName: (order.recipient_name as string) || undefined,

@@ -1,7 +1,7 @@
-import { buildFeed, FEED_BRAND, type FeedItem } from './google-feed'
-import { supabaseAdmin } from './supabase'
-import { getBoxProducts, pieceCount } from './catalog-db'
-import { scrubGots, scrubHardship } from './feed-copy'
+import { buildFeed, FEED_BRAND, type FeedItem } from './google-feed.ts'
+import { supabaseAdmin } from './supabase.ts'
+import { getBoxProducts, pieceCount } from './catalog-db.ts'
+import { scrubGots, scrubHardship } from './feed-copy.ts'
 
 // Google Merchant TSV feed (/product-feed.tsv) — built ON TOP of the XML
 // feed's buildFeed(), so price and availability can never disagree with the

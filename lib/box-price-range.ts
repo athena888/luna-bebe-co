@@ -1,5 +1,5 @@
-import { getBoxProducts, priceRange } from './catalog-db'
-import { isShoppingOnly } from './catalog-visibility'
+import { getBoxProducts, priceRange } from './catalog-db.ts'
+import { isShoppingOnly } from './catalog-visibility.ts'
 
 // The live price range of the boxes a shopper can actually browse, in whole
 // dollars. pSEO copy used to hardcode "$85 to $200" — numbers from an earlier

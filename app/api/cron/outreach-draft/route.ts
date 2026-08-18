@@ -5,6 +5,7 @@ import { runDrafterV2 } from '@/lib/outreach/drafter-v2'
 import { runReplyTriage } from '@/lib/outreach/reply-triage'
 import { maybeSendWeeklySummary } from '@/lib/outreach/metrics'
 import { getConfig } from '@/lib/pipeline/config'
+import { runGmailSync } from '@/lib/outreach/gmail-sync'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
@@ -28,6 +29,13 @@ export async function GET(req: NextRequest) {
   const dry = req.nextUrl.searchParams.get('dry') === '1' || process.env.DRY_RUN === '1'
   try {
     const started = Date.now()
+    // Reply/bounce sync runs FIRST, before any follow-up is drafted. Drafting a
+    // chase for someone who already replied is the fastest way to earn a spam
+    // complaint, so measurement must lead. Folded into this existing cron
+    // rather than adding an entry (Vercel Hobby caps cron frequency).
+    // No-ops safely when gmail.readonly has not been granted.
+    const sync = await runGmailSync({ dry })
+      .catch(e => { console.error('gmail sync failed:', e); return null })
     const v2 = (await getConfig<{ enabled?: boolean }>('targeting_v2'))?.enabled === true
     const stats = v2
       ? await runDrafterV2({ dry, timeBudgetMs: 200_000 })
@@ -40,7 +48,7 @@ export async function GET(req: NextRequest) {
       : null
     const press = await runPressDrafter({ dry, deadline: started + 270_000 })
       .catch(e => { console.error('press drafter failed:', e); return null })
-    return NextResponse.json({ ok: true, mode: v2 ? 'v2' : 'v1', ...stats, triage, weekly, press })
+    return NextResponse.json({ ok: true, mode: v2 ? 'v2' : 'v1', ...stats, sync, triage, weekly, press })
   } catch (e) {
     console.error('outreach-draft cron error:', e)
     return NextResponse.json({ error: e instanceof Error ? e.message : 'Drafter failed' }, { status: 500 })

@@ -1,4 +1,4 @@
-import { supabaseAdmin } from './supabase'
+import { supabaseAdmin } from './supabase.ts'
 
 /** Best-effort client IP from common proxy headers. */
 export function clientIp(req: Request): string {

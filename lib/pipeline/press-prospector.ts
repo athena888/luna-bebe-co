@@ -1,9 +1,9 @@
-import { anthropic } from '../anthropic'
-import { supabaseAdmin } from '../supabase'
-import { emailDomain, getSuppressedSet } from '../outreach'
-import { verifyEmail } from '../emailVerifier'
-import { getConfig, setConfig, bumpDailyStats, pipelineEnabled } from './config'
-import { patternCandidates } from './prospector'
+import { anthropic } from '../anthropic.ts'
+import { supabaseAdmin } from '../supabase.ts'
+import { emailDomain, getSuppressedSet } from '../outreach.ts'
+import { verifyEmail } from '../emailVerifier.ts'
+import { getConfig, setConfig, bumpDailyStats, pipelineEnabled } from './config.ts'
+import { patternCandidates } from './prospector.ts'
 
 // Press-channel prospector — the byline method. For each outlet in tonight's
 // rotation slice, a web-search agent finds the byline author of the outlet's

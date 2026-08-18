@@ -1,12 +1,12 @@
-import { supabaseAdmin } from '../supabase'
-import { bumpDailyStats, pipelineEnabled, getDailySendCap } from '../pipeline/config'
-import { getPipelineTemplates, draftFollowups } from '../pipeline/drafter'
-import { comboForDate, INDUSTRIES, violatesCityBan, type WeekCombo } from './targeting'
+import { supabaseAdmin } from '../supabase.ts'
+import { bumpDailyStats, pipelineEnabled, getDailySendCap } from '../pipeline/config.ts'
+import { getPipelineTemplates, draftFollowups } from '../pipeline/drafter.ts'
+import { comboForDate, INDUSTRIES, violatesCityBan, type WeekCombo } from './targeting.ts'
 import {
   pickTrack, renderFrozenTemplate, subjectVariantForSlot,
   FROZEN_TEMPLATES, type SubjectVariant,
-} from './templates'
-import type { PitchTrack } from './targeting'
+} from './templates.ts'
+import type { PitchTrack } from './targeting.ts'
 
 // Targeting-v2 drafter — ZERO model calls. Template selection is a
 // deterministic lookup (weekly combo → industry → track → frozen template;

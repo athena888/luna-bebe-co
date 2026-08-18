@@ -1,4 +1,4 @@
-import { SPANISH_ACTIVE } from './i18n'
+import { SPANISH_ACTIVE } from './i18n.ts'
 
 const BASE = (process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com').replace(/\/$/, '')
 

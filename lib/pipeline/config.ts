@@ -1,5 +1,7 @@
-import { supabaseAdmin } from '../supabase'
-import { isFreemail, emailDomain } from '../outreach'
+import { supabaseAdmin } from '../supabase.ts'
+// Explicit .ts: lib/outreach.ts and lib/outreach/ both exist, so a bare
+// '../outreach' is ambiguous under Node's ESM resolver (it picks the directory).
+import { isFreemail, emailDomain } from '../outreach.ts'
 
 // Key/value config for the daily outreach pipeline (table outreach_config).
 // Seeds live in supabase/migrations/outreach_pipeline.sql, documented in

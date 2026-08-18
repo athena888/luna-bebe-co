@@ -1,4 +1,4 @@
-import { getSiteImage } from './site-images'
+import { getSiteImage } from './site-images.ts'
 
 // Pages that declare their own `openGraph` REPLACE the root layout's block
 // wholesale in Next's metadata merge — they don't inherit its image. That is

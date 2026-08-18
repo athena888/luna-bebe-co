@@ -1,5 +1,5 @@
-import { supabaseAdmin } from './supabase'
-import { JOURNAL_POSTS, getJournalPost as getHardcoded, type JournalPost, type Block } from './journal'
+import { supabaseAdmin } from './supabase.ts'
+import { JOURNAL_POSTS, getJournalPost as getHardcoded, type JournalPost, type Block } from './journal.ts'
 
 // DB-backed journal. Posts created in the portal live in `journal_posts`; the
 // in-code JOURNAL_POSTS remain as built-in starters. Reads merge the two (DB

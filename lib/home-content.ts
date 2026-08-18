@@ -1,5 +1,5 @@
-import { supabaseAdmin } from './supabase'
-import { FREE_SHIPPING_THRESHOLD } from './products'
+import { supabaseAdmin } from './supabase.ts'
+import { FREE_SHIPPING_THRESHOLD } from './products.ts'
 
 // Editable homepage copy. Each block is stored as one row in `site_content`
 // (key → JSON value). When a row is missing we fall back to these defaults, so

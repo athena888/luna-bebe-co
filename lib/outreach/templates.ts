@@ -1,5 +1,5 @@
-import { unsubscribeUrl } from '../unsubscribe'
-import type { PitchTrack, TrackAssignment } from './targeting'
+import { unsubscribeUrl } from '../unsubscribe.ts'
+import type { PitchTrack, TrackAssignment } from './targeting.ts'
 
 // ── FROZEN TEMPLATES ─────────────────────────────────────────────────────────
 // Stored VERBATIM per Emily's 2026-08-14 spec. These are never AI-modified —

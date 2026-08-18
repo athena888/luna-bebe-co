@@ -1,6 +1,6 @@
-import { supabaseAdmin } from './supabase'
-import { PREBUILT_BOXES } from './prebuilt-boxes'
-import { getCatalog } from './products-db'
+import { supabaseAdmin } from './supabase.ts'
+import { PREBUILT_BOXES } from './prebuilt-boxes.ts'
+import { getCatalog } from './products-db.ts'
 import type { BoxSelection, Product } from '@/types'
 
 const SLOTS = ['swaddle', 'garment', 'bath', 'keepsake', 'mom', 'extra1', 'extra2'] as const

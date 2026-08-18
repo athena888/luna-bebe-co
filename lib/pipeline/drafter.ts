@@ -1,7 +1,7 @@
-import { anthropic } from '../anthropic'
-import { supabaseAdmin } from '../supabase'
-import { getLookbookToggle, bumpDailyStats, pipelineEnabled, followupsEnabled } from './config'
-import { getCurrentLookbook } from '../lookbook/current'
+import { anthropic } from '../anthropic.ts'
+import { supabaseAdmin } from '../supabase.ts'
+import { getLookbookToggle, bumpDailyStats, pipelineEnabled, followupsEnabled } from './config.ts'
+import { getCurrentLookbook } from '../lookbook/current.ts'
 
 // Stage 2 — drafter. For each discovered A/B prospect, assemble the email from
 // its category template. The ONLY AI-written text is the {{opening}} sentence
@@ -154,7 +154,7 @@ export async function draftFollowups(templates: PipelineTemplate[], dry: boolean
   const pressCutoff = new Date(Date.now() - PRESS_FOLLOWUP_AFTER_DAYS * 86_400_000).toISOString()
   // Press follow-ups need the press-kit link; loaded lazily to avoid the cost
   // when there are no press sends yet.
-  const { getCurrentPressKit } = await import('../press-kit')
+  const { getCurrentPressKit } = await import('../press-kit.ts')
   const kit = await getCurrentPressKit().catch(() => null)
 
   // Sends old enough, whose prospect is still in 'sent' (a reply flips it to

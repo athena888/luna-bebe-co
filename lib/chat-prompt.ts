@@ -1,5 +1,5 @@
-import { CONTACT_EMAIL, RETURNS_SUMMARY } from './site-config'
-import { FREE_SHIPPING_THRESHOLD } from './products'
+import { CONTACT_EMAIL, RETURNS_SUMMARY } from './site-config.ts'
+import { FREE_SHIPPING_THRESHOLD } from './products.ts'
 
 // Shared customer-assistant system prompt, used by the on-site AI chat route
 // (and the dormant Crisp bridge) so both answer with the same brand voice +
@@ -35,8 +35,8 @@ let cache: { at: number; prompt: string } | null = null
 export async function buildChatSystemPrompt(): Promise<string> {
   if (cache && Date.now() - cache.at < 300_000) return cache.prompt
   try {
-    const { getCatalog } = await import('./products-db')
-    const { getBoxes } = await import('./prebuilt-boxes-db')
+    const { getCatalog } = await import('./products-db.ts')
+    const { getBoxes } = await import('./prebuilt-boxes-db.ts')
     const [catalog, boxes] = await Promise.all([
       getCatalog({ activeOnly: true }),
       getBoxes({}).catch(() => []),

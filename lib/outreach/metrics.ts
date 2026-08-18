@@ -1,8 +1,8 @@
-import { supabaseAdmin } from '../supabase'
-import { sendEmail } from '../gmail'
-import { getConfig, setConfig } from '../pipeline/config'
-import { ROTATION, ROTATION_EPOCH } from './targeting'
-import { apiUsageSince } from './api-ledger'
+import { supabaseAdmin } from '../supabase.ts'
+import { sendEmail } from '../gmail.ts'
+import { getConfig, setConfig } from '../pipeline/config.ts'
+import { ROTATION, ROTATION_EPOCH } from './targeting.ts'
+import { apiUsageSince } from './api-ledger.ts'
 
 // Per-combo metrics and the weekly outreach summary email. Everything here is
 // plain SQL aggregation — no model calls. Drafts made by the v2 drafter carry

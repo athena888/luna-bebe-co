@@ -1,4 +1,4 @@
-import { getAllProducts } from './products'
+import { getAllProducts } from './products.ts'
 
 export function getProductTags(): string[] {
   const tags = new Set<string>()

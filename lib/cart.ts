@@ -1,5 +1,5 @@
 import type { Product } from '@/types'
-import { trackCartGrowth } from './analytics-events'
+import { trackCartGrowth } from './analytics-events.ts'
 
 // The "cart" is the box selection stored in sessionStorage as pl_box_selection
 // (an array). The build bag and checkout both read it, so adding from anywhere

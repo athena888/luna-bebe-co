@@ -624,7 +624,7 @@ export async function sendReviewRequestEmail({
   // Signed buyer identity — the review form passes it back so the API can
   // verify the purchase and send the 20% thank-you without ever asking the
   // customer to type an email on the site.
-  const { reviewToken } = await import('./review-token')
+  const { reviewToken } = await import('./review-token.ts')
   const rt = `&rt=${encodeURIComponent(reviewToken(orderId, customerEmail))}`
   const productPath = (id: string) => es ? `/es/productos/${id}` : `/products/${id}`
   // #reviews jumps straight to the review form on the product page.
@@ -951,7 +951,7 @@ export async function sendOrderConfirmationEmail({
   // Fail-soft: any problem just drops the line rather than the email.
   let arrivalLine = ''
   try {
-    const { estimateDelivery, estimateWithTransit, formatDeliveryWindow } = await import('./delivery')
+    const { estimateDelivery, estimateWithTransit, formatDeliveryWindow } = await import('./delivery.ts')
     const placed = orderedAt ? new Date(orderedAt) : new Date()
     const at = Number.isNaN(placed.getTime()) ? new Date() : placed
     if (shippingType === 'sameday') {

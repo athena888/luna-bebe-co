@@ -1,4 +1,4 @@
-import { supabaseAdmin } from './supabase'
+import { supabaseAdmin } from './supabase.ts'
 
 // Build 3 — occasion dates. A customer (or gift-giver) tells us a due date or
 // a baby's birthday; the daily cron schedules one perfectly-timed email per

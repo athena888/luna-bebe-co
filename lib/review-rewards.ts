@@ -103,7 +103,7 @@ export async function grantReviewReward(input: {
       if (!(e instanceof Error && e.message.includes('already exists'))) throw e
     }
 
-    const { sendReviewRewardEmail } = await import('./resend')
+    const { sendReviewRewardEmail } = await import('./resend.ts')
     await sendReviewRewardEmail({ customerEmail: email, code, locale: input.locale ?? 'en' })
     return code
   } catch (e) {

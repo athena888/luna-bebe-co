@@ -1,6 +1,6 @@
-import { supabaseAdmin } from './supabase'
-import { isOptedOut } from './unsubscribe'
-import { storeCheckoutEnabled } from './store-flags'
+import { supabaseAdmin } from './supabase.ts'
+import { isOptedOut } from './unsubscribe.ts'
+import { storeCheckoutEnabled } from './store-flags.ts'
 import {
   sendWelcomeSeries2Email,
   sendWelcomeSeries3Email,
@@ -10,7 +10,7 @@ import {
   sendOccasionDueEmail,
   sendOccasionBirthdayEmail,
   sendCartReminder2Email,
-} from './resend'
+} from './resend.ts'
 
 // Customer email flows on top of the `email_events` table (§31). Triggers
 // insert scheduled rows; the daily cron (/api/cron/daily-flows) sends the due
@@ -145,39 +145,39 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
     try {
       switch (ev.template) {
         case 'welcome-2': {
-          const { segmentOf, localeOf } = await import('./contacts')
+          const { segmentOf, localeOf } = await import('./contacts.ts')
           await sendWelcomeSeries2Email({ customerEmail: ev.recipient, segment: await segmentOf(ev.recipient), locale: await localeOf(ev.recipient) })
           break
         }
         case 'welcome-3': {
-          const { localeOf } = await import('./contacts')
+          const { localeOf } = await import('./contacts.ts')
           await sendWelcomeSeries3Email({ customerEmail: ev.recipient, locale: await localeOf(ev.recipient) })
           break
         }
         case 'winback': {
-          const { segmentOf } = await import('./contacts')
+          const { segmentOf } = await import('./contacts.ts')
           {
-            const { localeOf } = await import('./contacts')
+            const { localeOf } = await import('./contacts.ts')
             await sendWinBackEmail({ customerEmail: ev.recipient, segment: await segmentOf(ev.recipient), locale: await localeOf(ev.recipient) })
           }
           break
         }
         case 'occasion-due':
           {
-            const { localeOf } = await import('./contacts')
+            const { localeOf } = await import('./contacts.ts')
             await sendOccasionDueEmail({ customerEmail: ev.recipient, locale: await localeOf(ev.recipient) })
           }
           break
         case 'occasion-birthday':
           {
-            const { localeOf } = await import('./contacts')
+            const { localeOf } = await import('./contacts.ts')
             await sendOccasionBirthdayEmail({ customerEmail: ev.recipient, locale: await localeOf(ev.recipient) })
           }
           break
         case 'occasion-anniversary': {
-          const { sendAnniversaryEmail } = await import('./resend')
+          const { sendAnniversaryEmail } = await import('./resend.ts')
           {
-            const { localeOf } = await import('./contacts')
+            const { localeOf } = await import('./contacts.ts')
             await sendAnniversaryEmail({ customerEmail: ev.recipient, locale: await localeOf(ev.recipient) })
           }
           break
@@ -185,9 +185,9 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
         case 'restock': {
           // Re-check stock at send time — never announce a restock that
           // already sold out again.
-          const { restockProductIdFromCampaign } = await import('./waitlist')
+          const { restockProductIdFromCampaign } = await import('./waitlist.ts')
           const pid = restockProductIdFromCampaign(ev.campaign)
-          const { getCatalogProduct, getProductStock } = await import('./products-db')
+          const { getCatalogProduct, getProductStock } = await import('./products-db.ts')
           const product = pid ? await getCatalogProduct(pid) : null
           const stock = pid ? await getProductStock(pid, false) : null
           if (!product || !product.active || (stock !== null && stock <= 0)) {
@@ -195,9 +195,9 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
             skipped++
             continue
           }
-          const { sendRestockEmail } = await import('./resend')
+          const { sendRestockEmail } = await import('./resend.ts')
           {
-            const { localeOf } = await import('./contacts')
+            const { localeOf } = await import('./contacts.ts')
             await sendRestockEmail({ customerEmail: ev.recipient, productName: product.name, productId: product.id, locale: await localeOf(ev.recipient) })
           }
           break
@@ -213,7 +213,7 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
             continue
           }
           {
-            const { localeOf } = await import('./contacts')
+            const { localeOf } = await import('./contacts.ts')
             await sendCartReminder2Email({ customerEmail: ev.recipient, orderId: ev.order_id, locale: await localeOf(ev.recipient) })
           }
           break
@@ -240,7 +240,7 @@ export async function processDueEmails(limit = 50): Promise<{ sent: number; skip
             skipped++
             continue
           }
-          const { resolveOrderItemImages } = await import('./order-item-images')
+          const { resolveOrderItemImages } = await import('./order-item-images.ts')
           await sendOrderConfirmationEmail({
             customerName: order.customer_name,
             customerEmail: ev.recipient,

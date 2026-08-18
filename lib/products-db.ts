@@ -1,7 +1,7 @@
-import { supabaseAdmin } from './supabase'
-import { getAllProducts } from './products'
-import { PROTECTED_PRODUCT_IDS } from './prebuilt-boxes'
-import type { ProductCert } from './certifications'
+import { supabaseAdmin } from './supabase.ts'
+import { getAllProducts } from './products.ts'
+import { PROTECTED_PRODUCT_IDS } from './prebuilt-boxes.ts'
+import type { ProductCert } from './certifications.ts'
 import type { Product, ProductCategory } from '@/types'
 
 export interface ProductFaq { q: string; a: string }

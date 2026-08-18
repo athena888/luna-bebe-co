@@ -1,8 +1,8 @@
 import sharp from 'sharp'
 import convertHeic from 'heic-convert'
-import { anthropic } from '../anthropic'
-import { supabaseAdmin } from '../supabase'
-import { getTiers } from './copy'
+import { anthropic } from '../anthropic.ts'
+import { supabaseAdmin } from '../supabase.ts'
+import { getTiers } from './copy.ts'
 
 // Brand image library for the lookbook (Supabase Storage bucket 'brand-assets',
 // PRIVATE — previews and PDFs are served via short-lived signed URLs only).

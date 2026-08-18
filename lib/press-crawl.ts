@@ -1,6 +1,6 @@
-import { supabaseAdmin } from './supabase'
-import { anthropic } from './anthropic'
-import type { PressContact } from './press-pitch'
+import { supabaseAdmin } from './supabase.ts'
+import { anthropic } from './anthropic.ts'
+import type { PressContact } from './press-pitch.ts'
 
 // Press-contact crawler — the same Claude + web_search approach as the B2B
 // prospector (lib/pipeline/prospector.ts), pointed at ONE outlet at a time to

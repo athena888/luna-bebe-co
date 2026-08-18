@@ -1,7 +1,7 @@
-import { supabaseAdmin } from './supabase'
-import { sendCampaignEmail } from './resend'
-import { isOptedOut } from './unsubscribe'
-import type { ContactSegment } from './contacts'
+import { supabaseAdmin } from './supabase.ts'
+import { sendCampaignEmail } from './resend.ts'
+import { isOptedOut } from './unsubscribe.ts'
+import type { ContactSegment } from './contacts.ts'
 
 // Build 8 — one-off campaigns from Portal → Campaigns. Recipients come ONLY
 // from marketing_contacts with marketing_opt_in, filtered by segment, minus

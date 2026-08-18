@@ -1,5 +1,5 @@
-import { supabaseAdmin } from './supabase'
-import { FEED_BRAND, productFeedUrl } from './google-feed'
+import { supabaseAdmin } from './supabase.ts'
+import { FEED_BRAND, productFeedUrl } from './google-feed.ts'
 
 // Google product review feed (separate from the product feed by design).
 // Policy enforced in code, not convention:
@@ -111,7 +111,7 @@ export async function buildReviewFeed(): Promise<{ rows: ReviewFeedRow[]; issues
   const skusByProduct = new Map<string, string[]>()
   if (slugs.length) {
     try {
-      const { getBoxProducts } = await import('./catalog-db')
+      const { getBoxProducts } = await import('./catalog-db.ts')
       for (const b of await getBoxProducts()) {
         if (slugs.includes(b.slug)) skusByProduct.set(`box-${b.slug}`, b.variants.map(v => `box-${b.slug}--${v.key}`))
       }

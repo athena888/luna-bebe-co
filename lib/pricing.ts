@@ -1,5 +1,5 @@
-import { supabaseAdmin } from './supabase'
-import type { Currency } from './markets'
+import { supabaseAdmin } from './supabase.ts'
+import type { Currency } from './markets.ts'
 
 // Per-currency box fee and shipping (explicit, rounded per market — no FX).
 // USD mirrors lib/products (BOX_BASE_PRICE / SHIPPING) so the US flow is identical.

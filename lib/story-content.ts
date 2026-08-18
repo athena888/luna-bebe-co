@@ -1,4 +1,4 @@
-import { supabaseAdmin } from './supabase'
+import { supabaseAdmin } from './supabase.ts'
 
 // Editable copy for the Story page. Stored as one JSON row in `site_content`
 // (key `story.content`); falls back to these defaults so the page always

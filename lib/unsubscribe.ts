@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { supabaseAdmin } from './supabase'
+import { supabaseAdmin } from './supabase.ts'
 
 // Signed unsubscribe links for customer flow emails (welcome series, review
 // ask, win-back). The token is an HMAC of the email so links can't be forged

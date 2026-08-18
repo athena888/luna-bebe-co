@@ -1,4 +1,4 @@
-import { stripe } from './stripe'
+import { stripe } from './stripe.ts'
 
 // Owner-managed discount codes — create/list/deactivate Stripe promotion codes
 // from the portal so the founder never has to open the Stripe dashboard. Each

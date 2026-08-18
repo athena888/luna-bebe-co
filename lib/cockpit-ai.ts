@@ -1,4 +1,4 @@
-import { anthropic } from './anthropic'
+import { anthropic } from './anthropic.ts'
 
 // Anthropic integrations for the Marketing Cockpit (brief §7). All return parsed
 // JSON. Server-only. Models per the brief: Haiku for the high-volume classifier,

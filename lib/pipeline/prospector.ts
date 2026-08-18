@@ -1,11 +1,11 @@
-import { anthropic } from '../anthropic'
-import { supabaseAdmin } from '../supabase'
-import { emailDomain } from '../outreach'
-import { verifyEmail } from '../emailVerifier'
+import { anthropic } from '../anthropic.ts'
+import { supabaseAdmin } from '../supabase.ts'
+import { emailDomain } from '../outreach.ts'
+import { verifyEmail } from '../emailVerifier.ts'
 import {
   getRotation, comboForCursor, advanceRotation, getBlockedDomains, isBlockedEmail,
   getDailySendCap, bumpDailyStats, pipelineEnabled, type Combo,
-} from './config'
+} from './config.ts'
 
 // Stage 1 — nightly prospector. A Claude agent (web_search tool) finds ~40
 // candidates for tonight's metro×category combo; we dedup hard, discover an

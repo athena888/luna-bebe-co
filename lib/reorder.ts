@@ -1,5 +1,5 @@
-import { supabaseAdmin } from './supabase'
-import { getCatalog } from './products-db'
+import { supabaseAdmin } from './supabase.ts'
+import { getCatalog } from './products-db.ts'
 
 // Reorder points per product: daily_rate (last 30d of paid orders) ×
 // lead_time_days + safety_stock. Effective stock follows the same rule as

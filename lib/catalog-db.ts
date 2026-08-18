@@ -1,4 +1,4 @@
-import { supabaseAdmin } from './supabase'
+import { supabaseAdmin } from './supabase.ts'
 import type { Product } from '@/types'
 
 // Catalog restructure Phase 1+2 (§46): boxes as parent PRODUCTS with variant
@@ -6,7 +6,7 @@ import type { Product } from '@/types'
 // `products` table). Everything here is fail-soft: before §46 runs, reads
 // return [] and the legacy prebuilt-box grid keeps the /boxes page alive.
 
-export { BLANKET_COLORS } from './box-colors'
+export { BLANKET_COLORS } from './box-colors.ts'
 
 export interface ContentRef {
   item_id: string

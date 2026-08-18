@@ -1,5 +1,5 @@
 import type { BoxSelection, Product } from '@/types'
-import { PRODUCTS } from './products'
+import { PRODUCTS } from './products.ts'
 
 function find(category: keyof typeof PRODUCTS, id: string): Product {
   const p = PRODUCTS[category].find(p => p.id === id)

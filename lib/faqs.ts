@@ -1,4 +1,4 @@
-import { RETURNS_SUMMARY } from './site-config'
+import { RETURNS_SUMMARY } from './site-config.ts'
 
 // Shared FAQ content — rendered on /faq (with FAQPage schema) and linked from
 // every box page's buy panel. Returns/cancellation wording comes from

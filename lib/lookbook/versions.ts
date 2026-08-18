@@ -1,5 +1,5 @@
-import { supabaseAdmin } from '../supabase'
-import { BRAND_BUCKET, signedUrlFor } from './images'
+import { supabaseAdmin } from '../supabase.ts'
+import { BRAND_BUCKET, signedUrlFor } from './images.ts'
 
 // Versioned lookbook PDFs — UPLOADED by Emily, not generated (the AI builder/
 // renderer was removed 2026-08-14; she makes the PDF herself). Upload = signed

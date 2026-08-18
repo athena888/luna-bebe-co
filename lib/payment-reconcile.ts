@@ -1,5 +1,5 @@
-import { stripe } from './stripe'
-import { supabaseAdmin } from './supabase'
+import { stripe } from './stripe.ts'
+import { supabaseAdmin } from './supabase.ts'
 
 // Payment reconciliation — the safety net for the failure mode that broke
 // silently from 2026-06-04 to 2026-08-16: Stripe captures the money, the

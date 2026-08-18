@@ -1,4 +1,4 @@
-import { getConfig, setConfig } from './pipeline/config'
+import { getConfig, setConfig } from './pipeline/config.ts'
 
 // Multi-provider email verification cascade. One adapter per platform, each
 // keyed by its own env var; the first provider with an API key AND monthly

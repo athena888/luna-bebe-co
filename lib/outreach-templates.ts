@@ -2,7 +2,7 @@
 // Rendering FAILS (returns null) if any {{field}} is left unresolved, so we never
 // send "Hi {{first_name}}". Every send appends a CAN-SPAM footer (postal address
 // + opt-out) built from BUSINESS_ADDRESS.
-import { unsubscribeUrl } from './unsubscribe'
+import { unsubscribeUrl } from './unsubscribe.ts'
 
 export type OutreachTrack = 'A' | 'C'
 

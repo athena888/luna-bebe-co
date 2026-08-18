@@ -1,8 +1,8 @@
-import { anthropic } from '../anthropic'
-import { supabaseAdmin } from '../supabase'
-import { getConfig, bumpDailyStats } from '../pipeline/config'
-import { addSuppression } from '../outreach'
-import { apiBudgetRemaining, logApiCall } from './api-ledger'
+import { anthropic } from '../anthropic.ts'
+import { supabaseAdmin } from '../supabase.ts'
+import { getConfig, bumpDailyStats } from '../pipeline/config.ts'
+import { addSuppression } from '../outreach.ts'
+import { apiBudgetRemaining, logApiCall } from './api-ledger.ts'
 
 // OPTIONAL reply triage — config flag targeting_v2.reply_triage_enabled,
 // default OFF. When on: one daily Haiku batch classifying prospect replies

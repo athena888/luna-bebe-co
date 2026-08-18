@@ -1,9 +1,9 @@
 import { resolveMx } from 'node:dns/promises'
-import { supabaseAdmin } from '../supabase'
-import { sendEmail, gmailSender } from '../gmail'
-import { withFooter } from '../outreach-templates'
-import { getSuppressedSet, emailDomain } from '../outreach'
-import { getDailySendCap, getConfig, bumpDailyStats, pipelineEnabled } from './config'
+import { supabaseAdmin } from '../supabase.ts'
+import { sendEmail, gmailSender } from '../gmail.ts'
+import { withFooter } from '../outreach-templates.ts'
+import { getSuppressedSet, emailDomain } from '../outreach.ts'
+import { getDailySendCap, getConfig, bumpDailyStats, pipelineEnabled } from './config.ts'
 
 // Pipeline queue drainer. THE structural guarantee lives here: the only query
 // that feeds sendEmail() inner-joins email_drafts with status
@@ -32,12 +32,20 @@ async function hasMx(domain: string): Promise<boolean> {
   try { return (await resolveMx(domain)).length > 0 } catch { return false }
 }
 
-/** Outbound emails already sent today (any sender) — the cap is global. */
+/**
+ * Outbound emails already sent today — the cap is global.
+ *
+ * Counts ACTUAL send rows, not `touches`. The audit found the touches ledger
+ * had inflated to 94 rows against 75 real sends (19 duplicate bookkeeping rows
+ * on one day). Because the cap read `touches`, those duplicates silently ate
+ * the daily allowance and throttled real sending. `sends` is the authoritative
+ * record of a message actually handed to Gmail.
+ */
 async function sentTodayCount(): Promise<number> {
   const since = `${new Date().toISOString().slice(0, 10)}T00:00:00Z`
-  const { count } = await supabaseAdmin.from('touches')
+  const { count } = await supabaseAdmin.from('sends')
     .select('id', { count: 'exact', head: true })
-    .eq('direction', 'outbound').eq('channel', 'email').gte('created_at', since)
+    .eq('status', 'sent').gte('sent_at', since)
   return count ?? 0
 }
 
@@ -141,10 +149,37 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
     const body = withFooter(r.draft.body, to)   // CAN-SPAM footer at send time, never in the draft
     if (dry) { stats.sent++; if (isPress) pressSent++; sentToday.add(to); continue }
 
+    // ATOMIC CLAIM — the fix for concurrent double-sends.
+    //
+    // On 2026-08-17 nineteen prospects received the identical email twice,
+    // 4–15 seconds apart, with distinct Gmail message ids. Two drain runs
+    // overlapped: each seeded its own in-memory `sentToday` set at start, so
+    // neither could see the other's sends. An in-process guard cannot span
+    // processes; only the database can arbitrate.
+    //
+    // Flipping queued -> sending is atomic, so exactly one runner wins the row.
+    // A loser gets zero rows back and skips without sending.
+    const { data: claimed } = await supabaseAdmin.from('sends')
+      .update({ status: 'sending' })
+      .eq('id', r.id).eq('status', 'queued')
+      .select('id')
+    if (!claimed || claimed.length === 0) {
+      await skip('claimed by a concurrent drain (stays queued)', false)
+      continue
+    }
+
     try {
       const res = await sendEmail({ to, subject: r.draft.subject, text: body, replyTo: gmailSender() })
+      // threadId is what makes reply/bounce detection possible later — the old
+      // sender received it from sendEmail() and threw it away, which is why
+      // replies were invisible. recipient_email is stored alongside so the sync
+      // can match inbound mail without re-joining through the draft.
       await supabaseAdmin.from('sends').update({
-        status: 'sent', gmail_message_id: res.messageId, sent_at: new Date().toISOString(),
+        status: 'sent',
+        gmail_message_id: res.messageId,
+        gmail_thread_id: res.threadId ?? null,
+        recipient_email: to,
+        sent_at: new Date().toISOString(),
       }).eq('id', r.id)
       // A press follow-up is the LAST touch this cycle: the editor closes for
       // 90 days (re-pitchable next season) instead of lingering in 'sent'.
@@ -162,11 +197,14 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
       // followup_due — the pipeline drafts its own follow-ups after 6 days.
       const contactId = await mirrorContact(to, p.company, p.person_name)
       if (contactId) {
-        await supabaseAdmin.from('touches').insert({
+        // Idempotent on message_id: one Gmail message can only ever be one
+        // touch. Paired with the unique index in the v3 migration, a repeated
+        // drain can no longer inflate the ledger (the 94-vs-75 bug).
+        await supabaseAdmin.from('touches').upsert({
           contact_id: contactId, direction: 'outbound', channel: 'email',
           subject: r.draft.subject, snippet: body.slice(0, 280),
           message_id: res.messageId, track: 'pipeline', status: 'sent', followup_due: null,
-        })
+        }, { onConflict: 'message_id', ignoreDuplicates: true })
       }
       stats.sent++
     } catch (e) {

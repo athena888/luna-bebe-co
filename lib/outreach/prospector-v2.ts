@@ -1,12 +1,12 @@
-import { anthropic } from '../anthropic'
-import { supabaseAdmin } from '../supabase'
-import { emailDomain } from '../outreach'
-import { verifyEmail } from '../emailVerifier'
-import { findPublishedEmail, patternCandidates } from '../pipeline/prospector'
-import { getBlockedDomains, isBlockedEmail, bumpDailyStats, pipelineEnabled, getDailySendCap } from '../pipeline/config'
-import { CITIES, INDUSTRIES, comboForDate, type WeekCombo } from './targeting'
-import { qualifyProspects, type QualifyInput, type QualifyResult, type QualifyStats } from './qualify'
-import { apiBudgetRemaining, logApiCall } from './api-ledger'
+import { anthropic } from '../anthropic.ts'
+import { supabaseAdmin } from '../supabase.ts'
+import { emailDomain } from '../outreach.ts'
+import { verifyEmail } from '../emailVerifier.ts'
+import { findPublishedEmail, patternCandidates } from '../pipeline/prospector.ts'
+import { getBlockedDomains, isBlockedEmail, bumpDailyStats, pipelineEnabled, getDailySendCap } from '../pipeline/config.ts'
+import { CITIES, INDUSTRIES, comboForDate, type WeekCombo } from './targeting.ts'
+import { qualifyProspects, type QualifyInput, type QualifyResult, type QualifyStats } from './qualify.ts'
+import { apiBudgetRemaining, logApiCall } from './api-ledger.ts'
 
 // Targeting-v2 prospector: ONE combo (city × industry set) per WEEK — every
 // day's 25 sends come from that combo, combos never mix in a day. Two API

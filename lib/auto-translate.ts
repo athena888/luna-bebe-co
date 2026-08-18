@@ -1,4 +1,4 @@
-import { supabaseAdmin } from './supabase'
+import { supabaseAdmin } from './supabase.ts'
 
 // Phase 7 — auto-translate portal content on save. English is the source of
 // truth; machine output lands UNAPPROVED (status "auto"): live /es pages keep

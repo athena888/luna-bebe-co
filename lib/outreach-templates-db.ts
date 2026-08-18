@@ -1,5 +1,5 @@
-import { supabaseAdmin } from './supabase'
-import { TEMPLATES, type OutreachTemplate } from './outreach-templates'
+import { supabaseAdmin } from './supabase.ts'
+import { TEMPLATES, type OutreachTemplate } from './outreach-templates.ts'
 
 // Owner-editable cold-email templates. Overrides live in one site_content row
 // (key 'outreach.templates' → { [templateKey]: { subject, body } }) and merge

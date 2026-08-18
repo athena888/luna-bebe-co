@@ -1,8 +1,8 @@
 import { resolveMx } from 'node:dns/promises'
-import { getContactsDueForOutreach, getSuppressedSet, emailDomain, type OutreachCandidate } from './outreach'
-import { templateForTrack, templateByKey, renderTemplate, withFooter, type OutreachTemplate } from './outreach-templates'
-import { getOutreachTemplates } from './outreach-templates-db'
-import { mintOutreachCode } from './outreach-discount'
+import { getContactsDueForOutreach, getSuppressedSet, emailDomain, type OutreachCandidate } from './outreach.ts'
+import { templateForTrack, templateByKey, renderTemplate, withFooter, type OutreachTemplate } from './outreach-templates.ts'
+import { getOutreachTemplates } from './outreach-templates-db.ts'
+import { mintOutreachCode } from './outreach-discount.ts'
 
 // Fresh regex per use — a shared /g regex keeps lastIndex state across .test()
 // calls, which silently skips replacement on later emails after any throw.

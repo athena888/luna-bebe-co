@@ -1,7 +1,7 @@
-import { supabaseAdmin } from './supabase'
-import { anthropic } from './anthropic'
-import { isSuppressed } from './outreach'
-import { draftEmail } from './gmail'
+import { supabaseAdmin } from './supabase.ts'
+import { anthropic } from './anthropic.ts'
+import { isSuppressed } from './outreach.ts'
+import { draftEmail } from './gmail.ts'
 
 // Manual press & gift-guide outreach (separate from the automated B2B
 // pipeline). Personalized pitches are generated ONE Anthropic call per contact

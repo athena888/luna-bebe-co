@@ -1,4 +1,4 @@
-import { supabaseAdmin } from './supabase'
+import { supabaseAdmin } from './supabase.ts'
 
 // Build 12 — waitlist + restock notifications. Joining the waitlist is an
 // explicit "email me about this" (source: waitlist, opted in). Restock
@@ -17,7 +17,7 @@ export async function joinWaitlist(input: { email: string; productId: string; se
   )
   if (error) return { ok: false, error: error.message }
   try {
-    const { upsertContact } = await import('./contacts')
+    const { upsertContact } = await import('./contacts.ts')
     await upsertContact({
       email,
       source: `waitlist:${input.productId}`,
@@ -42,7 +42,7 @@ export async function processRestocks(): Promise<number> {
   if (!waiting?.length) return 0
 
   const productIds = [...new Set(waiting.map(w => w.product_id as string))]
-  const { getProductStock, getCatalogProduct } = await import('./products-db')
+  const { getProductStock, getCatalogProduct } = await import('./products-db.ts')
 
   let queued = 0
   for (const pid of productIds) {

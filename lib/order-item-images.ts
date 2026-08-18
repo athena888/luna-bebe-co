@@ -1,4 +1,4 @@
-import { supabaseAdmin } from './supabase'
+import { supabaseAdmin } from './supabase.ts'
 
 // Order-confirmation emails show item thumbnails. Items stored on the order
 // don't always carry an image URL, and the storage filenames have timestamp
