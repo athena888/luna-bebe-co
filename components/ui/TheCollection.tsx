@@ -35,7 +35,7 @@ export function TheCollection({ title, body, items }: { title: string; body: str
   const fallbackAlt = isEs
     ? 'Canastilla Petite Lavande con lazo, sobre boj'
     : 'Petite Lavande gift box tied with ribbon, resting on greenery'
-  const webImg: Img = web ?? { public_url: '/home-collection.jpg', alt_text: fallbackAlt }
+  const webImg: Img = web ?? { public_url: '/home-collection.webp', alt_text: fallbackAlt }
   const mobileImg: Img = mobile ?? webImg
 
   return (

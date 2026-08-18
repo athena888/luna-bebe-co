@@ -9,6 +9,7 @@ import { BoxBuyPanel } from '@/components/ui/BoxBuyPanel'
 import { BoxGallery } from '@/components/ui/BoxGallery'
 import { ReviewSection } from '@/components/ui/ReviewSection'
 import { SlotBackground } from '@/components/ui/SlotBackground'
+import { TrackViewItem } from '@/components/ui/TrackViewItem'
 import { boxSlotKey } from '@/lib/image-slots'
 import { getBoxProduct, getItemSizeOptions, pieceCount, priceRange } from '@/lib/catalog-db'
 import { CATEGORY_LABELS, CATEGORY_LABELS_ES, formatDollars } from '@/lib/products'
@@ -245,6 +246,16 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                 <p className="font-sans text-sm text-bark-600 mt-4">{t.card}</p>
                 <p className="font-sans text-xs text-bark-400 mt-3">{t.basket}</p>
               </div>
+
+              {/* GA4 view_item / Meta ViewContent — boxes fired nothing before,
+                  so the funnel showed no product views for the very products
+                  the ads point at. Id matches the Merchant feed offer id. */}
+              <TrackViewItem
+                id={`box-${box.slug}--${variant.key}`}
+                name={box.variants.length > 1 ? `${box.name} — ${variant.label}` : box.name}
+                price={variant.price}
+                category="Gift Box"
+              />
 
               <BoxBuyPanel
                 contents={variant.contents.map(c => ({ item: c.item, qty: c.qty, colorChoice: c.colorChoice }))}

@@ -187,7 +187,7 @@ export function Footer() {
             {/* Brand + newsletter */}
             <div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-color.png" alt="Petite Lavande" className="h-14 sm:h-[4.25rem] w-auto mb-5 mx-auto" />
+              <img src="/logo-color.webp" alt="Petite Lavande" className="h-14 sm:h-[4.25rem] w-auto mb-5 mx-auto" />
 
               <p className="font-playfair text-[15px] text-espresso mb-3 text-center">{isEs ? 'Solo te enviamos lo bueno.' : 'We only send the good stuff.'}</p>
               <div className="max-w-md mx-auto"><EmailSignup /></div>

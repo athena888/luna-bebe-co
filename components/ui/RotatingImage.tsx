@@ -6,13 +6,17 @@ import { useEffect, useRef, useState } from 'react'
 // on touch it's swipeable (drag left/right to advance). Renders absolutely-
 // positioned layers so it works as a section background. With one image it is
 // static; respects prefers-reduced-motion (then it just shows the first).
-function RotatingImageCore({ urls, alt = '', className = '', intervalMs = 5000 }: {
+const MOBILE_MEDIA = '(max-width: 639px)'
+
+function RotatingImageCore({ urls, mobileUrls, alt = '', className = '', intervalMs = 5000 }: {
   urls: string[]
+  mobileUrls?: string[]
   alt?: string
   className?: string
   intervalMs?: number
 }) {
   const list = urls.filter(Boolean)
+  const mobile = (mobileUrls ?? []).filter(Boolean)
   const [i, setI] = useState(0)
   const startX = useRef<number | null>(null)
 
@@ -43,23 +47,34 @@ function RotatingImageCore({ urls, alt = '', className = '', intervalMs = 5000 }
       onTouchEnd={swipe ? onTouchEnd : undefined}
     >
       {list.map((u, idx) => (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          key={`${u}-${idx}`}
-          src={u}
-          alt={idx === 0 ? alt : ''}
-          aria-hidden={idx !== 0}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === i % list.length ? 'opacity-100' : 'opacity-0'}`}
-        />
+        // <picture> so the browser downloads ONE crop, not both. Rendering a
+        // desktop <img> and a phone <img> and hiding one with CSS still
+        // downloads both — `display:none` doesn't cancel an image request —
+        // which was costing every phone visitor a full desktop hero.
+        <picture key={`${u}-${idx}`}>
+          {mobile[idx] && <source media={MOBILE_MEDIA} srcSet={mobile[idx]} />}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={u}
+            alt={idx === 0 ? alt : ''}
+            aria-hidden={idx !== 0}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === i % list.length ? 'opacity-100' : 'opacity-0'}`}
+          />
+        </picture>
       ))}
     </div>
   )
 }
 
 /** RotatingImage with an optional separate PHONE gallery. When `mobileUrls`
- *  has images, phones (< sm) rotate through those portrait crops while
- *  desktop keeps the landscape set — no more bad crops of wide heroes on
- *  mobile. With no mobile set, all screens share `urls` (old behavior). */
+ *  has images, phones (< sm) get those portrait crops while desktop keeps the
+ *  landscape set — no more bad crops of wide heroes on mobile. With no mobile
+ *  set, all screens share `urls`.
+ *
+ *  Both crops are paired inside one <picture> per slide rather than rendered
+ *  as two CSS-hidden galleries, so a phone downloads the phone crop only.
+ *  The mobile list is matched by index; if it's shorter, later slides fall
+ *  back to the desktop crop for those positions. */
 export function RotatingImage({ urls, mobileUrls, alt = '', className = '', intervalMs = 5000 }: {
   urls: string[]
   mobileUrls?: string[]
@@ -68,13 +83,10 @@ export function RotatingImage({ urls, mobileUrls, alt = '', className = '', inte
   intervalMs?: number
 }) {
   const mobile = (mobileUrls ?? []).filter(Boolean)
-  if (mobile.length > 0) {
-    return (
-      <>
-        <RotatingImageCore urls={urls} alt={alt} className={`${className} hidden sm:block`} intervalMs={intervalMs} />
-        <RotatingImageCore urls={mobile} alt={alt} className={`${className} sm:hidden`} intervalMs={intervalMs} />
-      </>
-    )
+  // A phone-only gallery (no desktop set) still needs something in <img>.
+  const web = urls.filter(Boolean)
+  if (web.length === 0 && mobile.length > 0) {
+    return <RotatingImageCore urls={mobile} alt={alt} className={className} intervalMs={intervalMs} />
   }
-  return <RotatingImageCore urls={urls} alt={alt} className={className} intervalMs={intervalMs} />
+  return <RotatingImageCore urls={web} mobileUrls={mobile} alt={alt} className={className} intervalMs={intervalMs} />
 }

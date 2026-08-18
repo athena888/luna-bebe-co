@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react'
 import { ParallaxLayer } from './ParallaxLayer'
 
+// Phone breakpoint, matched to Tailwind's `sm`.
+const MOBILE_MEDIA = '(max-width: 639px)'
+
 type Img = { public_url: string; alt_text: string }
 type DbScrim = { hex: string; opacity: number }
 
@@ -93,12 +96,14 @@ export function SlotBackground({
     return (
       <div className={`relative ${className}`}>
         {web && mobile ? (
-          <>
+          // One <picture>, not two CSS-hidden <img>s: hiding an image with
+          // `display:none` does not stop the browser downloading it, so the
+          // old pair cost every visitor both crops.
+          <picture>
+            <source media={MOBILE_MEDIA} srcSet={mobile.public_url} />
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={mobile.public_url} alt={mobile.alt_text} className="block w-full h-auto sm:hidden" aria-hidden="true" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={web.public_url} alt={web.alt_text} className="hidden w-full h-auto sm:block" aria-hidden="true" />
-          </>
+            <img src={web.public_url} alt={web.alt_text} className="block w-full h-auto" aria-hidden="true" />
+          </picture>
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={(web ?? mobile)!.public_url} alt={(web ?? mobile)!.alt_text} className="block w-full h-auto" aria-hidden="true" />
@@ -127,12 +132,11 @@ export function SlotBackground({
     }
     if (web && mobile) {
       return (
-        <>
+        <picture>
+          <source media={MOBILE_MEDIA} srcSet={mobile.public_url} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={mobile.public_url} alt={mobile.alt_text} className={`absolute inset-0 w-full h-full ${fitClass} sm:hidden`} aria-hidden="true" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={web.public_url} alt={web.alt_text} className={`absolute inset-0 w-full h-full ${fitClass} hidden sm:block`} aria-hidden="true" />
-        </>
+          <img src={web.public_url} alt={web.alt_text} className={`absolute inset-0 w-full h-full ${fitClass}`} aria-hidden="true" />
+        </picture>
       )
     }
     const one = web ?? mobile

@@ -67,7 +67,7 @@ function FbIcon({ size = 26 }: { size?: number }) {
 // solid bar the coloured version. Falls back to the built-in SVG if the PNG
 // isn't present yet.
 function Sprig({ light }: { light: boolean }) {
-  const src = light ? '/sprig-white.png' : '/sprig-color.png'
+  const src = light ? '/sprig-white.png' : '/sprig-color.webp'
   const [err, setErr] = useState(false)
   useEffect(() => { setErr(false) }, [src])
   if (err) {
@@ -81,7 +81,7 @@ function Sprig({ light }: { light: boolean }) {
 // version over the hero, coloured version on the solid bar. Falls back to the
 // sprig + Fraunces wordmark if the lockup image isn't present yet.
 function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
-  const src = light ? '/logo-white.png' : '/logo-color.png'
+  const src = light ? '/logo-white.png' : '/logo-color.webp'
   const [err, setErr] = useState(false)
   useEffect(() => { setErr(false) }, [src])
   // Bigger at the hero top; shrinks to normal on scroll. transition-all animates height.
