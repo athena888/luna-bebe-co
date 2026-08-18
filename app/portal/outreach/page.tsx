@@ -93,6 +93,73 @@ function Sparkline({ runs }: { runs: Run[] }) {
   )
 }
 
+
+// Manual bounce intake. Nothing routes delivery failures into the pipeline yet
+// (INBOUND_EMAIL_SECRET unset, no inbound provider), so bounced addresses were
+// never suppressed and stayed eligible for another send. Paste the bounce
+// emails from the inbox here and they go through the same path the webhook
+// would: suppression + prospect 'bounced' + pending drafts superseded.
+function BounceIntake() {
+  const [open, setOpen] = useState(false)
+  const [text, setText] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [result, setResult] = useState<null | { ok?: boolean; error?: string; found?: number; suppressed?: number; matchedProspect?: number; unmatched?: string[] }>(null)
+
+  async function submit() {
+    setBusy(true); setResult(null)
+    try {
+      const res = await fetch('/api/portal/outreach-pipeline/bounces', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      })
+      const json = await res.json()
+      setResult(json)
+      if (res.ok) setText('')
+    } catch {
+      setResult({ error: 'Network error' })
+    } finally { setBusy(false) }
+  }
+
+  return (
+    <div className="mb-4 bg-white border border-cream-300 rounded-lg p-3">
+      {!open ? (
+        <button onClick={() => setOpen(true)}
+          className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-500 hover:text-bark-700 transition-colors">
+          + Record bounced addresses
+        </button>
+      ) : (
+        <>
+          <p className="font-sans text-[11px] text-bark-500 mb-2 leading-relaxed">
+            Paste the bounce emails (or just the addresses, one per line). Each one is
+            suppressed permanently and its prospect marked bounced — the sender refuses
+            both, so they can never be emailed again.
+          </p>
+          <textarea value={text} onChange={e => setText(e.target.value)} rows={5}
+            placeholder="one address per line, or paste the whole bounce email"
+            className="w-full px-2 py-1.5 border border-cream-300 rounded font-mono text-[11px] text-bark-600 focus:outline-none focus:border-bark-400 mb-2" />
+          <div className="flex items-center gap-2">
+            <button onClick={submit} disabled={busy || !text.trim()}
+              className="inline-flex items-center gap-1.5 font-sans text-[10px] tracking-[0.15em] uppercase px-3 py-1.5 rounded bg-bark-700 text-cream-50 hover:bg-bark-600 disabled:opacity-40 transition-colors">
+              {busy ? <Loader size={11} className="animate-spin" /> : <Ban size={11} />} Suppress
+            </button>
+            <button onClick={() => { setOpen(false); setResult(null) }}
+              className="font-sans text-[10px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
+              Close
+            </button>
+          </div>
+          {result && (
+            <p className={`font-sans text-[11px] mt-2 ${result.error ? 'text-rose-600' : 'text-sage-600'}`}>
+              {result.error
+                ? result.error
+                : `Suppressed ${result.suppressed} of ${result.found} — ${result.matchedProspect} matched a prospect${result.unmatched?.length ? `, ${result.unmatched.length} had no prospect row (still suppressed)` : ''}.`}
+            </p>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
 export default function ReviewPage() {
   // One tab for all outreach (Emily 2026-08-15): Corporate = the automated
   // B2B pipeline review; Press = the manual drafts-only press system.
@@ -234,6 +301,7 @@ export default function ReviewPage() {
 
   return (
     <div className="p-4 md:p-8 max-w-3xl mx-auto">
+      <BounceIntake />
       <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
         <div className="flex items-baseline gap-4">
           <h1 className="font-serif text-2xl text-bark-700">Morning Review</h1>
