@@ -60,9 +60,38 @@ export function isBlockedEmail(email: string, blocked: Set<string>): boolean {
   return isFreemail(email) || blocked.has(emailDomain(email))
 }
 
+// Warm-up ladder to 50/day (Emily 2026-08-14). She has been steady at 25 for
+// several days; mailbox providers watch the SLOPE of volume from a young
+// sending domain more than the absolute number, and this domain also carries
+// customer receipts — so the step-up is staged instead of doubling overnight.
+// Dates are the first day each step applies (America/Los_Angeles).
+const SEND_RAMP: Array<{ from: string; cap: number }> = [
+  { from: '2026-08-17', cap: 30 },  // Mon
+  { from: '2026-08-19', cap: 35 },  // Wed
+  { from: '2026-08-21', cap: 42 },  // Fri
+  { from: '2026-08-24', cap: 50 },  // Mon — full volume
+]
+
+/** Today's ladder step, or null before the ramp starts. */
+export function rampCapForToday(now = new Date()): number | null {
+  const today = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit',
+  }).format(now)
+  let cap: number | null = null
+  for (const step of SEND_RAMP) if (today >= step.from) cap = step.cap
+  return cap
+}
+
 export async function getDailySendCap(): Promise<number> {
-  const v = await getConfig<number>('daily_send_cap')
-  const n = Number(v ?? process.env.OUTREACH_DAILY_CAP ?? 25)
+  // An explicit portal override always wins (Morning Review), so Emily can
+  // pause or hand-set the number without touching the ladder.
+  const override = await getConfig<number>('daily_send_cap')
+  if (override != null && Number.isFinite(Number(override)) && Number(override) > 0) {
+    return Math.floor(Number(override))
+  }
+  const ceiling = Number(process.env.OUTREACH_DAILY_CAP ?? 25)
+  const ramp = rampCapForToday()
+  const n = ramp == null ? 25 : Math.min(ramp, Number.isFinite(ceiling) && ceiling > 0 ? ceiling : 50)
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : 25
 }
 
