@@ -85,6 +85,16 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
     return { capRemaining: 0, sent: 0, failed: 0, skipped: [], dry, paused: true }
   }
 
+  // Second, independent gate. pipeline_enabled controls the whole machine
+  // (discovery, drafting, sending); live_sends_enabled controls SENDING alone,
+  // so discovery and qualification can run at full speed while outbound stays
+  // dark. Defaults to FALSE: the flag must be set true explicitly, because the
+  // failure mode here is irreversible — an email cannot be unsent.
+  const v3 = await getConfig<{ live_sends_enabled?: boolean }>('quality_v3')
+  if (v3 && v3.live_sends_enabled !== true) {
+    return { capRemaining: 0, sent: 0, failed: 0, skipped: [], dry, paused: true }
+  }
+
   const cap = await getDailySendCap()
   const capRemaining = Math.max(0, cap - (await sentTodayCount()))
   const stats: DrainStats = { capRemaining, sent: 0, failed: 0, skipped: [], dry }
