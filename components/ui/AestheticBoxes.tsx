@@ -84,7 +84,7 @@ function PriceBlock({ box }: { box: ResolvedBox }) {
     <div className="flex items-baseline gap-2.5 flex-wrap">
       {saving && <span className="font-serif text-lg text-bark-400 line-through">{fmt(regular)}</span>}
       <span className="font-serif text-2xl text-espresso">{fmt(price)}</span>
-      {saving && <span className="font-sans text-[11px] tracking-[0.15em] uppercase text-sage-600">Save {fmt(regular - price)}</span>}
+      {saving && <span className="font-sans text-[11px] tracking-[0.11em] uppercase text-sage-600">Save {fmt(regular - price)}</span>}
       <span className="font-sans text-[11px] text-bark-400">· Card at checkout</span>
     </div>
   )
@@ -108,7 +108,7 @@ function BuyBox({ box, size }: { box: ResolvedBox; size: string }) {
   return (
     <button
       onClick={buy}
-      className="shrink-0 whitespace-nowrap bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.25em] uppercase px-7 py-3 hover:bg-[#6d8070] transition-colors"
+      className="shrink-0 whitespace-nowrap bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.16em] uppercase px-7 py-3 hover:bg-[#6d8070] transition-colors"
     >
       Buy This Box
     </button>
@@ -119,7 +119,7 @@ function BuyBox({ box, size }: { box: ResolvedBox; size: string }) {
 function SizePicker({ size, setSize }: { size: string; setSize: (s: string) => void }) {
   return (
     <div className="flex items-center gap-3">
-      <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400">Size</p>
+      <p className="font-sans text-[11px] tracking-[0.16em] uppercase text-bark-400">Size</p>
       <div className="flex gap-2">
         {BOX_SIZES.map(s => (
           <button
@@ -148,7 +148,7 @@ function ItemEntry({ item, onOpen }: { item: BoxItem; onOpen: (i: BoxItem) => vo
       <div className="min-w-0 flex-1">
         <p className="font-sans text-xs text-bark-600 leading-snug group-hover:text-bark-800 line-clamp-2">{item.name}</p>
         <div className="flex items-center gap-2 flex-wrap mt-0.5">
-          <span className="font-sans text-[11px] tracking-[0.15em] uppercase text-gold-400">{item.category}</span>
+          <span className="font-sans text-[11px] tracking-[0.11em] uppercase text-gold-400">{item.category}</span>
           {(item as CartItem & { selectedColorHex?: string }).selectedColorHex && (
             <span className="inline-flex items-center gap-1">
               <span className="pl-swatch w-3 h-3 rounded-full border border-cream-300 shrink-0" style={{ backgroundColor: (item as CartItem & { selectedColorHex?: string }).selectedColorHex }} />
@@ -174,7 +174,7 @@ function ItemsList({ box, onOpen }: { box: ResolvedBox; onOpen: (i: BoxItem) => 
     <div className="space-y-5">
       {baby.length > 0 && (
         <div>
-          <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">For Baby</p>
+          <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">For Baby</p>
           <div className="grid grid-cols-2 gap-x-3 gap-y-4">
             {baby.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} onOpen={onOpen} />)}
           </div>
@@ -182,7 +182,7 @@ function ItemsList({ box, onOpen }: { box: ResolvedBox; onOpen: (i: BoxItem) => 
       )}
       {mama.length > 0 && (
         <div>
-          <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">Wellness</p>
+          <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 pb-1.5 mb-3 border-b border-cream-200">Wellness</p>
           <div className="grid grid-cols-2 gap-x-3 gap-y-4">
             {mama.map((item, i) => <ItemEntry key={`${item.id}-${i}`} item={item} onOpen={onOpen} />)}
           </div>
@@ -201,7 +201,7 @@ function ItemsModal({ box, onClose, onPreview }: { box: ResolvedBox; onClose: ()
       <div className="bg-white w-full sm:max-w-lg max-h-[88vh] flex flex-col overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3 px-6 pt-6 pb-4 border-b border-cream-200 shrink-0">
           <div>
-            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400">{box.style}</p>
+            <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400">{box.style}</p>
             <h3 className="font-serif text-2xl text-espresso">{box.name}</h3>
           </div>
           <button onClick={onClose} aria-label="Close" className="text-bark-400 hover:text-bark-600 transition-colors -mt-1"><X size={18} /></button>
@@ -282,7 +282,7 @@ function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => 
             )}
           </div>
           <div className="flex-1 lg:min-h-0 lg:overflow-y-auto p-6 lg:p-8 flex flex-col">
-            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-2">{item.category}</p>
+            <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-2">{item.category}</p>
             <h2 className="font-serif text-2xl lg:text-3xl text-espresso leading-tight mb-2">{item.name}</h2>
             <p className="font-sans text-base text-bark-400 mb-2">{fmt(item.price)}</p>
             {description && (
@@ -297,12 +297,12 @@ function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => 
             )}
             {ingredients && (
               <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
-                <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
+                <span className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
                 <span className="font-sans text-xs text-bark-400">{ingredients}</span>
               </div>
             )}
             <div className="border-t border-cream-300 pt-4 mt-auto">
-              <Link href={`/products/${item.id}`} className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
+              <Link href={`/products/${item.id}`} className="font-sans text-[11px] tracking-[0.11em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
                 View full product →
               </Link>
             </div>
@@ -475,7 +475,7 @@ function BoxSection({
             desktop, filling the remaining panel height. */}
         {box.items.length > 0 && (
           <div className="px-8 lg:px-12 xl:px-16 mt-5 lg:mt-4 pb-8 lg:pb-6 lg:flex-1 lg:min-h-0 flex flex-col">
-            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-bark-300 mb-3 shrink-0">What&apos;s Inside</p>
+            <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-bark-300 mb-3 shrink-0">What&apos;s Inside</p>
             <FadeScroll className="max-h-[380px] lg:max-h-none lg:flex-1 lg:min-h-0 overflow-y-auto scrollbar-hide pr-1 pb-2">
               <ItemsList box={box} onOpen={onPreview} />
             </FadeScroll>

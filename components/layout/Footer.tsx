@@ -106,7 +106,7 @@ function OccasionCapture({ email }: { email: string }) {
           className="flex-1 min-w-0 px-3 py-2 font-sans text-[13px] text-espresso placeholder:font-light placeholder:text-[#B8B0A6] bg-cream-50 border border-cream-300 focus:outline-none"
         />
         <button type="submit" disabled={state === 'saving'}
-          className="px-4 py-2 bg-[#7A8E7C] text-white font-sans text-[10px] tracking-[0.15em] uppercase font-semibold hover:bg-[#6b7d6d] transition-colors disabled:opacity-50">
+          className="px-4 py-2 bg-[#7A8E7C] text-white font-sans text-[10px] tracking-[0.11em] uppercase font-semibold hover:bg-[#6b7d6d] transition-colors disabled:opacity-50">
           {state === 'saving' ? '…' : 'Remember It'}
         </button>
       </div>

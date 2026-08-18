@@ -15,7 +15,7 @@ export function BoxGallery({ images, alt }: { images: string[]; alt: string }) {
   if (images.length === 0) {
     return (
       <div className="relative aspect-[3/4] bg-cream-200 border border-cream-300">
-        <div className="absolute inset-0 flex items-center justify-center font-sans text-xs tracking-[0.2em] uppercase text-bark-300">{isEs ? 'Fotografía muy pronto' : 'Photography coming soon'}</div>
+        <div className="absolute inset-0 flex items-center justify-center font-sans text-xs tracking-[0.14em] uppercase text-bark-300">{isEs ? 'Fotografía muy pronto' : 'Photography coming soon'}</div>
       </div>
     )
   }
@@ -33,7 +33,7 @@ export function BoxGallery({ images, alt }: { images: string[]; alt: string }) {
         >
           {images.map((src, i) => (
             <div key={i} className="relative shrink-0 w-full aspect-[3/4] snap-center bg-cream-200">
-              <Image src={src} alt={`${alt} — ${i + 1}`} fill className="object-cover" unoptimized />
+              <Image src={src} alt={`${alt} — ${i + 1}`} fill className="object-cover" />
             </div>
           ))}
         </div>
@@ -52,12 +52,12 @@ export function BoxGallery({ images, alt }: { images: string[]; alt: string }) {
         <div className="flex flex-col gap-2 w-16">
           {images.map((src, i) => (
             <button key={i} type="button" onClick={() => setIdx(i)} className={`relative aspect-square border transition-colors ${i === idx ? 'border-espresso' : 'border-cream-300 hover:border-espresso-light'}`}>
-              <Image src={src} alt={`${alt} — photo ${i + 1}`} fill className="object-cover" unoptimized />
+              <Image src={src} alt={`${alt} — photo ${i + 1}`} fill className="object-cover" />
             </button>
           ))}
         </div>
         <div className="relative flex-1 aspect-[3/4] bg-cream-200 overflow-hidden group">
-          <Image src={images[Math.min(idx, images.length - 1)]} alt={alt} fill className="object-cover transition-transform duration-300 group-hover:scale-105" unoptimized />
+          <Image src={images[Math.min(idx, images.length - 1)]} alt={alt} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
         </div>
       </div>
     </div>

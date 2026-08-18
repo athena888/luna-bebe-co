@@ -47,12 +47,12 @@ export default async function PressPage() {
         {/* Hero — background uploadable via Portal → Site Images → Press */}
         <SlotBackground slotKey="press.hero_bg" scrim="bg-cream-50/70">
           <section className="max-w-4xl mx-auto px-6 pt-16 pb-12 text-center">
-            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-3">Press Kit</p>
+            <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-3">Press Kit</p>
             <h1 className="font-serif text-4xl text-espresso mb-4">Petite Lavande</h1>
             <p className="font-cormorant text-xl italic text-espresso-light max-w-2xl mx-auto">{oneLiner}</p>
             {/* Boilerplate — copy-ready for editors */}
             <p className="font-sans text-sm text-bark-600 leading-relaxed max-w-2xl mx-auto mt-5">{boilerplate}</p>
-            <p className="font-sans text-xs tracking-[0.15em] uppercase text-bark-400 mt-4">Gift boxes {priceRange} · ships nationwide</p>
+            <p className="font-sans text-xs tracking-[0.11em] uppercase text-bark-400 mt-4">Gift boxes {priceRange} · ships nationwide</p>
             <p className="font-sans text-sm text-bark-500 mt-4">
               Press inquiries &amp; samples: <a className="underline" href="mailto:hello@petitelavande.com">hello@petitelavande.com</a>
             </p>

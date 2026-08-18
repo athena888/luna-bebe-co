@@ -77,7 +77,7 @@ export default function TrackPage() {
         <SlotBackground slotKey="track.bg" scrim="bg-cream-50/85" className="sm:min-h-[90vh]" attach="fixed">
         <div className="max-w-xl mx-auto px-6 py-14">
           <div className="text-center mb-10">
-            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-3">Order Status</p>
+            <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-3">Order Status</p>
             <h1 className="font-serif text-4xl text-espresso">Track an Order</h1>
           </div>
           <form onSubmit={handleLookup} className="space-y-4 mb-10">
@@ -112,7 +112,7 @@ export default function TrackPage() {
                     {/* Header */}
                     <div className="px-6 py-5 border-b border-cream-200 flex items-start justify-between gap-4">
                       <div>
-                        <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-1">Order Reference</p>
+                        <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-1">Order Reference</p>
                         <p className="font-sans text-sm font-medium text-bark-600">#{orderRef(order.id)}</p>
                         <p className="font-sans text-xs text-bark-400 mt-0.5">{formatDate(order.created_at)}</p>
                       </div>
@@ -146,7 +146,7 @@ export default function TrackPage() {
                       <div className="px-6 py-4 bg-sage-50/50">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-1">Tracking Number</p>
+                            <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-1">Tracking Number</p>
                             <p className="font-sans text-sm text-bark-600">{order.tracking_number}</p>
                           </div>
                           {order.tracking_url && (

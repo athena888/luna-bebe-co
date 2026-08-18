@@ -87,7 +87,7 @@ export default function AccountPage() {
       <SlotBackground slotKey="signin.bg" scrim="bg-cream-50/85" className="sm:min-h-[90vh]">
         <div className="max-w-xl mx-auto px-6 py-14">
         <div className="text-center mb-10">
-          <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-3">My Account</p>
+          <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-3">My Account</p>
           <h1 className="font-serif text-4xl text-espresso">Sign In</h1>
         </div>
 
@@ -123,7 +123,7 @@ export default function AccountPage() {
       {/* Account header */}
       <div className="flex items-start justify-between mb-10">
         <div>
-          <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-1">Welcome back</p>
+          <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-1">Welcome back</p>
           <h1 className="font-serif text-3xl text-espresso">{user.email}</h1>
         </div>
         <button onClick={handleSignOut} className="flex items-center gap-1.5 font-sans text-xs text-bark-400 hover:text-bark-600 transition-colors">
@@ -143,14 +143,14 @@ export default function AccountPage() {
             className="flex flex-col items-center gap-2 py-5 border border-cream-300 hover:border-bark-400 transition-colors text-bark-400 hover:text-bark-600"
           >
             {icon}
-            <span className="font-sans text-[11px] tracking-[0.2em] uppercase">{label}</span>
+            <span className="font-sans text-[11px] tracking-[0.14em] uppercase">{label}</span>
           </a>
         ))}
       </div>
 
       {/* Orders */}
       <div id="orders">
-        <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-bark-400 mb-6 pb-3 border-b border-cream-300">Order History</p>
+        <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-bark-400 mb-6 pb-3 border-b border-cream-300">Order History</p>
         {loading ? (
           <p className="font-sans text-sm text-bark-400">Loading orders...</p>
         ) : orders.length === 0 ? (
@@ -170,7 +170,7 @@ export default function AccountPage() {
                 </div>
                 <div className="text-right">
                   <p className="font-sans text-sm text-bark-600 mb-0.5">{formatPrice(order.total_amount)}</p>
-                  <span className="inline-block font-sans text-[11px] tracking-[0.15em] uppercase bg-cream-200 text-bark-500 px-2 py-0.5">
+                  <span className="inline-block font-sans text-[11px] tracking-[0.11em] uppercase bg-cream-200 text-bark-500 px-2 py-0.5">
                     {STATUS_LABEL[order.status] ?? order.status}
                   </span>
                 </div>

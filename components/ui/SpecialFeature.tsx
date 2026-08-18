@@ -16,7 +16,7 @@ export function PerksTicker({ perks }: { perks: Perk[] }) {
           <div key={copy} className="flex shrink-0 items-baseline" aria-hidden={copy === 1}>
             {perks.map(({ label, sub }) => (
               <span key={`${copy}-${label}`} className="flex items-baseline whitespace-nowrap px-8 sm:px-12">
-                <span className="font-sans text-[11px] tracking-[0.25em] uppercase font-semibold text-espresso">{label}</span>
+                <span className="font-sans text-[11px] tracking-[0.16em] uppercase font-semibold text-espresso">{label}</span>
                 <span className="font-cormorant text-[15px] text-espresso-light ml-3">{sub}</span>
                 <span className="w-1 h-1 rounded-full pl-round-full bg-gold-400 ml-8 sm:ml-12 self-center" />
               </span>
@@ -54,7 +54,7 @@ export function SpecialFeature({ title, intro }: { title: string; intro: string 
             </p>
             <Link
               href={isEs ? '/es/canastillas' : '/boxes'}
-              className={`inline-block font-sans text-[12px] tracking-[0.3em] uppercase border-b pb-1 transition-colors ${hasImage ? 'text-white border-white hover:text-cream-100 hover:border-cream-100' : 'text-espresso border-espresso hover:text-gold-500 hover:border-gold-500'}`}
+              className={`inline-block font-sans text-[12px] tracking-[0.18em] uppercase border-b pb-1 transition-colors ${hasImage ? 'text-white border-white hover:text-cream-100 hover:border-cream-100' : 'text-espresso border-espresso hover:text-gold-500 hover:border-gold-500'}`}
             >
               {isEs ? 'Comprar ahora' : 'Shop Now'}
             </Link>

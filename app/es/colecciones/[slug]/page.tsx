@@ -37,7 +37,7 @@ export default async function EsCollectionPage({ params }: { params: Promise<{ s
       <Header />
       <main className="min-h-screen bg-white">
     <div className="max-w-6xl mx-auto px-6 pt-12 pb-16">
-      <p className="font-sans text-[12px] tracking-[0.3em] uppercase font-bold text-[#7A8E7C] mb-3">Colección</p>
+      <p className="font-sans text-[12px] tracking-[0.18em] uppercase font-bold text-[#7A8E7C] mb-3">Colección</p>
       <h1 className="font-playfair text-3xl sm:text-4xl text-espresso mb-4">{t.h1 ?? t.title ?? c.title}</h1>
       {t.intro_copy && (
         <p className="font-sans text-[15px] leading-relaxed text-espresso-light max-w-2xl mb-10">{t.intro_copy}</p>

@@ -267,7 +267,7 @@ export function ReviewSection({ productId }: { productId: string }) {
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 hover:text-bark-600 border border-cream-300 px-4 py-2 transition-colors"
+            className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 hover:text-bark-600 border border-cream-300 px-4 py-2 transition-colors"
           >
             Write a Review
           </button>
@@ -278,19 +278,19 @@ export function ReviewSection({ productId }: { productId: string }) {
         <form onSubmit={handleSubmit} className="bg-cream-100 border border-cream-300 p-6 mb-8 space-y-4">
           <p className="font-serif text-lg text-bark-600 mb-4">Share Your Experience</p>
           <div>
-            <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">Your Rating</p>
+            <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">Your Rating</p>
             <StarRating value={rating} onChange={setRating} />
           </div>
           <div>
-            <label className="block font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">Your Name</label>
+            <label className="block font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">Your Name</label>
             <input required type="text" value={name} onChange={e => setName(e.target.value)} placeholder="First name or initials" className={inputClass} />
           </div>
           <div>
-            <label className="block font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">Your Review</label>
+            <label className="block font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">Your Review</label>
             <textarea required rows={4} value={body} onChange={e => setBody(e.target.value)} placeholder="Tell others what you loved about this product..." className={`${inputClass} resize-none`} />
           </div>
           <div>
-            <label className="block font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">Add a Photo (optional)</label>
+            <label className="block font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">Add a Photo (optional)</label>
             <input
               type="file"
               accept="image/*"
@@ -322,7 +322,7 @@ export function ReviewSection({ productId }: { productId: string }) {
             <button
               type="submit"
               disabled={submitState === 'submitting'}
-              className="bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase px-6 py-3 hover:bg-bark-700 transition-colors disabled:opacity-40"
+              className="bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.14em] uppercase px-6 py-3 hover:bg-bark-700 transition-colors disabled:opacity-40"
             >
               {submitState === 'submitting' ? 'Submitting...' : 'Submit Review'}
             </button>

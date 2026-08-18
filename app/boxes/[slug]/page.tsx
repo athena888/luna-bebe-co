@@ -178,19 +178,19 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
 
               {box.variants.length > 1 && (
                 <div className="mt-6">
-                  <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">{(isEs ? VARIANT_LABEL_ES[box.variantLabel] ?? box.variantLabel : box.variantLabel) || t.options}</p>
+                  <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">{(isEs ? VARIANT_LABEL_ES[box.variantLabel] ?? box.variantLabel : box.variantLabel) || t.options}</p>
                   <div className="flex flex-wrap gap-2">
                     {box.variants.map(v => (
                       <Link
                         key={v.key}
                         href={`${isEs ? '/es/canastillas' : '/boxes'}/${box.slug}?${box.variantParam}=${encodeURIComponent(v.key)}`}
-                        className={`flex items-center gap-2 font-sans text-[11px] tracking-[0.15em] uppercase border transition-colors ${
+                        className={`flex items-center gap-2 font-sans text-[11px] tracking-[0.11em] uppercase border transition-colors ${
                           v.images[0] ? 'p-1.5 pr-3' : 'px-4 py-2'
                         } ${v.key === variant.key ? 'border-espresso bg-espresso text-cream-50' : 'border-cream-300 text-bark-500 hover:border-espresso-light'}`}
                       >
                         {v.images[0] && (
                           <span className="relative w-9 h-9 shrink-0 overflow-hidden">
-                            <Image src={v.images[0]} alt={`${box.name} — ${v.label} option`} fill className="object-cover" unoptimized />
+                            <Image src={v.images[0]} alt={`${box.name} — ${v.label} option`} fill className="object-cover" />
                           </span>
                         )}
                         {v.label} · {formatDollars(v.price)}
@@ -207,7 +207,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                   story.variant_stories[variant.key] here. */}
 
               <div className="mt-8">
-                <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-3">{t.inside}</p>
+                <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-3">{t.inside}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-5">
                   {(Object.keys(CATEGORY_LABELS) as Array<keyof typeof CATEGORY_LABELS>)
                     .map(cat => ({ cat, items: variant.contents.filter(c => c.item.category === cat) }))
@@ -220,7 +220,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                             <li key={c.item.id} className="flex items-center gap-3 border-b border-cream-200 pb-2">
                               {c.item.image ? (
                                 <span className="relative w-10 h-10 shrink-0 overflow-hidden border border-cream-200">
-                                  <Image src={c.item.image} alt={c.item.name} fill className="object-cover" unoptimized />
+                                  <Image src={c.item.image} alt={c.item.name} fill className="object-cover" />
                                 </span>
                               ) : (
                                 <span className="w-10 h-10 shrink-0 border border-dashed border-cream-300 bg-cream-100" />
@@ -232,7 +232,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                                 )}
                                 {c.colorChoice ? ` — ${t.color}` : ''}
                                 {(c.item as { organic?: boolean }).organic && (
-                                  <span className="ml-2 font-sans text-[9px] tracking-[0.12em] uppercase border border-[#7A8E7C] text-[#7A8E7C] px-1.5 py-0.5 align-middle">{isEs ? 'orgánico' : 'organic'}</span>
+                                  <span className="ml-2 font-sans text-[11px] tracking-[0.12em] uppercase border border-[#7A8E7C] text-[#7A8E7C] px-1.5 py-0.5 align-middle">{isEs ? 'orgánico' : 'organic'}</span>
                                 )}
                               </span>
                               {c.note && <span className="font-sans text-xs text-bark-400">{c.note}</span>}
@@ -286,10 +286,10 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                   <div key={i}>
                     {s.image && (
                       <div className="relative aspect-square bg-cream-200 mb-3">
-                        <Image src={s.image} alt={s.title} fill className="object-cover" unoptimized />
+                        <Image src={s.image} alt={s.title} fill className="object-cover" />
                       </div>
                     )}
-                    <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-1">{i + 1} — {s.title}</p>
+                    <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-1">{i + 1} — {s.title}</p>
                     <p className="font-sans text-sm text-bark-500 leading-relaxed">{s.text}</p>
                   </div>
                 ))}
@@ -301,7 +301,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
           {story.comparison_image && (
             <section className="mt-16">
               <div className="relative w-full aspect-[3/1] bg-cream-100">
-                <Image src={story.comparison_image} alt={`${box.name} — all ${box.variantLabel.toLowerCase()}s compared at relative scale`} fill className="object-contain" unoptimized />
+                <Image src={story.comparison_image} alt={`${box.name} — all ${box.variantLabel.toLowerCase()}s compared at relative scale`} fill className="object-contain" />
               </div>
             </section>
           )}
@@ -318,7 +318,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                   <Link key={i} href={c.href} className="group block border border-cream-300 hover:border-espresso-light transition-colors">
                     {c.image && (
                       <div className="relative aspect-[4/3] bg-cream-100">
-                        <Image src={c.image} alt={c.label} fill className="object-cover" unoptimized />
+                        <Image src={c.image} alt={c.label} fill className="object-cover" />
                       </div>
                     )}
                     <div className="p-4">

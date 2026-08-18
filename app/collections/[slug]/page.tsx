@@ -61,7 +61,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
         }} />
 
         <div className="max-w-6xl mx-auto px-6 pt-12 pb-16">
-          <p className="font-sans text-[12px] tracking-[0.3em] uppercase font-bold text-[#7A8E7C] mb-3">Collection</p>
+          <p className="font-sans text-[12px] tracking-[0.18em] uppercase font-bold text-[#7A8E7C] mb-3">Collection</p>
           <h1 className="font-playfair text-3xl sm:text-4xl text-espresso mb-4">{c.h1 || c.title}</h1>
           {c.intro_copy && (
             <p className="font-sans text-[15px] leading-relaxed text-espresso-light max-w-2xl mb-10">{c.intro_copy}</p>
@@ -86,7 +86,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
 
           {siblings.length > 0 && (
             <div className="mt-14 pt-8 border-t border-cream-300">
-              <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-3">More to explore</p>
+              <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-3">More to explore</p>
               <div className="flex gap-6 flex-wrap">
                 {siblings.map(s => (
                   <Link key={s.slug} href={`/collections/${s.slug}`} className="font-sans text-sm text-espresso underline underline-offset-4 hover:text-gold-500 transition-colors">

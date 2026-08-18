@@ -49,10 +49,15 @@
   --color-espresso: #4A3B30;
   --color-espresso-light: #6F5B4D;
 
-  --font-serif: "Playfair Display", "Cormorant Garamond", Georgia, serif;
-  --font-cormorant: "Cormorant Garamond", Georgia, serif;
-  --font-sans: "Brandon Grotesque", "Jost", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-  --font-script: "Dancing Script", cursive;
+  /* TWO working faces (2026-08-17). Playfair Display sets headings and serif
+     accents; Jost carries body copy and every piece of UI. Pinyon Script is
+     the one decorative accent. "Brandon Grotesque" used to head the sans
+     stack but was never licensed or loaded, so every element silently fell
+     through to Jost anyway — it's gone rather than pretending. */
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-cormorant: "Playfair Display", Georgia, serif;
+  --font-sans: "Jost", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-script: "Pinyon Script", cursive;
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -99,11 +104,15 @@ body {
 /* Prevent any child from causing horizontal scroll */
 main { overflow-x: hidden; overflow-x: clip; }
 
-/* Noralee uses Cormorant as their body serif and Delores (≈ Playfair) as display */
+/* Display serif for headings only. Body copy runs in the sans: Playfair is a
+   high-contrast display face whose thin strokes get spindly and tiring at
+   paragraph sizes, and 1,489 `font-sans` utilities in the components were
+   already overriding this rule — the site was inconsistent about which face
+   body text used. Components that genuinely want the serif still say so. */
 h1, h2, h3, h4 { font-family: "Playfair Display", Georgia, serif; font-weight: 400; }
-p, li, blockquote { font-family: "Playfair Display", Georgia, serif; }
-.font-cormorant { font-family: "Cormorant Garamond", Georgia, serif; }
-.font-script { font-family: "Dancing Script", cursive; }
+p, li, blockquote { font-family: "Jost", ui-sans-serif, system-ui, sans-serif; }
+.font-cormorant { font-family: "Playfair Display", Georgia, serif; }
+.font-script { font-family: "Pinyon Script", cursive; }
 .font-pinyon { font-family: "Pinyon Script", cursive; }
 .font-playfair { font-family: "Playfair Display", Georgia, serif; }
 

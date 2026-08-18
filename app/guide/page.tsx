@@ -70,7 +70,7 @@ export default function GuidePage() {
       <Header />
       <main className="min-h-screen bg-cream-100">
         <SlotBackground slotKey="guide.header_bg" parallax className="px-4 sm:px-6 pt-14 pb-10 text-center">
-          <p className="text-[11px] font-sans font-semibold uppercase tracking-[0.3em] text-gold-400 mb-3">Gift Guide</p>
+          <p className="text-[11px] font-sans font-semibold uppercase tracking-[0.18em] text-gold-400 mb-3">Gift Guide</p>
           <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-3">Find the Perfect Box</h1>
           <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">Answer 4 quick questions and we&rsquo;ll curate the perfect combination just for her.</p>
         </SlotBackground>
@@ -109,7 +109,7 @@ export default function GuidePage() {
           {isComplete && !isLoading && recommendation && (
             <div>
               <div className="text-center mb-8">
-                <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-3">Curated For Her</p>
+                <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-3">Curated For Her</p>
                 <h2 className="font-serif text-3xl sm:text-4xl text-espresso mb-3">Your Curated Box</h2>
                 <div className="w-12 h-px bg-gold-400 mx-auto mb-3" />
                 <p className="font-sans text-sm text-bark-400">Based on your answers, here&rsquo;s what we suggest:</p>
@@ -144,20 +144,20 @@ export default function GuidePage() {
               )}
               {recommendation.reasoning && (
                 <div className="bg-cream-50 border border-cream-300 rounded-xl p-5 mb-6">
-                  <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-500 mb-2">A Note</p>
+                  <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-gold-500 mb-2">A Note</p>
                   <p className="font-cormorant text-base text-bark-600 leading-relaxed italic">{recommendation.reasoning}</p>
                 </div>
               )}
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={handleBuildWithRecs}
-                  className="flex-1 inline-flex items-center justify-center gap-2 bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.25em] uppercase px-8 py-4 rounded-lg hover:bg-[#6d8070] transition-colors"
+                  className="flex-1 inline-flex items-center justify-center gap-2 bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.16em] uppercase px-8 py-4 rounded-lg hover:bg-[#6d8070] transition-colors"
                 >
                   Build This Box <ArrowRight size={15} />
                 </button>
                 <button
                   onClick={restart}
-                  className="inline-flex items-center justify-center gap-2 border border-bark-600 text-bark-600 font-sans text-[11px] tracking-[0.25em] uppercase px-8 py-4 rounded-lg hover:bg-bark-600 hover:text-cream-50 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 border border-bark-600 text-bark-600 font-sans text-[11px] tracking-[0.16em] uppercase px-8 py-4 rounded-lg hover:bg-bark-600 hover:text-cream-50 transition-colors"
                 >
                   <RefreshCw size={14} /> Retake
                 </button>
@@ -192,7 +192,7 @@ export default function GuidePage() {
               </div>
               <div className="p-6">
                 <div className="flex items-center gap-2 mb-1">
-                  <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-gold-400">{CATEGORY_LABELS[modalProduct.category]}</p>
+                  <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-gold-400">{CATEGORY_LABELS[modalProduct.category]}</p>
                   {modalProduct.tag && <Badge variant="gold">{modalProduct.tag}</Badge>}
                 </div>
                 <h3 className="font-serif text-2xl text-espresso mb-1">{modalProduct.name}</h3>
@@ -203,7 +203,7 @@ export default function GuidePage() {
                 )}
                 <a
                   href={`/products/${modalProduct.id}`}
-                  className="inline-flex items-center gap-2 border border-bark-600 text-bark-600 font-sans text-[11px] tracking-[0.25em] uppercase px-6 py-3 rounded-lg hover:bg-bark-600 hover:text-cream-50 transition-colors"
+                  className="inline-flex items-center gap-2 border border-bark-600 text-bark-600 font-sans text-[11px] tracking-[0.16em] uppercase px-6 py-3 rounded-lg hover:bg-bark-600 hover:text-cream-50 transition-colors"
                 >
                   View full details <ArrowRight size={14} />
                 </a>

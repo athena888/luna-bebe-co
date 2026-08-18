@@ -153,21 +153,21 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
         >
           <section className="px-6 sm:px-8 py-16 sm:py-24 text-center">
             <div className="max-w-3xl mx-auto">
-              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-4">{lp.eyebrow}</p>
+              <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-4">{lp.eyebrow}</p>
               <h1 className="font-serif text-[2.5rem] sm:text-[3.5rem] text-espresso leading-[1.05] mb-6">{lp.h1}</h1>
               {lp.intro.map((para, i) => (
                 <p key={i} className="font-cormorant text-lg sm:text-xl text-espresso-light leading-loose mb-4">{para}</p>
               ))}
               <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-8">
                 {lp.highlights.map(h => (
-                  <li key={h} className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-500 flex items-center gap-2">
+                  <li key={h} className="font-sans text-[11px] tracking-[0.11em] uppercase text-bark-500 flex items-center gap-2">
                     <span className="w-3 h-px bg-gold-400" />{h}
                   </li>
                 ))}
               </ul>
               <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href="/build" className="bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-[#6d8070] transition-colors">Build Your Box</Link>
-                <Link href="/boxes" className="border border-bark-600 text-bark-600 font-sans text-[11px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-bark-600 hover:text-cream-50 transition-colors">Shop Ready-Made</Link>
+                <Link href="/build" className="bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#6d8070] transition-colors">Build Your Box</Link>
+                <Link href="/boxes" className="border border-bark-600 text-bark-600 font-sans text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-bark-600 hover:text-cream-50 transition-colors">Shop Ready-Made</Link>
               </div>
             </div>
           </section>
@@ -178,7 +178,7 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
           <section className="bg-[#FBF7F0] px-6 sm:px-10 py-16 sm:py-20">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12">
-                <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-2">What Goes Inside</p>
+                <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-2">What Goes Inside</p>
                 <h2 className="font-serif text-2xl sm:text-3xl text-espresso">Pieces to Include</h2>
               </div>
 
@@ -186,7 +186,7 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
                 <div key={category} className="mb-12 last:mb-0">
                   {/* Category heading */}
                   <div className="flex items-center gap-6 mb-6">
-                    <span className="font-sans text-[11px] tracking-[0.3em] uppercase text-bark-400 shrink-0">{label}</span>
+                    <span className="font-sans text-[11px] tracking-[0.18em] uppercase text-bark-400 shrink-0">{label}</span>
                     <span className="flex-1 h-px bg-cream-300" />
                   </div>
 
@@ -212,7 +212,7 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
         {lp.moment && (
           <section className="border-t border-cream-300 px-6 sm:px-8 py-16 sm:py-20">
             <div className="max-w-3xl mx-auto">
-              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-2 text-center">For This Moment</p>
+              <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-2 text-center">For This Moment</p>
               <h2 className="font-serif text-2xl sm:text-3xl text-espresso text-center mb-8">{lp.moment.heading}</h2>
               {lp.moment.paragraphs.map((para, i) => (
                 <p key={i} className="font-cormorant text-lg text-espresso-light leading-loose mb-5 last:mb-0">{para}</p>
@@ -225,7 +225,7 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
         {(lp.faqs?.length ?? 0) > 0 && (
           <section className="border-t border-cream-300 bg-[#FBF7F0] px-6 sm:px-8 py-16 sm:py-20">
             <div className="max-w-3xl mx-auto">
-              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-2 text-center">Good to Know</p>
+              <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-2 text-center">Good to Know</p>
               <h2 className="font-serif text-2xl sm:text-3xl text-espresso text-center mb-10">Questions, Answered</h2>
               <div className="space-y-4">
                 {lp.faqs!.map(f => (
@@ -246,7 +246,7 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
         {(lp.journalLinks?.length ?? 0) > 0 && (
           <section className="border-t border-cream-300 px-6 sm:px-8 py-10">
             <div className="max-w-3xl mx-auto text-center">
-              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-5">From the Journal</p>
+              <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-5">From the Journal</p>
               <div className="flex flex-wrap justify-center gap-3">
                 {lp.journalLinks!.map(j => (
                   <Link key={j.href} href={j.href} className="font-sans text-[12px] text-bark-600 hover:text-bark-800 underline underline-offset-4 decoration-gold-300">
@@ -261,7 +261,7 @@ export default async function GiftLandingPage({ params }: { params: Promise<{ sl
         {/* Internal links to other guides */}
         <section className="border-t border-cream-300 bg-[#FBF7F0] px-6 sm:px-8 py-10">
           <div className="max-w-5xl mx-auto">
-          <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-5 text-center">Explore more</p>
+          <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-5 text-center">Explore more</p>
           <div className="flex flex-wrap justify-center gap-3">
             {others.map(o => (
               <Link key={o.slug} href={`/gifts/${o.slug}`} className="font-sans text-[11px] tracking-[0.1em] text-bark-500 hover:text-bark-700 border border-cream-300 hover:border-bark-400 rounded-full px-4 py-2 transition-colors">

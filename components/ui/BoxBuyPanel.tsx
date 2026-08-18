@@ -84,14 +84,14 @@ export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, var
     <div className="mt-6">
       {needsColor && (
         <div className="mb-5">
-          <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">{isEs ? 'Color de la manta' : 'Blanket color'}</p>
+          <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">{isEs ? 'Color de la manta' : 'Blanket color'}</p>
           <div className="flex flex-wrap gap-2">
             {BLANKET_COLORS.map(c => (
               <button
                 key={c}
                 type="button"
                 onClick={() => setColor(c)}
-                className={`font-sans text-[11px] tracking-[0.15em] uppercase px-4 py-2 border transition-colors ${
+                className={`font-sans text-[11px] tracking-[0.11em] uppercase px-4 py-2 border transition-colors ${
                   color === c ? 'border-espresso bg-espresso text-cream-50' : 'border-cream-300 text-bark-500 hover:border-espresso-light'
                 }`}
               >
@@ -104,7 +104,7 @@ export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, var
 
       {needsSize && (
         <div className="mb-5">
-          <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">{isEs ? 'Talla' : 'Size'}</p>
+          <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">{isEs ? 'Talla' : 'Size'}</p>
           <div className="flex flex-wrap gap-2">
             {boxSizes.map(s => {
               const ok = sizeAvailable(s)
@@ -114,7 +114,7 @@ export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, var
                   type="button"
                   disabled={!ok}
                   onClick={() => ok && setSize(s)}
-                  className={`font-sans text-[11px] tracking-[0.15em] uppercase px-4 py-2 border transition-colors ${
+                  className={`font-sans text-[11px] tracking-[0.11em] uppercase px-4 py-2 border transition-colors ${
                     size === s ? 'border-espresso bg-espresso text-cream-50'
                       : ok ? 'border-cream-300 text-bark-500 hover:border-espresso-light'
                         : 'border-cream-200 text-bark-300 line-through decoration-bark-300 cursor-not-allowed'
@@ -131,7 +131,7 @@ export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, var
       <button
         onClick={buy}
         disabled={!canBuy}
-        className="w-full sm:w-auto bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-full sm:w-auto bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {isEs ? 'Agregar al carrito' : 'Add to Cart'} — {formatDollars(price)}
       </button>

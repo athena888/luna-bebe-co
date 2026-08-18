@@ -32,7 +32,7 @@ export function PrebuiltBoxesSection() {
           <Link key={box.slug} href={box.href ?? `/boxes/${box.slug}`} className="group w-full text-center">
             <div className="relative aspect-[3/4] bg-white overflow-hidden">
               {box.image
-                ? <Image src={box.image} alt={box.name} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" unoptimized sizes="(max-width:640px) 78vw, 380px" />
+                ? <Image src={box.image} alt={box.name} fill className="object-cover group-hover:scale-[1.03] transition-transform duration-700" sizes="(max-width:640px) 78vw, 380px" />
                 : <div className="absolute inset-0 flex items-center justify-center text-bark-300"><Package size={32} /></div>}
             </div>
             {/* Caption below the image — espresso, turns gold on hover */}

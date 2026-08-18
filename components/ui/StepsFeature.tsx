@@ -71,7 +71,7 @@ export function StepsFeature({ images, side = 'left', title, body, items }: {
           <div className="mt-9 md:mt-10">
             <Link
               href="/boxes"
-              className="inline-block font-sans text-[12px] tracking-[0.3em] uppercase text-white border-b border-white pb-1 hover:text-cream-100 hover:border-cream-100 transition-colors"
+              className="inline-block font-sans text-[12px] tracking-[0.18em] uppercase text-white border-b border-white pb-1 hover:text-cream-100 hover:border-cream-100 transition-colors"
             >
               Shop Now
             </Link>

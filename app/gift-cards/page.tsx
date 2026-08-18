@@ -20,7 +20,7 @@ const AMOUNTS = [
 // white inputs with a gold focus ring, olive section headings.
 const inputClass = "w-full px-4 py-3 border border-cream-300 bg-white font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-gold-400 transition-colors"
 const labelClass = "block font-serif text-lg text-espresso mb-2"
-const sectionClass = "font-sans text-[12px] tracking-[0.3em] uppercase font-bold text-[#7A8E7C] mb-5 pb-3 border-b border-cream-300"
+const sectionClass = "font-sans text-[12px] tracking-[0.18em] uppercase font-bold text-[#7A8E7C] mb-5 pb-3 border-b border-cream-300"
 
 export default function GiftCardsPage() {
   const isEs = useIsEs()
@@ -63,7 +63,7 @@ export default function GiftCardsPage() {
         <SlotBackground slotKey="giftcards.header_bg" scrim="bg-cream-50/55" className="px-6 pt-16 pb-14 sm:pt-20">
           <div className="max-w-4xl mx-auto">
             <div className="text-center">
-              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-3">{isEs ? 'El regalo perfecto' : 'The Perfect Gift'}</p>
+              <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-3">{isEs ? 'El regalo perfecto' : 'The Perfect Gift'}</p>
               <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-2">{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</h1>
               <p className="font-sans text-sm text-bark-500 max-w-md mx-auto leading-relaxed">
                 {isEs ? '¿No te decides? Regala la posibilidad de elegir. Quien lo recibe arma su propia canastilla Petite Lavande con tu cariño.' : <>Can't decide? Give the gift of choice. Your recipient builds their own Petite Lavande box with your love.</>}
@@ -89,7 +89,7 @@ export default function GiftCardsPage() {
                     >
                       {opt.label}
                       {opt.popular && (
-                        <span className="absolute top-2 right-2 font-sans text-[11px] tracking-[0.15em] uppercase bg-gold-400 text-white px-1.5 py-0.5">{isEs ? 'Popular' : 'Popular'}</span>
+                        <span className="absolute top-2 right-2 font-sans text-[11px] tracking-[0.11em] uppercase bg-gold-400 text-white px-1.5 py-0.5">{isEs ? 'Popular' : 'Popular'}</span>
                       )}
                     </button>
                   ))}
@@ -157,7 +157,7 @@ export default function GiftCardsPage() {
                 <SlotImage slotKey="giftcard.visual" className="w-full aspect-[3/2] overflow-hidden" />
                 <div className="p-8 pt-6">
                   <Gift size={32} className="text-gold-300 mx-auto mb-4" />
-                <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-2">Petite Lavande</p>
+                <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-2">Petite Lavande</p>
                 <p className="font-serif text-4xl text-cream-100 mb-1">${(amount / 100).toFixed(0)}</p>
                 <p className="font-sans text-sm text-cream-50 mb-6">Gift Card</p>
                 {recipientName && (

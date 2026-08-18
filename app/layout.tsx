@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { LanguageBanner } from '@/components/ui/LanguageBanner'
-import { Dancing_Script, Cormorant_Garamond, Jost, Fraunces, Pinyon_Script, Playfair_Display } from "next/font/google";
+import { Jost, Pinyon_Script, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import { Suspense } from "react";
 import "./globals.css";
@@ -14,14 +14,13 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { MarketGate } from "@/components/ui/MarketGate";
 
-const dancing = Dancing_Script({ subsets: ["latin"], variable: "--font-dancing", display: "swap" });
-const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["300", "400", "500"], style: ["normal", "italic"], variable: "--font-cormorant", display: "swap" });
 const jost = Jost({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-jost", display: "swap" });
-// Brand wordmark font (header lockup).
-const fraunces = Fraunces({ subsets: ["latin"], weight: ["400", "500", "600"], style: ["normal", "italic"], variable: "--font-fraunces", display: "swap" });
 // Formal copperplate script (Ginori-style panel headings).
 const pinyon = Pinyon_Script({ subsets: ["latin"], weight: "400", variable: "--font-pinyon", display: "swap" });
-// High-contrast didone serif (Ginori-style panel body copy).
+// Two working faces: Playfair Display for headings, Jost for everything
+// else. Pinyon stays for the rare script accent. Dancing Script, Cormorant
+// and Fraunces were retired 2026-08-17 — six loaded families was five too
+// many, and each duplicated a job one of these already did.
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500"], style: ["normal", "italic"], variable: "--font-playfair", display: "swap" });
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
@@ -80,7 +79,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const locale = await getLocale();
   const messages = await getMessages();
   return (
-    <html lang={locale} className={`${dancing.variable} ${cormorant.variable} ${jost.variable} ${fraunces.variable} ${pinyon.variable} ${playfair.variable} h-full antialiased`}>
+    <html lang={locale} className={`${jost.variable} ${pinyon.variable} ${playfair.variable} h-full antialiased`}>
       <head>
         {/* PWA / iOS home screen */}
         <meta name="apple-mobile-web-app-capable" content="yes" />

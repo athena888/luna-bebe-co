@@ -52,7 +52,7 @@ export function NoteActions({ token, senderName }: { token: string; senderName: 
           <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="Your email"
             className="flex-1 min-w-0 px-3 py-2.5 font-sans text-[13px] text-espresso bg-white border border-[#d8cdbb] focus:outline-none" />
           <button type="submit" disabled={optin === 'saving'}
-            className="px-4 bg-[#7A8E7C] text-white font-sans text-[10px] tracking-[0.15em] uppercase font-semibold disabled:opacity-50">
+            className="px-4 bg-[#7A8E7C] text-white font-sans text-[10px] tracking-[0.11em] uppercase font-semibold disabled:opacity-50">
             Join
           </button>
         </form>

@@ -72,7 +72,7 @@ export default async function StoryView({ locale = 'en' }: { locale?: 'en' | 'es
               </div>
             )}
             <div className="space-y-4 sm:order-1 sm:flex-1 min-w-0">
-              <p className="font-sans text-[12px] tracking-[0.3em] uppercase font-bold text-[#7A8E7C]">{content.founder.eyebrow}</p>
+              <p className="font-sans text-[12px] tracking-[0.18em] uppercase font-bold text-[#7A8E7C]">{content.founder.eyebrow}</p>
               {content.founder.paragraphs.map((para, i) => (
                 i === 0
                   ? <p key={i} className="font-playfair text-[17px] text-espresso leading-snug">{para}</p>
@@ -90,7 +90,7 @@ export default async function StoryView({ locale = 'en' }: { locale?: 'en' | 'es
         {GIVING_ORG_NAME && (
           <section className="border-b border-cream-300 bg-[#FBF7F0]">
             <div className="max-w-2xl mx-auto px-6 py-10 text-center">
-              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-bark-400 mb-3">A note on giving</p>
+              <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-bark-400 mb-3">A note on giving</p>
               <p className="font-playfair text-[15px] text-espresso-light leading-relaxed">
                 Every piece we make is meant to be used and loved. This season, we donated our sample
                 collection to {GIVING_ORG_NAME}, supporting local families welcoming new babies. It felt
@@ -136,7 +136,7 @@ export default async function StoryView({ locale = 'en' }: { locale?: 'en' | 'es
             </div>
             <div className="bg-[#76927E] flex flex-col items-center justify-center text-center px-8 sm:px-14 lg:px-20 py-16 md:py-12">
               <ScrollFlyIn from="down">
-                <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-white/70 mb-6">{content.hero.eyebrow}</p>
+                <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-white/70 mb-6">{content.hero.eyebrow}</p>
                 {/* h1 (was h2): the page's only top-level heading — Bing flagged
                     /story and /es/historia for missing h1. Styling unchanged. */}
                 <h1
@@ -165,7 +165,7 @@ export default async function StoryView({ locale = 'en' }: { locale?: 'en' | 'es
             <div className="border-t border-cream-300">
               <div className="py-4 text-center">
                 <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer"
-                  className="font-sans text-[11px] tracking-[0.3em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
+                  className="font-sans text-[11px] tracking-[0.18em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
                   Follow @petitelavandeco on Instagram
                 </a>
               </div>

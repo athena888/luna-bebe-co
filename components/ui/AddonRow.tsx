@@ -43,7 +43,7 @@ export function AddonRow({ inCartIds, onAdd }: { inCartIds: string[]; onAdd?: (p
 
   return (
     <div className="shrink-0 border-t border-cream-200 px-4 sm:px-6 pt-5 pb-4">
-      <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-4">Complete the gift</p>
+      <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-4">Complete the gift</p>
       <div className="flex gap-4 overflow-x-auto snap-x pb-1">
         {visible.map(p => (
           <div key={p.id} className="w-36 sm:w-40 shrink-0 snap-start">
@@ -53,7 +53,7 @@ export function AddonRow({ inCartIds, onAdd }: { inCartIds: string[]; onAdd?: (p
               aria-label={`Add ${p.name}`}
             >
               {p.image
-                ? <Image src={p.image} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized sizes="160px" />
+                ? <Image src={p.image} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="160px" />
                 : <div className="w-full h-full flex items-center justify-center text-4xl">{p.imageEmoji}</div>
               }
               <span className="absolute bottom-2 right-2 w-8 h-8 bg-white/90 border border-cream-300 flex items-center justify-center text-bark-600 group-hover:bg-bark-600 group-hover:text-cream-50 group-hover:border-bark-600 transition-colors">

@@ -160,7 +160,7 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
                     style={{ aspectRatio: '3/4' }}
                   >
                     {src
-                      ? <Image src={src} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width:1023px) 50vw, 28vw" unoptimized />
+                      ? <Image src={src} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width:1023px) 50vw, 28vw" />
                       : <div className="absolute inset-0 flex items-center justify-center text-7xl"><span className="select-none">{product.imageEmoji}</span></div>}
                     {src && (
                       <span className="absolute bottom-2 right-2 w-7 h-7 bg-cream-50/85 text-bark-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -175,13 +175,13 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
 
           {/* Info panel */}
           <div className="flex-1 lg:min-h-0 lg:overflow-y-auto p-6 lg:p-8 flex flex-col">
-            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-2">
+            <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-2">
               {CATEGORY_LABELS[product.category]}
             </p>
             <h2 className="font-sans text-2xl lg:text-3xl text-espresso leading-tight mb-2">{product.name}</h2>
             <p className="font-sans text-base text-bark-400 mb-4">{formatPrice(product.price)}</p>
             {product.tag && (
-              <span className="inline-block bg-terra-100 text-terra-500 font-sans text-[11px] tracking-[0.2em] uppercase px-3 py-1 mb-4 self-start">
+              <span className="inline-block bg-terra-100 text-terra-500 font-sans text-[11px] tracking-[0.14em] uppercase px-3 py-1 mb-4 self-start">
                 {product.tag}
               </span>
             )}
@@ -201,8 +201,8 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
                 <div className="flex items-start justify-between">
                   {[{ label: 'Free Shipping', sub: `$${Math.round(FREE_SHIPPING_THRESHOLD / 100)}+` }, { label: 'Handcrafted', sub: 'with care' }, { label: 'Gift Ready', sub: 'carefully packed' }].map(({ label, sub }) => (
                     <div key={label} className="flex-1 text-center">
-                      <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
-                      <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>
+                      <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-600">{label}</p>
+                      <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400">{sub}</p>
                     </div>
                   ))}
                 </div>
@@ -211,14 +211,14 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
 
             {ingredients && (
               <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
-                <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
+                <span className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
                 <span className="font-sans text-xs text-bark-400">{clean(ingredients)}</span>
               </div>
             )}
 
             {certs.some(isGots) && (
               <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
-                <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
+                <span className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
                 <span className="font-sans text-xs text-bark-400"><span className="text-bark-600">Organic cotton</span> from a GOTS-certified manufacturer.</span>
               </div>
             )}
@@ -227,7 +227,7 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
             {hasVariants && (
               <div className="border-t border-cream-300 pt-4 mb-4 space-y-3">
                 <div>
-                  <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400 mb-2">
+                  <p className="font-sans text-[11px] tracking-[0.16em] uppercase text-bark-400 mb-2">
                     Color{pickColor ? <span className="text-bark-600 capitalize">: {pickColor}</span> : ''}
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -249,7 +249,7 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
                 </div>
                 {pickColor && (
                   <div>
-                    <p className="font-sans text-[11px] tracking-[0.25em] uppercase text-bark-400 mb-2">Size</p>
+                    <p className="font-sans text-[11px] tracking-[0.16em] uppercase text-bark-400 mb-2">Size</p>
                     <div className="flex flex-wrap gap-2">
                       {sizesForColor.map(v => (
                         <button
@@ -272,14 +272,14 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
             <div className="mt-auto pt-4 space-y-2.5">
               <button
                 onClick={handleAddToBox}
-                className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-bark-700 transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-bark-600 text-cream-50 font-sans text-[11px] tracking-[0.14em] uppercase py-3.5 hover:bg-bark-700 transition-colors flex items-center justify-center gap-2"
               >
                 <ShoppingBag size={14} />
                 Add to Box
               </button>
               <Link
                 href={`/products/${product.id}`}
-                className="block w-full text-center border border-cream-300 text-bark-500 font-sans text-[11px] tracking-[0.2em] uppercase py-3 hover:border-bark-400 hover:text-bark-700 transition-colors"
+                className="block w-full text-center border border-cream-300 text-bark-500 font-sans text-[11px] tracking-[0.14em] uppercase py-3 hover:border-bark-400 hover:text-bark-700 transition-colors"
               >
                 View Full Details
               </Link>
@@ -316,14 +316,14 @@ function MobileGridCard({ product, onOpen }: { product: Product; onOpen: () => v
     <button onClick={onOpen} className="group text-left w-full">
       <div className="relative w-full overflow-hidden" style={{ aspectRatio: '3/4' }}>
         {src ? (
-          <Image src={src} alt={product.name} fill unoptimized sizes="50vw" className="object-cover"
+          <Image src={src} alt={product.name} fill sizes="50vw" className="object-cover"
             onError={() => setPhase(p => p + 1)} />
         ) : (
           <div className="w-full h-full bg-white flex items-center justify-center" style={{ fontSize: 'clamp(3rem,16vw,4rem)' }}>{product.imageEmoji}</div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent pointer-events-none" />
         {product.tag && (
-          <div className="absolute top-2 left-2"><span className="font-sans text-[8px] tracking-[0.15em] uppercase bg-gold-400/30 backdrop-blur-sm text-gold-100 px-1.5 py-0.5">{product.tag}</span></div>
+          <div className="absolute top-2 left-2"><span className="font-sans text-[8px] tracking-[0.11em] uppercase bg-gold-400/30 backdrop-blur-sm text-gold-100 px-1.5 py-0.5">{product.tag}</span></div>
         )}
         {isOrganic(product) && (
           <div className="absolute bottom-2 right-2 flex flex-col items-center gap-0.5 pointer-events-none">
@@ -509,7 +509,6 @@ export function ProductCarousel({ products }: { products: Product[] }) {
                         alt={product.name}
                         fill
                         sizes="(max-width: 640px) 80vw, 420px"
-                        unoptimized
                         className={`object-cover transition-transform duration-[8000ms] ease-in-out ${isCenter ? 'scale-110' : 'scale-100'}`}
                                                onError={() => setImgPhase(p => ({ ...p, [phaseKey]: (p[phaseKey] ?? 0) + 1 }))}
                       />
@@ -527,7 +526,7 @@ export function ProductCarousel({ products }: { products: Product[] }) {
 
                   {product.tag && (
                     <div className="absolute top-3 left-3">
-                      <span className="font-sans text-[11px] tracking-[0.15em] uppercase bg-gold-400/30 backdrop-blur-sm text-gold-100 px-2 py-0.5">
+                      <span className="font-sans text-[11px] tracking-[0.11em] uppercase bg-gold-400/30 backdrop-blur-sm text-gold-100 px-2 py-0.5">
                         {product.tag}
                       </span>
                     </div>
@@ -549,7 +548,7 @@ export function ProductCarousel({ products }: { products: Product[] }) {
                 </div>
 
                 <div className={`text-center mt-2 transition-opacity duration-300 ${isCenter ? 'opacity-100' : 'opacity-0'}`}>
-                  <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">
+                  <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400">
                     Tap to view details
                   </p>
                 </div>

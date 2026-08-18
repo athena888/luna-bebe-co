@@ -172,7 +172,7 @@ export function ChatWidget() {
                   className="w-full px-4 py-2.5 border border-cream-300 font-sans text-sm text-bark-600 placeholder:text-bark-400/50 focus:outline-none focus:border-gold-400 transition-colors"
                   style={{ borderRadius: 12 }} />
                 <button type="submit" disabled={loading}
-                  className="w-full bg-[#7A8E7C] text-white font-sans text-[12px] tracking-[0.2em] uppercase py-3 hover:bg-[#6d8070] transition-colors disabled:opacity-40"
+                  className="w-full bg-[#7A8E7C] text-white font-sans text-[12px] tracking-[0.14em] uppercase py-3 hover:bg-[#6d8070] transition-colors disabled:opacity-40"
                   style={{ borderRadius: 12 }}>
                   {loading ? 'Checking…' : 'Check status'}
                 </button>

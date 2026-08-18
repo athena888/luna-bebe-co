@@ -21,7 +21,7 @@ export function OccasionCountdown() {
   }
   return (
     <div className="mt-5 border border-cream-300 bg-cream-100 p-4">
-      <label className="block font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">
+      <label className="block font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">
         Gifting for a date?
       </label>
       <input

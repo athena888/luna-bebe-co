@@ -60,7 +60,7 @@ export default async function SameDayDeliveryPage() {
       <main className="bg-white min-h-screen">
         {/* Hero */}
         <section className="bg-cream-50 border-b border-cream-300 px-6 py-16 sm:py-20 text-center">
-          <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-5">Seattle &amp; the Eastside · Same-Day</p>
+          <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-5">Seattle &amp; the Eastside · Same-Day</p>
           <h1 className="font-serif text-4xl sm:text-5xl text-espresso leading-tight max-w-2xl mx-auto">
             The baby arrived today. So can the gift.
           </h1>
@@ -72,7 +72,7 @@ export default async function SameDayDeliveryPage() {
             <SameDayCountdown />
             <Link
               href="/boxes"
-              className="inline-block bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.25em] uppercase px-10 py-4 hover:bg-[#6d8070] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-espresso"
+              className="inline-block bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#6d8070] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-espresso"
             >
               Shop Gift Boxes
             </Link>
@@ -110,8 +110,8 @@ export default async function SameDayDeliveryPage() {
                     <Link key={b.slug} href={`/boxes/${b.slug}`} className="group block bg-white border border-cream-300 hover:border-espresso-light transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-espresso">
                       <div className="relative aspect-[3/4] bg-cream-100">
                         {cover
-                          ? <Image src={cover} alt={b.name} fill className="object-cover" unoptimized sizes="(max-width:640px) 90vw, 300px" />
-                          : <div className="absolute inset-0 flex items-center justify-center font-sans text-[10px] tracking-[0.2em] uppercase text-bark-300">Photography coming soon</div>}
+                          ? <Image src={cover} alt={b.name} fill className="object-cover" sizes="(max-width:640px) 90vw, 300px" />
+                          : <div className="absolute inset-0 flex items-center justify-center font-sans text-[10px] tracking-[0.14em] uppercase text-bark-300">Photography coming soon</div>}
                       </div>
                       <div className="p-4">
                         <h3 className="font-serif text-lg text-espresso group-hover:text-bark-600">{b.name}</h3>

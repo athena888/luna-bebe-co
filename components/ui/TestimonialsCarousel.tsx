@@ -11,7 +11,7 @@ function ReviewCard({ r, delay = 0 }: { r: Review; delay?: number }) {
       className="flex flex-col px-6 py-8 border border-cream-300 bg-white/80 text-center"
       style={{ animation: `plFade 0.45s ease ${delay}ms both` }}
     >
-      <p className="font-sans text-[11px] tracking-[0.25em] text-gold-400 mb-4">★★★★★</p>
+      <p className="font-sans text-[11px] tracking-[0.16em] text-gold-400 mb-4">★★★★★</p>
       <p
         className="flex-1 text-lg text-bark-500 leading-relaxed italic mb-6"
         style={{ fontFamily: 'var(--font-cormorant)' }}

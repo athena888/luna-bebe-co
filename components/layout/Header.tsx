@@ -91,7 +91,9 @@ function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
       {err ? (
         <span className="flex items-center gap-2 sm:gap-2.5">
           <Sprig light={light} />
-          <span style={{ fontFamily: 'var(--font-fraunces)', fontSize: expanded ? 'clamp(1.55rem, 6vw, 2.6rem)' : 'clamp(1.2rem, 5vw, 1.85rem)', fontWeight: 500, lineHeight: 1, color: light ? '#FBF4EA' : '#9D8BBC', transition: 'font-size 500ms' }}>
+          {/* Text fallback for the logo image — Playfair now that Fraunces is
+              no longer loaded (it was one family for one line of fallback). */}
+          <span style={{ fontFamily: 'var(--font-serif)', fontSize: expanded ? 'clamp(1.55rem, 6vw, 2.6rem)' : 'clamp(1.2rem, 5vw, 1.85rem)', fontWeight: 500, lineHeight: 1, color: light ? '#FBF4EA' : '#9D8BBC', transition: 'font-size 500ms' }}>
             Petite Lavande
           </span>
         </span>
@@ -286,7 +288,7 @@ export function PerksMarquee() {
         {shown.map(({ label, sub }, i) => (
           <span key={label} className="flex items-baseline whitespace-nowrap">
             {i > 0 && <span className="w-1 h-1 rounded-full bg-gold-400 mx-3 md:mx-5 lg:mx-8 self-center shrink-0" />}
-            <span className="font-sans text-[10px] md:text-[11px] tracking-[0.16em] md:tracking-[0.22em] lg:tracking-[0.25em] uppercase font-semibold text-cream-50">{label}</span>
+            <span className="font-sans text-[10px] md:text-[11px] tracking-[0.16em] md:tracking-[0.22em] lg:tracking-[0.16em] uppercase font-semibold text-cream-50">{label}</span>
             {sub && <span className="font-cormorant text-[13px] md:text-[15px] text-cream-200 ml-2 md:ml-3">{sub}</span>}
           </span>
         ))}
@@ -294,7 +296,7 @@ export function PerksMarquee() {
       <div className="sm:hidden grid grid-cols-2 gap-y-1.5 gap-x-4 px-4 text-center">
         {shown.map(({ label, sub }) => (
           <span key={label} className="flex flex-col">
-            <span className="font-sans text-[10px] tracking-[0.2em] uppercase font-semibold text-cream-50">{label}</span>
+            <span className="font-sans text-[10px] tracking-[0.14em] uppercase font-semibold text-cream-50">{label}</span>
             {sub && <span className="font-cormorant text-[13px] text-cream-200 leading-snug">{sub}</span>}
           </span>
         ))}
@@ -313,7 +315,7 @@ export function LaunchMarquee() {
         {[0, 1].map(copy => (
           <div key={copy} className="flex shrink-0" aria-hidden={copy === 1}>
             {[0, 1, 2].map(i => (
-              <p key={i} className="font-sans text-[11px] tracking-[0.25em] uppercase leading-relaxed whitespace-nowrap px-12">
+              <p key={i} className="font-sans text-[11px] tracking-[0.16em] uppercase leading-relaxed whitespace-nowrap px-12">
                 Fait avec amour, pour vous. &nbsp;·&nbsp; {isEs ? 'Petite Lavande llega muy pronto' : 'Petite Lavande is launching soon'} &mdash;&nbsp;
                 <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer" tabIndex={copy === 1 ? -1 : undefined} className="underline underline-offset-2 hover:text-gold-500 transition-colors">Instagram</a>
                 &nbsp;&amp;&nbsp;

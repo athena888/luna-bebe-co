@@ -26,7 +26,7 @@ export default async function GiftNotePage({ params }: { params: Promise<{ token
   return (
     <main className="min-h-screen bg-[#faf7f2] flex items-center justify-center px-6 py-16">
       <div className="max-w-md w-full text-center">
-        <p className="font-sans text-[11px] tracking-[0.3em] uppercase font-bold text-[#c9a84c] mb-1">Petite Lavande</p>
+        <p className="font-sans text-[11px] tracking-[0.18em] uppercase font-bold text-[#c9a84c] mb-1">Petite Lavande</p>
         <p className="font-playfair italic text-[13px] text-[#9c7c5a] mb-8">Fait avec amour, pour vous</p>
 
         {order ? (
@@ -51,7 +51,7 @@ export default async function GiftNotePage({ params }: { params: Promise<{ token
             <p className="font-sans text-sm text-espresso-light leading-relaxed mb-8">
               The link may have expired. The printed note is tucked inside the box itself — and we&rsquo;re here if you need anything.
             </p>
-            <Link href="/" className="inline-block bg-[#7A8E7C] text-white font-sans text-[12px] tracking-[0.2em] uppercase py-3.5 px-10 hover:bg-[#6b7d6d] transition-colors">
+            <Link href="/" className="inline-block bg-[#7A8E7C] text-white font-sans text-[12px] tracking-[0.14em] uppercase py-3.5 px-10 hover:bg-[#6b7d6d] transition-colors">
               Visit Petite Lavande
             </Link>
           </>

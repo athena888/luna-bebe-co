@@ -118,7 +118,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
         {soldOut && <div className="absolute inset-0 bg-bark-800/40" />}
         {soldOut && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="bg-white/90 font-sans text-[11px] tracking-[0.25em] uppercase text-bark-600 px-3 py-1.5">Sold Out</span>
+            <span className="bg-white/90 font-sans text-[11px] tracking-[0.16em] uppercase text-bark-600 px-3 py-1.5">Sold Out</span>
           </div>
         )}
         {!soldOut && !hasHoverMedia && (
@@ -489,7 +489,7 @@ export default function BuildPage() {
             className="relative z-10 w-full px-8 sm:px-14 pb-20 sm:pb-28 max-w-3xl"
             style={{ animation: 'slideUp 1.4s cubic-bezier(0.22,1,0.36,1) both' }}
           >
-            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-cream-200/60 mb-5">{isEs ? 'Arma tu canastilla' : 'Build Your Box'}</p>
+            <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-cream-200/60 mb-5">{isEs ? 'Arma tu canastilla' : 'Build Your Box'}</p>
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-cream-50 leading-[1.05] mb-6">
               {isEs ? 'No agregamos lo que no pertenece.' : <>We don&apos;t add what doesn&apos;t belong.</>}
             </h1>
@@ -507,13 +507,13 @@ export default function BuildPage() {
           {catalogLoading && activeCategories.length === 0 && (
             <div className="flex flex-col items-center justify-center py-24 gap-3">
               <div className="w-8 h-8 border-2 border-cream-300 border-t-bark-600 rounded-full animate-spin" />
-              <p className="font-sans text-xs tracking-[0.2em] uppercase text-bark-400">{isEs ? 'Cargando la colección…' : 'Loading the collection…'}</p>
+              <p className="font-sans text-xs tracking-[0.14em] uppercase text-bark-400">{isEs ? 'Cargando la colección…' : 'Loading the collection…'}</p>
             </div>
           )}
           {activeCategories.map((cat) => (
             <section key={cat} id={`cat-${cat}`}>
               <div className="pl-6 sm:pl-9 pr-6 sm:pr-8 mb-8">
-                <p className="font-sans text-[11px] tracking-[0.3em] uppercase font-bold text-gold-500 mb-1">{(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[cat]}</p>
+                <p className="font-sans text-[11px] tracking-[0.18em] uppercase font-bold text-gold-500 mb-1">{(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[cat]}</p>
                 <h2 className="font-serif text-lg sm:text-xl text-terra-500">{(isEs ? CATEGORY_SUBTITLES_ES : CATEGORY_SUBTITLES)[cat]}</h2>
               </div>
               <div className="relative">
@@ -635,7 +635,7 @@ export default function BuildPage() {
                     }
                   </div>
                   <div className="flex-1 min-w-0 pt-1">
-                    <p className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 mb-0.5">Petite Lavande</p>
+                    <p className="font-sans text-[11px] tracking-[0.11em] uppercase text-bark-400 mb-0.5">Petite Lavande</p>
                     <p className="font-sans text-sm text-bark-700 leading-snug mb-1.5">{product.name}</p>
                     {variantLabel && (
                       <p className="font-sans text-[11px] text-bark-400 capitalize mb-1">{variantLabel}</p>
@@ -655,7 +655,7 @@ export default function BuildPage() {
                       </div>
                       <button
                         onClick={() => removeItem(product.lineKey)}
-                        className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-700 transition-colors"
+                        className="font-sans text-[11px] tracking-[0.11em] uppercase text-bark-400 hover:text-bark-700 transition-colors"
                       >
                         Remove
                       </button>
@@ -671,14 +671,14 @@ export default function BuildPage() {
         {/* Drawer footer */}
         <div className="shrink-0 border-t border-cream-300 px-6 py-5">
           <div className="flex justify-between items-baseline mb-1">
-            <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">{isEs ? 'Subtotal' : 'Subtotal'}</span>
+            <span className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400">{isEs ? 'Subtotal' : 'Subtotal'}</span>
             <span className="font-sans text-base font-medium text-bark-600">{formatPrice(subtotal)}</span>
           </div>
           <p className="font-sans text-[11px] text-bark-400/60 mb-4">{isEs ? 'Canastilla y envío se calculan al pagar' : <>Box fee &amp; shipping calculated at checkout</>}</p>
           <button
             onClick={handleCheckout}
             disabled={!hasItems}
-            className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.25em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.16em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {isEs ? 'Finalizar compra' : 'Check Out'}
           </button>
@@ -779,7 +779,7 @@ export default function BuildPage() {
 
             {/* Product info — scrolls on desktop, flows naturally on mobile */}
             <div className="flex-1 lg:min-h-0 lg:overflow-y-auto p-6 lg:p-8 flex flex-col">
-              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-2">{(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[modalProduct.category]}</p>
+              <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-2">{(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[modalProduct.category]}</p>
               <h2 className="font-sans text-2xl lg:text-3xl text-espresso leading-tight mb-2">{modalProduct.name}</h2>
               <p className="font-sans text-base text-bark-400 mb-4">{formatPrice(modalProduct.price)}</p>
 
@@ -792,8 +792,8 @@ export default function BuildPage() {
                   <div className="flex items-start justify-between">
                     {[{ label: 'Free Shipping', sub: `$${Math.round(FREE_SHIPPING_THRESHOLD / 100)}+` }, { label: 'Handcrafted', sub: 'with care' }, { label: 'Gift Ready', sub: 'carefully packed' }].map(({ label, sub }) => (
                       <div key={label} className="flex-1 text-center">
-                        <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
-                        <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>
+                        <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-600">{label}</p>
+                        <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400">{sub}</p>
                       </div>
                     ))}
                   </div>
@@ -803,7 +803,7 @@ export default function BuildPage() {
               {/* Materials — covers the cotton story */}
               {modalProduct.ingredients && (
                 <div className="border-t border-cream-300 py-3.5 mb-0.5 flex items-start gap-2">
-                  <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
+                  <span className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
                   <span className="font-sans text-xs text-bark-400">{cleanGots(modalProduct.ingredients)}</span>
                 </div>
               )}
@@ -812,7 +812,7 @@ export default function BuildPage() {
               {modalHasVariants && !allVariantsOut && (
                 <div className="border-t border-cream-300 pt-4 space-y-4 mb-4">
                   <div>
-                    <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">
+                    <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">
                       Color{pickColor ? <span className="text-bark-600 capitalize">: {pickColor}</span> : ''}
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -835,7 +835,7 @@ export default function BuildPage() {
 
                   {pickColor && needsStyle && (
                     <div>
-                      <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">
+                      <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">
                         Style{pickStyle ? <span className="text-bark-600 capitalize">: {pickStyle}</span> : ''}
                       </p>
                       <div className="flex flex-wrap gap-2">
@@ -861,7 +861,7 @@ export default function BuildPage() {
 
                   {pickColor && (!needsStyle || pickStyle) && (
                     <div>
-                      <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2">Size</p>
+                      <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">Size</p>
                       <div className="flex flex-wrap gap-2">
                         {sizesForColor.map(v => {
                           const out = v.quantity <= 0
@@ -897,35 +897,35 @@ export default function BuildPage() {
               <div className="pt-2 pb-4">
                 {modalHasVariants ? (
                   allVariantsOut ? (
-                    <div className="w-full border border-bark-300 text-bark-400 font-sans text-[11px] tracking-[0.2em] uppercase py-4 text-center">Sold Out</div>
+                    <div className="w-full border border-bark-300 text-bark-400 font-sans text-[11px] tracking-[0.14em] uppercase py-4 text-center">Sold Out</div>
                   ) : pickedInBox ? (
                     <button onClick={() => toggleVariant(modalProduct, pickColor!, pickSize!, pickedVariant?.color_hex, pickStyle ?? '')}
-                      className="w-full border border-bark-300 text-bark-400 font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:border-bark-600 hover:text-bark-600 transition-colors flex items-center justify-center gap-2">
+                      className="w-full border border-bark-300 text-bark-400 font-sans text-[11px] tracking-[0.14em] uppercase py-4 hover:border-bark-600 hover:text-bark-600 transition-colors flex items-center justify-center gap-2">
                       <Check size={13} /> {isEs ? 'En tu canastilla · Quitar' : 'In Your Box · Remove'}
                     </button>
                   ) : (
                     <button
                       onClick={() => toggleVariant(modalProduct, pickColor!, pickSize!, pickedVariant?.color_hex, pickStyle ?? '')}
                       disabled={!pickInStock}
-                      className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                      className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.14em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                       {!pickColor ? (isEs ? 'Elige un color' : 'Choose a color') : needsStyle && !pickStyle ? (isEs ? 'Elige un estilo' : 'Choose a style') : !pickSize ? (isEs ? 'Elige una talla' : 'Choose a size') : (isEs ? 'Agregar a tu canastilla' : 'Add to Box')}
                     </button>
                   )
                 ) : isSoldOut(modalProduct.id) ? (
-                  <div className="w-full border border-bark-300 text-bark-400 font-sans text-[11px] tracking-[0.2em] uppercase py-4 text-center">Sold Out</div>
+                  <div className="w-full border border-bark-300 text-bark-400 font-sans text-[11px] tracking-[0.14em] uppercase py-4 text-center">Sold Out</div>
                 ) : selected.has(modalProduct.id) ? (
                   <div className="space-y-2">
-                    <div className="w-full border border-gold-400 text-gold-500 font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 text-center flex items-center justify-center gap-2">
+                    <div className="w-full border border-gold-400 text-gold-500 font-sans text-[11px] tracking-[0.14em] uppercase py-3.5 text-center flex items-center justify-center gap-2">
                       <Check size={13} /> {isEs ? 'En tu canastilla' : 'In Your Box'}
                     </div>
                     <button onClick={() => toggle(modalProduct)}
-                      className="w-full border border-bark-300 text-bark-400 font-sans text-[11px] tracking-[0.2em] uppercase py-3 hover:border-bark-600 hover:text-bark-600 transition-colors">
+                      className="w-full border border-bark-300 text-bark-400 font-sans text-[11px] tracking-[0.14em] uppercase py-3 hover:border-bark-600 hover:text-bark-600 transition-colors">
                       Remove
                     </button>
                   </div>
                 ) : (
                   <button onClick={() => toggle(modalProduct)}
-                    className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-[#6d8070] transition-colors">
+                    className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.14em] uppercase py-4 hover:bg-[#6d8070] transition-colors">
                     {isEs ? 'Agregar a tu canastilla' : 'Add to Box'}
                   </button>
                 )}
@@ -939,7 +939,7 @@ export default function BuildPage() {
                   className="w-full flex items-center justify-between text-left"
                   aria-expanded={descOpen}
                 >
-                  <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-600">Description</span>
+                  <span className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-600">Description</span>
                   <ChevronDown size={15} strokeWidth={1.5} className={`text-bark-400 transition-transform duration-300 ${descOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {descOpen && (
@@ -949,7 +949,7 @@ export default function BuildPage() {
                 )}
               </div>
               {modalProduct.tag && (
-                <span className="inline-block bg-terra-100 text-terra-500 font-sans text-[11px] tracking-[0.2em] uppercase px-3 py-1 mb-2 self-start">
+                <span className="inline-block bg-terra-100 text-terra-500 font-sans text-[11px] tracking-[0.14em] uppercase px-3 py-1 mb-2 self-start">
                   {modalProduct.tag}
                 </span>
               )}

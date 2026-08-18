@@ -75,8 +75,8 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
                   <Link key={p.slug} href={`${isEs ? '/es/canastillas' : '/boxes'}/${p.slug}`} className="group block border border-cream-300 hover:border-bark-400 transition-colors">
                     <div className="relative aspect-[3/4] bg-cream-100">
                       {cover
-                        ? <Image src={cover} alt={p.name} fill className="object-cover" unoptimized />
-                        : <div className="absolute inset-0 flex items-center justify-center font-sans text-[10px] tracking-[0.2em] uppercase text-bark-300">{isEs ? 'Fotografía muy pronto' : 'Photography coming soon'}</div>}
+                        ? <Image src={cover} alt={p.name} fill className="object-cover" />
+                        : <div className="absolute inset-0 flex items-center justify-center font-sans text-[10px] tracking-[0.14em] uppercase text-bark-300">{isEs ? 'Fotografía muy pronto' : 'Photography coming soon'}</div>}
                       <div className="absolute inset-x-0 bottom-0 pt-14 pb-5 px-5" style={{ backgroundImage: `linear-gradient(to top, ${rgba(1)}, ${rgba(0.72)}, transparent)` }}>
                         <h2 className="font-serif text-2xl text-espresso group-hover:text-bark-600">{p.name}</h2>
                         <p className="font-sans text-sm text-bark-600 mt-1">

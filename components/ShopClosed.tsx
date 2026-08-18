@@ -17,7 +17,7 @@ export function ShopClosed() {
             paused for just a little while — thank you for your patience.
           </p>
           <div className="flex flex-col items-center gap-3">
-            <Link href="/" className="font-sans text-xs tracking-[0.15em] uppercase text-bark-400 hover:text-espresso transition-colors">
+            <Link href="/" className="font-sans text-xs tracking-[0.11em] uppercase text-bark-400 hover:text-espresso transition-colors">
               Back to home
             </Link>
           </div>

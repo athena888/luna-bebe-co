@@ -26,7 +26,7 @@ function productImage(p: { id: string; image?: string | null }): string | null {
 }
 
 const inputClass = "w-full px-4 py-3 border border-cream-300 bg-cream-50 font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-bark-400 transition-colors"
-const labelClass = "block font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mb-2"
+const labelClass = "block font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2"
 
 // Garments quick-added from the homepage default to the first box size; the
 // bag line lets buyers flip it — guarded against variant stock below.
@@ -307,16 +307,16 @@ export default function CheckoutPage() {
                       <div className="bg-white p-4 sm:p-6 flex flex-wrap sm:flex-nowrap gap-4 sm:gap-5">
                         <div className="relative w-20 sm:w-24 aspect-[3/4] shrink-0 bg-cream-100 overflow-hidden">
                           {boxRef.image
-                            ? <Image src={boxRef.image} alt={boxRef.name} fill className="object-cover" unoptimized sizes="96px" />
+                            ? <Image src={boxRef.image} alt={boxRef.name} fill className="object-cover" sizes="96px" />
                             : <span className="absolute inset-0 flex items-center justify-center text-2xl">🎁</span>}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-bark-400 mb-1.5">Petite Lavande</p>
+                          <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-bark-400 mb-1.5">Petite Lavande</p>
                           <p className="font-sans text-[15px] text-espresso leading-snug">{boxRef.name}</p>
                           <p className="font-sans text-sm text-bark-500 mt-1.5">{formatPrice(boxRef.price)}</p>
                           {boxRef.size && (
                             <p className="font-sans text-[12px] text-bark-400 mt-2">
-                              <span className="tracking-[0.15em] uppercase text-[11px]">{isEs ? 'Talla' : 'Size'}</span> {boxRef.size} m
+                              <span className="tracking-[0.11em] uppercase text-[11px]">{isEs ? 'Talla' : 'Size'}</span> {boxRef.size} m
                             </p>
                           )}
                           <p className="font-sans text-[12px] text-bark-400 mt-1">
@@ -324,7 +324,7 @@ export default function CheckoutPage() {
                           </p>
                           <button
                             onClick={removeBox}
-                            className="mt-3 font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-700 transition-colors"
+                            className="mt-3 font-sans text-[11px] tracking-[0.11em] uppercase text-bark-400 hover:text-bark-700 transition-colors"
                           >
                             {isEs ? 'Quitar' : 'Remove'}
                           </button>
@@ -340,11 +340,11 @@ export default function CheckoutPage() {
                         <div key={key} className="bg-white p-4 sm:p-6 flex flex-wrap sm:flex-nowrap gap-4 sm:gap-5">
                           <div className="relative w-20 sm:w-24 aspect-[3/4] shrink-0 bg-cream-100 overflow-hidden">
                             {src
-                              ? <Image src={src} alt={item.name} fill className="object-cover" unoptimized sizes="96px" />
+                              ? <Image src={src} alt={item.name} fill className="object-cover" sizes="96px" />
                               : <span className="absolute inset-0 flex items-center justify-center text-2xl">{item.imageEmoji}</span>}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-bark-400 mb-1.5">Petite Lavande</p>
+                            <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-bark-400 mb-1.5">Petite Lavande</p>
                             <p className="font-sans text-[15px] text-espresso leading-snug">{item.name}</p>
                             {/* Box pricing: pieces are included in the box price — no per-line price */}
                             <p className="font-sans text-sm text-bark-500 mt-1.5">{boxRef ? (isEs ? 'Incluido' : 'Included') : formatPrice(item.price)}</p>
@@ -352,7 +352,7 @@ export default function CheckoutPage() {
                               <>
                               <div className="flex items-center gap-2 mt-2">
                                 {item.selectedColor && <span className="font-sans text-[12px] text-bark-400 capitalize">{item.selectedColor} ·</span>}
-                                <span className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400">Size</span>
+                                <span className="font-sans text-[11px] tracking-[0.11em] uppercase text-bark-400">Size</span>
                                 <div className="flex gap-1.5">
                                   {BOX_GARMENT_SIZES.map(s => {
                                     const avail = sizeAvailability(item, s).ok
@@ -397,7 +397,7 @@ export default function CheckoutPage() {
                     {entries.length === 0 && (
                       <div className="bg-white p-8 text-center">
                         <p className="font-sans text-sm text-bark-400 mb-3">Your bag is empty.</p>
-                        <Link href="/build" className="font-sans text-[11px] tracking-[0.2em] uppercase text-espresso underline underline-offset-4">Build your box</Link>
+                        <Link href="/build" className="font-sans text-[11px] tracking-[0.14em] uppercase text-espresso underline underline-offset-4">Build your box</Link>
                       </div>
                     )}
                     {/* Last-chance add-ons — adds into this page's own selection state */}
@@ -628,7 +628,7 @@ export default function CheckoutPage() {
                         <button
                           type="submit"
                           disabled={isSubmitting || entries.length === 0}
-                          className="w-full bg-[#7A8E7C] text-white font-sans text-[13px] tracking-[0.2em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40"
+                          className="w-full bg-[#7A8E7C] text-white font-sans text-[13px] tracking-[0.14em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40"
                         >
                           {isSubmitting ? (isEs ? 'Procesando…' : 'Processing…') : (isEs ? 'Finalizar compra' : 'Checkout')}
                         </button>

@@ -114,11 +114,11 @@ export function BagDrawer() {
             <div className="flex gap-4 items-start py-1">
               <div className="w-24 h-28 bg-cream-100 relative shrink-0 overflow-hidden">
                 {boxRef.image
-                  ? <Image src={boxRef.image} alt={boxRef.name} fill className="object-cover" unoptimized sizes="96px" />
+                  ? <Image src={boxRef.image} alt={boxRef.name} fill className="object-cover" sizes="96px" />
                   : <div className="w-full h-full flex items-center justify-center text-3xl">🎁</div>}
               </div>
               <div className="flex-1 min-w-0 pt-1">
-                <p className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 mb-0.5">Petite Lavande</p>
+                <p className="font-sans text-[11px] tracking-[0.11em] uppercase text-bark-400 mb-0.5">Petite Lavande</p>
                 <p className="font-sans text-sm text-bark-700 leading-snug mb-1.5">{boxRef.name}</p>
                 {boxRef.size && (
                   <p className="font-sans text-[11px] text-bark-400 mb-1">{isEs ? 'Talla' : 'Size'} {boxRef.size} m</p>
@@ -129,7 +129,7 @@ export function BagDrawer() {
                 <p className="font-sans text-sm text-bark-500 mb-3">{formatPrice(boxRef.price)}</p>
                 <button
                   onClick={() => update([])}
-                  className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-700 transition-colors"
+                  className="font-sans text-[11px] tracking-[0.11em] uppercase text-bark-400 hover:text-bark-700 transition-colors"
                 >
                   {isEs ? 'Quitar' : 'Remove'}
                 </button>
@@ -146,12 +146,12 @@ export function BagDrawer() {
                 <div key={key} className="flex gap-4 items-start py-1">
                   <div className="w-24 h-28 bg-cream-100 relative shrink-0 overflow-hidden">
                     {src
-                      ? <Image src={src} alt={product.name} fill className="object-cover" unoptimized sizes="96px" />
+                      ? <Image src={src} alt={product.name} fill className="object-cover" sizes="96px" />
                       : <div className="w-full h-full flex items-center justify-center text-3xl">{product.imageEmoji}</div>
                     }
                   </div>
                   <div className="flex-1 min-w-0 pt-1">
-                    <p className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 mb-0.5">Petite Lavande</p>
+                    <p className="font-sans text-[11px] tracking-[0.11em] uppercase text-bark-400 mb-0.5">Petite Lavande</p>
                     <p className="font-sans text-sm text-bark-700 leading-snug mb-1.5">{product.name}</p>
                     {variantLabel && (
                       <p className="font-sans text-[11px] text-bark-400 capitalize mb-1">{variantLabel}</p>
@@ -171,7 +171,7 @@ export function BagDrawer() {
                       </div>
                       <button
                         onClick={() => removeItem(key)}
-                        className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-700 transition-colors"
+                        className="font-sans text-[11px] tracking-[0.11em] uppercase text-bark-400 hover:text-bark-700 transition-colors"
                       >
                         {isEs ? 'Quitar' : 'Remove'}
                       </button>
@@ -187,7 +187,7 @@ export function BagDrawer() {
         {/* Footer */}
         <div className="shrink-0 border-t border-cream-300 px-6 py-5">
           <div className="flex justify-between items-baseline mb-1">
-            <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">Subtotal</span>
+            <span className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400">Subtotal</span>
             <span className="font-sans text-base font-medium text-bark-600">{formatPrice(subtotal)}</span>
           </div>
           <p className="font-sans text-[11px] text-bark-400/60 mb-2">{isEs ? 'Envío se calcula al pagar' : 'Shipping calculated at checkout'}</p>
@@ -195,7 +195,7 @@ export function BagDrawer() {
           <button
             onClick={() => { setOpen(false); router.push(isEs ? '/es/checkout' : '/checkout') }}
             disabled={!hasItems}
-            className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.25em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.16em] uppercase py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {isEs ? 'Pagar' : 'Check Out'}
           </button>

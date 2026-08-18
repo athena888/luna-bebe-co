@@ -116,8 +116,8 @@ export function EditorialStrip() {
               transitionDelay: `${buttonsDelay}ms`,
             }}
           >
-            <Link href="/build" className="w-auto bg-cream-50 text-bark-600 font-sans text-[11px] tracking-[0.2em] uppercase px-7 py-3 sm:px-8 sm:py-3.5 hover:bg-cream-100 transition-colors">Build Your Own Box</Link>
-            <Link href="/boxes" className="w-auto border border-cream-50/70 text-cream-50 font-sans text-[11px] tracking-[0.2em] uppercase px-7 py-3 sm:px-8 sm:py-3.5 hover:bg-cream-50/10 transition-colors">Shop Gift Ideas</Link>
+            <Link href="/build" className="w-auto bg-cream-50 text-bark-600 font-sans text-[11px] tracking-[0.14em] uppercase px-7 py-3 sm:px-8 sm:py-3.5 hover:bg-cream-100 transition-colors">Build Your Own Box</Link>
+            <Link href="/boxes" className="w-auto border border-cream-50/70 text-cream-50 font-sans text-[11px] tracking-[0.14em] uppercase px-7 py-3 sm:px-8 sm:py-3.5 hover:bg-cream-50/10 transition-colors">Shop Gift Ideas</Link>
           </div>
         </div>
       </div>

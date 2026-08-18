@@ -165,7 +165,7 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
         ) : !product ? (
           <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
             <p className="font-sans text-sm text-bark-400">Product not found.</p>
-            <Link href="/build" className="font-sans text-xs tracking-[0.2em] uppercase text-bark-600 underline underline-offset-2">
+            <Link href="/build" className="font-sans text-xs tracking-[0.14em] uppercase text-bark-600 underline underline-offset-2">
               Back to Build
             </Link>
           </div>
@@ -220,14 +220,14 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
               <div className="w-full lg:flex-1 pt-1 px-3">
 
                 {/* Breadcrumb */}
-                <nav className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 mb-4 flex items-center gap-1.5 flex-wrap">
+                <nav className="font-sans text-[11px] tracking-[0.11em] uppercase text-bark-400 mb-4 flex items-center gap-1.5 flex-wrap">
                   <Link href="/build" className="hover:text-bark-600 transition-colors">{isEs ? 'Arma tu canastilla' : 'Build Your Box'}</Link>
                   <span>/</span>
                   <span>{(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[product.category]}</span>
                 </nav>
 
                 {/* Category label */}
-                <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-1.5">
+                <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-1.5">
                   {(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[product.category]}
                 </p>
 
@@ -243,7 +243,7 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
                 {/* Tag badge */}
                 {product.tag && (
                   <div className="mb-4">
-                    <span className="bg-terra-100 text-terra-500 font-sans text-[11px] tracking-[0.2em] uppercase px-3 py-1">
+                    <span className="bg-terra-100 text-terra-500 font-sans text-[11px] tracking-[0.14em] uppercase px-3 py-1">
                       {product.tag}
                     </span>
                   </div>
@@ -252,7 +252,7 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
                 {/* Preorder state (portal toggle) */}
                 {(product as Product & { preorder?: boolean; preorder_note?: string | null }).preorder && (
                   <div className="mb-3">
-                    <span className="inline-block bg-sage-100 text-sage-500 font-sans text-[10px] tracking-[0.15em] uppercase font-bold px-2.5 py-1">
+                    <span className="inline-block bg-sage-100 text-sage-500 font-sans text-[10px] tracking-[0.11em] uppercase font-bold px-2.5 py-1">
                       Preorder{(product as Product & { preorder_note?: string | null }).preorder_note ? ` · ${(product as Product & { preorder_note?: string | null }).preorder_note}` : ''}
                     </span>
                     <p className="font-sans text-[13px] text-bark-500 leading-relaxed mt-2">
@@ -264,7 +264,7 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
                 {/* Sold out → waitlist capture (Build 12) */}
                 {stock !== null && stock <= 0 && !(product as Product & { preorder?: boolean }).preorder ? (
                   <div className="mb-4">
-                    <span className="inline-block bg-cream-200 text-bark-400 font-sans text-[10px] tracking-[0.15em] uppercase font-bold px-2.5 py-1 mb-3">
+                    <span className="inline-block bg-cream-200 text-bark-400 font-sans text-[10px] tracking-[0.11em] uppercase font-bold px-2.5 py-1 mb-3">
                       {isEs ? 'Agotado' : 'Sold out'}
                     </span>
                     {wlState === 'done' ? (
@@ -285,7 +285,7 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
                             className="flex-1 min-w-0 px-3 py-2.5 font-sans text-[13px] text-espresso placeholder:text-bark-400/50 bg-white border border-cream-300 focus:outline-none focus:border-bark-400"
                           />
                           <button type="submit" disabled={wlState === 'saving'}
-                            className="px-4 bg-[#7A8E7C] text-white font-sans text-[10px] tracking-[0.15em] uppercase font-semibold hover:bg-[#6d8070] transition-colors disabled:opacity-50">
+                            className="px-4 bg-[#7A8E7C] text-white font-sans text-[10px] tracking-[0.11em] uppercase font-semibold hover:bg-[#6d8070] transition-colors disabled:opacity-50">
                             {wlState === 'saving' ? '…' : (isEs ? 'Avísame' : 'Notify Me')}
                           </button>
                         </div>
@@ -294,12 +294,12 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
                   </div>
                 ) : inBox ? (
                   <div className="space-y-2 mb-4">
-                    <div className="w-full border border-gold-400 text-gold-400 font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 text-center">
+                    <div className="w-full border border-gold-400 text-gold-400 font-sans text-[11px] tracking-[0.14em] uppercase py-3.5 text-center">
                       {isEs ? 'En tu canastilla' : 'Added to Box'}
                     </div>
                     <button
                       onClick={() => router.push('/build')}
-                      className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-[#6d8070] transition-colors"
+                      className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.14em] uppercase py-3.5 hover:bg-[#6d8070] transition-colors"
                     >
                       {isEs ? 'Ir a tu canastilla' : 'Go to Your Box'}
                     </button>
@@ -307,7 +307,7 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
                 ) : (
                   <button
                     onClick={handleAddToBox}
-                    className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.2em] uppercase py-3.5 hover:bg-[#6d8070] transition-colors mb-4"
+                    className="w-full bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.14em] uppercase py-3.5 hover:bg-[#6d8070] transition-colors mb-4"
                   >
                     {(product as Product & { preorder?: boolean }).preorder ? (isEs ? 'Reservar ahora' : 'Preorder Now') : (isEs ? 'Agregar a tu canastilla' : 'Add to Box')}
                   </button>
@@ -323,8 +323,8 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
                     { label: isEs ? 'Listo para regalar' : 'Gift Ready', sub: isEs ? 'empacado con cuidado' : 'carefully packed' },
                   ].map(({ label, sub }) => (
                     <div key={label} className="flex-1 text-center">
-                      <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-600">{label}</p>
-                      <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400">{sub}</p>
+                      <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-600">{label}</p>
+                      <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400">{sub}</p>
                     </div>
                   ))}
                 </div>
@@ -368,7 +368,7 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
                 {product.ingredients && (
                   <div className="border-t border-cream-300">
                     <div className="py-3.5 flex items-start gap-2">
-                      <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
+                      <span className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mt-0.5 shrink-0">Materials</span>
                       <span className="font-sans text-xs text-bark-400">{clean(product.ingredients)}</span>
                     </div>
                   </div>
@@ -378,7 +378,7 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
                 {hasGotsCert(product as unknown as { certifications?: Array<{ key?: string; name?: string }> }) && (
                   <div className="border-t border-cream-300">
                     <div className="py-3.5 flex items-start gap-2">
-                      <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
+                      <span className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
                       <span className="font-sans text-xs text-bark-400">Organic cotton from a GOTS-certified manufacturer.</span>
                     </div>
                   </div>
@@ -387,7 +387,7 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
                 <div className="border-t border-cream-300 pt-4 mt-1">
                   <Link
                     href="/build"
-                    className="font-sans text-[11px] tracking-[0.15em] uppercase text-bark-400 hover:text-bark-600 transition-colors"
+                    className="font-sans text-[11px] tracking-[0.11em] uppercase text-bark-400 hover:text-bark-600 transition-colors"
                   >
                     ← Back to Build
                   </Link>
@@ -453,7 +453,7 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
 
           {/* Counter */}
           {allImages.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 font-sans text-[11px] tracking-[0.2em] text-white/50">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 font-sans text-[11px] tracking-[0.14em] text-white/50">
               {lightboxIdx + 1} / {allImages.length}
             </div>
           )}

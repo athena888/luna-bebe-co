@@ -20,7 +20,7 @@ export default function DevolucionesPage() {
       <Header />
       <main className="min-h-screen bg-white">
     <article className="max-w-2xl mx-auto px-6 pt-12 pb-16 font-sans text-bark-600">
-      <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-4">Legal</p>
+      <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-4">Legal</p>
       <h1 className="font-playfair text-4xl font-normal text-espresso mb-2">Devoluciones y Reembolsos</h1>
       <p className="text-bark-400 text-sm mb-10">Última actualización: julio 2026</p>
 

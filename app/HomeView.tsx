@@ -149,11 +149,11 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/decor/lavender-divider.png" alt="" aria-hidden="true" className="w-full max-w-xl h-auto rotate-180" />
           </div>
-          <p className="font-sans text-[12px] tracking-[0.3em] uppercase font-bold text-[#7A8E7C] mb-4">{s('story.eyebrow', 'Our Story')}</p>
+          <p className="font-sans text-[12px] tracking-[0.18em] uppercase font-bold text-[#7A8E7C] mb-4">{s('story.eyebrow', 'Our Story')}</p>
           <h2 className="font-playfair text-2xl sm:text-3xl text-espresso leading-snug max-w-2xl mx-auto mb-6">{s('story.heading', story.hero.heading)}</h2>
           <Link
             href="/story"
-            className="inline-block font-sans text-[12px] tracking-[0.3em] uppercase text-espresso border-b border-espresso pb-1 hover:text-gold-500 hover:border-gold-500 transition-colors"
+            className="inline-block font-sans text-[12px] tracking-[0.18em] uppercase text-espresso border-b border-espresso pb-1 hover:text-gold-500 hover:border-gold-500 transition-colors"
           >
             {s('story.cta', 'Read Our Story')}
           </Link>
@@ -181,10 +181,10 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
             <section className="py-12 sm:py-16 px-6 sm:px-10">
               <div className="max-w-6xl mx-auto">
                 <div className="text-center mb-10">
-                  <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-3">{content.reviews.eyebrow}</p>
+                  <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-3">{content.reviews.eyebrow}</p>
                   <h2 className="font-serif text-[2.25rem] sm:text-[3rem] text-espresso">{content.reviews.title}</h2>
                   {content.reviews.ratingLine && (
-                    <p className="font-sans text-[11px] tracking-[0.2em] text-gold-400 mt-3">{content.reviews.ratingLine}</p>
+                    <p className="font-sans text-[11px] tracking-[0.14em] text-gold-400 mt-3">{content.reviews.ratingLine}</p>
                   )}
                 </div>
                 <TestimonialsCarousel reviews={content.reviews.items} />
@@ -200,7 +200,7 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
             <div>
               <div className="py-4 text-center">
                 <a href="https://www.instagram.com/petitelavandeco" target="_blank" rel="noopener noreferrer"
-                  className="font-sans text-[11px] tracking-[0.3em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
+                  className="font-sans text-[11px] tracking-[0.18em] uppercase text-bark-400 hover:text-bark-600 transition-colors">
                   Follow @petitelavandeco on Instagram
                 </a>
               </div>

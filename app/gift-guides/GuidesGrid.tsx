@@ -30,7 +30,7 @@ export function GuidesGrid({ guides }: { guides: GuideCard[] }) {
           <button
             key={t}
             onClick={() => setActive(t)}
-            className={`font-sans text-[11px] tracking-[0.2em] uppercase px-5 py-2.5 border transition-colors ${
+            className={`font-sans text-[11px] tracking-[0.14em] uppercase px-5 py-2.5 border transition-colors ${
               active === t
                 ? 'bg-bark-600 text-cream-50 border-bark-600'
                 : 'bg-transparent text-bark-500 border-cream-300 hover:border-bark-400'
@@ -57,12 +57,12 @@ export function GuidesGrid({ guides }: { guides: GuideCard[] }) {
                   <span className="font-serif italic text-2xl text-bark-300">Petite Lavande</span>
                 </div>
               )}
-              <span className="absolute top-3 left-3 bg-cream-50/90 text-bark-600 font-sans text-[11px] tracking-[0.2em] uppercase px-3 py-1">{g.tag}</span>
+              <span className="absolute top-3 left-3 bg-cream-50/90 text-bark-600 font-sans text-[11px] tracking-[0.14em] uppercase px-3 py-1">{g.tag}</span>
             </div>
-            <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-1.5">{g.eyebrow}</p>
+            <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-1.5">{g.eyebrow}</p>
             <h2 className="font-serif text-xl text-espresso leading-snug mb-2 group-hover:text-bark-800 transition-colors">{g.h1.replace(/^The /, '')}</h2>
             <p className="font-cormorant text-base text-bark-400 leading-relaxed mb-3 line-clamp-3">{g.blurb}</p>
-            <span className="inline-flex items-center gap-1.5 font-sans text-[11px] tracking-[0.2em] uppercase text-bark-500 group-hover:text-bark-700 transition-colors">
+            <span className="inline-flex items-center gap-1.5 font-sans text-[11px] tracking-[0.14em] uppercase text-bark-500 group-hover:text-bark-700 transition-colors">
               Explore <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
             </span>
           </Link>

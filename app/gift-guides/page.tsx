@@ -54,7 +54,7 @@ export default async function GiftGuidesHub() {
         <SlotBackground slotKey="guide.header_bg" scrim="bg-cream-50/80" className="border-b border-cream-300">
           <section className="px-6 sm:px-8 py-16 sm:py-24 text-center">
             <div className="max-w-2xl mx-auto">
-              <p className="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-400 mb-4">Gifting Ideas</p>
+              <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-4">Gifting Ideas</p>
               <h1 className="font-serif text-[2.5rem] sm:text-[3.5rem] text-espresso leading-[1.05] mb-5">Find the perfect gift</h1>
               <p className="font-cormorant text-lg sm:text-xl text-bark-400 leading-loose">
                 Whether it&rsquo;s for a newborn, the new mama, a baby shower or a whole team — every Petite Lavande gift guide, in one place. Filter by the occasion and let us do the rest.
