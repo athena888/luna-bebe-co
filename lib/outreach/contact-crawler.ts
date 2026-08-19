@@ -323,6 +323,7 @@ export async function runContactCrawler(opts: {
     if (Date.now() > deadline - 15_000) break
     if (verifyBudget <= 0) { stats.skipped.push({ domain: t.domain, why: 'verify budget spent' }); continue }
     stats.attempted++
+    try {
     const dkey = t.domain.toLowerCase()
     const prev = state[dkey] ?? { a: 0, t: '' }
     if (!dry) {
@@ -426,6 +427,11 @@ export async function runContactCrawler(opts: {
         confidence: s.confidence ?? 'MEDIUM',
         source_url: s.source_url ?? benefitsUrl ?? chosen!.sourceUrl, source_title: s.source_title ?? null,
       })))
+    }
+    } catch (e) {
+      // One hostile or malformed site must never kill the whole run.
+      console.error('crawl error:', t.domain, e)
+      stats.skipped.push({ domain: t.domain, why: 'crawl error: ' + (e instanceof Error ? e.message : String(e)).slice(0, 120) })
     }
   }
 
