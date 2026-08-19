@@ -5,6 +5,10 @@ import { Activity, Users, Eye, Loader } from 'lucide-react'
 
 interface Snapshot {
   configured: boolean
+  /** false = credentials present but the property can't be read (see `hint`). */
+  connected?: boolean
+  reason?: 'permission' | 'property' | 'unknown'
+  hint?: string
   activeUsers?: number
   todayUsers?: number
   todayPageViews?: number
@@ -21,7 +25,7 @@ export function RealtimeTraffic() {
       const res = await fetch('/api/portal/ga-realtime', { cache: 'no-store' })
       setData(await res.json())
     } catch {
-      setData({ configured: true, error: 'Could not reach analytics.' })
+      setData({ configured: true, connected: false, reason: 'unknown', hint: 'Could not reach analytics.' })
     } finally {
       setLoading(false)
     }
@@ -29,9 +33,13 @@ export function RealtimeTraffic() {
 
   useEffect(() => {
     load()
-    const id = setInterval(load, 30_000) // refresh every 30s
+    // Only poll while it's actually working. Re-polling a property we can't
+    // read just burns a Google round-trip every 30s for as long as the tab
+    // stays open — the setup card below tells you what to fix instead.
+    if (data && (data.configured === false || data.connected === false)) return
+    const id = setInterval(load, 30_000)
     return () => clearInterval(id)
-  }, [load])
+  }, [load, data])
 
   if (loading) {
     return (
@@ -56,19 +64,36 @@ export function RealtimeTraffic() {
     )
   }
 
-  if (data?.error) {
+  // Credentials are set but the property can't be read — say exactly what to
+  // fix rather than "setup is in progress", which never told anyone anything.
+  if (data && data.connected === false) {
     return (
       <div className="bg-cream-50 rounded-2xl border border-cream-200 p-6">
-        <h2 className="font-serif text-xl text-bark-600 mb-2">Live Traffic</h2>
-        <p className="font-sans text-sm text-bark-400 mb-4">Service account setup is in progress. View your live analytics directly:</p>
-        <a
-          href="https://analytics.google.com/analytics/web/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block px-4 py-2 bg-bark-600 text-white font-sans text-[11px] tracking-[0.2em] uppercase rounded hover:bg-bark-700 transition-colors"
-        >
-          → View in Google Analytics
-        </a>
+        <div className="flex items-center gap-2 mb-2">
+          <h2 className="font-serif text-xl text-bark-600">Live Traffic</h2>
+          <span className="font-sans text-[10px] uppercase tracking-wider text-bark-400 border border-cream-300 rounded px-1.5 py-0.5">Not connected</span>
+        </div>
+        <p className="font-sans text-sm text-bark-500 leading-relaxed mb-4">{data.hint}</p>
+        <div className="flex flex-wrap gap-2">
+          {data.reason === 'permission' && (
+            <a
+              href="https://analytics.google.com/analytics/web/#/admin/suiteusermanagement/property"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-4 py-2 border border-cream-300 text-bark-600 font-sans text-[11px] tracking-[0.11em] uppercase rounded hover:border-bark-400 transition-colors"
+            >
+              Property access management
+            </a>
+          )}
+          <a
+            href="https://analytics.google.com/analytics/web/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block px-4 py-2 bg-bark-600 text-white font-sans text-[11px] tracking-[0.11em] uppercase rounded hover:bg-bark-700 transition-colors"
+          >
+            → View in Google Analytics
+          </a>
+        </div>
       </div>
     )
   }
