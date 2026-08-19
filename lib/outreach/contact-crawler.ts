@@ -273,7 +273,7 @@ async function fetchText(url: string): Promise<string | null> {
 }
 
 // ── Per-domain crawl ─────────────────────────────────────────────────────────
-async function crawlDomain(t: CrawlTarget, stats: CrawlStats): Promise<{
+async function crawlDomain(t: CrawlTarget, stats: CrawlStats, deadline: number): Promise<{
   candidates: Candidate[]; benefitsText: string; benefitsUrl: string | null
 }> {
   const hosts = ['https://' + t.domain, 'https://www.' + t.domain]
@@ -304,7 +304,7 @@ async function crawlDomain(t: CrawlTarget, stats: CrawlStats): Promise<{
   // Sitemap-listed bio pages are the highest-yield source on law/consulting
   // sites — the index page carries names, the emails live here.
   for (const url of idx.bioUrls) {
-    if (pages >= MAX_PAGES_PER_DOMAIN + 4 || candidates.some(c => c.title)) break
+    if (Date.now() > deadline || pages >= MAX_PAGES_PER_DOMAIN + 4 || candidates.some(c => c.title)) break
     const bio = await fetchPage(url)
     if (!bio) continue
     pages++; stats.pagesFetched++
@@ -322,7 +322,7 @@ async function crawlDomain(t: CrawlTarget, stats: CrawlStats): Promise<{
   }
 
   for (const path of teamPaths) {
-    if (pages >= MAX_PAGES_PER_DOMAIN) break
+    if (Date.now() > deadline || pages >= MAX_PAGES_PER_DOMAIN) break
     const html = await fetchPage(host + path)
     if (!html) continue
     pages++; stats.pagesFetched++
@@ -353,7 +353,7 @@ async function crawlDomain(t: CrawlTarget, stats: CrawlStats): Promise<{
       }
       let followed = 0
       for (const url of links) {
-        if (followed >= MAX_BIO_PAGES || pages >= MAX_PAGES_PER_DOMAIN + 4) break
+        if (Date.now() > deadline || followed >= MAX_BIO_PAGES || pages >= MAX_PAGES_PER_DOMAIN + 4) break
         const bio = await fetchPage(url)
         if (!bio) continue
         followed++; pages++; stats.pagesFetched++
@@ -376,7 +376,7 @@ async function crawlDomain(t: CrawlTarget, stats: CrawlStats): Promise<{
   }
 
   for (const path of careerPaths) {
-    if (pages >= MAX_PAGES_PER_DOMAIN + 2) break
+    if (Date.now() > deadline || pages >= MAX_PAGES_PER_DOMAIN + 2) break
     const html = await fetchPage(host + path)
     if (!html) continue
     pages++; stats.pagesFetched++
@@ -442,7 +442,7 @@ export async function runContactCrawler(opts: {
       await setConfig('crawl_state', state)
     }
 
-    const { candidates, benefitsText, benefitsUrl } = await crawlDomain(t, stats)
+    const { candidates, benefitsText, benefitsUrl } = await crawlDomain(t, stats, Math.min(deadline - 20_000, Date.now() + 90_000))
     stats.contactsFound += candidates.length
     if (!candidates.length) { stats.skipped.push({ domain: t.domain, why: 'no published non-generic address' }); continue }
 
