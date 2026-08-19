@@ -30,7 +30,7 @@ import { verifyEmail } from '../emailVerifier.ts'
 import { qualifyRecord } from './qualify-v3.ts'
 import {
   roleFamilyForTitle, gradeRole, isGenericEmail, looksLikeMachineAddress,
-  bandForRange, type SizeBand, type Segment,
+  bandForRange, SIZE_BANDS, type SizeBand, type Segment,
 } from './icp.ts'
 
 // ── Tunables ─────────────────────────────────────────────────────────────────
@@ -335,8 +335,13 @@ export async function runContactCrawler(opts: {
     stats.contactsFound += candidates.length
     if (!candidates.length) { stats.skipped.push({ domain: t.domain, why: 'no published non-generic address' }); continue }
 
-    const band = (t.company_size_band as SizeBand | null)
-      ?? bandForRange(t.employee_count, t.employee_count)
+    // Directory seeds can carry foreign band strings ('50-249' is Clutch's
+    // vocabulary, not ours) — bandMidpoint() destructures a lookup by OUR
+    // bands and crashes on anything else. Validate, else derive from headcount.
+    const storedBand = t.company_size_band as SizeBand | null
+    const band = (storedBand && (SIZE_BANDS as readonly string[]).includes(storedBand))
+      ? storedBand
+      : bandForRange(t.employee_count, t.employee_count)
     // Segment comes from the same classifier scoring will use — rank with it.
     const seg = qualifyRecord({ company: t.company, domain: t.domain, category: t.category, fitReason: t.fit_reason }).segment
     const ranked = rankCandidates(candidates, seg, band)
@@ -374,7 +379,7 @@ export async function runContactCrawler(opts: {
       fitReason: [t.fit_reason, benefitsText].filter(Boolean).join(' '),
       sourceUrl: benefitsUrl ?? chosen.sourceUrl,
       researchAgeDays: 0,
-      known: t.company_size_band ? { sizeBand: t.company_size_band as SizeBand, sizeConfidence: 'MEDIUM' } : null,
+      known: band ? { sizeBand: band, sizeConfidence: 'MEDIUM' } : null,
     })
 
     if (out.result.status === 'QUALIFIED') stats.qualified++

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { runContactCrawler } from '@/lib/outreach/contact-crawler'
+import { bandForRange, SIZE_BANDS } from '@/lib/outreach/icp'
 
 // On-demand contact crawler + seed intake (Portal-protected).
 //
@@ -49,7 +50,11 @@ export async function POST(req: NextRequest) {
         category: CATEGORY_BY_INDUSTRY[s.industry ?? ''] ?? null,
         industry_key: s.industry ?? null,
         metro: s.metro ?? null,
-        company_size_band: s.size_band ?? null,
+        // Store OUR size vocabulary only. Directory bands ('50-249') pass
+        // through bandForRange via the headcount estimate instead.
+        company_size_band: (s.size_band && (SIZE_BANDS as readonly string[]).includes(s.size_band))
+          ? s.size_band
+          : bandForRange(s.employee_est ?? null, s.employee_est ?? null),
         ...(s.employee_est ? { employee_count: s.employee_est, employee_count_source: 'inferred' } : {}),
         fit_reason: `Directory-crawled seed: ${s.metro ?? '?'} ${s.industry ?? '?'} firm, ${s.size_band ?? '?'} employees.`,
       })
