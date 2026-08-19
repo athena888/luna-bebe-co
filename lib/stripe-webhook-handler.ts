@@ -2,15 +2,23 @@ import type Stripe from 'stripe'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
 import { sendOrderConfirmationEmail, sendGiftCardEmail, sendRefundEmail, sendDisputeAlertEmail } from '@/lib/resend'
-import { sendPurchaseEvent } from '@/lib/ga-measurement-protocol'
+import { sendPurchaseEvent, sendRefundEvent } from '@/lib/ga-measurement-protocol'
 import { sendPurchaseCapi } from '@/lib/meta-capi'
 import { isInternalEmail } from '@/lib/site-config'
+import { orderAdvanceDecision, purchaseAnalyticsAllowed } from '@/lib/purchase-analytics'
 import type { Order } from '@/types'
 
 export async function handleStripeEvent(event: Stripe.Event) {
   switch (event.type) {
     case 'checkout.session.completed':
+    // Async payment methods (Klarna etc.): `completed` arrives while still
+    // unpaid and is ignored by the paid gate below; this later event is the
+    // actual payment confirmation and runs the same idempotent path.
+    case 'checkout.session.async_payment_succeeded':
       await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session)
+      return
+    case 'checkout.session.async_payment_failed':
+      console.log('Async payment failed for session:', (event.data.object as Stripe.Checkout.Session).id)
       return
     case 'payment_intent.payment_failed':
       console.log('Payment failed for intent:', (event.data.object as Stripe.PaymentIntent).id)
@@ -69,6 +77,18 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
   await restockOrder(order)
   await supabaseAdmin.from('orders').update({ status: 'refunded' }).eq('id', order.id)
 
+  // Reverse the GA4 revenue with the ORIGINAL transaction_id — a refunded
+  // order must not stay counted as won revenue. Live-mode events only, same
+  // rule as the purchase event.
+  if (purchaseAnalyticsAllowed(charge.livemode)) {
+    await sendRefundEvent({
+      orderId: order.id,
+      valueCents: charge.amount_refunded ?? order.total_amount ?? 0,
+      currency: (charge.currency ?? 'usd').toUpperCase(),
+      internal: isInternalEmail(order.customer_email),
+    })
+  }
+
   await sendRefundEmail({
     customerName: order.customer_name,
     customerEmail: order.customer_email,
@@ -94,6 +114,15 @@ async function handleDisputeCreated(dispute: Stripe.Dispute) {
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+  // Payment truth gate: Stripe fires `completed` for async payment methods
+  // while payment_status is still 'unpaid'. Reaching the success URL proves
+  // nothing — NOTHING here (gift cards included) may run until Stripe says
+  // the money actually moved. `async_payment_succeeded` re-enters with 'paid'.
+  if (session.payment_status !== 'paid') {
+    console.log('checkout session completed but not paid — waiting for async payment:', session.id)
+    return
+  }
+
   // Gift card — Stripe-side idempotency keys keep retries from creating duplicate coupons
   if (session.metadata?.type === 'gift_card') {
     const { recipient_email, recipient_name, sender_name, message, amount } = session.metadata
@@ -138,7 +167,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     .eq('id', orderId)
     .maybeSingle()
 
-  const alreadyAdvanced = existing && existing.status !== 'pending'
+  const decision = orderAdvanceDecision(session, (existing as { status?: string } | null)?.status ?? null)
+  if (!decision.advance) {
+    // Safe identifiers only — never the session object (it carries PII).
+    console.log(`checkout session not advanced (${decision.reason}): order ${orderId}, session ${session.id}`)
+    return
+  }
 
   const { data: orderData } = await supabaseAdmin
     .from('orders')
@@ -151,9 +185,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     .single()
 
   const order = orderData as Order | null
-  if (!order || alreadyAdvanced) return
+  if (!order) return
 
-  // Side effects only on first transition (line 76 already returns when alreadyAdvanced)
+  // Side effects only on first transition (the decision above already refused replays)
   if (order.selected_items?.length) {
     await Promise.allSettled(
       order.selected_items.map(item => {
@@ -245,6 +279,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const items = (order.selected_items ?? []).map(i => ({
     id: i.id, name: i.name, price: i.price, qty: (i as { qty?: number }).qty ?? 1, category: i.category,
   }))
+
+  // Production analytics only for LIVE-mode events: test-mode sessions
+  // forwarded by `stripe listen` during development were landing in
+  // production GA4 as real revenue. Orders/emails still flow for test mode
+  // (that's what dev testing exercises) — only the analytics are withheld.
+  if (!purchaseAnalyticsAllowed(session.livemode)) {
+    console.log('test-mode session — GA4/CAPI purchase not sent: order', order.id)
+    return
+  }
 
   // Server-side GA4 purchase — behind the same first-transition guard above,
   // so replays never double-report; transaction_id dedupes besides.

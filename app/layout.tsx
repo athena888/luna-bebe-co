@@ -124,33 +124,40 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           <>
             <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
             <Script id="ga4" strategy="afterInteractive">{`
-              // Respect the cookie banner: a visitor who clicked Decline is not
-              // configured/tracked (script noop). Undecided or accepted → track.
-              var __declined = false;
-              try { __declined = localStorage.getItem('cookie_consent') === 'declined'; } catch(e){}
-              // Admin pages never generate analytics. Owner browsing was
-              // inflating users, sessions and the landing-page report; the
-              // traffic_type tag below only helps if GA4's internal filter is
-              // switched to Active, so /portal is cut off at the source with
-              // Google's official kill switch as well as skipping config.
-              var __portal = false;
-              try { __portal = location.pathname.indexOf('/portal') === 0; } catch(e){}
-              if (__portal) { window['ga-disable-${GA_ID}'] = true; }
-              if (!__declined && !__portal) {
-                // Own-traffic exclusion: visiting ?internal=1 (or logging into the
-                // portal) flags this browser so GA tags it traffic_type=internal.
+              // Mirror of lib/analytics-gate.ts — the loader-time gate. GA is
+              // configured ONLY on the production storefront, outside /portal,
+              // in a browser that is neither flagged internal nor declined the
+              // cookie banner. Everything else gets Google's official kill
+              // switch so even the loaded gtag.js (and its enhanced-measurement
+              // page_views) sends nothing. localhost, 127.0.0.1 and Vercel
+              // preview hosts all fail the host check — dev and preview traffic
+              // can no longer reach the production property.
+              var __allowed = false;
+              try {
+                var __host = location.hostname.toLowerCase();
+                var __prodHost = __host === 'petitelavande.com' || __host === 'www.petitelavande.com';
+                var __portal = location.pathname.indexOf('/portal') === 0;
+                var __internal = false, __declined = false;
                 try {
-                  var u = new URL(window.location.href);
-                  if (u.searchParams.get('internal') === '1') localStorage.setItem('pl_internal','1');
-                  if (u.searchParams.get('internal') === '0') localStorage.removeItem('pl_internal');
+                  __internal = localStorage.getItem('pl_internal_analytics') === '1'
+                            || localStorage.getItem('pl_internal') === '1';
+                  __declined = localStorage.getItem('cookie_consent') === 'declined';
                 } catch(e){}
-                var __internal = false;
-                try { __internal = localStorage.getItem('pl_internal') === '1'; } catch(e){}
+                __allowed = __prodHost && !__portal && !__internal && !__declined;
+              } catch(e){}
+              if (!__allowed) {
+                window['ga-disable-${GA_ID}'] = true;
+              } else {
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 window.gtag = window.gtag || gtag;
                 gtag('js', new Date());
-                gtag('config', '${GA_ID}', __internal ? { traffic_type: 'internal' } : {});
+                // ONE page_view strategy: gtag's automatic page_view covers the
+                // initial load; SPA route changes are covered by GA4 enhanced
+                // measurement (history events). No manual page_view anywhere,
+                // so nothing can double-fire. UTM/gclid attribution is read by
+                // gtag.js from the landing URL — untouched.
+                gtag('config', '${GA_ID}');
               }
             `}</Script>
           </>
@@ -159,12 +166,21 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         {/* Meta Pixel */}
         {META_PIXEL_ID && (
           <Script id="meta-pixel" strategy="afterInteractive">{`
-            // Respect the cookie banner (same rule as GA above).
-            var __plxDeclined = false;
-            try { __plxDeclined = localStorage.getItem('cookie_consent') === 'declined'; } catch(e){}
-            var __plxPortal = false;
-            try { __plxPortal = location.pathname.indexOf('/portal') === 0; } catch(e){}
-            if (!__plxDeclined && !__plxPortal) {
+            // Same gate as GA above (mirror of lib/analytics-gate.ts).
+            var __plxAllowed = false;
+            try {
+              var __plxHost = location.hostname.toLowerCase();
+              var __plxProd = __plxHost === 'petitelavande.com' || __plxHost === 'www.petitelavande.com';
+              var __plxPortal = location.pathname.indexOf('/portal') === 0;
+              var __plxInternal = false, __plxDeclined = false;
+              try {
+                __plxInternal = localStorage.getItem('pl_internal_analytics') === '1'
+                             || localStorage.getItem('pl_internal') === '1';
+                __plxDeclined = localStorage.getItem('cookie_consent') === 'declined';
+              } catch(e){}
+              __plxAllowed = __plxProd && !__plxPortal && !__plxInternal && !__plxDeclined;
+            } catch(e){}
+            if (__plxAllowed) {
               !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
               n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
               n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;

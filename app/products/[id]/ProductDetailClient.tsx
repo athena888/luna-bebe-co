@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useIsEs } from '@/lib/use-is-es'
 import Image from 'next/image'
@@ -9,7 +9,7 @@ import { ChevronDown, X, ChevronLeft, ChevronRight, Leaf } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { CATEGORY_LABELS, CATEGORY_LABELS_ES, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
-import { trackViewItem } from '@/lib/analytics-events'
+import { trackViewItem, oncePerKey } from '@/lib/analytics-events'
 import { RelatedProducts, type RelatedItem } from '@/components/ui/RelatedProducts'
 import { ReviewSection } from '@/components/ui/ReviewSection'
 import { CertBadges } from '@/components/ui/CertBadges'
@@ -79,6 +79,7 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
   const [wlState, setWlState] = useState<'idle' | 'saving' | 'done'>('idle')
   const [descOpen, setDescOpen] = useState(false)
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
+  const viewItemSent = useRef<string | null>(null)
 
   const allImages = gallery.length > 0
     ? gallery.map((g, i) => ({ src: g.image_url, alt: g.label ?? product?.name ?? '' }))
@@ -102,7 +103,9 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
         setProduct(p)
         setStock(st ?? null)
         setEsDescription(esd ?? null)
-        trackViewItem({ id: p.id, name: p.name, price: p.price, category: p.category })
+        // Once per product per mount: Strict Mode / a refetch reruns this
+        // callback, and view_item must not count a rerender as a second view.
+        if (oncePerKey(viewItemSent, p.id)) trackViewItem({ id: p.id, name: p.name, price: p.price, category: p.category })
         const sorted = [...g].sort((a, b) => {
           if (a.is_primary && !b.is_primary) return -1
           if (!a.is_primary && b.is_primary) return 1

@@ -1,4 +1,4 @@
-// Server-side GA4 purchase event via the Measurement Protocol — fired from the
+// Server-side GA4 events via the Measurement Protocol — fired from the
 // Stripe webhook so ad blockers can't erase revenue data. The ONLY place a
 // purchase event exists (nothing fires client-side, so no double counting);
 // transaction_id = order id makes GA dedupe replays regardless.
@@ -8,7 +8,7 @@
 
 interface PurchaseItem { id: string; name: string; price: number; qty?: number; category?: string }
 
-export async function sendPurchaseEvent(input: {
+export interface PurchaseEventInput {
   orderId: string
   valueCents: number
   currency?: string
@@ -20,13 +20,12 @@ export async function sendPurchaseEvent(input: {
   // test orders show up as real revenue.
   internal?: boolean
   sessionId?: string | null  // GA session id when known — ties the purchase to the real session
-}): Promise<void> {
-  const measurementId = process.env.NEXT_PUBLIC_GA_ID
-  const apiSecret = process.env.GA4_API_SECRET
-  if (!measurementId || !apiSecret) return
+}
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
-  const body = {
+/** Pure payload builder — exported so tests can pin transaction_id, currency,
+ *  value and item mapping without touching the network. */
+export function buildPurchaseBody(input: PurchaseEventInput, baseUrl: string) {
+  return {
     // Without the browser's _ga cookie we use the order id as client_id — the
     // event still lands with full revenue; attribution ties via transaction_id.
     client_id: input.clientId || `srv.${input.orderId}`,
@@ -49,7 +48,12 @@ export async function sendPurchaseEvent(input: {
       },
     }],
   }
+}
 
+async function postMp(body: unknown, label: string): Promise<void> {
+  const measurementId = process.env.NEXT_PUBLIC_GA_ID
+  const apiSecret = process.env.GA4_API_SECRET
+  if (!measurementId || !apiSecret) return
   try {
     const res = await fetch(
       `https://www.google-analytics.com/mp/collect?measurement_id=${measurementId}&api_secret=${apiSecret}`,
@@ -60,8 +64,36 @@ export async function sendPurchaseEvent(input: {
         signal: AbortSignal.timeout(5000),
       },
     )
-    if (!res.ok && res.status !== 204) console.error('GA4 MP purchase non-OK:', res.status)
+    if (!res.ok && res.status !== 204) console.error(`GA4 MP ${label} non-OK:`, res.status)
   } catch (e) {
-    console.error('GA4 MP purchase failed (order unaffected):', e)
+    console.error(`GA4 MP ${label} failed (order unaffected):`, e)
   }
+}
+
+export async function sendPurchaseEvent(input: PurchaseEventInput): Promise<void> {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
+  await postMp(buildPurchaseBody(input, baseUrl), 'purchase')
+}
+
+/** GA4 `refund` with the ORIGINAL transaction_id — reverses the purchase in
+ *  GA revenue reports instead of leaving refunded money counted as won. */
+export async function sendRefundEvent(input: {
+  orderId: string
+  valueCents: number
+  currency?: string
+  internal?: boolean
+}): Promise<void> {
+  await postMp({
+    client_id: `srv.${input.orderId}`,
+    events: [{
+      name: 'refund',
+      params: {
+        transaction_id: input.orderId,
+        value: input.valueCents / 100,
+        currency: input.currency ?? 'USD',
+        ...(input.internal ? { traffic_type: 'internal' } : {}),
+        engagement_time_msec: 100,
+      },
+    }],
+  }, 'refund')
 }
