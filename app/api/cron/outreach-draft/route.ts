@@ -7,6 +7,7 @@ import { runReplyTriage } from '@/lib/outreach/reply-triage'
 import { maybeSendWeeklySummary } from '@/lib/outreach/metrics'
 import { getConfig } from '@/lib/pipeline/config'
 import { runGmailSync } from '@/lib/outreach/gmail-sync'
+import { runContactCrawler } from '@/lib/outreach/contact-crawler'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
@@ -37,6 +38,12 @@ export async function GET(req: NextRequest) {
     // No-ops safely when gmail.readonly has not been granted.
     const sync = await runGmailSync({ dry })
       .catch(e => { console.error('gmail sync failed:', e); return null })
+    // Free contact crawler runs BEFORE the drafter so a company crawled this
+    // morning can be drafted in the same pass and sit in Morning Review today.
+    // Zero model calls: published team pages + the verifier cascade + the
+    // deterministic v3 scorer. Fail-soft, flag: quality_v3.contact_crawler_enabled.
+    const crawl = await runContactCrawler({ dry, timeBudgetMs: 120_000 })
+      .catch(e => { console.error('contact crawler failed:', e); return null })
     // v3 takes precedence: it drafts ONLY prospects passing every hard gate,
     // ranked by tier and score rather than FIFO. v2/v1 remain as fallbacks, so
     // turning the flag off restores the previous behaviour exactly.
@@ -55,7 +62,7 @@ export async function GET(req: NextRequest) {
       : null
     const press = await runPressDrafter({ dry, deadline: started + 270_000 })
       .catch(e => { console.error('press drafter failed:', e); return null })
-    return NextResponse.json({ ok: true, mode: v3 ? 'v3' : v2 ? 'v2' : 'v1', ...stats, sync, triage, weekly, press })
+    return NextResponse.json({ ok: true, crawl, mode: v3 ? 'v3' : v2 ? 'v2' : 'v1', ...stats, sync, triage, weekly, press })
   } catch (e) {
     console.error('outreach-draft cron error:', e)
     return NextResponse.json({ error: e instanceof Error ? e.message : 'Drafter failed' }, { status: 500 })
