@@ -128,7 +128,15 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               // configured/tracked (script noop). Undecided or accepted → track.
               var __declined = false;
               try { __declined = localStorage.getItem('cookie_consent') === 'declined'; } catch(e){}
-              if (!__declined) {
+              // Admin pages never generate analytics. Owner browsing was
+              // inflating users, sessions and the landing-page report; the
+              // traffic_type tag below only helps if GA4's internal filter is
+              // switched to Active, so /portal is cut off at the source with
+              // Google's official kill switch as well as skipping config.
+              var __portal = false;
+              try { __portal = location.pathname.indexOf('/portal') === 0; } catch(e){}
+              if (__portal) { window['ga-disable-${GA_ID}'] = true; }
+              if (!__declined && !__portal) {
                 // Own-traffic exclusion: visiting ?internal=1 (or logging into the
                 // portal) flags this browser so GA tags it traffic_type=internal.
                 try {
@@ -154,7 +162,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             // Respect the cookie banner (same rule as GA above).
             var __plxDeclined = false;
             try { __plxDeclined = localStorage.getItem('cookie_consent') === 'declined'; } catch(e){}
-            if (!__plxDeclined) {
+            var __plxPortal = false;
+            try { __plxPortal = location.pathname.indexOf('/portal') === 0; } catch(e){}
+            if (!__plxDeclined && !__plxPortal) {
               !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
               n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
               n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;

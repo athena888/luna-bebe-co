@@ -4,6 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { sendOrderConfirmationEmail, sendGiftCardEmail, sendRefundEmail, sendDisputeAlertEmail } from '@/lib/resend'
 import { sendPurchaseEvent } from '@/lib/ga-measurement-protocol'
 import { sendPurchaseCapi } from '@/lib/meta-capi'
+import { isInternalEmail } from '@/lib/site-config'
 import type { Order } from '@/types'
 
 export async function handleStripeEvent(event: Stripe.Event) {
@@ -253,6 +254,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     currency,
     clientId: session.metadata?.ga_cid ?? null,
     sessionId: session.metadata?.ga_sid ?? null,
+    // Our own test orders must not land in GA4 as revenue.
+    internal: isInternalEmail(order.customer_email),
     items,
   })
 

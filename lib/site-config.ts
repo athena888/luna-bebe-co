@@ -36,3 +36,29 @@ export function adminRecipients(): string[] {
     .filter(Boolean)
   return list.length ? list : [CONTACT_EMAIL]
 }
+
+/**
+ * Is this order OUR OWN traffic — a test, a staff purchase, an admin address?
+ *
+ * The browser tags its own hits `traffic_type: internal` (see the GA loader in
+ * app/layout.tsx), but the server-side `purchase` event has no browser context,
+ * so test orders were landing in GA4 as real revenue no matter what internal
+ * filter was set. This decides that per order.
+ *
+ * Matches: any ADMIN_EMAIL address, the contact address, anything on the brand
+ * domain, plus the usual test shapes (`checkout-test@…`, `you+test@…`). Extra
+ * personal addresses can be listed in INTERNAL_EMAILS (comma-separated).
+ */
+export function isInternalEmail(email: string | null | undefined): boolean {
+  const e = (email ?? '').trim().toLowerCase()
+  if (!e) return false
+  const listed = [
+    ...adminRecipients(),
+    ...(process.env.INTERNAL_EMAILS ?? '').split(','),
+  ].map(x => x.trim().toLowerCase()).filter(Boolean)
+  if (listed.includes(e)) return true
+  if (e.endsWith('@petitelavande.com')) return true
+  if (/^checkout-test@/.test(e)) return true
+  if (/\+test\d*@/.test(e)) return true
+  return false
+}

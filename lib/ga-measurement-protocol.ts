@@ -14,6 +14,11 @@ export async function sendPurchaseEvent(input: {
   currency?: string
   items?: PurchaseItem[]
   clientId?: string | null   // GA client id when known; falls back to a stable server id
+  // Our own test/staff order — tagged so GA4's internal-traffic filter can
+  // drop it. Browser hits get this from the loader in app/layout.tsx; a
+  // server-sent purchase has no browser context, so it must be passed in or
+  // test orders show up as real revenue.
+  internal?: boolean
   sessionId?: string | null  // GA session id when known — ties the purchase to the real session
 }): Promise<void> {
   const measurementId = process.env.NEXT_PUBLIC_GA_ID
@@ -34,6 +39,7 @@ export async function sendPurchaseEvent(input: {
         // MP events have no browser context — without these, purchases show as
         // "(not set)" in GA page/session reports.
         ...(input.sessionId ? { session_id: input.sessionId } : {}),
+        ...(input.internal ? { traffic_type: 'internal' } : {}),
         engagement_time_msec: 100,
         page_location: `${baseUrl}/confirmation`,
         page_title: 'Order Confirmation | Petite Lavande',
