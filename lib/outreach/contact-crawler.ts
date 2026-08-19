@@ -148,7 +148,17 @@ function decodeCf(hex: string): string | null {
   return /@/.test(out) ? out.toLowerCase() : null
 }
 
-function extractEmails(html: string, domain: string): Map<string, number> {
+/** Emails hidden as entities or spelled-out: &#64; / [at] / (at) / [dot]. */
+function deobfuscate(html: string): string {
+  return html
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n, 10)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCharCode(parseInt(n, 16)))
+    .replace(/\s*[\[({]\s*at\s*[\])}]\s*/gi, '@')
+    .replace(/\s*[\[({]\s*dot\s*[\])}]\s*/gi, '.')
+}
+
+function extractEmails(rawHtml: string, domain: string): Map<string, number> {
+  const html = deobfuscate(rawHtml)
   const found = new Map<string, number>()   // email -> first index (for context)
   const d = domain.toLowerCase()
   const re = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi
@@ -188,6 +198,80 @@ function titleFromContext(text: string): string | null {
   return null
 }
 
+// ── Site-index discovery ─────────────────────────────────────────────────────
+// Instead of guessing paths, ask the site: (a) nav links on the home page
+// whose anchor text says team/people/attorneys/careers, (b) sitemap.xml (via
+// robots.txt too), filtered for team-ish, bio-ish and careers-ish URLs. This
+// is what turned up empty on 13 of 14 domains with fixed paths — most sites
+// put people at /firm/our-people, /attorneys, /who-we-are, etc.
+const NAV_TEAM_TEXT = /(team|people|attorneys?|staff|who we are|leadership|meet|about us|our firm)/i
+const URL_TEAMISH = /\/(?:[a-z-]*(?:team|people|attorneys?|staff|leadership|who-we-are|our-firm)[a-z-]*)\/?$/i
+const URL_BIOISH = /\/(?:people|team|attorneys?|profiles?|staff|bio|our-team|lawyers?)\/[a-z0-9-]{3,60}\/?$/i
+const URL_CAREERISH = /\/(?:careers?|jobs|join(?:-us)?|culture|benefits|working-(?:here|with-us))\/?$/i
+
+interface SiteIndex { teamPaths: string[]; bioUrls: string[]; careerPaths: string[] }
+
+async function discoverSiteIndex(host: string, homeHtml: string | null): Promise<SiteIndex> {
+  const teamPaths = new Set<string>()
+  const bioUrls = new Set<string>()
+  const careerPaths = new Set<string>()
+
+  // (a) home-page navigation, judged by the link TEXT a human would click
+  if (homeHtml) {
+    for (const m of homeHtml.matchAll(/<a[^>]*href="([^"#?]+)"[^>]*>([\s\S]{0,120}?)<\/a>/gi)) {
+      const href = m[1]; const text = stripTags(m[2])
+      if (!NAV_TEAM_TEXT.test(text) && !/career|join|jobs/i.test(text)) continue
+      const abs: string = href.startsWith('http') ? href : host + (href.startsWith('/') ? href : '/' + href)
+      if (!abs.startsWith(host)) continue
+      const path = abs.slice(host.length) || '/'
+      if (/career|join|jobs/i.test(text)) careerPaths.add(path)
+      else teamPaths.add(path)
+    }
+  }
+
+  // (b) sitemap.xml — the literal site index. robots.txt may name it.
+  const sitemapUrls = new Set<string>([host + '/sitemap.xml'])
+  const robots = await fetchText(host + '/robots.txt')
+  if (robots) for (const m of robots.matchAll(/^sitemap:\s*(\S+)/gim)) sitemapUrls.add(m[1])
+  let scanned = 0
+  for (const sm of sitemapUrls) {
+    if (scanned >= 2) break
+    const xml = await fetchText(sm)
+    if (!xml) continue
+    scanned++
+    const locs = [...xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/gi)].map(x => x[1]).slice(0, 800)
+    // one level of sitemap-index indirection
+    const children = locs.filter(u => /sitemap[^/]*\.xml/i.test(u)).slice(0, 2)
+    for (const c of children) {
+      const cx = await fetchText(c)
+      if (cx) locs.push(...[...cx.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/gi)].map(x => x[1]).slice(0, 800))
+    }
+    for (const u of locs) {
+      if (!u.startsWith(host)) continue
+      const path = u.slice(host.length) || '/'
+      if (URL_BIOISH.test(path)) bioUrls.add(u)
+      else if (URL_TEAMISH.test(path)) teamPaths.add(path)
+      else if (URL_CAREERISH.test(path)) careerPaths.add(path)
+    }
+  }
+  return {
+    teamPaths: [...teamPaths].slice(0, 4),
+    bioUrls: [...bioUrls].slice(0, 8),
+    careerPaths: [...careerPaths].slice(0, 3),
+  }
+}
+
+/** Plain-text fetch (robots.txt, sitemaps) — no HTML content-type demand. */
+async function fetchText(url: string): Promise<string | null> {
+  const ctl = new AbortController()
+  const t = setTimeout(() => ctl.abort(), FETCH_TIMEOUT_MS)
+  try {
+    const res = await fetch(url, { signal: ctl.signal, redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0 (compatible; PetiteLavandeResearch/1.0; +https://petitelavande.com)' } })
+    if (!res.ok) return null
+    return (await res.text()).slice(0, 500_000)
+  } catch { return null } finally { clearTimeout(t) }
+}
+
 // ── Per-domain crawl ─────────────────────────────────────────────────────────
 async function crawlDomain(t: CrawlTarget, stats: CrawlStats): Promise<{
   candidates: Candidate[]; benefitsText: string; benefitsUrl: string | null
@@ -199,10 +283,11 @@ async function crawlDomain(t: CrawlTarget, stats: CrawlStats): Promise<{
   let benefitsUrl: string | null = null
   let pages = 0
 
+  let homeHtml: string | null = null
   for (const h of hosts) {
     const html = await fetchPage(h)
     if (html) {
-      host = h; pages++; stats.pagesFetched++
+      host = h; homeHtml = html; pages++; stats.pagesFetched++
       // Home page occasionally carries gifting/benefits language too.
       benefitsText += ' ' + stripTags(html).slice(0, 2500)
       break
@@ -210,7 +295,33 @@ async function crawlDomain(t: CrawlTarget, stats: CrawlStats): Promise<{
   }
   if (!host) return { candidates, benefitsText: '', benefitsUrl: null }
 
-  for (const path of TEAM_PATHS) {
+  // Ask the site where its pages are (nav text + sitemap.xml) and try those
+  // FIRST; the static path guesses remain as fallback.
+  const idx = await discoverSiteIndex(host, homeHtml)
+  const teamPaths = [...new Set([...idx.teamPaths, ...TEAM_PATHS])]
+  const careerPaths = [...new Set([...idx.careerPaths, ...CAREERS_PATHS])]
+
+  // Sitemap-listed bio pages are the highest-yield source on law/consulting
+  // sites — the index page carries names, the emails live here.
+  for (const url of idx.bioUrls) {
+    if (pages >= MAX_PAGES_PER_DOMAIN + 4 || candidates.some(c => c.title)) break
+    const bio = await fetchPage(url)
+    if (!bio) continue
+    pages++; stats.pagesFetched++
+    for (const [email, i2] of extractEmails(bio, t.domain)) {
+      if (isGenericEmail(email) || looksLikeMachineAddress(email)) continue
+      if (candidates.some(c => c.email === email)) continue
+      const ctx = stripTags(bio.slice(Math.max(0, i2 - 800), i2 + 800))
+      candidates.push({
+        email,
+        name: nameFromContext(ctx, email.split('@')[0]),
+        title: titleFromContext(ctx) ?? titleFromContext(stripTags(bio).slice(0, 1200)),
+        sourceUrl: url,
+      })
+    }
+  }
+
+  for (const path of teamPaths) {
     if (pages >= MAX_PAGES_PER_DOMAIN) break
     const html = await fetchPage(host + path)
     if (!html) continue
@@ -264,7 +375,7 @@ async function crawlDomain(t: CrawlTarget, stats: CrawlStats): Promise<{
     }
   }
 
-  for (const path of CAREERS_PATHS) {
+  for (const path of careerPaths) {
     if (pages >= MAX_PAGES_PER_DOMAIN + 2) break
     const html = await fetchPage(host + path)
     if (!html) continue
@@ -346,11 +457,18 @@ export async function runContactCrawler(opts: {
     const seg = qualifyRecord({ company: t.company, domain: t.domain, category: t.category, fitReason: t.fit_reason }).segment
     const ranked = rankCandidates(candidates, seg, band)
 
+    // Verification quota goes ONLY to candidates whose published title the ICP
+    // recognises (EXACT or INFLUENCER). Untitled or wrong-department contacts
+    // score REJECTED anyway — verifying them first is how run 4 spent quota on
+    // an attorney's assistant with no title.
+    const titled = ranked.filter(c => c.title && gradeRole(seg, roleFamilyForTitle(c.title), band) !== 'WRONG')
+    if (!titled.length) { stats.skipped.push({ domain: t.domain, why: 'contacts published but none with an ICP title' }); continue }
+
     let chosen: Candidate | null = null
     let grade: 'A' | 'C' | null = null
     let provider: string | null = null
     let score: number | null = null
-    for (const c of ranked.slice(0, MAX_VERIFIES_PER_DOMAIN)) {
+    for (const c of titled.slice(0, MAX_VERIFIES_PER_DOMAIN)) {
       if (verifyBudget <= 0) break
       verifyBudget--; stats.verifyBudgetLeft = verifyBudget
       const v = await verifyEmail(c.email)
