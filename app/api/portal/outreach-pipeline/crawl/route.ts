@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
 import { runContactCrawler } from '@/lib/outreach/contact-crawler'
-import { bandForRange, SIZE_BANDS } from '@/lib/outreach/icp'
+import { processSeeds, type SeedIn } from '@/lib/outreach/intake'
 
 // On-demand contact crawler + seed intake (Portal-protected).
 //
@@ -19,52 +18,13 @@ import { bandForRange, SIZE_BANDS } from '@/lib/outreach/icp'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
 
-// Directory industry -> legacy category (classifySegment's strong prior).
-const CATEGORY_BY_INDUSTRY: Record<string, string> = {
-  law: 'law',
-  tech: 'tech_people_ops',
-  consulting: 'agencies_pr',
-  finance: 'wealth_mgmt',
-  real_estate: 'luxury_real_estate',
-}
-
-interface Seed { company: string; domain: string; metro?: string; industry?: string; size_band?: string; employee_est?: number }
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({})) as {
-      seeds?: Seed[]; run?: boolean; dry?: boolean; limit?: number; verifyBudget?: number
+      seeds?: SeedIn[]; run?: boolean; dry?: boolean; limit?: number; verifyBudget?: number
     }
 
-    const seeded: string[] = []
-    const seedSkipped: { domain: string; why: string }[] = []
-    for (const s of body.seeds ?? []) {
-      const domain = (s.domain ?? '').trim().toLowerCase()
-      const company = (s.company ?? '').trim()
-      if (!domain || !company) { seedSkipped.push({ domain: domain || '(none)', why: 'company and domain required' }); continue }
-      const { error } = await supabaseAdmin.from('prospects').insert({
-        company, domain,
-        channel: 'corporate',
-        status: 'needs_manual_check',
-        qualification_status: 'NEEDS_CONTACT_RESEARCH',
-        category: CATEGORY_BY_INDUSTRY[s.industry ?? ''] ?? null,
-        industry_key: s.industry ?? null,
-        metro: s.metro ?? null,
-        // Store OUR size vocabulary only. Directory bands ('50-249') pass
-        // through bandForRange via the headcount estimate instead.
-        company_size_band: (s.size_band && (SIZE_BANDS as readonly string[]).includes(s.size_band))
-          ? s.size_band
-          : bandForRange(s.employee_est ?? null, s.employee_est ?? null),
-        ...(s.employee_est ? { employee_count: s.employee_est, employee_count_source: 'inferred' } : {}),
-        fit_reason: `Directory-crawled seed: ${s.metro ?? '?'} ${s.industry ?? '?'} firm, ${s.size_band ?? '?'} employees.`,
-      })
-      if (error) {
-        // 23505 = domain already a prospect — expected, never an error state.
-        seedSkipped.push({ domain, why: error.code === '23505' ? 'already a prospect' : error.message })
-      } else {
-        seeded.push(domain)
-      }
-    }
+    const { seeded, skipped: seedSkipped } = await processSeeds(body.seeds ?? [])
 
     const crawl = body.run === false ? null : await runContactCrawler({
       dry: body.dry,

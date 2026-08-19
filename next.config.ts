@@ -8,6 +8,12 @@ const nextConfig: NextConfig = {
   // hersheytext (Cricut card writer) reads its font files with __dirname at
   // runtime — bundling breaks those paths, so load it from node_modules.
   serverExternalPackages: ['hersheytext'],
+  // The research routine commits intake files to ops/outreach-intake/; the
+  // prospect cron reads them at runtime, so they must be traced into its
+  // serverless bundle (nothing imports them statically).
+  outputFileTracingIncludes: {
+    '/api/cron/outreach-prospect': ['./ops/outreach-intake/**'],
+  },
   images: {
     remotePatterns: [
       {

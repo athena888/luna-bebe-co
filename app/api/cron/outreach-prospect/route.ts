@@ -4,6 +4,7 @@ import { runPressProspector } from '@/lib/pipeline/press-prospector'
 import { runProspectorV2 } from '@/lib/outreach/prospector-v2'
 import { getConfig } from '@/lib/pipeline/config'
 import { runCycleV3 } from '@/lib/outreach/cycle-v3'
+import { ingestIntakeFiles } from '@/lib/outreach/intake'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
@@ -27,6 +28,15 @@ export async function GET(req: NextRequest) {
   const dry = req.nextUrl.searchParams.get('dry') === '1' || process.env.DRY_RUN === '1'
   try {
     const started = Date.now()
+    // Repo-file intake FIRST: the cloud research routine commits its findings
+    // to ops/outreach-intake/ (its sandbox cannot reach this site directly),
+    // and last night's deploy bundled them. Runs before discovery/qualification
+    // so today's leads flow through the same pass. ?intake_only=1 runs just
+    // this step (surgical reruns without re-triggering paid discovery).
+    const intake = await ingestIntakeFiles().catch(e => { console.error('intake failed:', e); return null })
+    if (req.nextUrl.searchParams.get('intake_only') === '1') {
+      return NextResponse.json({ ok: true, intake })
+    }
     const v2 = (await getConfig<{ enabled?: boolean }>('targeting_v2'))?.enabled === true
     const stats = v2
       ? await runProspectorV2({ dry, timeBudgetMs: 160_000 })
@@ -40,7 +50,7 @@ export async function GET(req: NextRequest) {
       .catch(e => { console.error('v3 cycle failed:', e); return null })
     const press = await runPressProspector({ dry, startedAt: started, timeBudgetMs: 260_000 })
       .catch(e => { console.error('press prospector failed:', e); return null })
-    return NextResponse.json({ ok: true, mode: v2 ? 'v2' : 'v1', ...stats, cycle, press })
+    return NextResponse.json({ ok: true, intake, mode: v2 ? 'v2' : 'v1', ...stats, cycle, press })
   } catch (e) {
     console.error('outreach-prospect cron error:', e)
     return NextResponse.json({ error: e instanceof Error ? e.message : 'Prospector failed' }, { status: 500 })

@@ -109,7 +109,7 @@ function eligible(state: CrawlState, domain: string): boolean {
 }
 
 // ── Page fetching ────────────────────────────────────────────────────────────
-async function fetchPage(url: string): Promise<string | null> {
+export async function fetchPage(url: string): Promise<string | null> {
   const ctl = new AbortController()
   const t = setTimeout(() => ctl.abort(), FETCH_TIMEOUT_MS)
   try {
@@ -132,7 +132,7 @@ async function fetchPage(url: string): Promise<string | null> {
   }
 }
 
-const stripTags = (html: string) => html
+export const stripTags = (html: string) => html
   .replace(/<script[\s\S]*?<\/script>/gi, ' ')
   .replace(/<style[\s\S]*?<\/style>/gi, ' ')
   .replace(/<[^>]+>/g, ' ')
@@ -157,7 +157,7 @@ function deobfuscate(html: string): string {
     .replace(/\s*[\[({]\s*dot\s*[\])}]\s*/gi, '.')
 }
 
-function extractEmails(rawHtml: string, domain: string): Map<string, number> {
+export function extractEmails(rawHtml: string, domain: string): Map<string, number> {
   const html = deobfuscate(rawHtml)
   const found = new Map<string, number>()   // email -> first index (for context)
   const d = domain.toLowerCase()
@@ -173,7 +173,7 @@ function extractEmails(rawHtml: string, domain: string): Map<string, number> {
   return found
 }
 
-function nameFromContext(text: string, localPart: string): string | null {
+export function nameFromContext(text: string, localPart: string): string | null {
   // Closest "First Last" that doesn't look like navigation copy.
   for (const m of text.matchAll(/\b([A-Z][a-z]{2,15})\s+([A-Z][a-zA-Z'-]{2,20})\b/g)) {
     const a = m[1], b = m[2]
@@ -190,7 +190,7 @@ function nameFromContext(text: string, localPart: string): string | null {
   return null
 }
 
-function titleFromContext(text: string): string | null {
+export function titleFromContext(text: string): string | null {
   for (const re of TITLE_PATTERNS) {
     const m = text.match(re)
     if (m) return m[0].replace(/\s+/g, ' ').trim()
