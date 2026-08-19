@@ -41,6 +41,12 @@ const DEFAULT_VERIFY_BUDGET = 8          // verifier calls per run (quota guard)
 const RETRY_AFTER_DAYS = 30              // a fully-failed domain rests this long
 const MIN_HOURS_BETWEEN_ATTEMPTS = 48
 
+// Team INDEX pages usually link to per-person bio pages that carry the email
+// (law firms almost always). When an index yields no addresses, follow a few
+// same-site bio links and extract there instead.
+const BIO_LINK_RE = /href="([^"#?]*\/(?:people|team|attorneys?|our-team|profiles?|staff|bio)\/[a-z0-9-]{3,60}\/?)"/gi
+const MAX_BIO_PAGES = 5
+
 const TEAM_PATHS = ['/team', '/people', '/our-team', '/about/team', '/our-people', '/staff', '/about-us', '/about', '/leadership']
 const CAREERS_PATHS = ['/careers', '/careers/', '/join', '/join-us', '/jobs', '/culture', '/benefits', '/about/careers']
 
@@ -222,6 +228,40 @@ async function crawlDomain(t: CrawlTarget, stats: CrawlStats): Promise<{
       })
     }
     if (candidates.some(c => c.title)) break   // a titled contact is enough
+
+    // Index page with no published addresses -> follow its bio links. This is
+    // how law/consulting sites publish contacts: index lists names, the email
+    // (often Cloudflare-obfuscated) lives on the person's own page.
+    if (candidates.length === 0) {
+      const links = new Set<string>()
+      for (const m of html.matchAll(BIO_LINK_RE)) {
+        const href = m[1]
+        const abs: string = href.startsWith('http') ? href : host + (href.startsWith('/') ? href : '/' + href)
+        if (abs.startsWith(host)) links.add(abs)
+        if (links.size >= MAX_BIO_PAGES * 3) break
+      }
+      let followed = 0
+      for (const url of links) {
+        if (followed >= MAX_BIO_PAGES || pages >= MAX_PAGES_PER_DOMAIN + 4) break
+        const bio = await fetchPage(url)
+        if (!bio) continue
+        followed++; pages++; stats.pagesFetched++
+        const bioEmails = extractEmails(bio, t.domain)
+        for (const [email, idx] of bioEmails) {
+          if (isGenericEmail(email) || looksLikeMachineAddress(email)) continue
+          if (candidates.some(c => c.email === email)) continue
+          const ctx = stripTags(bio.slice(Math.max(0, idx - 800), idx + 800))
+          candidates.push({
+            email,
+            name: nameFromContext(ctx, email.split('@')[0]),
+            title: titleFromContext(ctx) ?? titleFromContext(stripTags(bio).slice(0, 1200)),
+            sourceUrl: url,
+          })
+        }
+        if (candidates.some(c => c.title)) break
+      }
+      if (candidates.length) break   // got contacts via bios; stop trying index paths
+    }
   }
 
   for (const path of CAREERS_PATHS) {
