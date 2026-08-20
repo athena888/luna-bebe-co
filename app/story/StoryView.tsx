@@ -63,22 +63,29 @@ export default async function StoryView({ locale = 'en' }: { locale?: 'en' | 'es
         {/* Founder letter — opens the page (the logo + headline moved down to
             the full-bleed section between the values and the closing). */}
         <SlotBackground slotKey="story.hero_bg" scrim="bg-[#FBF7F0]/92" className="border-b border-cream-300">
-          <div className="max-w-4xl mx-auto px-6 pt-10 sm:pt-12 pb-12 sm:pb-14 sm:flex sm:items-start sm:gap-10">
+          {/* Letter layout (Emily 2026-08-20): portrait ON TOP, centered, with
+              the letter in one readable column beneath — the old side-by-side
+              float fell apart once the letter grew to ten paragraphs (a short
+              photo against a towering text column). Same stack on phones,
+              slightly smaller portrait. */}
+          <div className="max-w-2xl mx-auto px-6 pt-10 sm:pt-14 pb-12 sm:pb-16">
             {founder && (
-              <div className="mb-6 sm:mb-0 sm:order-2 sm:w-64 shrink-0">
-                <div className="aspect-[3/4] overflow-hidden border border-cream-300">
+              <div className="w-40 sm:w-52 mx-auto mb-6 sm:mb-8">
+                <div className="aspect-[3/4] overflow-hidden rounded-sm border border-cream-300 shadow-sm">
                   <img src={founder.public_url} alt={founder.alt_text} className="w-full h-full object-cover" />
                 </div>
               </div>
             )}
-            <div className="space-y-4 sm:order-1 sm:flex-1 min-w-0">
-              <p className="font-sans text-[12px] tracking-[0.18em] uppercase font-bold text-[#7A8E7C]">{content.founder.eyebrow}</p>
+            <p className="font-sans text-[12px] tracking-[0.18em] uppercase font-bold text-[#7A8E7C] text-center mb-6 sm:mb-8">
+              {content.founder.eyebrow}
+            </p>
+            <div className="space-y-4">
               {content.founder.paragraphs.map((para, i) => (
                 i === 0
-                  ? <p key={i} className="font-playfair text-[17px] text-espresso leading-snug">{para}</p>
-                  : <p key={i} className="font-playfair text-[14px] text-espresso-light leading-snug">{para}</p>
+                  ? <p key={i} className="font-playfair text-[17px] sm:text-[18px] text-espresso leading-relaxed">{para}</p>
+                  : <p key={i} className="font-playfair text-[15px] sm:text-[16px] text-espresso-light leading-relaxed">{para}</p>
               ))}
-              <p className="font-playfair italic text-xl text-espresso">
+              <p className="font-playfair italic text-xl text-espresso pt-2">
                 {content.founder.signature}
               </p>
             </div>
