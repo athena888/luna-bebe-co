@@ -62,6 +62,21 @@ function variantForSlot(slot: number): 'A' | 'B' {
   return slot % 2 === 0 ? 'A' : 'B'
 }
 
+
+// Emily's own template (2026-08-20): when outreach_config.custom_template is
+// enabled, EVERY cold draft uses the body/subject stored in pipeline_templates
+// key CUSTOM — bypassing the per-segment frozen templates AND the
+// evidence-opening gate (her copy carries no opening slot). The template lives
+// in the DB so she can edit copy without a deploy. The banned-content check
+// still applies; nothing sends without her approval either way.
+async function loadCustomTemplate(): Promise<{ subject: string; body: string } | null> {
+  const flag = await getConfig<{ enabled?: boolean }>('custom_template')
+  if (flag?.enabled !== true) return null
+  const { data } = await supabaseAdmin.from('pipeline_templates')
+    .select('subject, body').eq('key', 'CUSTOM').maybeSingle()
+  return (data as { subject: string; body: string } | null) ?? null
+}
+
 export async function runDrafterV3(opts: { dry?: boolean; limit?: number } = {}): Promise<DrafterV3Stats> {
   const dry = Boolean(opts.dry)
   const stats: DrafterV3Stats = {
@@ -123,6 +138,30 @@ export async function runDrafterV3(opts: { dry?: boolean; limit?: number } = {})
     if (p.email_is_generic) { stats.skipped.push({ company: p.company, why: 'generic inbox' }); continue }
     if (p.contact_confidence !== 'HIGH') { stats.skipped.push({ company: p.company, why: 'contact confidence below HIGH' }); continue }
     if (!(p.email_grade === 'A' || p.email_grade === 'B')) { stats.skipped.push({ company: p.company, why: 'grade not A/B' }); continue }
+
+    // Custom-template mode: Emily's copy, no evidence requirement.
+    const custom = await loadCustomTemplate()
+    if (custom) {
+      const first = p.person_name?.split(/\s+/)[0] || 'there'
+      const body = custom.body.replace(/\{\{\s*first_name\s*\}\}/g, first).replace(/\{\{\s*company\s*\}\}/g, p.company)
+      const subject = custom.subject.replace(/\{\{\s*first_name\s*\}\}/g, first).replace(/\{\{\s*company\s*\}\}/g, p.company)
+      const bannedC = findBannedContent(body)
+      if (bannedC) { stats.skipped.push({ company: p.company, why: `banned content: ${bannedC.why}` }); continue }
+      if (!dry) {
+        await supabaseAdmin.from('email_drafts').insert({
+          prospect_id: p.id, template_key: 'CUSTOM', subject, body,
+          is_followup: false, draft_kind: 'cold', status: 'pending_review',
+          combo_key: segment, track_used: segment, subject_variant: 'A',
+        })
+        await supabaseAdmin.from('prospects').update({
+          status: 'drafted', account_stage: 'DRAFTED', updated_at: new Date().toISOString(),
+        }).eq('id', p.id)
+      }
+      stats.drafted++
+      stats.byTier[p.qualification_tier ?? '?'] = (stats.byTier[p.qualification_tier ?? '?'] ?? 0) + 1
+      stats.bySegment[segment] = (stats.bySegment[segment] ?? 0) + 1
+      continue
+    }
 
     const signals = await loadSignals(p.id)
     const opening = buildOpening({ company: p.company, segment, signals })
