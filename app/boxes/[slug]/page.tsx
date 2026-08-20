@@ -7,6 +7,8 @@ import { Footer } from '@/components/layout/Footer'
 import { JsonLd } from '@/components/ui/JsonLd'
 import { BoxBuyPanel } from '@/components/ui/BoxBuyPanel'
 import { BoxGallery } from '@/components/ui/BoxGallery'
+import { BoxVariantPills } from '@/components/ui/BoxVariantPills'
+import { BoxItemModalTrigger } from '@/components/ui/BoxItemModal'
 import { ReviewSection } from '@/components/ui/ReviewSection'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { TrackViewItem } from '@/components/ui/TrackViewItem'
@@ -176,9 +178,15 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
         <SlotBackground slotKey={boxSlotKey(box.slug)} scrim="bg-white/88" attach="fixed">
         <div className="max-w-5xl mx-auto px-6 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            {/* 1 — Gallery: the selected variant's set only */}
+            {/* 1 — Gallery: every variant's photos appended into one swipeable
+                strip (starting on the selected variant); the variant pills
+                below highlight whichever variant's photo is on screen. */}
             <div className="lg:sticky lg:top-24 lg:self-start">
-              <BoxGallery images={variant.images} alt={`${box.name} — ${variant.label}`} />
+              <BoxGallery
+                images={box.variants.flatMap(v => v.images.map(src => ({ src, variantKey: v.key, variantLabel: v.label })))}
+                alt={box.name}
+                startKey={variant.key}
+              />
             </div>
 
             {/* 2 — Buy panel */}
@@ -192,24 +200,17 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
               {box.variants.length > 1 && (
                 <div className="mt-6">
                   <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2">{(isEs ? VARIANT_LABEL_ES[box.variantLabel] ?? box.variantLabel : box.variantLabel) || t.options}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {box.variants.map(v => (
-                      <Link
-                        key={v.key}
-                        href={`${isEs ? '/es/canastillas' : '/boxes'}/${box.slug}?${box.variantParam}=${encodeURIComponent(v.key)}`}
-                        className={`flex items-center gap-2 font-sans text-[11px] tracking-[0.11em] uppercase border transition-colors ${
-                          v.images[0] ? 'p-1.5 pr-3' : 'px-4 py-2'
-                        } ${v.key === variant.key ? 'border-espresso bg-espresso text-cream-50' : 'border-cream-300 text-bark-500 hover:border-espresso-light'}`}
-                      >
-                        {v.images[0] && (
-                          <span className="relative w-9 h-9 shrink-0 overflow-hidden">
-                            <Image src={v.images[0]} alt={`${box.name} — ${v.label} option`} fill className="object-cover" />
-                          </span>
-                        )}
-                        {v.label} · {formatDollars(v.price)}
-                      </Link>
-                    ))}
-                  </div>
+                  <BoxVariantPills
+                    boxName={box.name}
+                    selectedKey={variant.key}
+                    variants={box.variants.map(v => ({
+                      key: v.key,
+                      label: v.label,
+                      text: `${v.label} · ${formatDollars(v.price)}`,
+                      image: v.images[0] ?? null,
+                      href: `${isEs ? '/es/canastillas' : '/boxes'}/${box.slug}?${box.variantParam}=${encodeURIComponent(v.key)}`,
+                    }))}
+                  />
                   {variant.adds && <p className="font-sans text-xs text-bark-400 mt-3">{variant.adds}</p>}
                 </div>
               )}
@@ -230,7 +231,22 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                         <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-300 mb-2">{(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[g.cat]}</p>
                         <ul className="space-y-2">
                           {g.items.map(c => (
-                            <li key={c.item.id} className="flex items-center gap-3 border-b border-cream-200 pb-2">
+                            <li key={c.item.id} className="border-b border-cream-200 pb-2">
+                              {/* Whole row opens the same product-details modal
+                                  the Build page uses (gallery, certs, story). */}
+                              <BoxItemModalTrigger
+                                isEs={isEs}
+                                item={{
+                                  id: c.item.id,
+                                  name: c.item.name,
+                                  price: c.item.price,
+                                  category: c.item.category,
+                                  image: c.item.image ?? null,
+                                  imageEmoji: c.item.imageEmoji,
+                                  organic: (c.item as { organic?: boolean }).organic,
+                                }}
+                                className="flex items-center gap-3 w-full text-left group cursor-pointer"
+                              >
                               {c.item.image ? (
                                 <span className="relative w-10 h-10 shrink-0 overflow-hidden border border-cream-200">
                                   <Image src={c.item.image} alt={c.item.name} fill className="object-cover" />
@@ -238,7 +254,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                               ) : (
                                 <span className="w-10 h-10 shrink-0 border border-dashed border-cream-300 bg-cream-100" />
                               )}
-                              <span className="font-sans text-sm text-bark-600">
+                              <span className="font-sans text-sm text-bark-600 group-hover:text-espresso transition-colors">
                                 {c.qty > 1 ? `${c.qty} × ` : ''}{c.item.name}
                                 {/* The heading counts PIECES, this list shows
                                     ITEMS, and a set counts as its pieces — so
@@ -260,6 +276,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                                 )}
                               </span>
                               {c.note && <span className="font-sans text-xs text-bark-400">{c.note}</span>}
+                              </BoxItemModalTrigger>
                             </li>
                           ))}
                         </ul>
