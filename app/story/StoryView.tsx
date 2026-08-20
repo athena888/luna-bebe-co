@@ -69,25 +69,32 @@ export default async function StoryView({ locale = 'en' }: { locale?: 'en' | 'es
               photo against a towering text column). Same stack on phones,
               slightly smaller portrait. */}
           <div className="max-w-3xl mx-auto px-6 pt-10 sm:pt-14 pb-12 sm:pb-16">
-            {founder && (
-              <div className="w-40 sm:w-52 mx-auto mb-6 sm:mb-8">
-                {/* Round portrait (Emily 2026-08-18). A circle needs a SQUARE
-                    frame — keeping the 3:4 crop would render an oval. */}
-                <div className="aspect-square overflow-hidden rounded-full border border-cream-300 shadow-sm">
-                  <img src={founder.public_url} alt={founder.alt_text} className="w-full h-full object-cover" />
-                </div>
-              </div>
-            )}
             <p className="font-sans text-[12px] tracking-[0.18em] uppercase font-bold text-[#7A8E7C] text-center mb-6 sm:mb-8">
               {content.founder.eyebrow}
             </p>
             <div className="space-y-4">
+              {/* Round portrait (Emily 2026-08-18), floated INTO the letter so
+                  the text wraps around it and then runs full width beneath —
+                  the magazine treatment, and the reason this doesn't repeat
+                  the old side-by-side failure (a short photo column against a
+                  towering text column). shape-outside makes the wrap follow
+                  the circle instead of its bounding box. A circle needs a
+                  SQUARE frame; a 3:4 crop would render an oval.
+                  Phones keep it centred on top: floating a 160px portrait in a
+                  375px screen leaves a column too narrow to read. */}
+              {founder && (
+                <div className="w-40 sm:w-52 mx-auto mb-6 sm:float-left sm:mx-0 sm:mr-7 sm:mb-4 sm:[shape-outside:circle(50%)] sm:[shape-margin:1rem]">
+                  <div className="aspect-square overflow-hidden rounded-full border border-cream-300 shadow-sm">
+                    <img src={founder.public_url} alt={founder.alt_text} className="w-full h-full object-cover" />
+                  </div>
+                </div>
+              )}
               {content.founder.paragraphs.map((para, i) => (
                 i === 0
                   ? <p key={i} className="font-playfair text-[18px] sm:text-[19px] text-espresso leading-relaxed">{para}</p>
                   : <p key={i} className="font-playfair text-[16px] sm:text-[17px] text-espresso-light leading-relaxed">{para}</p>
               ))}
-              <p className="font-playfair italic text-xl text-espresso pt-2">
+              <p className="font-playfair italic text-xl text-espresso pt-2 clear-both">
                 {content.founder.signature}
               </p>
             </div>
