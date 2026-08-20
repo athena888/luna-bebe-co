@@ -68,10 +68,12 @@ export default async function StoryView({ locale = 'en' }: { locale?: 'en' | 'es
               float fell apart once the letter grew to ten paragraphs (a short
               photo against a towering text column). Same stack on phones,
               slightly smaller portrait. */}
-          <div className="max-w-2xl mx-auto px-6 pt-10 sm:pt-14 pb-12 sm:pb-16">
+          <div className="max-w-3xl mx-auto px-6 pt-10 sm:pt-14 pb-12 sm:pb-16">
             {founder && (
               <div className="w-40 sm:w-52 mx-auto mb-6 sm:mb-8">
-                <div className="aspect-[3/4] overflow-hidden rounded-sm border border-cream-300 shadow-sm">
+                {/* Round portrait (Emily 2026-08-18). A circle needs a SQUARE
+                    frame — keeping the 3:4 crop would render an oval. */}
+                <div className="aspect-square overflow-hidden rounded-full border border-cream-300 shadow-sm">
                   <img src={founder.public_url} alt={founder.alt_text} className="w-full h-full object-cover" />
                 </div>
               </div>
@@ -82,8 +84,8 @@ export default async function StoryView({ locale = 'en' }: { locale?: 'en' | 'es
             <div className="space-y-4">
               {content.founder.paragraphs.map((para, i) => (
                 i === 0
-                  ? <p key={i} className="font-playfair text-[17px] sm:text-[18px] text-espresso leading-relaxed">{para}</p>
-                  : <p key={i} className="font-playfair text-[15px] sm:text-[16px] text-espresso-light leading-relaxed">{para}</p>
+                  ? <p key={i} className="font-playfair text-[18px] sm:text-[19px] text-espresso leading-relaxed">{para}</p>
+                  : <p key={i} className="font-playfair text-[16px] sm:text-[17px] text-espresso-light leading-relaxed">{para}</p>
               ))}
               <p className="font-playfair italic text-xl text-espresso pt-2">
                 {content.founder.signature}
