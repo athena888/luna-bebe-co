@@ -7,7 +7,7 @@ import { qualifyRecord } from './qualify-v3.ts'
 import {
   isGenericEmail, looksLikeMachineAddress, SIZE_BANDS, bandForRange, type SizeBand,
 } from './icp.ts'
-import { fetchPage, extractEmails } from './contact-crawler.ts'
+import { fetchPage, extractEmails, stripTags } from './contact-crawler.ts'
 
 // Research intake — the shared core behind BOTH delivery paths from the daily
 // cloud research routine:
@@ -81,6 +81,26 @@ export async function processSeeds(seeds: SeedIn[]): Promise<{ seeded: string[];
   return { seeded, skipped }
 }
 
+
+// The cloud researcher's sandbox cannot fetch company sites (egress policy),
+// so its leads arrive without benefits evidence — and without evidence the
+// scorer rejects even a verified, well-titled contact and the drafter refuses
+// an opening. THIS server can fetch freely, so when a lead carries no
+// evidence, harvest the careers page here before scoring.
+const BENEFITS_PATHS = ['/careers', '/careers/', '/join', '/join-us', '/jobs', '/culture', '/benefits', '/about/careers']
+async function harvestBenefits(domain: string): Promise<{ text: string; url: string } | null> {
+  for (const host of ['https://' + domain, 'https://www.' + domain]) {
+    for (const path of BENEFITS_PATHS) {
+      const html = await fetchPage(host + path)
+      if (html) return { text: stripTags(html).slice(0, 6000), url: host + path }
+    }
+    // only try www if the bare host never answered at all
+    const home = await fetchPage(host)
+    if (home) return null
+  }
+  return null
+}
+
 // ── Researched contacts / leads ──────────────────────────────────────────────
 export interface ContactOutcome {
   domain: string
@@ -111,7 +131,10 @@ export async function processResearchedContact(c: LeadIn, budget: { verifies: nu
   if (['sent', 'replied', 'bounced', 'suppressed'].includes(String(p.status))) {
     return { domain, status: 'rejected', why: `prospect already ${p.status}` }
   }
-  if (p.email) return { domain, status: 'rejected', why: 'contact already set for this company — edit in the portal instead' }
+  const existingEmail = (p.email as string | null ?? '').toLowerCase()
+  if (existingEmail && existingEmail !== (c.email ?? '').trim().toLowerCase()) {
+    return { domain, status: 'rejected', why: 'contact already set for this company — edit in the portal instead' }
+  }
 
   // ── Resolve the email ───────────────────────────────────────────────────────
   let candidate = (c.email ?? '').trim().toLowerCase()
@@ -132,7 +155,18 @@ export async function processResearchedContact(c: LeadIn, budget: { verifies: nu
       candidate = found.find(e => nameTokens.some(t => e.split('@')[0].includes(t))) ?? (found.length === 1 ? found[0] : '')
       if (candidate) break
     }
-    if (!candidate) return { domain, status: 'parked', why: 'no published address found on the given pages' }
+    if (!candidate) {
+      // Keep the research: the person is real and titled even if their firm
+      // publishes no address. Future paths (portal edit, allowlisted direct
+      // POST, a later crawl) start from this instead of zero.
+      await supabaseAdmin.from('prospects').update({
+        person_name: name, title,
+        source_url: c.source_url ?? c.bio_url ?? null,
+        qualification_via: 'cloud_research',
+        updated_at: new Date().toISOString(),
+      }).eq('id', String(p.id))
+      return { domain, status: 'parked', why: 'no published address found on the given pages (name/title saved)' }
+    }
   }
   if (isGenericEmail(candidate) || looksLikeMachineAddress(candidate)) {
     return { domain, status: 'rejected', why: 'generic or machine address' }
@@ -151,6 +185,13 @@ export async function processResearchedContact(c: LeadIn, budget: { verifies: nu
   const band = (storedBand && (SIZE_BANDS as readonly string[]).includes(storedBand))
     ? storedBand
     : bandForRange(p.employee_count as number | null, p.employee_count as number | null)
+  let evidenceText = (c.evidence_text ?? '').slice(0, 6000)
+  let evidenceUrl = c.evidence_url ?? null
+  if (!evidenceText) {
+    const harvested = await harvestBenefits(domain)
+    if (harvested) { evidenceText = harvested.text; evidenceUrl = harvested.url }
+  }
+
   const q = qualifyRecord({
     company: String(p.company ?? ''),
     domain,
@@ -159,8 +200,8 @@ export async function processResearchedContact(c: LeadIn, budget: { verifies: nu
     personName: name,
     email: candidate,
     emailGrade: grade,
-    fitReason: [p.fit_reason as string | null, (c.evidence_text ?? '').slice(0, 6000)].filter(Boolean).join(' '),
-    sourceUrl: c.evidence_url ?? c.source_url ?? null,
+    fitReason: [p.fit_reason as string | null, evidenceText].filter(Boolean).join(' '),
+    sourceUrl: evidenceUrl ?? c.source_url ?? null,
     researchAgeDays: 0,
     known: band ? { sizeBand: band, sizeConfidence: 'MEDIUM' } : null,
   })
@@ -204,7 +245,7 @@ export async function processResearchedContact(c: LeadIn, budget: { verifies: nu
       prospect_id: p.id, domain,
       signal_type: String(s.signal_type), signal_value: s.signal_value ?? null,
       confidence: s.confidence ?? 'MEDIUM',
-      source_url: s.source_url ?? c.evidence_url ?? null, source_title: s.source_title ?? null,
+      source_url: s.source_url ?? evidenceUrl ?? null, source_title: s.source_title ?? null,
     })))
   }
 
