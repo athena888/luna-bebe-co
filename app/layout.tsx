@@ -74,6 +74,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID
+// Google Ads destination. Configured on the SAME gtag.js the GA4 property
+// already loads — one tag, two destinations — because Google Ads does not read
+// GA4 events: a conversion only counts when a gtag `conversion` event carries
+// send_to: AW-XXXXXXXXX/LABEL. Unset = nothing changes.
+const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const locale = await getLocale();
@@ -147,6 +152,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               } catch(e){}
               if (!__allowed) {
                 window['ga-disable-${GA_ID}'] = true;
+                ${GOOGLE_ADS_ID ? `window['ga-disable-${GOOGLE_ADS_ID}'] = true;` : ''}
               } else {
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
@@ -158,6 +164,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                 // so nothing can double-fire. UTM/gclid attribution is read by
                 // gtag.js from the landing URL — untouched.
                 gtag('config', '${GA_ID}');
+                ${GOOGLE_ADS_ID ? `gtag('config', '${GOOGLE_ADS_ID}');` : ''}
               }
             `}</Script>
           </>

@@ -3,7 +3,7 @@
 // rendering/hydration/state syncs can never fire anything.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { cartGrowthEvent, checkoutSignature, shouldFireBeginCheckout, oncePerKey } from './analytics-events.ts'
+import { cartGrowthEvent, checkoutSignature, shouldFireBeginCheckout, oncePerKey, googleAdsPayload } from './analytics-events.ts'
 
 const item = (id: string, price: number, qty = 1, lineKey?: string) =>
   ({ id, name: id, price, qty, lineKey: lineKey ?? id })
@@ -101,4 +101,31 @@ test('checkout signature is order-independent and qty-sensitive', () => {
   const b = checkoutSignature([item('b', 200, 2), item('a', 100)])
   assert.equal(a, b)
   assert.notEqual(a, checkoutSignature([item('a', 100), item('b', 200, 3)]))
+})
+
+// ── Google Ads conversions ─────────────────────────────────────────────────
+// Google Ads ignores GA4 events entirely: a conversion counts only when a
+// gtag `conversion` event carries send_to: AW-XXXXXXXXX/LABEL.
+
+test('the Ads payload is null until BOTH the id and the label are configured', () => {
+  assert.equal(googleAdsPayload(undefined, 'abcDEF', { value: 95 }), null)
+  assert.equal(googleAdsPayload('AW-123456789', undefined, { value: 95 }), null)
+  assert.equal(googleAdsPayload(undefined, undefined, {}), null)
+})
+
+test('purchase sends the real order total, currency and order id', () => {
+  const p = googleAdsPayload('AW-123456789', 'pUrChAsE_LaBeL', {
+    value: 74.95, currency: 'USD', transaction_id: '2d82e75b-c169-46d4-98cf-316ae0f3d1f6',
+  })
+  assert.equal(p?.send_to, 'AW-123456789/pUrChAsE_LaBeL')
+  assert.equal(p?.value, 74.95)              // dollars, not cents
+  assert.equal(p?.currency, 'USD')
+  assert.equal(p?.transaction_id, '2d82e75b-c169-46d4-98cf-316ae0f3d1f6')
+})
+
+test('begin_checkout carries value and currency but no transaction id', () => {
+  const p = googleAdsPayload('AW-123456789', 'bcLabel', { value: 165, currency: 'USD' })
+  assert.equal(p?.send_to, 'AW-123456789/bcLabel')
+  assert.equal(p?.value, 165)
+  assert.equal('transaction_id' in (p ?? {}), false)
 })

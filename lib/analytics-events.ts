@@ -17,6 +17,52 @@ declare global {
   var fbq: ((...args: unknown[]) => void) | undefined
 }
 
+// ── Google Ads conversions ───────────────────────────────────────────────────
+// Google Ads does NOT read GA4 events. A conversion is only recorded when a
+// gtag `conversion` event carries `send_to: AW-XXXXXXXXX/LABEL`, and that
+// requires the AW destination to be configured on the page (app/layout.tsx
+// does that alongside the existing GA4 config — one gtag.js, two destinations,
+// never a second tracking system).
+//
+// The id and the two labels come from the Google Ads UI
+// (Goals → Conversions → the action → Tag setup → "Use Google tag") and live
+// in env, so no conversion identifier is invented here. With them unset every
+// call below is a silent no-op, exactly as before.
+const ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID
+const ADS_LABEL_PURCHASE = process.env.NEXT_PUBLIC_GADS_LABEL_PURCHASE
+const ADS_LABEL_BEGIN_CHECKOUT = process.env.NEXT_PUBLIC_GADS_LABEL_BEGIN_CHECKOUT
+
+/** Verbose only outside production, so the browser console can prove what
+ *  fired without leaking anything in front of customers. Values shown are the
+ *  same ones already sent to Google — never a secret. */
+const DEBUG = process.env.NODE_ENV !== 'production'
+
+export interface AdsConversionParams { value?: number; currency?: string; transaction_id?: string }
+
+/** The exact payload Google Ads expects, or null when this conversion isn't
+ *  configured. Pure, so the send_to shape is unit-tested rather than trusted. */
+export function googleAdsPayload(
+  adsId: string | undefined,
+  label: string | undefined,
+  params: AdsConversionParams,
+): (AdsConversionParams & { send_to: string }) | null {
+  if (!adsId || !label) return null
+  return { send_to: `${adsId}/${label}`, ...params }
+}
+
+function adsConversion(label: string | undefined, what: string, params: AdsConversionParams): void {
+  if (typeof window === 'undefined' || !shouldTrackAnalytics()) return
+  const payload = googleAdsPayload(ADS_ID, label, params)
+  if (!payload) {
+    if (DEBUG) console.info(`[ads] ${what} skipped — ${!ADS_ID ? 'NEXT_PUBLIC_GOOGLE_ADS_ID' : 'conversion label'} not set`)
+    return
+  }
+  try {
+    window.gtag?.('event', 'conversion', payload)
+    if (DEBUG) console.info(`[ads] ${what} fired`, payload)
+  } catch { /* analytics must never break the store */ }
+}
+
 export function track(event: string, params?: Record<string, unknown>): void {
   if (typeof window === 'undefined' || !shouldTrackAnalytics()) return
   try { window.gtag?.('event', event, params ?? {}) } catch { /* analytics must never break the store */ }
@@ -114,6 +160,12 @@ export function trackBeginCheckout(items: CartLike[]): void {
   if (!items.length) return
   if (typeof window !== 'undefined' && !shouldFireBeginCheckout(checkoutSignature(items), window.sessionStorage)) return
   track('begin_checkout', { currency: 'USD', value: subtotal(items) / 100, items: items.map(toItem) })
+  // Google Ads Begin Checkout. Same call site as the GA4 event, so it inherits
+  // the once-per-cart guard above and can't fire on a refresh of /checkout.
+  adsConversion(ADS_LABEL_BEGIN_CHECKOUT, 'begin_checkout', {
+    value: subtotal(items) / 100,
+    currency: 'USD',
+  })
   fbqTrack('InitiateCheckout', {
     content_type: 'product',
     content_ids: items.map(i => i.id),
@@ -132,4 +184,14 @@ export function trackPurchase(input: { orderId: string; value: number; currency:
     value: input.value,
     currency: input.currency,
   }, { eventID: input.orderId })
+  // Google Ads Purchase. The caller (app/confirmation/page.tsx) only reaches
+  // here for a session Stripe itself reported as paid, and holds a
+  // per-order sessionStorage flag, so a refresh cannot double-count.
+  // transaction_id is the real order id — the same value the confirmation
+  // email and /track use — which is also how Google de-duplicates its side.
+  adsConversion(ADS_LABEL_PURCHASE, 'purchase', {
+    value: input.value,
+    currency: input.currency,
+    transaction_id: input.orderId,
+  })
 }
