@@ -114,8 +114,14 @@ async function loadCache(domains: string[]): Promise<Map<string, CacheRow>> {
 async function saveCache(rows: Omit<CacheRow, 'classified_at'>[]): Promise<void> {
   if (!rows.length) return
   const now = new Date().toISOString()
+  // One scrape can return the same domain twice (two people at one firm).
+  // Postgres rejects a single ON CONFLICT DO UPDATE that would touch the same
+  // row twice, so the whole batch used to fail — the cache never populated and
+  // every run re-classified from scratch, burning an API call it did not need.
+  // Last write per domain wins; they carry the same classification anyway.
+  const byDomain = new Map(rows.map(r => [r.domain, r]))
   const { error } = await supabaseAdmin.from('qualification_cache')
-    .upsert(rows.map(r => ({ ...r, classified_at: now })), { onConflict: 'domain' })
+    .upsert([...byDomain.values()].map(r => ({ ...r, classified_at: now })), { onConflict: 'domain' })
   if (error) console.error('qualification_cache upsert failed:', error.message)
 }
 
@@ -169,7 +175,7 @@ export async function qualifyProspects(
 
     // Dry runs are manual and supervised — they bypass the daily budget gate
     // (which fails closed on DB errors) but still report real token usage.
-    if (!opts.dry && (await apiBudgetRemaining()) < 1) {
+    if (!opts.dry && (await apiBudgetRemaining('qualification')) < 1) {
       stats.deferred += slice.length   // budget spent — batch queues for next run
     } else {
       const payload = slice.map(p => ({

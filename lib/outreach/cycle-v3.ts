@@ -48,7 +48,7 @@ interface CycleBudget {
   enrichBatches: number     // × 6 companies
   discoveryBatches: number  // × 5 companies
 }
-const DEFAULT_BUDGET: CycleBudget = { enrichBatches: 3, discoveryBatches: 1 }
+const DEFAULT_BUDGET: CycleBudget = { enrichBatches: 2, discoveryBatches: 4 }
 
 export async function runCycleV3(opts: { dry?: boolean } = {}): Promise<CycleStats> {
   const dry = Boolean(opts.dry)

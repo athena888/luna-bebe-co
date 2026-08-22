@@ -31,8 +31,36 @@ export async function apiCallsToday(): Promise<number> {
   return count ?? 0
 }
 
-export async function apiBudgetRemaining(): Promise<number> {
-  return Math.max(0, MAX_API_CALLS_PER_DAY - await apiCallsToday())
+// Finding new companies must outrank re-researching the ones we have. On
+// 2026-08-22 all three of the day's calls went to enrichment and
+// prospect_search got none — for the whole week — so the pool was never
+// replenished and Morning Review emptied out. These calls are ring-fenced:
+// only the discovery path may spend them, and only until it has.
+export const DISCOVERY_PURPOSES: readonly ApiPurpose[] = ['prospect_search', 'qualification']
+export const DISCOVERY_RESERVED_CALLS = 4
+
+/** Discovery-path calls already made today (UTC). Fails closed: on a DB error
+ *  we assume none ran, which keeps the reserve intact rather than releasing it
+ *  to enrichment. */
+export async function discoveryCallsToday(): Promise<number> {
+  const since = new Date().toISOString().slice(0, 10) + 'T00:00:00Z'
+  const { count, error } = await supabaseAdmin.from('ai_call_log')
+    .select('id', { count: 'exact', head: true })
+    .gte('called_at', since).in('purpose', DISCOVERY_PURPOSES as string[])
+  if (error) return 0
+  return count ?? 0
+}
+
+/**
+ * Calls this purpose may still make today. Discovery purposes see the whole
+ * remaining budget; everything else sees it minus whatever is still being held
+ * back for discovery.
+ */
+export async function apiBudgetRemaining(purpose?: ApiPurpose): Promise<number> {
+  const free = Math.max(0, MAX_API_CALLS_PER_DAY - await apiCallsToday())
+  if (purpose && DISCOVERY_PURPOSES.includes(purpose)) return free
+  const held = Math.max(0, DISCOVERY_RESERVED_CALLS - await discoveryCallsToday())
+  return Math.max(0, free - held)
 }
 
 export interface ApiCallRecord {

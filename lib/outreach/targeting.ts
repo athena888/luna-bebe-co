@@ -116,13 +116,17 @@ export interface WeekCombo {
 
 /** The 8-week rotation. Loops after W8. */
 export const ROTATION: WeekCombo[] = [
-  { week: 1, city: 'seattle_bellevue', industries: ['tech_50_500'] },
-  { week: 2, city: 'nyc', industries: ['law_firms', 'wealth_mgmt'] },
+  // Small professional firms lead the rotation. They publish named partner
+  // emails; large tech companies publish team pages with no address at all
+  // (a 2026-08-22 crawl of 74 enterprise domains produced 31 named people but
+  // only 3 reachable addresses). A one-box minimum makes these firms viable.
+  { week: 1, city: 'nyc', industries: ['law_firms', 'wealth_mgmt'] },
+  { week: 2, city: 'dc_nova', industries: ['law_firms', 'accounting_consulting'] },
   { week: 3, city: 'miami_ftlauderdale', industries: ['wealth_mgmt', 'luxury_realestate'] },
-  { week: 4, city: 'sf_bay_area', industries: ['tech_50_500'] },
-  { week: 5, city: 'austin', industries: ['tech_50_500', 'agencies'] },
-  { week: 6, city: 'boston', industries: ['biotech_pharma', 'law_firms'] },
-  { week: 7, city: 'dc_nova', industries: ['law_firms', 'accounting_consulting'] },
+  { week: 4, city: 'boston', industries: ['biotech_pharma', 'law_firms'] },
+  { week: 5, city: 'seattle_bellevue', industries: ['tech_50_500'] },
+  { week: 6, city: 'sf_bay_area', industries: ['tech_50_500'] },
+  { week: 7, city: 'austin', industries: ['tech_50_500', 'agencies'] },
   { week: 8, city: 'salt_lake_provo', industries: ['tech_50_500'] },
 ]
 
@@ -133,7 +137,7 @@ export const ROTATION_EPOCH = '2026-08-17' // first Monday after launch
 export const DAILY_SEND_CAP = 25
 export const SUPPRESSION_DAYS = 90       // never same domain twice in 90 days
 export const QUALIFY_CACHE_DAYS = 180    // never re-classify a domain within 180 days
-export const MAX_API_CALLS_PER_DAY = 3   // hard cap on Anthropic calls
+export const MAX_API_CALLS_PER_DAY = 15  // hard cap on Anthropic calls
 
 /** Deterministic combo for a given date (UTC). Same date → same combo, always. */
 export function comboForDate(date: Date): WeekCombo {

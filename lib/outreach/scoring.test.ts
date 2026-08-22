@@ -181,15 +181,18 @@ test('enterprise scale without an exact buyer is penalized', () => {
   assert.ok(withInfluencer.disqualifiers.some(d => /procurement/i.test(d)))
 })
 
-test('unknown company size is penalized and blocks the hard gate', () => {
+test('unknown company size is penalized but no longer blocks the hard gate', () => {
+  // Minimum order is one box, so "we could not find a headcount" is a research
+  // gap, not a disqualification. It still costs points — it must never be
+  // cheaper to leave size unresearched than to find it.
   const r = scoreProspect(base({ sizeBand: null, sizeConfidence: 'LOW' }))
   assert.ok(r.disqualifiers.some(d => /no reliable company-size/i.test(d)))
+  assert.ok(r.score < scoreProspect(base()).score, 'unknown size must still cost points')
   const g = checkHardGates(r, base({ sizeBand: null }), {
     suppressed: false, isExistingCustomer: false,
     companyAlreadyContacted: false, hasQualificationEvidence: true,
   })
-  assert.equal(g.pass, false)
-  assert.ok(g.failed.some(f => /company-size evidence/i.test(f)))
+  assert.ok(!g.failed.some(f => /company-size evidence/i.test(f)), 'size must not be a hard gate')
 })
 
 // ── Per-segment scoring ──────────────────────────────────────────────────────
@@ -284,11 +287,14 @@ test('no intent signal at all is penalized', () => {
 
 // ── Thresholds and gates (§10, §11) ──────────────────────────────────────────
 test('tier thresholds match the specification', () => {
+  // GOOD starts at 62 (was 70): a one-box minimum makes smaller, lower-scoring
+  // accounts genuinely worth opening. EXCELLENT and the BAD floor are unchanged
+  // — this lowers the bar a little, it does not remove it.
   assert.equal(tierForScore(100), 'EXCELLENT')
   assert.equal(tierForScore(85), 'EXCELLENT')
   assert.equal(tierForScore(84), 'GOOD')
-  assert.equal(tierForScore(70), 'GOOD')
-  assert.equal(tierForScore(69), 'WEAK')
+  assert.equal(tierForScore(62), 'GOOD')
+  assert.equal(tierForScore(61), 'WEAK')
   assert.equal(tierForScore(55), 'WEAK')
   assert.equal(tierForScore(54), 'BAD')
 })
@@ -319,6 +325,30 @@ test('deliverability grade C or D blocks drafting', () => {
     const r = scoreProspect(base({ emailGrade: g }))
     assert.equal(r.draftEligible, false, `grade ${g} must not draft`)
   }
+})
+
+test('lowering the bar never re-opens the generic-inbox gate', () => {
+  // The bar moved for COMPANY grade only. Contact identity is untouched: a
+  // generic inbox still cannot draft without an approved override, whatever
+  // the company scores.
+  const r = scoreProspect(base({ email: 'info@northgatesystems.com' }))
+  const g = checkHardGates(r, base({ email: 'info@northgatesystems.com' }), {
+    suppressed: false, isExistingCustomer: false,
+    companyAlreadyContacted: false, hasQualificationEvidence: true,
+  })
+  assert.equal(g.pass, false)
+  assert.ok(g.failed.some(f => /generic inbox/i.test(f)), g.failed.join('; '))
+})
+
+test('a small firm with a real signal is now workable, an empty one is not', () => {
+  // The point of the change: 12-person practice, named buyer, real signal.
+  assert.equal(recurringPotential('LAW_PROFESSIONAL', '11-25', 1), 'MEDIUM')
+  assert.equal(recurringPotential('EMPLOYEE_GIFTING', '11-25', 1), 'MEDIUM')
+  // Unknown headcount plus a signal is "plausible", not "no".
+  assert.equal(recurringPotential('EMPLOYEE_GIFTING', null, 1), 'MEDIUM')
+  // But no signal at all is still LOW — the bar moved, it did not vanish.
+  assert.equal(recurringPotential('EMPLOYEE_GIFTING', null, 0), 'LOW')
+  assert.equal(recurringPotential('LOW_PRIORITY', '201-500', 5), 'LOW')
 })
 
 // ── Selection ordering (§35) ─────────────────────────────────────────────────

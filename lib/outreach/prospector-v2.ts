@@ -171,7 +171,7 @@ export async function scrapeAndQualify(opts: { dry?: boolean; date?: Date; want?
   const combo = comboForDate(opts.date ?? new Date())
 
   // The search itself is an API call — it must fit the daily budget too.
-  if (!dry && (await apiBudgetRemaining()) < 1) {
+  if (!dry && (await apiBudgetRemaining('prospect_search')) < 1) {
     return { combo, candidates: [], qualified: [], qualify: null, searchTokens: { input: 0, output: 0 }, budgetExhausted: true }
   }
 

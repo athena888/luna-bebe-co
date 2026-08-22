@@ -75,8 +75,8 @@ export const SEGMENTS: Record<Segment, SegmentConfig> = {
     label: 'Employee new-parent gifting',
     priority: 100,
     idealBands: ['51-100', '101-200', '201-500', '501-1000'],
-    conditionalBands: ['26-50', '1001-5000'],
-    rejectBands: ['1-10', '11-25'],
+    conditionalBands: ['11-25', '26-50', '1001-5000'],
+    rejectBands: ['1-10'],
     exceptionRule:
       '26-50 allowed with evidence of a real People/HR function. 1001-5000 allowed only with an exact named buyer, a direct inbox, and benefits/employee-experience evidence. 5000+ deprioritized: procurement complexity and incumbent vendors sink cold outbound.',
     quotaPercent: 45,
@@ -87,8 +87,8 @@ export const SEGMENTS: Record<Segment, SegmentConfig> = {
     label: 'Private wealth / family office client gifting',
     priority: 90,
     idealBands: ['26-50', '51-100', '101-200', '201-500'],
-    conditionalBands: ['11-25', '501-1000'],
-    rejectBands: ['1-10'],
+    conditionalBands: ['1-10', '11-25', '501-1000'],
+    rejectBands: [],
     exceptionRule:
       '11-25 allowed when client value is very high (family office / UHNW) AND the decision-maker is directly reachable.',
     quotaPercent: 25,
@@ -112,8 +112,8 @@ export const SEGMENTS: Record<Segment, SegmentConfig> = {
     label: 'Select law / professional services',
     priority: 80,
     idealBands: ['26-50', '51-100', '101-200', '201-500', '501-1000'],
-    conditionalBands: ['11-25', '1001-5000'],
-    rejectBands: ['1-10'],
+    conditionalBands: ['1-10', '11-25', '1001-5000'],
+    rejectBands: [],
     exceptionRule:
       'Two distinct motions: EMPLOYEE (larger firm, People/HR buyer) or CLIENT (family/estate/private-client/fertility-adjacent practice). A general commercial firm with neither is not a prospect.',
     quotaPercent: 15,
@@ -460,12 +460,18 @@ export function recurringPotential(
   if (segment === 'LOW_PRIORITY') return 'LOW'
   const mid = band ? bandMidpoint(band) : null
 
+  // Minimum order is ONE box, so structural volume no longer decides whether an
+  // account is worth opening. Unknown headcount with a real gifting signal is
+  // "plausible", not "no" — it used to score -20 AND fail a hard gate, which is
+  // what emptied Morning Review. Contact-quality gates are untouched.
+  if (mid == null && signalGroups >= 1) return 'MEDIUM'
+
   if (segment === 'EMPLOYEE_GIFTING') {
     // Births scale with headcount; below ~50 people the occasion is too rare
     // to build a standing account on.
     if (mid != null && mid >= 200 && signalGroups >= 1) return 'HIGH'
     if (mid != null && mid >= 50) return signalGroups >= 1 ? 'HIGH' : 'MEDIUM'
-    if (mid != null && mid >= 26) return 'MEDIUM'
+    if (mid != null && mid >= 11) return 'MEDIUM'
     return 'LOW'
   }
   if (segment === 'WEALTH_CLIENT') {

@@ -76,13 +76,13 @@ export interface ScoringResult {
   draftEligible: boolean
 }
 
-export const AUTOMATED_DRAFT_MIN = 70
+export const AUTOMATED_DRAFT_MIN = 62
 export const PREFERRED_SEND_MIN = 75
 export const TOP_PRIORITY_MIN = 85
 
 export function tierForScore(score: number): Tier {
   if (score >= 85) return 'EXCELLENT'
-  if (score >= 70) return 'GOOD'
+  if (score >= 62) return 'GOOD'
   if (score >= 55) return 'WEAK'
   return 'BAD'
 }
@@ -107,10 +107,10 @@ function scoreCompanyFit(
 
   const band = input.sizeBand
   if (band == null) {
-    penalty += 10
+    penalty += 4
     disq.push('No reliable company-size evidence')
   } else if (cfg.rejectBands.includes(band)) {
-    penalty += 25
+    penalty += 12
     disq.push(`Company size ${band} is below the floor for ${cfg.label}`)
   } else if (cfg.idealBands.includes(band)) {
     points += 10
@@ -142,7 +142,7 @@ function scoreCompanyFit(
     points += 5
     reasons.push('Plausible but not yet proven recurring use case')
   } else {
-    penalty += 20
+    penalty += 10
     disq.push('Weak or unclear recurring gifting use case')
   }
 
@@ -422,9 +422,9 @@ export function checkHardGates(result: ScoringResult, input: ScoringInput, ctx: 
   if (result.hardFail) failed.push('Hard-fail condition on contact (wrong role, hedged, or generic inbox)')
   if (!SEGMENTS[input.segment].autoSendable) failed.push('Segment is not auto-sendable')
   if (result.recurring === 'LOW') failed.push('Recurring potential is LOW')
-  if (input.sizeBand == null && input.segment !== 'VC_PLATFORM') {
-    failed.push('No company-size evidence and no documented exception')
-  }
+  // Company size is scored (penalty above), not gated: with a one-box minimum a
+  // 12-person family-law practice is a real customer, and "no headcount found"
+  // is a research gap rather than a disqualification.
   if (result.roleGrade === 'WRONG') failed.push('No relevant buyer or influencer identified')
   if (!input.email) failed.push('No business email')
   if (result.emailIsGeneric && !input.genericOverrideApproved) failed.push('Generic inbox without approved override')
