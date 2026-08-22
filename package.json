@@ -11,6 +11,7 @@
     "setup:welcome-code": "node scripts/setup-welcome-code.js",
     "decor:split": "node scripts/split-botanical.mjs",
     "indexnow": "node scripts/indexnow-ping.mjs",
+    "feed:openai": "node scripts/openai-feed-export.mjs",
     "check:nav": "node scripts/check-nav.mjs",
     "check:copy": "node scripts/check-product-copy.mjs"
   },
