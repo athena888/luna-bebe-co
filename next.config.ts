@@ -88,7 +88,15 @@ const nextConfig: NextConfig = {
             // Without them the CSP blocks platform.js, window.gapi never
             // exists, and the opt-in silently never renders (it is written to
             // fail quietly, so the block left no trace).
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://js.stripe.com https://client.crisp.chat https://apis.google.com; style-src 'self' 'unsafe-inline' https://client.crisp.chat; img-src 'self' https: data:; font-src 'self' https: https://client.crisp.chat; media-src 'self' https://client.crisp.chat; connect-src 'self' https://api.stripe.com https://www.google-analytics.com https://www.googletagmanager.com https://*.supabase.co https://api.anthropic.com https://api.gemini.com https://client.crisp.chat wss://client.relay.crisp.chat wss://stream.relay.crisp.chat https://www.google.com; frame-src 'self' blob: https://js.stripe.com https://game.crisp.chat https://www.google.com; base-uri 'self'; form-action 'self'",
+            //
+            // Google Ads conversions (2026-08-22) need googleadservices.com and
+            // the doubleclick hosts: gtag fires the conversion, then POSTS it to
+            // googleadservices.com/pagead/conversion/<id> and ad.doubleclick.net
+            // /ccm/s/collect. Both were blocked by connect-src, so the event ran
+            // in the browser and never reached Google — the console showed
+            // "Refused to connect", and Ads reported "Conversion has never
+            // received data". Verified against the real blocked requests.
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://js.stripe.com https://client.crisp.chat https://apis.google.com; style-src 'self' 'unsafe-inline' https://client.crisp.chat; img-src 'self' https: data:; font-src 'self' https: https://client.crisp.chat; media-src 'self' https://client.crisp.chat; connect-src 'self' https://api.stripe.com https://www.google-analytics.com https://www.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://ad.doubleclick.net https://*.supabase.co https://api.anthropic.com https://api.gemini.com https://client.crisp.chat wss://client.relay.crisp.chat wss://stream.relay.crisp.chat https://www.google.com; frame-src 'self' blob: https://js.stripe.com https://game.crisp.chat https://www.google.com https://td.doubleclick.net; base-uri 'self'; form-action 'self'",
           },
         ],
       },
