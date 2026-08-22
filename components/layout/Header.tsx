@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useIsEs } from '@/lib/use-is-es'
+import { localePath } from '@/lib/locale-routes'
 import { useState, useEffect, useRef } from 'react'
 import { Menu, X, User, ShoppingBag, Mail, ChevronDown } from 'lucide-react'
 import { cartCount } from '@/lib/cart'
@@ -35,7 +36,7 @@ function CartButton({ light }: { light: boolean }) {
       // The click opens the drawer, so this href is the no-JS / crawler path —
       // and it sent Spanish visitors to the English checkout. /es/checkout
       // re-exports the same component, so the Spanish route is a real page.
-      href={isEs ? '/es/checkout' : '/checkout'}
+      href={localePath('/checkout', isEs)}
       onClick={e => { e.preventDefault(); window.dispatchEvent(new Event('pl:open-bag')) }}
       className={`relative w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50 hover:text-white' : 'text-gold-500 hover:text-espresso'}`}
       title="Shopping bag"
@@ -91,7 +92,7 @@ function Wordmark({ light, expanded }: { light: boolean; expanded: boolean }) {
   // Bigger at the hero top; shrinks to normal on scroll. transition-all animates height.
   const sizeCls = expanded ? 'h-[4.5rem] sm:h-[5.25rem]' : 'h-12 sm:h-14'
   return (
-    <Link href={useIsEs() ? '/es' : '/'} className="flex items-center shrink-0 min-w-0" aria-label="Petite Lavande — home">
+    <Link href={localePath('/', useIsEs())} className="flex items-center shrink-0 min-w-0" aria-label="Petite Lavande — home">
       {err ? (
         <span className="flex items-center gap-2 sm:gap-2.5">
           <Sprig light={light} />
@@ -173,7 +174,7 @@ function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
   return (
     <div className="relative" onMouseEnter={enter} onMouseLeave={leave} onFocus={enter} onBlur={leave}>
       <Link
-        href={isEs ? '/es/canastillas' : '/boxes'}
+        href={localePath('/boxes', isEs)}
         className={cls}
         aria-expanded={open}
         aria-controls="boxes-dropdown"
@@ -188,7 +189,7 @@ function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
         <div className="bg-cream-white border border-cream-300 shadow-lg px-7 py-6 whitespace-nowrap min-w-[340px]">
           <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-400 font-bold mb-2.5">{isEs ? 'Nuestras canastillas' : 'Ready-Made Boxes'}</p>
           {boxProducts.map(p => (
-            <Link key={p.slug} href={isEs ? `/es/canastillas/${p.slug}` : `/boxes/${p.slug}`} onClick={() => setOpen(false)}
+            <Link key={p.slug} href={localePath(`/boxes/${p.slug}`, isEs)} onClick={() => setOpen(false)}
               className="block font-sans text-[13px] normal-case tracking-normal text-espresso hover:text-gold-500 transition-colors py-1">
               {p.name}
               {OCCASION_BY_SLUG[p.slug] && (
@@ -199,15 +200,15 @@ function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
               )}
             </Link>
           ))}
-          <Link href="/corporate" onClick={() => setOpen(false)}
+          <Link href={localePath('/corporate', isEs)} onClick={() => setOpen(false)}
             className="block font-sans text-[13px] normal-case tracking-normal text-espresso hover:text-gold-500 transition-colors py-1">
             {isEs ? 'Regalos corporativos' : 'Corporate Gifting'}
           </Link>
-          <Link href={isEs ? '/es/build' : '/build'} onClick={() => setOpen(false)}
+          <Link href={localePath('/build', isEs)} onClick={() => setOpen(false)}
             className="block font-sans text-[13px] normal-case tracking-normal text-[#7A8E7C] hover:text-espresso transition-colors py-1">
             {isEs ? 'Arma la tuya' : 'Build Your Own'}
           </Link>
-          <Link href={isEs ? '/es/canastillas' : '/boxes'} onClick={() => setOpen(false)}
+          <Link href={localePath('/boxes', isEs)} onClick={() => setOpen(false)}
             className="self-end font-sans text-[12px] normal-case tracking-normal text-[#7A8E7C] underline underline-offset-2 hover:text-espresso transition-colors">
             {isEs ? 'Ver todas →' : 'View all boxes →'}
           </Link>
@@ -225,9 +226,9 @@ function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) 
     <>
       {/* Curated first, custom second */}
       <BoxesDropdown light={light} cls={cls} />
-      <Link href={isEs ? '/es/build' : '/build'} className={cls} onClick={onClick}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
-      <Link href={isEs ? '/es/tarjetas-regalo' : '/gift-cards'} className={cls} onClick={onClick}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
-      <Link href={isEs ? '/es/historia' : '/story'} className={cls} onClick={onClick}>{isEs ? 'Nuestra historia' : 'Stories'}</Link>
+      <Link href={localePath('/build', isEs)} className={cls} onClick={onClick}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
+      <Link href={localePath('/gift-cards', isEs)} className={cls} onClick={onClick}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
+      <Link href={localePath('/story', isEs)} className={cls} onClick={onClick}>{isEs ? 'Nuestra historia' : 'Stories'}</Link>
     </>
   )
 }
@@ -241,18 +242,18 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
       {/* Boxes — sub-links always expanded (Emily 2026-08-15: no accordion,
           every tap target visible the moment the menu opens) */}
       <div>
-        <Link href={isEs ? '/es/canastillas' : '/boxes'} className={linkCls} onClick={onClose}>{isEs ? 'Canastillas' : 'Gift Boxes'}</Link>
+        <Link href={localePath('/boxes', isEs)} className={linkCls} onClick={onClose}>{isEs ? 'Canastillas' : 'Gift Boxes'}</Link>
         <div className="mt-3 pl-3 flex flex-col gap-2.5 font-sans text-[13px] tracking-normal normal-case">
           {boxProducts.map(p => (
-            <Link key={p.slug} href={isEs ? `/es/canastillas/${p.slug}` : `/boxes/${p.slug}`} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{p.name}</Link>
+            <Link key={p.slug} href={localePath(`/boxes/${p.slug}`, isEs)} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{p.name}</Link>
           ))}
-          <Link href="/corporate" onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{isEs ? 'Regalos corporativos' : 'Corporate Gifting'}</Link>
+          <Link href={localePath('/corporate', isEs)} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{isEs ? 'Regalos corporativos' : 'Corporate Gifting'}</Link>
         </div>
       </div>
-      <Link href={isEs ? '/es/build' : '/build'} className={linkCls} onClick={onClose}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
-      <Link href={isEs ? '/es/tarjetas-regalo' : '/gift-cards'} className={linkCls} onClick={onClose}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
-      <Link href={isEs ? '/es/historia' : '/story'} className={linkCls} onClick={onClose}>{isEs ? 'Nuestra historia' : 'Stories'}</Link>
-      <Link href="/account" className="uppercase text-[#7A6B60] hover:text-espresso transition-colors" onClick={onClose}>My Account</Link>
+      <Link href={localePath('/build', isEs)} className={linkCls} onClick={onClose}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
+      <Link href={localePath('/gift-cards', isEs)} className={linkCls} onClick={onClose}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
+      <Link href={localePath('/story', isEs)} className={linkCls} onClick={onClose}>{isEs ? 'Nuestra historia' : 'Stories'}</Link>
+      <Link href={localePath('/account', isEs)} className="uppercase text-[#7A6B60] hover:text-espresso transition-colors" onClick={onClose}>{isEs ? 'Mi cuenta' : 'My Account'}</Link>
     </div>
   )
 }
@@ -344,6 +345,7 @@ export function LaunchMarquee() {
 // normal solid bar once the user scrolls. Pages without a hero pass nothing and
 // get the solid in-flow header.
 export function Header({ overHero = false }: { overHero?: boolean }) {
+  const isEs = useIsEs()
   const [open, setOpen] = useState(false)
   // Auto-hide: the bar slides up while scrolling down (max product/image
   // space) and slides back in on scroll-up (cart + nav one flick away).
@@ -437,7 +439,7 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
             </div>
           )}
           <div className={`absolute right-9 flex items-center gap-0.5 ${expanded ? 'bottom-2' : 'bottom-0.5'}`}>
-            <Link href="/account" className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50 hover:text-white' : 'text-gold-500 hover:text-espresso'}`} title="My Account">
+            <Link href={localePath('/account', isEs)} className={`w-11 h-11 flex items-center justify-center transition-colors ${light ? 'text-cream-50 hover:text-white' : 'text-gold-500 hover:text-espresso'}`} title={isEs ? 'Mi cuenta' : 'My Account'} aria-label={isEs ? 'Mi cuenta' : 'My Account'}>
               <User size={27} strokeWidth={1.2} />
             </Link>
             <CartButton light={light} />

@@ -15,6 +15,7 @@ import { TrackViewItem } from '@/components/ui/TrackViewItem'
 import { boxSlotKey } from '@/lib/image-slots'
 import { isShoppingOnly } from '@/lib/catalog-visibility'
 import { SPANISH_ACTIVE } from '@/lib/i18n'
+import { localePath } from '@/lib/locale-routes'
 import { getBoxProduct, getItemSizeOptions, pieceCount, piecesPerItem, priceRange } from '@/lib/catalog-db'
 import { CATEGORY_LABELS, CATEGORY_LABELS_ES, formatDollars } from '@/lib/products'
 
@@ -310,7 +311,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
               />
 
               <p className="font-sans text-sm text-bark-500 mt-6">
-                <Link href="/faq" className="underline underline-offset-2 hover:text-bark-600">{t.faq}</Link>
+                <Link href={localePath('/faq', isEs)} className="underline underline-offset-2 hover:text-bark-600">{t.faq}</Link>
               </p>
 
               <p className="font-sans text-sm text-bark-500 mt-3">

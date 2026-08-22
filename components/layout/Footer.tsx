@@ -2,10 +2,12 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { ArrowRight } from 'lucide-react'
 import { CONTACT_EMAIL } from '@/lib/site-config'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { useIsEs } from '@/lib/use-is-es'
+import { localePath, switchLocalePath } from '@/lib/locale-routes'
 
 // Segment chips (Build 7) — one optional tap after signup so flow emails can
 // speak to the right reader. Fire-and-forget; disappears once tapped.
@@ -174,6 +176,7 @@ function EmailSignup() {
 
 export function Footer() {
   const isEs = useIsEs()
+  const pathname = usePathname()
   return (
     <footer className="font-medium">
       {/* Main footer — optional owner-managed background sits behind everything;
@@ -198,25 +201,25 @@ export function Footer() {
               <div>
                 <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">{isEs ? 'Compra y regala' : <>Shop &amp; Gift</>}</p>
                 <ul className="space-y-2.5 text-[13.5px] font-sans font-normal">
-                  <li><Link href={isEs ? '/es/canastillas' : '/boxes'} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Sets de regalo' : 'Gift Sets'}</Link></li>
-                  <li><Link href={isEs ? '/es/build' : '/build'} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link></li>
-                  <li><Link href={isEs ? '/es/tarjetas-regalo' : '/gift-cards'} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link></li>
-                  <li><Link href="/gift-guides" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Ideas para regalar' : 'Gifting Ideas'}</Link></li>
+                  <li><Link href={localePath('/boxes', isEs)} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Sets de regalo' : 'Gift Sets'}</Link></li>
+                  <li><Link href={localePath('/build', isEs)} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link></li>
+                  <li><Link href={localePath('/gift-cards', isEs)} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link></li>
+                  <li><Link href={localePath('/gift-guides', isEs)} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Ideas para regalar' : 'Gifting Ideas'}</Link></li>
                 </ul>
               </div>
               <div>
                 <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">{isEs ? 'Nosotros' : 'About'}</p>
                 <ul className="space-y-2.5 text-[13.5px] font-sans font-normal">
-                  <li><Link href={isEs ? '/es/historia' : '/story'} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Nuestra historia' : 'Our Story'}</Link></li>
-                  <li><Link href="/track" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Rastrear pedido' : 'Track Order'}</Link></li>
-                  <li><Link href="/account" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Mi cuenta' : 'My Account'}</Link></li>
+                  <li><Link href={localePath('/story', isEs)} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Nuestra historia' : 'Our Story'}</Link></li>
+                  <li><Link href={localePath('/track', isEs)} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Rastrear pedido' : 'Track Order'}</Link></li>
+                  <li><Link href={localePath('/account', isEs)} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Mi cuenta' : 'My Account'}</Link></li>
                 </ul>
               </div>
               <div>
                 <p className="font-playfair text-[15px] tracking-[0.02em] uppercase text-espresso font-medium mb-3.5">{isEs ? 'Corporativo' : 'Corporate'}</p>
                 <ul className="space-y-2.5 text-[13.5px] font-sans font-normal">
-                  <li><Link href="/corporate" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Regalos para equipos' : 'Team Gifting'}</Link></li>
-                  <li><Link href="/press" className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Prensa' : 'Press'}</Link></li>
+                  <li><Link href={localePath('/corporate', isEs)} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Regalos para equipos' : 'Team Gifting'}</Link></li>
+                  <li><Link href={localePath('/press', isEs)} className="text-espresso hover:text-gold-500 transition-colors">{isEs ? 'Prensa' : 'Press'}</Link></li>
                   <li><a href={`mailto:${CONTACT_EMAIL}`} className="text-espresso hover:text-gold-500 transition-colors break-all">{CONTACT_EMAIL}</a></li>
                 </ul>
               </div>
@@ -232,21 +235,21 @@ export function Footer() {
               <div className="flex border border-cream-300">
                 {isEs ? (
                   <>
-                    <Link href="/" className="px-3 py-1.5 bg-white text-espresso hover:bg-cream-50 transition-colors text-[12px]">English</Link>
+                    <Link href={switchLocalePath(pathname, 'en')} className="px-3 py-1.5 bg-white text-espresso hover:bg-cream-50 transition-colors text-[12px]">English</Link>
                     <span className="px-3 py-1.5 bg-[#7A8E7C] text-white font-semibold text-[12px]">Español</span>
                   </>
                 ) : (
                   <>
                     <span className="px-3 py-1.5 bg-[#7A8E7C] text-white font-semibold text-[12px]">English</span>
-                    <Link href="/es" className="px-3 py-1.5 bg-white text-espresso hover:bg-cream-50 transition-colors text-[12px]">Español</Link>
+                    <Link href={switchLocalePath(pathname, 'es')} className="px-3 py-1.5 bg-white text-espresso hover:bg-cream-50 transition-colors text-[12px]">Español</Link>
                   </>
                 )}
               </div>
             )}
             <div className="flex items-center gap-x-5 sm:gap-x-8 whitespace-nowrap">
-              <Link href="/legal/privacy" className="hover:text-gold-500 transition-colors">{isEs ? 'Privacidad' : 'Privacy Policy'}</Link>
-              <Link href="/legal/terms" className="hover:text-gold-500 transition-colors">{isEs ? 'Términos' : 'Terms of Service'}</Link>
-              <Link href={isEs ? '/es/legal/devoluciones' : '/legal/returns'} className="hover:text-gold-500 transition-colors">{isEs ? 'Devoluciones' : 'Returns'}</Link>
+              <Link href={localePath('/legal/privacy', isEs)} className="hover:text-gold-500 transition-colors">{isEs ? 'Privacidad' : 'Privacy Policy'}</Link>
+              <Link href={localePath('/legal/terms', isEs)} className="hover:text-gold-500 transition-colors">{isEs ? 'Términos' : 'Terms of Service'}</Link>
+              <Link href={localePath('/legal/returns', isEs)} className="hover:text-gold-500 transition-colors">{isEs ? 'Devoluciones' : 'Returns'}</Link>
             </div>
           </div>
 

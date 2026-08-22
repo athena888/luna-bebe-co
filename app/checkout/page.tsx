@@ -16,6 +16,7 @@ import { trackBeginCheckout } from '@/lib/analytics-events'
 import { AddonRow } from '@/components/ui/AddonRow'
 import { DeliveryEstimate } from '@/components/ui/DeliveryEstimate'
 import { useIsEs } from '@/lib/use-is-es'
+import { localePath } from '@/lib/locale-routes'
 
 function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
 function boxItemTotal(selection: BoxSelection) { return Object.values(selection).reduce((sum, p) => sum + (p?.price ?? 0) * ((p as { qty?: number })?.qty ?? 1), 0) }
@@ -396,8 +397,8 @@ export default function CheckoutPage() {
                     })}
                     {entries.length === 0 && (
                       <div className="bg-white p-8 text-center">
-                        <p className="font-sans text-sm text-bark-400 mb-3">Your bag is empty.</p>
-                        <Link href="/build" className="font-sans text-[11px] tracking-[0.14em] uppercase text-espresso underline underline-offset-4">Build your box</Link>
+                        <p className="font-sans text-sm text-bark-400 mb-3">{isEs ? 'Tu bolsa está vacía.' : 'Your bag is empty.'}</p>
+                        <Link href={localePath('/build', isEs)} className="font-sans text-[11px] tracking-[0.14em] uppercase text-espresso underline underline-offset-4">{isEs ? 'Arma tu canastilla' : 'Build your box'}</Link>
                       </div>
                     )}
                     {/* Last-chance add-ons — adds into this page's own selection state */}

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useIsEs } from '@/lib/use-is-es'
+import { localePath } from '@/lib/locale-routes'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronDown, X, ChevronLeft, ChevronRight, Leaf } from 'lucide-react'
@@ -167,9 +168,9 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
           <Spinner />
         ) : !product ? (
           <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-            <p className="font-sans text-sm text-bark-400">Product not found.</p>
-            <Link href="/build" className="font-sans text-xs tracking-[0.14em] uppercase text-bark-600 underline underline-offset-2">
-              Back to Build
+            <p className="font-sans text-sm text-bark-400">{isEs ? 'Producto no encontrado.' : 'Product not found.'}</p>
+            <Link href={localePath('/build', isEs)} className="font-sans text-xs tracking-[0.14em] uppercase text-bark-600 underline underline-offset-2">
+              {isEs ? 'Volver a Arma tu canastilla' : 'Back to Build'}
             </Link>
           </div>
         ) : (
@@ -224,7 +225,7 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
 
                 {/* Breadcrumb */}
                 <nav className="font-sans text-[11px] tracking-[0.11em] uppercase text-bark-400 mb-4 flex items-center gap-1.5 flex-wrap">
-                  <Link href="/build" className="hover:text-bark-600 transition-colors">{isEs ? 'Arma tu canastilla' : 'Build Your Box'}</Link>
+                  <Link href={localePath('/build', isEs)} className="hover:text-bark-600 transition-colors">{isEs ? 'Arma tu canastilla' : 'Build Your Box'}</Link>
                   <span>/</span>
                   <span>{(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[product.category]}</span>
                 </nav>
@@ -400,10 +401,10 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
 
                 <div className="border-t border-cream-300 pt-4 mt-1">
                   <Link
-                    href="/build"
+                    href={localePath('/build', isEs)}
                     className="font-sans text-[11px] tracking-[0.11em] uppercase text-bark-400 hover:text-bark-600 transition-colors"
                   >
-                    ← Back to Build
+                    {isEs ? '← Volver a Arma tu canastilla' : '← Back to Build'}
                   </Link>
                 </div>
 

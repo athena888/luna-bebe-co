@@ -1,4 +1,4 @@
-import { supabaseAdmin } from './supabase'
+import { supabaseAdmin } from './supabase.ts'
 
 // Spanish (es-US) locale infrastructure. Four hard rules, enforced here and
 // in every consumer:
@@ -14,7 +14,8 @@ import { supabaseAdmin } from './supabase'
 // production stays dark until launch).
 export const SPANISH_ACTIVE = process.env.SPANISH_ACTIVE === 'true' || process.env.NEXT_PUBLIC_SPANISH_ACTIVE === 'true'
 
-export type Locale = 'en' | 'es'
+export type { Locale } from './locale-routes.ts'
+import type { Locale } from './locale-routes.ts'
 
 // ——— UI dictionary (checkout strings, banner, switcher, shared chrome) ———
 // Drafts pending native review — the flag keeps all of it dark until then.
@@ -128,3 +129,7 @@ export async function esProductComplete(id: string): Promise<boolean> {
   const { complete } = await translationCoverage('product', ES_PRODUCT_REQUIRED, [id])
   return complete.length > 0
 }
+
+// Locale routing lives in ./locale-routes — a dependency-free module, because
+// client components (Header, Footer) need it and this file imports supabaseAdmin.
+export { localePath, enPath, switchLocalePath } from './locale-routes.ts'

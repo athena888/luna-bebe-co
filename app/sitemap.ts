@@ -59,6 +59,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       urls.push({ url: `${base}/es`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 })
       urls.push({ url: `${base}/es/legal/devoluciones`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 })
       urls.push({ url: `${base}/es/historia`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 })
+      urls.push({ url: `${base}/es/faq`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 })
       urls.push({ url: `${base}/es/canastillas`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 })
       // Spanish box DETAIL pages. They render, they carry hreflang, and they
       // were absent from the sitemap entirely — only the /es/canastillas index
