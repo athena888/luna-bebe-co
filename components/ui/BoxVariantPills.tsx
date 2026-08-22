@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { GALLERY_VARIANT_EVENT } from '@/components/ui/BoxGallery'
@@ -26,15 +27,30 @@ export function BoxVariantPills({ variants, selectedKey, boxName }: {
   boxName: string
 }) {
   const [highlightKey, setHighlightKey] = useState(selectedKey)
+  const router = useRouter()
+  // Swiping the gallery into another variant used to move ONLY this
+  // highlight. Everything below the gallery — price, the "what's inside"
+  // list, the offer id and the buy panel — is server-rendered from the URL
+  // variant, so the page showed one variant's photo and pill above another
+  // variant's contents, and Add to box added the one in the URL. Following
+  // the swipe with a replace() re-renders all of it from the one source of
+  // truth. scroll:false keeps the reader where they are, and the gallery
+  // keeps its own position (its start-scroll effect runs on mount only).
+  const navigatedTo = useRef(selectedKey)
 
   useEffect(() => {
     const onGallery = (e: Event) => {
       const key = (e as CustomEvent<{ key?: string }>).detail?.key
-      if (key && variants.some(v => v.key === key)) setHighlightKey(key)
+      const target = key ? variants.find(v => v.key === key) : undefined
+      if (!target) return
+      setHighlightKey(target.key)
+      if (target.key === navigatedTo.current) return
+      navigatedTo.current = target.key
+      router.replace(target.href, { scroll: false })
     }
     window.addEventListener(GALLERY_VARIANT_EVENT, onGallery)
     return () => window.removeEventListener(GALLERY_VARIANT_EVENT, onGallery)
-  }, [variants])
+  }, [variants, router])
 
   return (
     <div className="flex flex-wrap gap-2">
