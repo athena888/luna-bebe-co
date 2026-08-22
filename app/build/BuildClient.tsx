@@ -490,24 +490,33 @@ export default function BuildClient({ initialCatalog }: { initialCatalog?: Recor
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-bark-700 to-bark-800" />
           )}
-          <div
-            className="relative z-10 w-full px-8 sm:px-14 pb-20 sm:pb-28 max-w-3xl"
-            style={{ animation: 'slideUp 1.4s cubic-bezier(0.22,1,0.36,1) both' }}
-          >
+          {/* The entrance animation starts at opacity 0, which would have left
+              the new CTA invisible (and so untappable-looking) for 1.4s on the
+              slowest devices. Desktop keeps it; phones render immediately. */}
+          <div className="relative z-10 w-full px-8 sm:px-14 pb-16 sm:pb-28 max-w-3xl sm:[animation:slideUp_1.4s_cubic-bezier(0.22,1,0.36,1)_both]">
             <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-cream-200/60 mb-5">{isEs ? 'Arma tu canastilla' : 'Build Your Box'}</p>
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-cream-50 leading-[1.05] mb-6">
               {isEs ? 'No agregamos lo que no pertenece.' : <>We don&apos;t add what doesn&apos;t belong.</>}
             </h1>
-            <p className="font-serif italic text-lg sm:text-xl text-cream-200/80 leading-relaxed max-w-lg mb-3">
-              {isEs ? 'No rellenamos la canastilla por rellenar. Cada pieza está aquí porque una mamá reciente y su bebé de verdad la van a usar y querer.' : <>We don&apos;t pad the box with filler. Every item here exists because a new mother and a newborn baby will actually use it and love it.</>}
+            <p className="font-serif italic text-lg sm:text-xl text-cream-200/90 leading-relaxed max-w-lg mb-3">
+              {isEs ? 'Cada pieza está aquí porque una mamá reciente o su bebé de verdad la van a usar y querer.' : <>Every item is chosen because a new mother or newborn will actually use and love it.</>}
             </p>
-            <p className="font-sans text-sm text-cream-100/50 tracking-wide">
+            {/* Kept for desktop, where there is room for it over the photo; on a
+                phone it pushed the CTA below the fold for no conversion gain. */}
+            <p className="hidden sm:block font-sans text-sm text-cream-100/50 tracking-wide">
               {isEs ? 'La sencillez no es un atajo. Es la decisión más difícil.' : <>Simplicity isn&apos;t a shortcut. It&apos;s the harder choice.</>}
             </p>
+            {/* Anchor, not a route: the builder IS this page, directly below. */}
+            <a
+              href="#builder"
+              className="mt-7 sm:mt-8 inline-flex items-center justify-center min-h-[48px] bg-[#7A8E7C] hover:bg-[#6d8070] text-white font-sans text-[11px] tracking-[0.25em] uppercase px-10 py-4 transition-colors"
+            >
+              {isEs ? 'Arma tu canastilla' : 'Build Your Box'}
+            </a>
           </div>
         </section>
 
-        <div className="w-full pt-12 pb-4 relative">
+        <div id="builder" className="w-full pt-12 pb-4 relative scroll-mt-24">
           <div className="relative z-10 space-y-8">
           {catalogLoading && activeCategories.length === 0 && (
             <div className="flex flex-col items-center justify-center py-24 gap-3">
