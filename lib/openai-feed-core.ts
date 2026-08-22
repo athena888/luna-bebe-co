@@ -152,10 +152,11 @@ export function buildRows(inputs: FeedInput[]): BuildResult {
       seller_name: FEED_SELLER,
       target_countries: FEED_COUNTRY,
       is_ads_eligible: 'true',
-      // Ads-only feed. The spec ties is_eligible_checkout to search (checkout
-      // requires search=true); both are false here, which is consistent — we
-      // are not enabling OpenAI search or checkout.
-      is_eligible_search: 'false',
+      // Search-eligible so the catalogue can surface in ChatGPT shopping, not
+      // only in paid placements. Checkout stays false: the spec allows
+      // search=true with checkout=false (checkout is what requires search),
+      // and we are not handing OpenAI the transaction.
+      is_eligible_search: 'true',
       is_eligible_checkout: 'false',
       condition: 'new',
       is_digital: 'false',

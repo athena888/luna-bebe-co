@@ -158,7 +158,10 @@ test('12. every emitted row carries every required Ads field', () => {
       assert.notEqual(row[field], '', `${field} is empty`)
     }
     assert.equal(row.is_ads_eligible, 'true')
-    assert.equal(row.is_eligible_search, 'false')
+    // Search-eligible: the catalogue may surface in ChatGPT shopping, not
+    // only in paid placements. Checkout stays false — the spec allows that
+    // pairing (checkout is what requires search), and we keep the transaction.
+    assert.equal(row.is_eligible_search, 'true')
     assert.equal(row.is_eligible_checkout, 'false')
   }
 })

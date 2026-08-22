@@ -1,4 +1,5 @@
 import { supabaseAdmin } from './supabase.ts'
+import { storeCheckoutEnabled } from './store-flags.ts'
 import { getCatalog, getProductStock, type DbProduct } from './products-db.ts'
 import { getBoxProducts, pieceCount } from './catalog-db.ts'
 import {
@@ -102,14 +103,24 @@ export async function collectFeedInputs(): Promise<FeedInput[]> {
         itemId: `box-${box.slug}--${variant.key}`,
         title: many ? `${box.name} — ${variant.label}` : box.name,
         // Describes exactly what the buyer receives; no added claims.
-        description: `${box.subtitle ? `${box.subtitle}. ` : ''}${pieces} hand-packed pieces: ${contents}. Personalized card included.`,
+        // box.subtitle is deliberately French on the site ("Notre boîte
+        // signature."), which opened every description on a target_countries=US
+        // feed in a language the buyer may not read. The French brand name
+        // still leads in `title` ("Mama et Bébé — Strawberry and Bunny"); the
+        // description itself is English.
+        description: `${pieces} hand-packed pieces: ${contents}. Personalized card included.`,
         url,
         imageUrl: images[0] ?? null,
         additionalImageUrls: images.slice(1, 11),
         priceCents: variant.price,
         salePriceCents: null,             // no sale mechanism exists in the store
-        availability: 'in_stock',         // boxes are assembled to order
-        productCategory: 'Baby & Toddler > Baby Gift Sets',
+        // Assembled to order, so components never gate a box — but the master
+        // checkout switch does. Advertising in_stock while checkout is closed
+        // sends paid traffic to a store that cannot take the order.
+        availability: storeCheckoutEnabled() ? 'in_stock' : 'out_of_stock',
+        productCategory: box.slug.includes('new-mom')
+          ? 'Health & Beauty > Personal Care'
+          : 'Baby & Toddler > Baby Gift Sets',
         groupId: many ? `box-${box.slug}` : null,
         variantLabel: many ? box.name : null,
         ageGroup: box.slug.includes('new-mom') ? 'adult' : 'newborn',
