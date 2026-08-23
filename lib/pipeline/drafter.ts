@@ -2,6 +2,7 @@ import { anthropic } from '../anthropic.ts'
 import { supabaseAdmin } from '../supabase.ts'
 import { getLookbookToggle, bumpDailyStats, pipelineEnabled, followupsEnabled } from './config.ts'
 import { getCurrentLookbook } from '../lookbook/current.ts'
+import { wordCount, linkCount } from './draft-rules.ts'
 
 // Stage 2 — drafter. For each discovered A/B prospect, assemble the email from
 // its category template. The ONLY AI-written text is the {{opening}} sentence
@@ -50,8 +51,9 @@ export function renderPipelineTemplate(
   return { ok: true, subject, body }
 }
 
-const wordCount = (s: string) => s.trim().split(/\s+/).filter(Boolean).length
-const linkCount = (s: string) => (s.match(/(?:https?:\/\/|www\.|petitelavande\.com)/gi) ?? []).length
+// Hard rules live in ./draft-rules.ts so they can be unit tested without
+// standing up a Supabase client.
+
 
 /** AI writes ONE opening sentence from the fit reason — or 'GENERIC' when thin. */
 async function draftOpening(p: { company: string; fit_reason: string | null; category: string | null }): Promise<string | null> {
