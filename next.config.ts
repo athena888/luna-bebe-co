@@ -27,6 +27,16 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 2678400, // 31 days
   },
+  // OpenAI Ads rejected the extensionless feed URL with "Unable to save the
+  // hosted URL". Its spec accepts .csv/.tsv/.txt (and gzip variants), so the
+  // fetcher appears to read the format from the path. This is an ALIAS, not a
+  // second feed: same route, same builder, so the two can never drift.
+  async rewrites() {
+    return [
+      { source: '/api/feeds/openai-products.csv', destination: '/api/feeds/openai-products' },
+    ]
+  },
+
   async redirects() {
     return [
       // Canonical host: everything on www permanently redirects to the bare
