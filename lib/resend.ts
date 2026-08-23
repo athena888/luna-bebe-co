@@ -1041,3 +1041,31 @@ export async function sendOrderConfirmationEmail({
     `,
   })
 }
+
+// Internal alert: the outreach machine hit its cumulative model-spend ceiling
+// and has stopped. Plain text, sent once per cap — see lib/outreach/api-ledger.
+export async function sendSpendCapEmail(spentUsd: number, capUsd = 30) {
+  const text = [
+    'The outreach machine has reached its spend cap and STOPPED making model calls.',
+    '',
+    `Spent to date:  $${spentUsd.toFixed(2)}`,
+    `Cap:            $${capUsd.toFixed(2)}`,
+    '',
+    'Nothing will be discovered, enriched, qualified or drafted until the cap is',
+    'raised. Sending of already-approved drafts is unaffected.',
+    '',
+    'Measured cost per result before this stopped: roughly $6.50 per draft that',
+    'reached Morning Review, driven by web-search input tokens rather than',
+    'reasoning. A contact database (Apollo) returns known-good addresses instead',
+    'of guessing them, which is the lever this pipeline does not have.',
+    '',
+    'To continue on models instead, raise SPEND_CAP_USD in',
+    'lib/outreach/api-ledger.ts and redeploy.',
+  ].join('\n')
+  return resend.emails.send({
+    from: FROM,
+    to: process.env.ADMIN_EMAIL || CONTACT_EMAIL,
+    subject: `Outreach stopped — $${capUsd.toFixed(2)} model spend cap reached`,
+    text,
+  })
+}
