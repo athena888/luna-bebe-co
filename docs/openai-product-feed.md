@@ -163,6 +163,30 @@ That separation is deliberate: editing a title, description, image or price in
 the Google feed puts those items back into Merchant Center review for up to
 three business days, so the OpenAI feed must never be able to trigger one.
 
+## Getting listed in ChatGPT shopping (search) — checked 2026-08-24
+
+Per <https://developers.openai.com/commerce/guides/get-started>, ChatGPT
+product listing is "currently available to approved partners" and OpenAI does
+**not** crawl a hosted feed URL. The sequence is:
+
+1. Apply at <https://chatgpt.com/merchants> (business name, site, catalog,
+   contact; say search-only — no Instant Checkout yet).
+2. Once approved, OpenAI provisions a **file upload** location (or the
+   Products API). Upload `petite-lavande-openai-products.csv` from
+   `npm run feed:openai`. Their guidance: "provide the entire feed once a day
+   via file upload" and overwrite the same file with each snapshot.
+3. Re-run the export and re-upload whenever prices, boxes or availability
+   change (at minimum whenever the Portal catalog changes).
+
+Column naming: the spec accepts both Google-style (`id`, `link`, `image_link`)
+and OpenAI canonical (`item_id`, `url`, `image_url`) headers and auto-detects
+them — this feed uses the canonical set and needs no renaming.
+
+`is_eligible_checkout` stays `false` until an Agentic Commerce Protocol
+checkout exists; enabling it also requires `seller_privacy_policy` and
+`seller_tos` columns. `seller_name` is overwritten by the registered merchant
+name on OpenAI's side.
+
 ## Connecting the feed in OpenAI Ads Manager
 
 Per <https://developers.openai.com/ads/product-feeds>, the Ads catalog transfer

@@ -102,13 +102,12 @@ export async function collectFeedInputs(): Promise<FeedInput[]> {
       inputs.push({
         itemId: `box-${box.slug}--${variant.key}`,
         title: many ? `${box.name} — ${variant.label}` : box.name,
-        // Describes exactly what the buyer receives; no added claims.
-        // box.subtitle is deliberately French on the site ("Notre boîte
-        // signature."), which opened every description on a target_countries=US
-        // feed in a language the buyer may not read. The French brand name
-        // still leads in `title` ("Mama et Bébé — Strawberry and Bunny"); the
-        // description itself is English.
-        description: `${pieces} hand-packed pieces: ${contents}. Personalized card included.`,
+        // Leads with what the shopper is searching for — organic, baby & mama,
+        // gift box (Emily 2026-08-24) — then exactly what the buyer receives;
+        // no added claims. box.subtitle is deliberately French on the site
+        // ("Notre boîte signature."), so it is not used here: the French brand
+        // name still leads in `title`, the description itself is English.
+        description: `${box.slug.includes('new-mom') ? 'Organic Mama Gift Box' : 'Organic Baby & Mama Gift Box'} — ${pieces} hand-packed pieces: ${contents}. Personalized card included.`,
         url,
         imageUrl: images[0] ?? null,
         additionalImageUrls: images.slice(1, 11),
