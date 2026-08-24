@@ -1,0 +1,41 @@
+{
+  "seeds": [
+    {"company":"Medbridge","domain":"medbridge.com","metro":"Seattle","industry":"tech","employee_est":200},
+    {"company":"HCMP (Hillis Clark Martin & Peterson)","domain":"hcmp.com","metro":"Seattle","industry":"law","employee_est":90},
+    {"company":"McNaul Ebel Nawrot & Helgren PLLC","domain":"mcnaul.com","metro":"Seattle","industry":"law","employee_est":60},
+    {"company":"Pivotal Commware","domain":"pivotalcommware.com","metro":"Seattle","industry":"tech","employee_est":54},
+    {"company":"Seattle Credit Union","domain":"seattlecu.com","metro":"Seattle","industry":"finance","employee_est":187},
+    {"company":"MSR Communities","domain":"msrcommunities.com","metro":"Seattle","industry":"real_estate","employee_est":60},
+    {"company":"AHBL","domain":"ahbl.com","metro":"Seattle","industry":"consulting","employee_est":130},
+    {"company":"Seed IP Law Group","domain":"seedip.com","metro":"Seattle","industry":"law","employee_est":50},
+    {"company":"Redmond Technology Partners","domain":"redtech.com","metro":"Seattle","industry":"tech","employee_est":50},
+    {"company":"Westlake Associates","domain":"westlakeassociates.com","metro":"Seattle","industry":"real_estate","employee_est":48},
+    {"company":"Rosen Harbottle Commercial Real Estate","domain":"rosenharbottle.com","metro":"Seattle","industry":"real_estate","employee_est":24},
+    {"company":"System Six","domain":"systemsix.com","metro":"Seattle","industry":"finance","employee_est":26},
+    {"company":"Verity Credit Union","domain":"veritycu.com","metro":"Seattle","industry":"finance","employee_est":138},
+    {"company":"ISOutsource","domain":"isoutsource.com","metro":"Seattle","industry":"consulting","employee_est":100},
+    {"company":"Beacon Trust","domain":"beacontrust.com","metro":"New York","industry":"finance","employee_est":51},
+    {"company":"Farrell Fritz","domain":"farrellfritz.com","metro":"New York","industry":"law","employee_est":201},
+    {"company":"Cullen and Dykman LLP","domain":"cullenllp.com","metro":"New York","industry":"law","employee_est":300},
+    {"company":"Keane & Beane P.C.","domain":"kblaw.com","metro":"New York","industry":"law","employee_est":65},
+    {"company":"Cyware","domain":"cyware.com","metro":"New York","industry":"tech","employee_est":250},
+    {"company":"NAI James E. Hanson","domain":"naihanson.com","metro":"New York","industry":"real_estate","employee_est":89},
+    {"company":"Connell Foley LLP","domain":"connellfoley.com","metro":"New York","industry":"law","employee_est":270},
+    {"company":"INVIDI Technologies","domain":"invidi.com","metro":"New York","industry":"tech","employee_est":198},
+    {"company":"SOSV","domain":"sosv.com","metro":"New York","industry":"finance","employee_est":320},
+    {"company":"The Blau & Berg Company","domain":"blauberg.com","metro":"New York","industry":"real_estate","employee_est":40}
+  ],
+  "leads": [
+    {"domain":"seedip.com","person_name":"Amy Strok","title":"Director of Human Resources","source_url":"https://www.seedip.com/attorneys/amy-strok","bio_url":"https://www.linkedin.com/in/amy-strok-shrm-cp-phr-5065657/"},
+    {"domain":"seattlecu.com","person_name":"Kelly Earnest","title":"Chief People Officer","source_url":"https://www.seattlecu.com/our-leadership/","bio_url":"https://www.linkedin.com/in/kelly-earnest-6264156/"},
+    {"domain":"westlakeassociates.com","person_name":"Jennifer Allen","title":"Executive Operations Manager","source_url":"https://theorg.com/org/westlake-associates-inc/org-chart/jennifer-allen"},
+    {"domain":"farrellfritz.com","person_name":"Elizabeth Knechtges","title":"Director of Administration","source_url":"https://www.linkedin.com/in/elizabeth-knechtges-35064825/"},
+    {"domain":"kblaw.com","person_name":"Barbara Durkin","title":"Office Manager","source_url":"https://www.kblaw.com/2025/06/05/keane-beane-office-manager-barbara-durkin-celebrates-her-45th-anniversary/","evidence_text":"Keane & Beane's Office Manager, Barbara Durkin, Celebrates Her 45th Anniversary!","evidence_url":"https://www.kblaw.com/2025/06/05/keane-beane-office-manager-barbara-durkin-celebrates-her-45th-anniversary/"},
+    {"domain":"cullenllp.com","person_name":"Adele Mauro","title":"Human Resources Manager","source_url":"https://www.linkedin.com/in/adele-mauro-7aaa77a/"},
+    {"domain":"connellfoley.com","person_name":"Brian Singleton","title":"Chief Operating Officer","source_url":"https://www.linkedin.com/in/brian-singleton-875330332/"},
+    {"domain":"ahbl.com","person_name":"Heather Perkins","title":"Director of Human Resources","source_url":"https://www.linkedin.com/in/heather-perkins-0904/"},
+    {"domain":"naihanson.com","person_name":"Tracy McCauley","title":"Director, Operations","source_url":"https://www.linkedin.com/in/tracy-mccauley-500b29102/"},
+    {"domain":"isoutsource.com","person_name":"Staci Botts","title":"Senior Director of People Experience","source_url":"https://www.linkedin.com/in/stacibotts/"},
+    {"domain":"pivotalcommware.com","person_name":"Lauren Brown","title":"Operations Manager","source_url":"https://www.linkedin.com/in/lauren-brown-b385931b8/"}
+  ]
+}
