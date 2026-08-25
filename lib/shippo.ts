@@ -1,3 +1,5 @@
+import { parcelFor } from '@/lib/packaging'
+
 const SHIPPO_API = 'https://api.goshippo.com'
 const SHIPPO_KEY = () => process.env.SHIPPO_API_KEY!
 
@@ -28,6 +30,8 @@ export async function createShippingLabel({
   toZip,
   toPhone,
   isPremium,
+  cartonId,
+  weightLb,
 }: {
   toName: string
   toStreet1: string
@@ -37,6 +41,10 @@ export async function createShippingLabel({
   toZip: string
   toPhone?: string
   isPremium: boolean
+  /** Which physical carton went out — see CARTONS in lib/packaging.ts. */
+  cartonId?: string
+  /** Declared weight in pounds, as weighed by the packer. */
+  weightLb?: number
 }): Promise<ShippoLabel> {
   // Safety guard: never buy a real (paid) label outside production.
   // A live token starts with "shippo_live_"; the test token starts with
@@ -62,6 +70,8 @@ export async function createShippingLabel({
     email: process.env.SHIPPO_FROM_EMAIL || 'hello@petitelavande.com',
   }
 
+  const parcel = parcelFor(cartonId, weightLb)
+
   // Create shipment
   const shipmentRes = await shippoFetch('/shipments/', {
     address_from: fromAddress,
@@ -75,12 +85,15 @@ export async function createShippingLabel({
       country: 'US',
       phone: toPhone || '',
     },
+    // USPS bills on the greater of DECLARED and actual weight, so the number
+    // the packer weighed wins over any per-carton assumption. Under-declaring
+    // invites a postage-due adjustment weeks after the parcel has gone.
     parcels: [{
-      length: '12',
-      width: '10',
-      height: '6',
+      length: parcel.length,
+      width: parcel.width,
+      height: parcel.height,
       distance_unit: 'in',
-      weight: '3',
+      weight: parcel.weightLb,
       mass_unit: 'lb',
     }],
     async: false,

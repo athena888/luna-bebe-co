@@ -494,9 +494,11 @@ export default function BuildClient({ initialCatalog }: { initialCatalog?: Recor
               the new CTA invisible (and so untappable-looking) for 1.4s on the
               slowest devices. Desktop keeps it; phones render immediately. */}
           <div className="relative z-10 w-full px-8 sm:px-14 pb-16 sm:pb-28 max-w-3xl sm:[animation:slideUp_1.4s_cubic-bezier(0.22,1,0.36,1)_both]">
-            <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-cream-200/60 mb-5">{isEs ? 'Arma tu canastilla' : 'Build Your Box'}</p>
+            {/* "We don't add what doesn't belong." was removed 2026-08-24, so
+                "Build Your Box" moves up out of the 11px eyebrow into the h1 it
+                left behind — the page keeps exactly one heading, at hero size. */}
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-cream-50 leading-[1.05] mb-6">
-              {isEs ? 'No agregamos lo que no pertenece.' : <>We don&apos;t add what doesn&apos;t belong.</>}
+              {isEs ? 'Arma tu canastilla' : 'Build Your Box'}
             </h1>
             <p className="font-serif italic text-lg sm:text-xl text-cream-200/90 leading-relaxed max-w-lg mb-3">
               {isEs ? 'Cada pieza está aquí porque una mamá reciente o su bebé de verdad la van a usar y querer.' : <>Every item is chosen because a new mother or newborn will actually use and love it.</>}

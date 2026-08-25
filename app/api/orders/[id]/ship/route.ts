@@ -1,14 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { CARTON_IDS } from '@/lib/packaging'
 import { createShippingLabel } from '@/lib/shippo'
 import { sendShippingNotificationEmail } from '@/lib/resend'
 import type { Order } from '@/types'
 
 export async function POST(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
+
+  // The portal sends the carton the box actually went into and its weighed
+  // pounds. Anything unrecognised is ignored rather than rejected: a label is
+  // still better bought at the defaults than not bought at all. 70 lb is the
+  // USPS domestic ceiling.
+  let cartonId: string | undefined
+  let weightLb: number | undefined
+  try {
+    const body = await req.json()
+    if (body && typeof body === 'object') {
+      if (typeof body.cartonId === 'string' && CARTON_IDS.includes(body.cartonId)) cartonId = body.cartonId
+      const w = Number(body.weightLb)
+      if (Number.isFinite(w) && w > 0 && w <= 70) weightLb = w
+    }
+  } catch { /* no body — the defaults in lib/packaging.ts apply */ }
 
   const { data, error } = await supabaseAdmin
     .from('orders')
@@ -38,6 +54,8 @@ export async function POST(
       toZip: addr.zip,
       toPhone: addr.phone,
       isPremium: order.shipping_type === 'premium',
+      cartonId,
+      weightLb,
     })
   } catch (err) {
     console.error('Shippo label error:', err)

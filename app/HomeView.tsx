@@ -65,9 +65,7 @@ async function getCollectionsData(locale: 'en' | 'es' = 'en') {
 // Sections whose text lives in the DB fall back to English until their
 // translations are seeded — identical layout either way.
 const ES: Record<string, string> = {
-  'hero.h1a': 'Vemos a la mamá,',
-  'hero.h1b': 'no solo al bebé.',
-  'hero.sub': 'La canastilla de baby shower que cuida al bebé — y honra a mamá.',  // pending native review ('honra a mamá'); 'baby shower' stays in English per es-US glossary
+  'hero.sub': 'Canastillas de baby shower orgánicas de lujo — para mamá y bebé',  // 'baby shower' stays in English per es-US glossary
   'hero.cta': 'Ver las canastillas',
   'cat.eyebrow': 'Sets curados para cada nuevo comienzo — o arma la tuya desde cero.',
   'cat.title': 'Compra por categoría',
@@ -101,12 +99,13 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
           {/* pt reserves a safe zone for the overlaid header so the copy never rides under it */}
           <div className="relative z-10 w-full min-h-[85vh] sm:min-h-[92vh] px-6 sm:px-12 pt-36 sm:pt-44 pb-10 sm:pb-14 flex flex-col justify-end items-end">
             <div className="hero-rise w-full max-w-[320px] sm:max-w-md text-right" style={{ animationDelay: '0.35s' }}>
-              <h1 className="font-serif text-[1.75rem] sm:text-[2.4rem] text-cream-50 leading-[1.1] mb-3">
-                {s('hero.h1a', 'We see the mother,')}<br />{s('hero.h1b', 'not just the baby.')}
+              {/* The tagline IS the h1 now. The "We see the mother" headline was
+                  removed 2026-08-24; leaving the hero with no h1 at all would cost
+                  the homepage its strongest on-page keyword signal. Visual weight
+                  is unchanged — only the tag differs. */}
+              <h1 className="font-serif text-cream-200/90 text-base sm:text-xl leading-relaxed mb-6">
+                {s('hero.sub', 'Luxury organic baby shower gift boxes — For mama and baby')}
               </h1>
-              <p className="font-serif text-cream-200/90 text-base sm:text-xl leading-relaxed mb-6">
-                {s('hero.sub', 'Luxury organic baby shower gift boxes — hand-packed and delivered with love.')}
-              </p>
               <Link
                 href={isEs ? '/es/canastillas' : '/boxes'}
                 className="inline-block bg-[#7A8E7C] text-white font-serif text-base sm:text-lg tracking-[0.06em] uppercase px-9 py-3 hover:bg-[#6d8070] transition-colors"
