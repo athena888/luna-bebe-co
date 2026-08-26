@@ -12,6 +12,7 @@
 // composed deterministically from stored evidence (see ./opening.ts).
 
 import { supabaseAdmin } from '../supabase.ts'
+import { followupsSafe } from './followup-gate.ts'
 import { getConfig, pipelineEnabled } from '../pipeline/config.ts'
 import { SEGMENTS, type Segment } from './icp.ts'
 import {
@@ -210,10 +211,16 @@ export async function runDrafterV3(opts: { dry?: boolean; limit?: number } = {})
   }
 
   // ── Follow-ups ─────────────────────────────────────────────────────────────
+  // The flags say what we want; the gate says whether reply detection is
+  // actually working. A follow-up sent while replies are invisible chases
+  // people who already answered, so both must agree. Once gmail.readonly is
+  // granted and the nightly sync logs a clean run, this opens on its own.
+  const followupGate = await followupsSafe()
+  if (!followupGate.safe) console.warn('follow-ups held:', followupGate.reason)
   stats.followupsDrafted = await draftFollowups({
     dry,
-    step1: flags?.followup_1_enabled === true,
-    step2: flags?.followup_2_enabled === true,
+    step1: followupGate.safe && flags?.followup_1_enabled === true,
+    step2: followupGate.safe && flags?.followup_2_enabled === true,
   })
 
   return stats

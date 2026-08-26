@@ -1,6 +1,7 @@
 import { anthropic } from '../anthropic.ts'
 import { supabaseAdmin } from '../supabase.ts'
 import { getLookbookToggle, bumpDailyStats, pipelineEnabled, followupsEnabled } from './config.ts'
+import { followupsSafe } from '../outreach/followup-gate.ts'
 import { getCurrentLookbook } from '../lookbook/current.ts'
 import { wordCount, linkCount } from './draft-rules.ts'
 
@@ -144,11 +145,20 @@ export async function runDrafter(opts: { dry?: boolean; timeBudgetMs?: number } 
 const PRESS_FOLLOWUP_AFTER_DAYS = 7   // press waits a little longer (7–10 day window)
 
 export async function draftFollowups(templates: PipelineTemplate[], dry: boolean, deadline: number): Promise<number> {
-  // DISABLED (Emily 2026-08-17): no automated follow-ups. Gated here rather
-  // than at the call sites so BOTH drafters (v1 runDrafter and
-  // lib/outreach/drafter-v2) are covered by the one switch. Re-enable by
-  // setting outreach_config.followups_enabled = true.
+  // TWO gates, ANDed. Placed here rather than at the call sites so BOTH
+  // drafters (v1 runDrafter and lib/outreach/drafter-v2) are covered.
+  //
+  //  1. followups_enabled — the intent switch.
+  //  2. followupsSafe()   — evidence that reply detection is actually running.
+  //     Chasing somebody who already answered is the fastest way to earn a
+  //     spam complaint, so follow-ups hold whenever replies would be invisible
+  //     and resume by themselves once the nightly sync is healthy again.
   if (!(await followupsEnabled())) return 0
+  const gate = await followupsSafe()
+  if (!gate.safe) {
+    console.warn('follow-ups held:', gate.reason)
+    return 0
+  }
   const tpl = templates.find(t => t.key === 'followup')
   const pressTpl = templates.find(t => t.key === 'press-followup')
   if (!tpl && !pressTpl) return 0
