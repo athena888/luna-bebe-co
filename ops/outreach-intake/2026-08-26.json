@@ -1,0 +1,29 @@
+{
+  "seeds": [
+    {"company": "Lasher Holzapfel Sperry & Ebberson", "domain": "lasher.com", "metro": "Seattle", "industry": "law", "employee_est": 65},
+    {"company": "Aspect Consulting", "domain": "aspectconsulting.com", "metro": "Seattle", "industry": "consulting", "employee_est": 100},
+    {"company": "Flyhomes", "domain": "flyhomes.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 350},
+    {"company": "Christensen O'Connor Johnson Kindness", "domain": "cojk.com", "metro": "Seattle", "industry": "law", "employee_est": 90},
+    {"company": "DreamBox Learning", "domain": "dreambox.com", "metro": "Seattle", "industry": "tech", "employee_est": 286},
+    {"company": "Intellectual Ventures", "domain": "intellectualventures.com", "metro": "Seattle", "industry": "law", "employee_est": 280},
+    {"company": "Parallels", "domain": "parallels.com", "metro": "Seattle", "industry": "tech", "employee_est": 350},
+    {"company": "Coblentz Patch Duffy & Bass", "domain": "coblentzlaw.com", "metro": "San Francisco", "industry": "law", "employee_est": 180},
+    {"company": "Hanson Bridgett", "domain": "hansonbridgett.com", "metro": "San Francisco", "industry": "law", "employee_est": 390},
+    {"company": "Farella Braun + Martel", "domain": "fbm.com", "metro": "San Francisco", "industry": "law", "employee_est": 250},
+    {"company": "Sideman & Bancroft", "domain": "sideman.com", "metro": "San Francisco", "industry": "law", "employee_est": 90},
+    {"company": "Bailard", "domain": "bailard.com", "metro": "San Francisco", "industry": "finance", "employee_est": 90},
+    {"company": "TMG Partners", "domain": "tmgpartners.com", "metro": "San Francisco", "industry": "real_estate", "employee_est": 56},
+    {"company": "Findem", "domain": "findem.ai", "metro": "San Francisco", "industry": "tech", "employee_est": 224},
+    {"company": "Qatalyst Partners", "domain": "qatalyst.com", "metro": "San Francisco", "industry": "finance", "employee_est": 80}
+  ],
+  "leads": [
+    {"domain": "dreambox.com", "person_name": "Chelsea Giusti", "title": "Sr. Manager, Human Resources", "source_url": "https://www.comparably.com/companies/dreambox-learning/chelsea-giusti", "bio_url": "https://www.comparably.com/companies/dreambox-learning/chelsea-giusti"},
+    {"domain": "coblentzlaw.com", "person_name": "Chris Boyd", "title": "Chief Operating Officer", "source_url": "https://www.coblentzlaw.com/news/coblentz-patch-duffy-bass-llp-ceo-retiring-new-chief-operating-officer-joining/", "bio_url": "https://www.coblentzlaw.com/chris-boyd/"},
+    {"domain": "hansonbridgett.com", "person_name": "Jeremy Strauss", "title": "Chief Human Resources Officer", "source_url": "https://www.hansonbridgett.com/press-release/hanson-bridgett-welcomes-jeremy-strauss-new-chief-human-resources-officer", "bio_url": "https://www.hansonbridgett.com/people/jeremy-strauss"},
+    {"domain": "cojk.com", "person_name": "Cynthia Elliott", "title": "Staff Administrator and Human Resources Manager", "source_url": "https://www.zoominfo.com/p/Cynthia-Elliott/36519087", "bio_url": "https://www.zoominfo.com/p/Cynthia-Elliott/36519087"},
+    {"domain": "parallels.com", "person_name": "Iryna Wigley", "title": "Senior Vice President of Global HR", "source_url": "https://www.linkedin.com/in/iryna-wigley-03a481141/", "bio_url": "https://www.linkedin.com/in/iryna-wigley-03a481141/"},
+    {"domain": "flyhomes.com", "person_name": "Marli Tarbaux", "title": "VP of People & Culture", "source_url": "https://www.linkedin.com/in/marliwalker/", "bio_url": "https://www.linkedin.com/in/marliwalker/"},
+    {"domain": "tmgpartners.com", "person_name": "Lynn Tolin", "title": "Executive Vice President & Chief Operating Officer", "source_url": "https://www.tmgpartners.com/about/partners/lynn-tolin", "bio_url": "https://www.tmgpartners.com/about/partners/lynn-tolin"},
+    {"domain": "aspectconsulting.com", "person_name": "Lindsay Pearsall", "title": "Director of Human Resources", "source_url": "https://wiza.co/d/aspect-consulting-llc/bf72/lindsay-pearsall", "bio_url": "https://wiza.co/d/aspect-consulting-llc/bf72/lindsay-pearsall"}
+  ]
+}
