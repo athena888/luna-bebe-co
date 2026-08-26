@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { FOUNDING_CODE, foundingSalePrice } from '@/lib/promo'
+import { foundingPromoState } from '@/lib/promo-state'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
 import { BOX_BASE_PRICE, SHIPPING, freeShippingApplies, sameDayEligible } from '@/lib/products'
@@ -29,6 +31,7 @@ export async function POST(req: NextRequest) {
       occasionLabel,
       locale: uiLocale,
       totalAmount,
+      attributionCode,
       promoId,
       preferredAssemblyImage,
       preferredAssemblyStyle,
@@ -61,6 +64,7 @@ export async function POST(req: NextRequest) {
       occasionLabel?: string
       locale?: string
       totalAmount: number
+      attributionCode?: string
       promoId?: string
       preferredAssemblyImage?: string
       preferredAssemblyStyle?: string
@@ -128,6 +132,11 @@ export async function POST(req: NextRequest) {
         const matches = wanted.size === inCart.size
           && [...wanted].every(([id, qty]) => inCart.get(id) === qty)
         if (matches) {
+          // Founding Families: the customer is charged the same sale price the
+          // product page and the Merchant feed advertise. Server-side, so a
+          // client that posts a stale price cannot pick its own discount.
+          const promo = await foundingPromoState()
+          const boxUnitAmount = (promo.active ? foundingSalePrice(variant.price) : null) ?? variant.price
           itemLineItems = [{
             price_data: {
               currency: stripeCurrency,
@@ -135,7 +144,7 @@ export async function POST(req: NextRequest) {
                 name: `${box.name}${box.variants.length > 1 ? ` — ${variant.label}` : ''}`,
                 description: `${variant.contents.map(c => c.item.name).join(', ')} — hand-packed, ribbon-tied, with your personalized card`,
               },
-              unit_amount: variant.price,
+              unit_amount: boxUnitAmount,
             },
             quantity: 1,
           }]
@@ -145,6 +154,13 @@ export async function POST(req: NextRequest) {
 
     // Honor the free-shipping bar the cart drawer shows: standard shipping is
     // free once box base + items reach FREE_SHIPPING_THRESHOLD (USD only).
+    // Only FOUNDING30 is accepted here, and only as a label: it never alters
+    // the amount charged. Anything else the shopper typed came through the
+    // normal Stripe promotion path and is already reflected in promoId.
+    const promoCodeUsed = (attributionCode ?? "").trim().toUpperCase() === FOUNDING_CODE
+      ? FOUNDING_CODE
+      : null
+
     const merchandiseTotal = boxBase + itemLineItems.reduce((s, li) => s + li.price_data.unit_amount * li.quantity, 0)
     const shipFree = freeShippingApplies(merchandiseTotal, shippingType, currency)
     if (shipFree) shipAmount = 0
@@ -211,6 +227,8 @@ export async function POST(req: NextRequest) {
         utm_medium:   utmMedium   || null,
         utm_campaign: utmCampaign || null,
         utm_content:  utmContent  || null,
+        // Attribution for the IG/RedNote push. Null unless the shopper typed it.
+        promo_code: promoCodeUsed,
       })
       .select()
       .single()

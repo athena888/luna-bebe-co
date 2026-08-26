@@ -2,6 +2,8 @@ import { buildFeed, FEED_BRAND, type FeedItem } from './google-feed.ts'
 import { supabaseAdmin } from './supabase.ts'
 import { getBoxProducts, pieceCount } from './catalog-db.ts'
 import { scrubGots, scrubHardship } from './feed-copy.ts'
+import { foundingSalePrice, saleEffectiveDate } from './promo.ts'
+import { foundingPromoState } from './promo-state.ts'
 
 // Google Merchant TSV feed (/product-feed.tsv) — built ON TOP of the XML
 // feed's buildFeed(), so price and availability can never disagree with the
@@ -101,10 +103,20 @@ const HEADER = [
   'condition', 'brand', 'identifier_exists', 'google_product_category',
   'age_group', 'gender', 'item_group_id', 'product_type', 'custom_label_0',
   'sale_price', 'color', 'size', 'custom_label_1', 'excluded_destination',
+  // Appended for the Founding Families promo. Google pairs sale_price with
+  // this window; without it a sale_price is honoured indefinitely.
+  'sale_price_effective_date',
 ]
 
 export async function buildProductTsv(): Promise<string> {
   const { items } = await buildFeed()
+
+  // One decision for the whole file: if the promo is off (sold out, outside
+  // its window, killed by env, or the count is unknown) every row ships at
+  // regular price. Resolving it once means rows cannot disagree with each
+  // other mid-build.
+  const promo = await foundingPromoState()
+  const saleWindow = saleEffectiveDate()
 
   const { data: variantRows } = await supabaseAdmin
     .from('product_variants')
@@ -159,7 +171,7 @@ export async function buildProductTsv(): Promise<string> {
           base.condition, base.brand, base.identifier_exists, base.google_product_category,
           base.age_group, g, item.id, base.product_type, base.custom_label_0, base.sale_price,
           titleCase(clean(v.color)), feedSize(v.size),
-          base.custom_label_1, base.excluded_destination,
+          base.custom_label_1, base.excluded_destination, '',   // single items are never on promo
         ].join('\t'))
       })
     } else {
@@ -170,7 +182,7 @@ export async function buildProductTsv(): Promise<string> {
         base.google_product_category, base.age_group, gender(item.title), '',
         base.product_type, base.custom_label_0, base.sale_price,
         titleCase(clean(only?.color || nameColor)), only ? feedSize(only.size) : '',
-        base.custom_label_1, base.excluded_destination,
+        base.custom_label_1, base.excluded_destination, '',   // single items are never on promo
       ].join('\t'))
     }
   }
@@ -199,6 +211,9 @@ export async function buildProductTsv(): Promise<string> {
         ? `${HOST}/boxes/${b.slug}?${b.variantParam}=${encodeURIComponent(v.key)}`
         : `${HOST}/boxes/${b.slug}`
       const pieces = pieceCount(v)
+      // Boxes only, and only at the four founding tiers — foundingSalePrice
+      // returns null for any other price, so nothing else can slip onto sale.
+      const sale = promo.active ? foundingSalePrice(v.price) : null
       lines.push([
         `box-${b.slug}--${v.key}`,
         scrubHardship(clean(`${pieces}-Piece ${kw} – Hand-Packed & Personalized – ${b.name}`)).slice(0, 150),
@@ -206,9 +221,11 @@ export async function buildProductTsv(): Promise<string> {
         link, v.images[0] ?? '', `${(v.price / 100).toFixed(2)} USD`,
         'in_stock', 'new', FEED_BRAND, 'false', '5859',
         b.slug === 'new-mom-gift-box' ? '' : 'newborn', g,
-        many ? `box-${b.slug}` : '', 'Baby Gifts > Gift Boxes', 'box', '',
+        many ? `box-${b.slug}` : '', 'Baby Gifts > Gift Boxes', 'box',
+        sale ? `${(sale / 100).toFixed(2)} USD` : '',
         '', '',
         tier(v.price / 100), '',   // custom_label_1 = tier; boxes keep full ad eligibility
+        sale ? saleWindow : '',
       ].join('\t'))
     }
   }

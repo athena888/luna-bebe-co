@@ -18,6 +18,9 @@ import { SPANISH_ACTIVE, getTranslations } from '@/lib/i18n'
 import { localePath } from '@/lib/locale-routes'
 import { getBoxProduct, getItemSizeOptions, pieceCount, piecesPerItem, priceRange } from '@/lib/catalog-db'
 import { CATEGORY_LABELS, CATEGORY_LABELS_ES, formatDollars } from '@/lib/products'
+import { SalePrice } from '@/components/ui/SalePrice'
+import { foundingSalePrice, priceValidUntil } from '@/lib/promo'
+import { foundingPromoState } from '@/lib/promo-state'
 
 // Phase 3 box product page — one data-driven template for every parent
 // product. Variants live in a query param (?tier=/?theme=); canonical strips
@@ -115,6 +118,17 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
   const requested = typeof sp[box.variantParam] === 'string' ? sp[box.variantParam] as string : ''
   const variant = box.variants.find(v => v.key === requested) ?? box.variants[0]
   const { low, high } = priceRange(box)
+
+  // Founding Families. Resolved once here and threaded down, so the visible
+  // price, the JSON-LD offer and the price handed to the cart are the same
+  // number by construction — Merchant Center disapproves a landing page whose
+  // price disagrees with the feed, and three independent lookups is how that
+  // disagreement happens.
+  const promo = await foundingPromoState()
+  const salePrice = promo.active ? foundingSalePrice(variant.price) : null
+  const saleLow = promo.active ? (foundingSalePrice(low) ?? low) : low
+  const saleHigh = promo.active ? (foundingSalePrice(high) ?? high) : high
+  const onSale = saleLow !== low || saleHigh !== high
   // Locale-aware: the Spanish page used to advertise the English URL in its
   // Product offer and its breadcrumbs, which invites Google to treat /es/ as a
   // duplicate of /boxes/ rather than its own indexable page.
@@ -175,12 +189,15 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
         brand: { '@type': 'Brand', name: 'Petite Lavande' },
         sku: box.slug,
         mpn: box.slug,
+        // The sale price IS the price for structured data — Google compares
+        // this against the feed's sale_price, and priceValidUntil must match
+        // the feed's sale_price_effective_date end.
         offers: low === high
-          ? { '@type': 'Offer', price: (low / 100).toFixed(2), priceCurrency: 'USD', url, availability: 'https://schema.org/InStock' }
+          ? { '@type': 'Offer', price: (saleLow / 100).toFixed(2), priceCurrency: 'USD', url, availability: 'https://schema.org/InStock', ...(onSale ? { priceValidUntil: priceValidUntil() } : {}) }
           // availability belongs on BOTH shapes: without it Google reads a
           // multi-variant box as having unknown stock, and the merchant feed
           // says in_stock for the same offer — a mismatch it can flag.
-          : { '@type': 'AggregateOffer', lowPrice: (low / 100).toFixed(2), highPrice: (high / 100).toFixed(2), priceCurrency: 'USD', offerCount: box.variants.length, url, availability: 'https://schema.org/InStock' },
+          : { '@type': 'AggregateOffer', lowPrice: (saleLow / 100).toFixed(2), highPrice: (saleHigh / 100).toFixed(2), priceCurrency: 'USD', offerCount: box.variants.length, url, availability: 'https://schema.org/InStock', ...(onSale ? { priceValidUntil: priceValidUntil() } : {}) },
         ...reviewLd,
       }} />
       <JsonLd data={{
@@ -217,7 +234,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
               <p className="font-sans text-[13px] tracking-[0.08em] text-bark-500 mt-2">
                 {pieceCount(variant)} {isEs ? 'piezas, empacadas a mano' : 'pieces, hand-packed'}
               </p>
-              <p className="font-sans text-2xl text-espresso mt-4">{formatDollars(variant.price)}</p>
+              <SalePrice price={salePrice ?? variant.price} salePrice={salePrice} locale={isEs ? 'es' : 'en'} className="mt-4" />
 
               {box.variants.length > 1 && (
                 <div className="mt-6">
@@ -228,7 +245,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                     variants={box.variants.map(v => ({
                       key: v.key,
                       label: v.label,
-                      text: `${v.label} · ${formatDollars(v.price)}`,
+                      text: `${v.label} · ${formatDollars((promo.active ? foundingSalePrice(v.price) : null) ?? v.price)}`,
                       image: v.images[0] ?? null,
                       href: `${isEs ? '/es/canastillas' : '/boxes'}/${box.slug}?${box.variantParam}=${encodeURIComponent(v.key)}`,
                     }))}
@@ -315,13 +332,13 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
               <TrackViewItem
                 id={`box-${box.slug}--${variant.key}`}
                 name={box.variants.length > 1 ? `${box.name} — ${variant.label}` : box.name}
-                price={variant.price}
+                price={salePrice ?? variant.price}
                 category="Gift Box"
               />
 
               <BoxBuyPanel
                 contents={variant.contents.map(c => ({ item: c.item, qty: c.qty, colorChoice: c.colorChoice }))}
-                price={variant.price}
+                price={salePrice ?? variant.price}
                 boxName={box.name}
                 boxSlug={box.slug}
                 variantKey={variant.key}

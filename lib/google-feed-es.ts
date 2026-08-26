@@ -1,6 +1,8 @@
 import { getBoxProducts, pieceCount } from './catalog-db.ts'
 import { getTranslations } from './i18n.ts'
 import { FEED_BRAND } from './google-feed.ts'
+import { foundingSalePrice, saleEffectiveDate } from './promo.ts'
+import { foundingPromoState } from './promo-state.ts'
 
 // Spanish (es-US) Google Merchant feed — a SEPARATE primary feed for the same
 // merchant (5829406914), targeting US / Spanish.
@@ -55,6 +57,7 @@ export const ES_HEADER = [
   'condition', 'brand', 'identifier_exists', 'google_product_category',
   'age_group', 'gender', 'item_group_id', 'product_type',
   'content_language', 'target_country', 'custom_label_0', 'custom_label_1',
+  'sale_price', 'sale_price_effective_date',
 ] as const
 
 const clean = (s: string) => s.replace(/[\t\n\r]+/g, ' ').replace(/\s{2,}/g, ' ').trim()
@@ -87,6 +90,11 @@ export async function buildEsFeedRows(): Promise<EsFeedResult> {
   if (!boxes.length) return { rows, skipped }
 
   // One round trip per entity type rather than per product.
+  // Same promo decision as the English feed, from the same module, so the two
+  // feeds can never advertise different prices for the same box.
+  const promo = await foundingPromoState()
+  const saleWindow = saleEffectiveDate()
+
   const boxEs = await getTranslations('catalog_product', boxes.map(b => b.slug))
   const variantIds = boxes.flatMap(b => b.variants.map(v => `${b.slug}:${v.key}`))
   const variantEs = await getTranslations('catalog_variant', variantIds)
@@ -120,6 +128,9 @@ export async function buildEsFeedRows(): Promise<EsFeedResult> {
         .join(', ')
 
       const pieces = pieceCount(v)
+      // Boxes only, and only at the four founding tiers — the same call the
+      // English feed makes, so the two can never disagree on a price.
+      const sale = promo.active ? foundingSalePrice(v.price) : null
       const link = many
         ? `${HOST}/es/canastillas/${b.slug}?${b.variantParam}=${encodeURIComponent(v.key)}`
         : `${HOST}/es/canastillas/${b.slug}`
@@ -148,6 +159,8 @@ export async function buildEsFeedRows(): Promise<EsFeedResult> {
         target_country: ES_TARGET_COUNTRY,
         custom_label_0: 'box',
         custom_label_1: tier(v.price / 100),
+        sale_price: sale ? `${(sale / 100).toFixed(2)} USD` : '',
+        sale_price_effective_date: sale ? saleWindow : '',
       })
     }
   }

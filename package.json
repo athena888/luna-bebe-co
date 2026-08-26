@@ -14,7 +14,8 @@
     "feed:openai": "node scripts/openai-feed-export.mjs",
     "check:nav": "node scripts/check-nav.mjs",
     "check:copy": "node scripts/check-product-copy.mjs",
-    "feed:es:verify": "node scripts/merchant-feed-es-verify.mjs"
+    "feed:es:verify": "node scripts/merchant-feed-es-verify.mjs",
+    "promo:check": "node scripts/promo-price-consistency.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.96.0",

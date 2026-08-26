@@ -38,6 +38,11 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
   // linking to /boxes/[slug]. Empty until §46 runs + seeds — the legacy
   // prebuilt grid keeps the page alive either way.
   const { getBoxProducts, priceRange } = await import('@/lib/catalog-db')
+  const { foundingSalePrice } = await import('@/lib/promo')
+  const { foundingPromoState } = await import('@/lib/promo-state')
+  const { FOUNDING_BADGE } = await import('@/lib/promo')
+  // One promo lookup for the whole grid rather than one per card.
+  const promoState = await foundingPromoState()
   // Kept OFF the hub (Emily 2026-08-17), same reasoning as the nav exclusion in
   // components/layout/Header.tsx: the fixed-price starter box exists so Google
   // Shopping has something to list (the /build configurator has no single price
@@ -70,6 +75,9 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
               {catalogProducts.map(p => {
                 const { low, high } = priceRange(p)
+                const saleLow = promoState.active ? (foundingSalePrice(low) ?? low) : low
+                const saleHigh = promoState.active ? (foundingSalePrice(high) ?? high) : high
+                const cardOnSale = saleLow !== low || saleHigh !== high
                 const cover = ((p.story as { hub_image?: string })?.hub_image) || p.variants[0]?.images[0]
                 return (
                   <Link key={p.slug} href={`${isEs ? '/es/canastillas' : '/boxes'}/${p.slug}`} className="group block border border-cream-300 hover:border-bark-400 transition-colors">
@@ -80,8 +88,18 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
                       <div className="absolute inset-x-0 bottom-0 pt-14 pb-5 px-5" style={{ backgroundImage: `linear-gradient(to top, ${rgba(1)}, ${rgba(0.72)}, transparent)` }}>
                         <h2 className="font-serif text-2xl text-espresso group-hover:text-bark-600">{p.name}</h2>
                         <p className="font-sans text-sm text-bark-600 mt-1">
-                          {low === high ? `$${low / 100}` : `$${low / 100} – $${high / 100}`}
+                          {cardOnSale ? (
+                            <>
+                              <span>{saleLow === saleHigh ? `$${saleLow / 100}` : `$${saleLow / 100} – $${saleHigh / 100}`}</span>{' '}
+                              <span className="line-through text-bark-400">{low === high ? `$${low / 100}` : `$${low / 100} – $${high / 100}`}</span>
+                            </>
+                          ) : (low === high ? `$${low / 100}` : `$${low / 100} – $${high / 100}`)}
                         </p>
+                        {cardOnSale && (
+                          <p className="font-sans text-[9px] tracking-[0.14em] uppercase text-[#7A8E7C] mt-1">
+                            {FOUNDING_BADGE[isEs ? 'es' : 'en']}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </Link>
