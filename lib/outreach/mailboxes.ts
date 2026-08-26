@@ -27,6 +27,11 @@ export interface SendLimits {
   total: number
   minDelayMs: number
   maxDelayMs: number
+  /** Max sends per invocation. 0 = unlimited (in-process pacing applies).
+   *  Set to 1 when an EXTERNAL scheduler provides the spacing: a serverless
+   *  function cannot sleep 6-10 minutes inside a 300s limit, so it would be
+   *  killed mid-sleep after a single send. */
+  maxPerRun: number
 }
 
 /** Usage for one PT day, keyed by lowercase mailbox address. */
@@ -66,7 +71,8 @@ export function loadLimits(env: NodeJS.ProcessEnv = process.env): SendLimits {
   const total = num(env.EMAIL_TOTAL_DAILY_LIMIT, 100)
   const minDelayMs = num(env.EMAIL_MIN_DELAY_SECONDS, 360) * 1000
   const maxDelayMs = num(env.EMAIL_MAX_DELAY_SECONDS, 600) * 1000
-  return { perMailbox, total, minDelayMs, maxDelayMs: Math.max(minDelayMs, maxDelayMs) }
+  const maxPerRun = Number(env.EMAIL_MAX_PER_RUN) > 0 ? Math.floor(Number(env.EMAIL_MAX_PER_RUN)) : 0
+  return { perMailbox, total, minDelayMs, maxDelayMs: Math.max(minDelayMs, maxDelayMs), maxPerRun }
 }
 
 /** EMAIL_DRY_RUN=true → run every decision, call no send API. */

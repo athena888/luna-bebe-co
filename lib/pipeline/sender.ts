@@ -308,6 +308,11 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
       await supabaseAdmin.from('sends').update({ status: 'failed' }).eq('id', r.id)
       stats.failed++
     }
+    // Externally paced? Stop after the allotted sends and return promptly.
+    // The scheduler supplies the gap, so sleeping here would only burn the
+    // function until its 300s ceiling killed it mid-sleep.
+    if (limits.maxPerRun && stats.sent >= limits.maxPerRun) break
+
     // Human pacing: 6-10 minutes between sends by default, randomised.
     // jitterMs()'s 4-12 SECONDS was burst speed for a cold campaign.
     if (i < rows.length - 1) await sleep(pacingDelayMs(limits))

@@ -15,7 +15,7 @@ import {
 const A: Mailbox = { slot: 1, email: 'a@petitelavande.com' }
 const B: Mailbox = { slot: 2, email: 'b@petitelavande.com' }
 const BOXES = [A, B]
-const LIMITS: SendLimits = { perMailbox: 50, total: 100, minDelayMs: 360_000, maxDelayMs: 600_000 }
+const LIMITS: SendLimits = { perMailbox: 50, total: 100, minDelayMs: 360_000, maxDelayMs: 600_000, maxPerRun: 0 }
 
 // ── Configuration ───────────────────────────────────────────────────────────
 
@@ -157,6 +157,13 @@ test('pacing stays inside the configured window', () => {
     const d = pacingDelayMs(LIMITS)
     assert.ok(d >= LIMITS.minDelayMs && d <= LIMITS.maxDelayMs, `out of range: ${d}`)
   }
+})
+
+test('maxPerRun defaults off and reads from env', () => {
+  assert.equal(loadLimits({} as never).maxPerRun, 0, 'unlimited unless asked')
+  assert.equal(loadLimits({ EMAIL_MAX_PER_RUN: '1' } as never).maxPerRun, 1)
+  assert.equal(loadLimits({ EMAIL_MAX_PER_RUN: '0' } as never).maxPerRun, 0)
+  assert.equal(loadLimits({ EMAIL_MAX_PER_RUN: 'abc' } as never).maxPerRun, 0)
 })
 
 test('default pacing really is 6-10 sends per hour', () => {

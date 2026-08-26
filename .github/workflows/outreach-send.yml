@@ -1,0 +1,51 @@
+name: Outreach send tick
+
+# Paces cold outreach from OUTSIDE Vercel.
+#
+# Why this exists: cold sending needs 6-10 minutes between emails to look
+# human, and a Vercel function is killed at 300s — so it can only ever manage
+# one send before the sleep outlives it. Vercel Hobby also caps crons at once
+# per day. This scheduler supplies the spacing instead: one tick every ten
+# minutes, EMAIL_MAX_PER_RUN=1 send per tick, which is ~144 opportunities a day
+# against a 100/day ceiling that the server enforces regardless.
+#
+# This workflow cannot decide anything. It only pings the existing endpoint;
+# approval, suppression, dedup, per-mailbox caps and the dry-run switch all
+# live server-side and are unchanged by how often this fires.
+
+on:
+  schedule:
+    # Every 10 minutes. GitHub's scheduler is best-effort and can run late
+    # under load — that is fine here, because a late tick simply means a
+    # slightly longer gap between two emails, never a burst.
+    - cron: '*/10 * * * *'
+  workflow_dispatch:        # lets you fire one tick by hand from the Actions tab
+
+# Never let two ticks overlap: a second drain running concurrently would fight
+# the first for the same queued rows. The database claim makes that safe, but
+# not overlapping is cheaper and clearer.
+concurrency:
+  group: outreach-send
+  cancel-in-progress: false
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Trigger the send drain
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CRON_SECRET:-}" ]; then
+            echo "CRON_SECRET is not set in repository secrets — refusing to call the endpoint."
+            exit 1
+          fi
+          # --fail-with-body so a non-2xx surfaces the server's message in the log
+          # rather than a bare exit code.
+          curl --silent --show-error --fail-with-body \
+               --max-time 300 \
+               --header "Authorization: Bearer ${CRON_SECRET}" \
+               "https://petitelavande.com/api/cron/scheduled-send"
+          echo    # newline after the JSON body
