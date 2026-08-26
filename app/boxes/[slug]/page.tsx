@@ -14,7 +14,7 @@ import { SlotBackground } from '@/components/ui/SlotBackground'
 import { TrackViewItem } from '@/components/ui/TrackViewItem'
 import { boxSlotKey } from '@/lib/image-slots'
 import { isShoppingOnly } from '@/lib/catalog-visibility'
-import { SPANISH_ACTIVE } from '@/lib/i18n'
+import { SPANISH_ACTIVE, getTranslations } from '@/lib/i18n'
 import { localePath } from '@/lib/locale-routes'
 import { getBoxProduct, getItemSizeOptions, pieceCount, piecesPerItem, priceRange } from '@/lib/catalog-db'
 import { CATEGORY_LABELS, CATEGORY_LABELS_ES, formatDollars } from '@/lib/products'
@@ -95,6 +95,21 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
   const { slug } = await params
   const box = await getBoxProduct(slug)
   if (!box) notFound()
+
+  // Spanish pages must carry Spanish PRODUCT copy, not just Spanish chrome.
+  // Until now /es/canastillas rendered the English name and the French
+  // subtitle, so the page was a near-duplicate of its English twin — and a
+  // Merchant feed row submitted with content_language=es whose landing page
+  // reads English is disapproved outright. The copy comes from the same
+  // `translations` rows lib/google-feed-es.ts reads, so the page and the feed
+  // cannot drift apart. Mutating the record is safe: getBoxProduct returns a
+  // fresh object per request (these routes are force-dynamic), and doing it
+  // here localises all thirteen downstream uses at once.
+  if (isEs) {
+    const es = (await getTranslations('catalog_product', [box.slug])).get(box.slug)
+    if (es?.name) box.name = es.name
+    if (es?.subtitle) box.subtitle = es.subtitle
+  }
 
   const sp = await searchParams
   const requested = typeof sp[box.variantParam] === 'string' ? sp[box.variantParam] as string : ''
