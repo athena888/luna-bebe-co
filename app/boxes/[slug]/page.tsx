@@ -100,7 +100,10 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
   const requested = typeof sp[box.variantParam] === 'string' ? sp[box.variantParam] as string : ''
   const variant = box.variants.find(v => v.key === requested) ?? box.variants[0]
   const { low, high } = priceRange(box)
-  const url = `${BASE}/boxes/${box.slug}`
+  // Locale-aware: the Spanish page used to advertise the English URL in its
+  // Product offer and its breadcrumbs, which invites Google to treat /es/ as a
+  // duplicate of /boxes/ rather than its own indexable page.
+  const url = `${BASE}${isEs ? '/es/canastillas' : '/boxes'}/${box.slug}`
   const story = (box.story ?? {}) as Story
   const crossSell = (story.cross_sell ?? []).slice(0, 3)
   // Per-size stock for sized items (garments) — drives the size chips.
@@ -159,15 +162,18 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
         mpn: box.slug,
         offers: low === high
           ? { '@type': 'Offer', price: (low / 100).toFixed(2), priceCurrency: 'USD', url, availability: 'https://schema.org/InStock' }
-          : { '@type': 'AggregateOffer', lowPrice: (low / 100).toFixed(2), highPrice: (high / 100).toFixed(2), priceCurrency: 'USD', offerCount: box.variants.length, url },
+          // availability belongs on BOTH shapes: without it Google reads a
+          // multi-variant box as having unknown stock, and the merchant feed
+          // says in_stock for the same offer — a mismatch it can flag.
+          : { '@type': 'AggregateOffer', lowPrice: (low / 100).toFixed(2), highPrice: (high / 100).toFixed(2), priceCurrency: 'USD', offerCount: box.variants.length, url, availability: 'https://schema.org/InStock' },
         ...reviewLd,
       }} />
       <JsonLd data={{
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: BASE },
-          { '@type': 'ListItem', position: 2, name: 'Gift Boxes', item: `${BASE}/boxes` },
+          { '@type': 'ListItem', position: 1, name: isEs ? 'Inicio' : 'Home', item: isEs ? BASE + '/es' : BASE },
+          { '@type': 'ListItem', position: 2, name: isEs ? 'Canastillas' : 'Gift Boxes', item: BASE + (isEs ? '/es/canastillas' : '/boxes') },
           { '@type': 'ListItem', position: 3, name: box.name, item: url },
         ],
       }} />
