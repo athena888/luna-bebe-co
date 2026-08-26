@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { LanguageBanner } from '@/components/ui/LanguageBanner'
+import { FoundingBanner } from '@/components/ui/FoundingBanner'
 import { Jost, Pinyon_Script, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import { Suspense } from "react";
@@ -88,7 +89,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   // different axis from the /es/ content locale and has no es-US member. The
   // lang attribute must follow the URL instead — see middleware.ts.
   const pathname = (await headers()).get('x-pathname') ?? '';
-  const htmlLang = pathname === '/es' || pathname.startsWith('/es/') ? 'es-US' : locale;
+  const isEsPath = pathname === '/es' || pathname.startsWith('/es/');
+  const htmlLang = isEsPath ? 'es-US' : locale;
+  // The promo bar is for customers. The portal is staff-only and its own
+  // layout — a launch banner over the order table helps nobody.
+  const showFoundingBanner = !pathname.startsWith('/portal');
   return (
     <html lang={htmlLang} className={`${jost.variable} ${pinyon.variable} ${playfair.variable} h-full antialiased`}>
       <head>
@@ -102,6 +107,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>
       <body className="min-h-full flex flex-col bg-white text-bark-600">
+        {/* Site-wide launch bar. Renders nothing when the promo is off. */}
+        {showFoundingBanner && <FoundingBanner locale={isEsPath ? 'es' : 'en'} />}
         {/* Site-wide structured data */}
         <JsonLd data={{
           '@context': 'https://schema.org',

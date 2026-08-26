@@ -1,5 +1,5 @@
 import { formatDollars } from '@/lib/products'
-import { FOUNDING_BADGE } from '@/lib/promo'
+import { foundingBadge } from '@/lib/promo'
 
 // One renderer for promo pricing, so every surface strikes through the same
 // way. Passing salePrice={null} renders exactly what the site rendered before
@@ -7,7 +7,7 @@ import { FOUNDING_BADGE } from '@/lib/promo'
 // change rather than an audit of every price on the site.
 
 export function SalePrice({
-  price, salePrice, locale = 'en', className = '', badge = true,
+  price, salePrice, locale = 'en', className = '', badge = true, remaining = 0,
 }: {
   price: number
   salePrice: number | null
@@ -15,6 +15,8 @@ export function SalePrice({
   className?: string
   /** Cards in a dense grid suppress the badge; product pages show it. */
   badge?: boolean
+  /** Founding boxes still available — the badge counts down from this. */
+  remaining?: number
 }) {
   if (salePrice == null) {
     return <p className={`font-sans text-2xl text-espresso ${className}`}>{formatDollars(price)}</p>
@@ -29,15 +31,15 @@ export function SalePrice({
           {formatDollars(price)}
         </span>
       </p>
-      {badge && <FoundingBadge locale={locale} />}
+      {badge && <FoundingBadge locale={locale} remaining={remaining} />}
     </div>
   )
 }
 
-export function FoundingBadge({ locale = 'en', className = '' }: { locale?: 'en' | 'es'; className?: string }) {
+export function FoundingBadge({ locale = 'en', className = '', remaining = 0 }: { locale?: 'en' | 'es'; className?: string; remaining?: number }) {
   return (
     <span className={`inline-block mt-2 font-sans text-[10px] tracking-[0.14em] uppercase border border-[#7A8E7C] text-[#7A8E7C] px-2 py-1 ${className}`}>
-      {FOUNDING_BADGE[locale]}
+      {foundingBadge(remaining, locale)}
     </span>
   )
 }

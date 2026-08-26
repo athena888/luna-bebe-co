@@ -40,7 +40,7 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
   const { getBoxProducts, priceRange } = await import('@/lib/catalog-db')
   const { foundingSalePrice } = await import('@/lib/promo')
   const { foundingPromoState } = await import('@/lib/promo-state')
-  const { FOUNDING_BADGE } = await import('@/lib/promo')
+  const { foundingBadge } = await import('@/lib/promo')
   // One promo lookup for the whole grid rather than one per card.
   const promoState = await foundingPromoState()
   // Kept OFF the hub (Emily 2026-08-17), same reasoning as the nav exclusion in
@@ -97,7 +97,7 @@ export async function BoxesView({ locale = 'en' }: { locale?: 'en' | 'es' }) {
                         </p>
                         {cardOnSale && (
                           <p className="font-sans text-[9px] tracking-[0.14em] uppercase text-[#7A8E7C] mt-1">
-                            {FOUNDING_BADGE[isEs ? 'es' : 'en']}
+                            {foundingBadge(promoState.remaining, isEs ? 'es' : 'en')}
                           </p>
                         )}
                       </div>

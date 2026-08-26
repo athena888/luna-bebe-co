@@ -6,16 +6,16 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  foundingSalePrice, resolvePrice, effectivePrice, inFoundingWindow,
+  foundingSalePrice, resolvePrice, effectivePrice, inFoundingWindow, foundingBadge,
   saleEffectiveDate, priceValidUntil, FOUNDING_TIERS, FOUNDING_LIMIT,
   FOUNDING_MAX_PERCENT, FOUNDING_BADGE, FOUNDING_CODE,
 } from './promo.ts'
 
 test('every advertised tier maps to its stated price', () => {
-  assert.equal(foundingSalePrice(6500), 4900)    // $65 → $49
-  assert.equal(foundingSalePrice(9500), 6800)    // $95 → $68
-  assert.equal(foundingSalePrice(12500), 8800)   // $125 → $88
-  assert.equal(foundingSalePrice(16500), 11500)  // $165 → $115
+  assert.equal(foundingSalePrice(6500), 5500)    // $65 → $55
+  assert.equal(foundingSalePrice(9500), 8000)    // $95 → $80
+  assert.equal(foundingSalePrice(12500), 10500)  // $125 → $105
+  assert.equal(foundingSalePrice(16500), 14000)  // $165 → $140
 })
 
 test('a price that is not a tier gets no sale', () => {
@@ -27,13 +27,25 @@ test('a price that is not a tier gets no sale', () => {
   assert.equal(foundingSalePrice(9501), null)   // one cent off a tier is not a tier
 })
 
-test('"up to 30% off" is literally true and not an overstatement', () => {
-  // The claim must be >= every actual discount, and reached by at least one.
+test('"15% off" is delivered at every tier and never overstated', () => {
+  // A customer who checks the arithmetic must never find they got LESS than
+  // the copy promised; rounding to fives should also not drift far past it.
   const percents = Object.entries(FOUNDING_TIERS)
     .map(([full, sale]) => (1 - Number(sale) / Number(full)) * 100)
-  assert.ok(Math.max(...percents) <= 30.5, 'no tier may exceed the advertised 30%')
-  assert.ok(Math.max(...percents) >= 29.5, 'at least one tier must reach ~30% or the copy oversells')
-  assert.equal(FOUNDING_MAX_PERCENT, 30)
+  assert.ok(Math.min(...percents) >= 15, 'every tier must deliver at least the advertised 15%')
+  assert.ok(Math.max(...percents) <= 17, 'rounding should not drift far past the claim')
+  assert.equal(FOUNDING_MAX_PERCENT, 16)
+})
+
+test('the badge counts down, and gets singular/plural right in both languages', () => {
+  assert.equal(foundingBadge(20), 'Founding Families — 20 left')
+  assert.equal(foundingBadge(7), 'Founding Families — 7 left')
+  assert.equal(foundingBadge(1), 'Founding Families — 1 left')
+  assert.equal(foundingBadge(20, 'es'), 'Familias Fundadoras — quedan 20')
+  assert.equal(foundingBadge(1, 'es'), 'Familias Fundadoras — queda 1')
+  // Never advertise a negative or fractional remainder.
+  assert.equal(foundingBadge(-3), 'Founding Families — 0 left')
+  assert.equal(foundingBadge(2.7), 'Founding Families — 2 left')
 })
 
 test('every sale price is strictly below its list price', () => {
@@ -44,9 +56,9 @@ test('every sale price is strictly below its list price', () => {
 })
 
 test('resolvePrice honours the promo gate — off means list price', () => {
-  assert.deepEqual(resolvePrice(16500, true), { price: 16500, salePrice: 11500 })
+  assert.deepEqual(resolvePrice(16500, true), { price: 16500, salePrice: 14000 })
   assert.deepEqual(resolvePrice(16500, false), { price: 16500, salePrice: null })
-  assert.equal(effectivePrice(resolvePrice(16500, true)), 11500)
+  assert.equal(effectivePrice(resolvePrice(16500, true)), 14000)
   assert.equal(effectivePrice(resolvePrice(16500, false)), 16500)
 })
 
@@ -65,8 +77,8 @@ test('the feed window and the JSON-LD date describe the same end', () => {
 })
 
 test('the promo constants match what the marketing says', () => {
-  assert.equal(FOUNDING_LIMIT, 30)
+  assert.equal(FOUNDING_LIMIT, 20)
   assert.equal(FOUNDING_CODE, 'FOUNDING30')
-  assert.match(FOUNDING_BADGE.en, /first 30 boxes/)
-  assert.match(FOUNDING_BADGE.es, /primeras 30 cajas/)
+  assert.match(FOUNDING_BADGE.en, /first 20 boxes/)
+  assert.match(FOUNDING_BADGE.es, /primeras 20 cajas/)
 })

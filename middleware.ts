@@ -61,7 +61,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  return NextResponse.next()
+  // Forward the path for every matched route, not just /es: the root layout
+  // uses it to decide the <html lang> AND to keep the customer launch banner
+  // off /portal. Without this a staff page falls through with no path and is
+  // indistinguishable from the storefront.
+  const forwardedAll = new Headers(request.headers)
+  forwardedAll.set('x-pathname', pathname)
+  return NextResponse.next({ request: { headers: forwardedAll } })
 }
 
 export const config = {

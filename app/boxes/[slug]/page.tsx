@@ -234,7 +234,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
               <p className="font-sans text-[13px] tracking-[0.08em] text-bark-500 mt-2">
                 {pieceCount(variant)} {isEs ? 'piezas, empacadas a mano' : 'pieces, hand-packed'}
               </p>
-              <SalePrice price={salePrice ?? variant.price} salePrice={salePrice} locale={isEs ? 'es' : 'en'} className="mt-4" />
+              <SalePrice price={variant.price} salePrice={salePrice} locale={isEs ? 'es' : 'en'} remaining={promo.remaining} className="mt-4" />
 
               {box.variants.length > 1 && (
                 <div className="mt-6">

@@ -12,23 +12,24 @@
 /** Attribution only. Adds no further discount — see lib/stripe-discounts.ts. */
 export const FOUNDING_CODE = 'FOUNDING30'
 
-/** The promise in the marketing copy: first 30 boxes. */
-export const FOUNDING_LIMIT = 30
+/** How many boxes the promotion covers. The badge counts DOWN from here. */
+export const FOUNDING_LIMIT = 20
 
 /**
- * Per-tier prices, in cents. NOT a percentage: the discount deepens with the
- * tier (24.6% at $65 → 30.3% at $165), which is what makes "up to 30% off"
- * literally true. A flat rate would have made that copy false at every tier
- * but the top one.
+ * Per-tier prices, in cents. A nominal 15% off, rounded to clean fives so the
+ * prices read as chosen rather than calculated — which puts every tier between
+ * 15.2% and 16.0%. The copy therefore claims "15% off": every customer gets at
+ * least that and no tier is overstated. $105 sits deliberately above the $100
+ * free-shipping bar, so that box is not discounted twice.
  */
 export const FOUNDING_TIERS: Record<number, number> = {
-  6500: 4900,    // $65 → $49   (24.6% off)
-  9500: 6800,    // $95 → $68   (28.4% off)
-  12500: 8800,   // $125 → $88  (29.6% off)
-  16500: 11500,  // $165 → $115 (30.3% off)
+  6500: 5500,    // $65 → $55   (15.4% off)
+  9500: 8000,    // $95 → $80   (15.8% off)
+  12500: 10500,  // $125 → $105 (16.0% off)
+  16500: 14000,  // $165 → $140 (15.2% off)
 }
 
-/** Deepest discount in the table, for copy that must not overstate. */
+/** Deepest discount in the table. Copy must never claim MORE than this. */
 export const FOUNDING_MAX_PERCENT = Math.max(
   ...Object.entries(FOUNDING_TIERS).map(([full, sale]) => Math.round((1 - Number(sale) / Number(full)) * 100))
 )
@@ -45,10 +46,26 @@ export const FOUNDING_END = process.env.FOUNDING_END ?? '2026-09-30T23:59:59.000
 /** Kill switch — set FOUNDING_PROMO_ACTIVE=false to end the promo early. */
 export const FOUNDING_FORCED_OFF = process.env.FOUNDING_PROMO_ACTIVE === 'false'
 
-/** Badge copy. Spanish mirrors the /es pages' register (see lib/i18n.ts). */
+/**
+ * Badge copy. It COUNTS DOWN rather than restating the total: "first 20 boxes"
+ * is a claim, "20 left" is a reason to buy today, and a number that visibly
+ * moves is the whole point of a founding promotion rather than a sale.
+ *
+ * Singular is handled per language — "1 left"/"queda 1" and "2 left"/"quedan 2"
+ * do not share a form in Spanish.
+ */
+export function foundingBadge(remaining: number, locale: 'en' | 'es' = 'en'): string {
+  const n = Math.max(0, Math.floor(remaining))
+  if (locale === 'es') {
+    return n === 1 ? 'Familias Fundadoras — queda 1' : `Familias Fundadoras — quedan ${n}`
+  }
+  return n === 1 ? 'Founding Families — 1 left' : `Founding Families — ${n} left`
+}
+
+/** Static form, for surfaces with no access to the live count (e.g. emails). */
 export const FOUNDING_BADGE = {
-  en: 'Founding Families — first 30 boxes',
-  es: 'Familias Fundadoras — primeras 30 cajas',
+  en: `Founding Families — first ${FOUNDING_LIMIT} boxes`,
+  es: `Familias Fundadoras — primeras ${FOUNDING_LIMIT} cajas`,
 } as const
 
 /**

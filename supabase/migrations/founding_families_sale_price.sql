@@ -28,10 +28,10 @@ alter table public.catalog_variants add constraint catalog_variants_sale_below_p
 -- construction rather than by an exclusion list someone has to maintain.
 update public.catalog_variants set
   sale_price = case price
-    when 6500  then 4900
-    when 9500  then 6800
-    when 12500 then 8800
-    when 16500 then 11500
+    when 6500  then 5500
+    when 9500  then 8000
+    when 12500 then 10500
+    when 16500 then 14000
   end,
   sale_start = timestamptz '2026-08-25 00:00:00+00',
   sale_end   = timestamptz '2026-09-30 23:59:59+00'
