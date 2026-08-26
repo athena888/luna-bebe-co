@@ -1,9 +1,15 @@
 import { resolveMx } from 'node:dns/promises'
 import { supabaseAdmin } from '../supabase.ts'
-import { sendEmail, gmailSender } from '../gmail.ts'
+import { sendEmail } from '../gmail.ts'
 import { withFooter } from '../outreach-templates.ts'
 import { getSuppressedSet, emailDomain } from '../outreach.ts'
 import { getDailySendCap, getConfig, bumpDailyStats, pipelineEnabled } from './config.ts'
+import {
+  loadMailboxes, loadLimits, dryRunEnabled, selectMailbox, remainingToday,
+  pacingDelayMs, ptDayKey,
+} from '../outreach/mailboxes.ts'
+import { evaluateCandidate, companyKey } from '../outreach/send-guards.ts'
+import { getMailboxUsage, buildGuardState } from '../outreach/mailbox-usage.ts'
 
 // Pipeline queue drainer. THE structural guarantee lives here: the only query
 // that feeds sendEmail() inner-joins email_drafts with status
@@ -20,14 +26,11 @@ export interface DrainStats {
   skipped: { to: string; why: string }[]
   dry: boolean
   paused?: boolean
+  /** Sends made per mailbox during THIS drain, keyed by address. */
+  byMailbox?: Record<string, number>
 }
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
-function jitterMs(): number {
-  const min = Number(process.env.OUTREACH_GAP_MIN_MS) || 4000
-  const max = Number(process.env.OUTREACH_GAP_MAX_MS) || 12000
-  return min + Math.floor(Math.random() * Math.max(0, max - min))
-}
 async function hasMx(domain: string): Promise<boolean> {
   try { return (await resolveMx(domain)).length > 0 } catch { return false }
 }
@@ -95,10 +98,35 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
     return { capRemaining: 0, sent: 0, failed: 0, skipped: [], dry, paused: true }
   }
 
-  const cap = await getDailySendCap()
-  const capRemaining = Math.max(0, cap - (await sentTodayCount()))
-  const stats: DrainStats = { capRemaining, sent: 0, failed: 0, skipped: [], dry }
+  // EMAIL_DRY_RUN forces dry mode for the whole drain, whatever the caller asked.
+  const dryRun = dry || dryRunEnabled()
+
+  // Two ceilings apply and the LOWER wins: the legacy pipeline cap
+  // (outreach_config.daily_send_cap) and the mailbox policy (50 each, 100
+  // total). Neither can be exceeded by widening the other.
+  const mailboxes = loadMailboxes()
+  const limits = loadLimits()
+  const usage = await getMailboxUsage()
+  const legacyCap = await getDailySendCap()
+  const legacyRemaining = Math.max(0, legacyCap - (await sentTodayCount()))
+  const capRemaining = Math.min(legacyRemaining, remainingToday(mailboxes, usage, limits))
+
+  const stats: DrainStats = {
+    capRemaining, sent: 0, failed: 0, skipped: [], dry: dryRun, byMailbox: {},
+  }
+  if (!mailboxes.length) {
+    stats.skipped.push({ to: '-', why: 'no sender mailbox configured (EMAIL_ACCOUNT_1_EMAIL)' })
+    return stats
+  }
   if (capRemaining === 0) return stats
+
+  // Every suppression / dedup / company-state set, loaded once.
+  const guards = await buildGuardState()
+  // Mutated as this drain sends, so later rows in the SAME run see earlier ones.
+  const emailedEver = new Set(guards.emailedEver)
+  const emailedToday = new Set(guards.emailedToday)
+  const companiesContacted = new Set(guards.companiesContacted)
+  const runningUsage = { ...usage }
 
   // Approval enforced structurally: inner join on approved_by_user.
   const { data } = await supabaseAdmin.from('sends')
@@ -112,6 +140,7 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
   if (!rows.length) return stats
 
   const suppressed = await getSuppressedSet()
+  void suppressed   // guards carry suppression now; binding kept for clarity
   // Press sub-cap: press + corporate share the global Gmail ceiling above, but
   // press alone never exceeds its own daily cap (default 5).
   const pressCap = await pressDailyCap()
@@ -146,14 +175,33 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
       if (!dry && terminal) await supabaseAdmin.from('sends').update({ status: 'failed' }).eq('id', r.id)
     }
     const isPress = p.channel === 'press'
-    if (!to) { await skip('no email'); continue }
-    if (!(p.email_grade === 'A' || p.email_grade === 'B')) { await skip('grade not A/B'); continue }
-    if (suppressed.has(to)) { await skip('suppressed'); continue }
-    if (p.status === 'replied' || p.status === 'bounced' || p.status === 'suppressed') { await skip(`prospect ${p.status}`); continue }
+
+    // One consolidated verdict: address, grade, suppression, unsubscribe,
+    // do-not-contact, reply, bounce, per-person dedup AND company-level dedup.
+    // Company rules apply to cold corporate outreach only - press pitches are
+    // deliberately sent to several editors at one outlet.
+    const verdict = evaluateCandidate({
+      prospectId: p.id, email: to, emailGrade: p.email_grade, status: p.status,
+      domain: null, company: p.company,
+    }, {
+      ...guards,
+      emailedEver, emailedToday,
+      companiesContacted: isPress ? new Set<string>() : companiesContacted,
+      companiesReplied: isPress ? new Set<string>() : guards.companiesReplied,
+      companiesOptedOut: isPress ? new Set<string>() : guards.companiesOptedOut,
+    })
+    if (!verdict.send) {
+      // Cap/company holds keep the row QUEUED for another day; identity-based
+      // blocks (bounced, unsubscribed, wrong grade) are terminal.
+      const holdOnly = verdict.reason === 'already-emailed-today'
+        || verdict.reason === 'company-already-contacted'
+        || verdict.reason === 'missing-postal-address'
+      await skip(String(verdict.reason), !holdOnly)
+      continue
+    }
     // Press sub-cap reached → leave the row QUEUED for tomorrow's drain.
     if (isPress && pressSent >= pressCap) { await skip('press daily cap reached (stays queued)', false); continue }
-    // Same address already contacted today → hold until tomorrow, never double-send.
-    if (sentToday.has(to)) { await skip('already emailed today (stays queued)', false); continue }
+
     if (!(await hasMx(emailDomain(to)))) { await skip('no MX record (would bounce)'); continue }
 
     // CAN-SPAM footer at send time, never in the draft.
@@ -163,13 +211,24 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
     // address, so that fallback would ship a non-compliant commercial email.
     // Refuse instead: a missing address is a configuration error, and the
     // right failure is to send nothing.
-    const postal = (process.env.BUSINESS_ADDRESS || '').trim()
-    if (!postal || /\[.*\]/.test(postal)) {
-      await skip('BUSINESS_ADDRESS not configured — refusing to send without a postal address (CAN-SPAM)', false)
+    const body = withFooter(r.draft.body, to)
+
+    // WHICH mailbox sends - and whether any may. Checked per row, so a drain
+    // that fills mailbox A mid-run rolls onto B rather than breaching a cap.
+    const pick = selectMailbox(mailboxes, runningUsage, limits)
+    if (!pick.mailbox) { await skip(pick.reason ?? 'daily cap reached', false); break }
+    const from = pick.mailbox.email
+
+    if (dryRun) {
+      stats.sent++
+      stats.byMailbox![from] = (stats.byMailbox![from] ?? 0) + 1
+      runningUsage[from] = (runningUsage[from] ?? 0) + 1
+      if (isPress) pressSent++
+      sentToday.add(to); emailedToday.add(to); emailedEver.add(to)
+      const dk = companyKey({ domain: null, company: p.company })
+      if (dk && !isPress) companiesContacted.add(dk)
       continue
     }
-    const body = withFooter(r.draft.body, to)
-    if (dry) { stats.sent++; if (isPress) pressSent++; sentToday.add(to); continue }
 
     // ATOMIC CLAIM — the fix for concurrent double-sends.
     //
@@ -191,7 +250,7 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
     }
 
     try {
-      const res = await sendEmail({ to, subject: r.draft.subject, text: body, replyTo: gmailSender() })
+      const res = await sendEmail({ to, subject: r.draft.subject, text: body, from, replyTo: from })
       // threadId is what makes reply/bounce detection possible later — the old
       // sender received it from sendEmail() and threw it away, which is why
       // replies were invisible. recipient_email is stored alongside so the sync
@@ -201,6 +260,10 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
         gmail_message_id: res.messageId,
         gmail_thread_id: res.threadId ?? null,
         recipient_email: to,
+        // Which mailbox spent an allowance, and which Pacific day it belongs
+        // to. Both are what the per-mailbox cap counts.
+        sender_email: from,
+        sent_day_pt: ptDayKey(),
         sent_at: new Date().toISOString(),
       }).eq('id', r.id)
       // A press follow-up is the LAST touch this cycle: the editor closes for
@@ -214,7 +277,18 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
         updated_at: new Date().toISOString(),
       }).eq('id', p.id)
       if (isPress) { pressSent++; pressSentThisDrain++ }
-      sentToday.add(to)
+      sentToday.add(to); emailedToday.add(to); emailedEver.add(to)
+      runningUsage[from] = (runningUsage[from] ?? 0) + 1
+      stats.byMailbox![from] = (stats.byMailbox![from] ?? 0) + 1
+      // Claim the company so no colleague is approached later.
+      const ck = companyKey({ domain: null, company: p.company })
+      if (ck && !isPress) {
+        companiesContacted.add(ck)
+        await supabaseAdmin.from('company_outreach_state').upsert({
+          company_key: ck, first_contact_email: to,
+          first_sent_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+        }, { onConflict: 'company_key', ignoreDuplicates: true }).then(() => {}, () => {})
+      }
       // Mirror into the unified touches ledger (cockpit visibility). No
       // followup_due — the pipeline drafts its own follow-ups after 6 days.
       const contactId = await mirrorContact(to, p.company, p.person_name)
@@ -234,7 +308,9 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
       await supabaseAdmin.from('sends').update({ status: 'failed' }).eq('id', r.id)
       stats.failed++
     }
-    if (i < rows.length - 1) await sleep(jitterMs())
+    // Human pacing: 6-10 minutes between sends by default, randomised.
+    // jitterMs()'s 4-12 SECONDS was burst speed for a cold campaign.
+    if (i < rows.length - 1) await sleep(pacingDelayMs(limits))
   }
 
   if (!dry && (stats.sent || stats.failed)) {

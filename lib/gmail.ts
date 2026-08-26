@@ -25,9 +25,16 @@ function loadServiceAccount(): { client_email: string; private_key: string } {
   return { client_email: key.client_email, private_key: key.private_key.replace(/\\n/g, '\n') }
 }
 
-function jwtClient(scopes: string[] = SCOPES) {
+// Domain-wide delegation impersonates ONE mailbox per client, chosen by
+// `subject`. That is the whole mechanism behind multi-mailbox sending: a second
+// sender needs only its address here — no second client id, secret or refresh
+// token — provided it is a real Workspace user on the domain.
+function jwtClient(scopes: string[] = SCOPES, subject?: string) {
   const { client_email, private_key } = loadServiceAccount()
-  return new google.auth.JWT({ email: client_email, key: private_key, scopes, subject: gmailSender() })
+  return new google.auth.JWT({
+    email: client_email, key: private_key, scopes,
+    subject: (subject ?? gmailSender()).trim(),
+  })
 }
 
 function toBase64Url(s: string): string {
@@ -53,9 +60,12 @@ function buildRaw(opts: { from: string; to: string; subject: string; text: strin
 export interface SendResult { messageId: string; threadId?: string }
 
 /** Send a plain-text email as GMAIL_SENDER. Returns the Gmail Message-ID. */
-export async function sendEmail(opts: { to: string; subject: string; text: string; replyTo?: string }): Promise<SendResult> {
-  const from = gmailSender()
-  const gmail = google.gmail({ version: 'v1', auth: jwtClient() })
+export async function sendEmail(opts: { to: string; subject: string; text: string; replyTo?: string; from?: string }): Promise<SendResult> {
+  // `from` selects WHICH mailbox sends. Omitted → the legacy single sender, so
+  // existing callers are unchanged. The address is both the impersonation
+  // subject and the From header; they must match or Gmail rejects the send.
+  const from = (opts.from ?? gmailSender()).trim()
+  const gmail = google.gmail({ version: 'v1', auth: jwtClient(SCOPES, from) })
   const raw = toBase64Url(buildRaw({ from, to: opts.to, subject: opts.subject, text: opts.text, replyTo: opts.replyTo }))
   const res = await gmail.users.messages.send({ userId: 'me', requestBody: { raw } })
   return { messageId: res.data.id ?? '', threadId: res.data.threadId ?? undefined }
