@@ -102,7 +102,17 @@ export function sameDayEligible(zip: string | undefined | null): boolean {
 // Free STANDARD shipping once the merchandise total (box base + items) reaches
 // this many USD cents. NEXT_PUBLIC_ so the cart drawer, checkout page, and the
 // checkout session API all read the same number. Premium rush stays paid.
-export const FREE_SHIPPING_THRESHOLD = Number(process.env.NEXT_PUBLIC_FREE_SHIPPING_THRESHOLD || 10000)
+//
+// Lowered from $100 to $50 (Emily, 2026-08-26). At the old bar every box
+// beneath it — the $65 and $85 Petites — had $9.95 added at checkout, which
+// on a $65 box is a 15% surcharge revealed at the very last step: the single
+// most common reason a cart is abandoned. Our real cost is the measured USPS
+// Ground Advantage rate, $8.07 for a 2 lb carton, so this buys the same
+// goodwill as a ~12% discount on the entry box while reading as generosity
+// rather than markdown. Every derived surface follows automatically: the
+// perks strip, the FAQs, the chat assistant and the cart's progress bar all
+// read this one constant.
+export const FREE_SHIPPING_THRESHOLD = Number(process.env.NEXT_PUBLIC_FREE_SHIPPING_THRESHOLD || 5000)
 
 // USD-only for now: the threshold is a USD amount and non-USD markets have
 // their own per-currency shipping prices in lib/pricing.ts.
