@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { LanguageBanner } from '@/components/ui/LanguageBanner'
 import { Jost, Pinyon_Script, Playfair_Display } from "next/font/google";
 import Script from "next/script";
@@ -83,8 +84,13 @@ const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const locale = await getLocale();
   const messages = await getMessages();
+  // getLocale() answers the MARKET locale (en-US / en-GB / fr-FR), which is a
+  // different axis from the /es/ content locale and has no es-US member. The
+  // lang attribute must follow the URL instead — see middleware.ts.
+  const pathname = (await headers()).get('x-pathname') ?? '';
+  const htmlLang = pathname === '/es' || pathname.startsWith('/es/') ? 'es-US' : locale;
   return (
-    <html lang={locale} className={`${jost.variable} ${pinyon.variable} ${playfair.variable} h-full antialiased`}>
+    <html lang={htmlLang} className={`${jost.variable} ${pinyon.variable} ${playfair.variable} h-full antialiased`}>
       <head>
         {/* PWA / iOS home screen */}
         <meta name="apple-mobile-web-app-capable" content="yes" />

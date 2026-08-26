@@ -17,6 +17,17 @@ function isAuthed(request: NextRequest): boolean {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // Spanish pages: forward the path so the ROOT layout can render
+  // <html lang="es-US">. next-intl resolves locale from domain/cookie/
+  // Accept-Language and never sees these URLs, so every /es/ page was served
+  // declaring English — telling Google the Spanish page is English. Nothing
+  // else about the request changes, and /es/ never required auth.
+  if (pathname === '/es' || pathname.startsWith('/es/')) {
+    const forwarded = new Headers(request.headers)
+    forwarded.set('x-pathname', pathname)
+    return NextResponse.next({ request: { headers: forwarded } })
+  }
+
   if (PUBLIC_EXCEPTIONS.some(p => pathname === p || pathname.startsWith(p + '/'))) {
     return NextResponse.next()
   }
@@ -54,5 +65,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/portal/:path*', '/api/portal/:path*', '/api/orders/:path*'],
+  matcher: ['/portal/:path*', '/api/portal/:path*', '/api/orders/:path*', '/es', '/es/:path*'],
 }
