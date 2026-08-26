@@ -56,7 +56,7 @@ interface QueuedRow {
   id: string
   draft: {
     id: string; subject: string; body: string; status: string; is_followup: boolean
-    prospect: { id: string; email: string | null; company: string; person_name: string | null; status: string; email_grade: string | null; channel: string | null }
+    prospect: { id: string; email: string | null; company: string; person_name: string | null; status: string; email_grade: string | null; channel: string | null; domain: string | null }
   }
 }
 
@@ -130,7 +130,7 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
 
   // Approval enforced structurally: inner join on approved_by_user.
   const { data } = await supabaseAdmin.from('sends')
-    .select('id, draft:email_drafts!inner(id, subject, body, status, is_followup, prospect:prospects!inner(id, email, company, person_name, status, email_grade, channel))')
+    .select('id, draft:email_drafts!inner(id, subject, body, status, is_followup, prospect:prospects!inner(id, email, company, person_name, status, email_grade, channel, domain))')
     .eq('status', 'queued')
     .eq('email_drafts.status', 'approved_by_user')
     .order('created_at', { ascending: true })
@@ -182,7 +182,7 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
     // deliberately sent to several editors at one outlet.
     const verdict = evaluateCandidate({
       prospectId: p.id, email: to, emailGrade: p.email_grade, status: p.status,
-      domain: null, company: p.company,
+      domain: p.domain, company: p.company,
     }, {
       ...guards,
       emailedEver, emailedToday,
@@ -225,7 +225,7 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
       runningUsage[from] = (runningUsage[from] ?? 0) + 1
       if (isPress) pressSent++
       sentToday.add(to); emailedToday.add(to); emailedEver.add(to)
-      const dk = companyKey({ domain: null, company: p.company })
+      const dk = companyKey({ domain: p.domain, company: p.company })
       if (dk && !isPress) companiesContacted.add(dk)
       continue
     }
@@ -281,7 +281,7 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
       runningUsage[from] = (runningUsage[from] ?? 0) + 1
       stats.byMailbox![from] = (stats.byMailbox![from] ?? 0) + 1
       // Claim the company so no colleague is approached later.
-      const ck = companyKey({ domain: null, company: p.company })
+      const ck = companyKey({ domain: p.domain, company: p.company })
       if (ck && !isPress) {
         companiesContacted.add(ck)
         await supabaseAdmin.from('company_outreach_state').upsert({
