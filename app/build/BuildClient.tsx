@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useIsEs } from '@/lib/use-is-es'
+import { trackAddToCart } from '@/lib/analytics-events'
 import { CATEGORY_LABELS_ES } from '@/lib/products'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
@@ -243,7 +244,12 @@ export default function BuildClient({ initialCatalog }: { initialCatalog?: Recor
         const pendingId = sessionStorage.getItem('pl_pending_add')
         if (pendingId) {
           const found = Object.values(byCat).flat().find(p => p.id === pendingId)
-          if (found) setSelected(prev => { const next = new Map(prev); next.set(found.id, { ...found, lineKey: found.id, qty: 1 }); return next })
+          if (found) {
+            setSelected(prev => { const next = new Map(prev); next.set(found.id, { ...found, lineKey: found.id, qty: 1 }); return next })
+            // The product page's "Add to box" click lands here — that click is
+            // the add (the flag is cleared below, so a rerun can't re-fire).
+            trackAddToCart([{ id: found.id, name: found.name, price: found.price, category: found.category, qty: 1 }])
+          }
           sessionStorage.removeItem('pl_pending_add')
         }
       })
@@ -360,25 +366,29 @@ export default function BuildClient({ initialCatalog }: { initialCatalog?: Recor
   }, [inventory])
 
   // Non-variant add/remove (key = product id)
+  // GA4 add_to_cart fires from these handlers (the user's action), never from
+  // the persist effect below — restores, resumes and hydration stay silent.
   const toggle = useCallback((product: BuildProduct) => {
+    if (!selected.has(product.id)) trackAddToCart([{ id: product.id, name: product.name, price: product.price, category: product.category, qty: 1 }])
     setSelected(prev => {
       const next = new Map(prev)
       if (next.has(product.id)) next.delete(product.id)
       else next.set(product.id, { ...product, lineKey: product.id, qty: 1 })
       return next
     })
-  }, [])
+  }, [selected])
 
   // Variant add/remove (key = id:color:size:style)
   const toggleVariant = useCallback((product: BuildProduct, color: string, size: string, hex?: string | null, style?: string) => {
     const key = variantKey(product.id, color, size, style)
+    if (!selected.has(key)) trackAddToCart([{ id: product.id, name: product.name, price: product.price, category: product.category, qty: 1, lineKey: key }])
     setSelected(prev => {
       const next = new Map(prev)
       if (next.has(key)) next.delete(key)
       else next.set(key, { ...product, selectedColor: color, selectedSize: size, selectedStyle: style || undefined, colorHex: hex ?? undefined, lineKey: key, qty: 1 })
       return next
     })
-  }, [])
+  }, [selected])
 
   const removeItem = useCallback((key: string) => {
     setSelected(prev => { const next = new Map(prev); next.delete(key); return next })
@@ -386,13 +396,15 @@ export default function BuildClient({ initialCatalog }: { initialCatalog?: Recor
 
   // Adjust quantity for a line (min 1; never below 1 — use Remove to delete).
   const changeQty = useCallback((key: string, delta: number) => {
+    const cur = selected.get(key)
+    if (cur && delta > 0) trackAddToCart([{ id: cur.id, name: cur.name, price: cur.price, category: cur.category, qty: delta, lineKey: key }])
     setSelected(prev => {
       const next = new Map(prev)
       const item = next.get(key)
       if (item) next.set(key, { ...item, qty: Math.max(1, (item.qty ?? 1) + delta) })
       return next
     })
-  }, [])
+  }, [selected])
 
   // Is any variant (or the plain product) of this id in the box?
   const isProductSelected = useCallback(

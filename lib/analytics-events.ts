@@ -132,6 +132,16 @@ export function trackCartGrowth(prev: CartLike[], next: CartLike[], valueCents?:
   fbqTrack('AddToCart', { content_type: 'product', content_ids: ev.items.map(i => i.item_id), value: ev.value, currency: 'USD' })
 }
 
+/** Direct add_to_cart for surfaces that keep their own bag state instead of
+ *  going through writeCart (the Build page). Call ONLY from the user's add
+ *  action — never from an effect, a restore or a state sync. */
+export function trackAddToCart(items: CartLike[], valueCents?: number): void {
+  if (!items.length) return
+  const value = (valueCents ?? subtotal(items)) / 100
+  track('add_to_cart', { currency: 'USD', value, items: items.map(toItem) })
+  fbqTrack('AddToCart', { content_type: 'product', content_ids: items.map(i => i.id), value, currency: 'USD' })
+}
+
 /** Order-independent fingerprint of the checkout contents. */
 export function checkoutSignature(items: CartLike[]): string {
   return items.map(i => `${i.lineKey ?? i.id}:${i.qty ?? 1}`).sort().join('|')
