@@ -29,7 +29,12 @@ export interface GaSnapshot {
   todayUsers: number           // unique users today
   todayPageViews: number       // page views today
   topPages: Array<{ path: string; views: number }>
+  /** Today's funnel, by GA4 event name. Missing events are 0, not absent. */
+  funnel: { view_item: number; add_to_cart: number; begin_checkout: number; purchase: number }
 }
+
+/** The funnel steps the portal shows, in order. */
+export const FUNNEL_EVENTS = ['view_item', 'add_to_cart', 'begin_checkout', 'purchase'] as const
 
 /** Sessions per day for the last `days` days, keyed 'YYYYMMDD' (GA4 date
  *  dimension format). Used by the weekly scorecard to compute CVR. */
@@ -82,5 +87,25 @@ export async function getRealtimeSnapshot(): Promise<GaSnapshot> {
     views: Number(r.metricValues?.[0]?.value ?? 0),
   }))
 
-  return { activeUsers, todayUsers, todayPageViews, topPages }
+  // Today's funnel counts. Asked for by event name so a step with no events
+  // reads 0 rather than vanishing — "nobody added to cart today" is a real
+  // answer and the most useful one this widget can give.
+  const [events] = await analytics.runReport({
+    property,
+    dateRanges: [{ startDate: 'today', endDate: 'today' }],
+    dimensions: [{ name: 'eventName' }],
+    metrics: [{ name: 'eventCount' }],
+  })
+  const counts = new Map<string, number>()
+  for (const r of events.rows ?? []) {
+    counts.set(r.dimensionValues?.[0]?.value ?? '', Number(r.metricValues?.[0]?.value ?? 0))
+  }
+  const funnel = {
+    view_item: counts.get('view_item') ?? 0,
+    add_to_cart: counts.get('add_to_cart') ?? 0,
+    begin_checkout: counts.get('begin_checkout') ?? 0,
+    purchase: counts.get('purchase') ?? 0,
+  }
+
+  return { activeUsers, todayUsers, todayPageViews, topPages, funnel }
 }

@@ -13,6 +13,7 @@ interface Snapshot {
   todayUsers?: number
   todayPageViews?: number
   topPages?: Array<{ path: string; views: number }>
+  funnel?: { view_item: number; add_to_cart: number; begin_checkout: number; purchase: number }
   error?: string
 }
 
@@ -116,6 +117,31 @@ export function RealtimeTraffic() {
         <Stat icon={<Users size={18} className="text-sage-400" />} label="Users today" value={data?.todayUsers ?? 0} />
         <Stat icon={<Eye size={18} className="text-bark-400" />} label="Views today" value={data?.todayPageViews ?? 0} />
       </div>
+
+      {/* Today's funnel. Shown even at zero: "12 viewed, 0 added" is the most
+          useful sentence this card can say, and hiding it would read as broken
+          rather than as an honest zero. */}
+      {data?.funnel && (
+        <div className="mb-5">
+          <p className="font-sans text-[10px] tracking-[0.14em] uppercase text-bark-400 mb-2">Today&apos;s funnel</p>
+          <div className="grid grid-cols-4 gap-2">
+            {([
+              ['Viewed', data.funnel.view_item],
+              ['Added', data.funnel.add_to_cart],
+              ['Checkout', data.funnel.begin_checkout],
+              ['Bought', data.funnel.purchase],
+            ] as const).map(([label, n]) => (
+              <div key={label} className="bg-white rounded-lg border border-cream-200 px-3 py-2 text-center">
+                <p className="font-serif text-xl text-bark-600">{n}</p>
+                <p className="font-sans text-[9px] tracking-[0.12em] uppercase text-bark-400 mt-0.5">{label}</p>
+              </div>
+            ))}
+          </div>
+          <p className="font-sans text-[10px] text-bark-300 mt-2">
+            Counts exclude your own browsing — the portal flags this browser as internal.
+          </p>
+        </div>
+      )}
 
       {!!data?.topPages?.length && (
         <div>
