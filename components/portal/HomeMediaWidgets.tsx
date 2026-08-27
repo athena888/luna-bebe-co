@@ -74,7 +74,7 @@ export function GallerySlot({ slot, label, description, wide = false }: {
           <p className="font-sans text-xs font-medium text-bark-600">{label}</p>
           {description && <p className="font-sans text-[10px] text-bark-400 mt-0.5 leading-relaxed">{description}</p>}
         </div>
-        {images.length > 1 && <span className="font-sans text-[9px] tracking-[0.15em] uppercase text-gold-500 shrink-0">Rotates · 5s</span>}
+        {images.length > 1 && <span className="font-sans text-[9px] tracking-[0.15em] uppercase text-gold-500 shrink-0">Rotates · 2s</span>}
       </div>
       {loading ? (
         <div className="flex items-center gap-2 text-bark-400 py-4 text-xs"><Loader size={12} className="animate-spin" /> Loading…</div>
@@ -301,7 +301,7 @@ export function EditorialMediaGallery() {
           <p className="font-sans text-xs font-medium text-bark-600">Editorial Media</p>
           <p className="font-sans text-[10px] text-bark-400 mt-0.5 leading-relaxed">Add photos &amp; videos — they rotate every 5s on the homepage.</p>
         </div>
-        {items.length > 1 && <span className="font-sans text-[9px] tracking-[0.15em] uppercase text-gold-500 shrink-0">Rotates · 5s</span>}
+        {items.length > 1 && <span className="font-sans text-[9px] tracking-[0.15em] uppercase text-gold-500 shrink-0">Rotates · 2s</span>}
       </div>
       {loading ? (
         <div className="flex items-center gap-2 text-bark-400 py-4 text-xs"><Loader size={12} className="animate-spin" /> Loading…</div>

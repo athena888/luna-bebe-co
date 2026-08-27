@@ -6,9 +6,15 @@ import { useEffect, useRef, useState } from 'react'
 // on touch it's swipeable (drag left/right to advance). Renders absolutely-
 // positioned layers so it works as a section background. With one image it is
 // static; respects prefers-reduced-motion (then it just shows the first).
+//
+// Breakpoint-aware slide lists (2026-08-27): phones rotate through the MOBILE
+// list when it exists, desktop through the web list — independently sized.
+// The previous <picture> pairing keyed every slide to the DESKTOP list, so a
+// second mobile-only photo never rendered and the hero looked dead on phones
+// (Emily's exact report: two mobile uploads, one web photo, no rotation).
 const MOBILE_MEDIA = '(max-width: 639px)'
 
-function RotatingImageCore({ urls, mobileUrls, alt = '', className = '', intervalMs = 5000, navEvent }: {
+export function RotatingImage({ urls, mobileUrls, alt = '', className = '', intervalMs = 5000, navEvent }: {
   urls: string[]
   mobileUrls?: string[]
   alt?: string
@@ -19,10 +25,23 @@ function RotatingImageCore({ urls, mobileUrls, alt = '', className = '', interva
    *  above the image, so buttons rendered here would be unclickable. */
   navEvent?: string
 }) {
-  const list = urls.filter(Boolean)
+  const web = urls.filter(Boolean)
   const mobile = (mobileUrls ?? []).filter(Boolean)
+  // SSR renders the web list; phones switch to their own list on hydration.
+  // (Brief first-paint web crop on phones — same as the old fallback path.)
+  const [isMobile, setIsMobile] = useState(false)
   const [i, setI] = useState(0)
   const startX = useRef<number | null>(null)
+
+  useEffect(() => {
+    const mq = window.matchMedia(MOBILE_MEDIA)
+    const apply = () => { setIsMobile(mq.matches); setI(0) }
+    apply()
+    mq.addEventListener('change', apply)
+    return () => mq.removeEventListener('change', apply)
+  }, [])
+
+  const list = isMobile && mobile.length > 0 ? mobile : web.length > 0 ? web : mobile
 
   // Reschedule after every change so a manual swipe restarts the timer cleanly.
   useEffect(() => {
@@ -32,8 +51,6 @@ function RotatingImageCore({ urls, mobileUrls, alt = '', className = '', interva
     return () => clearTimeout(t)
   }, [i, list.length, intervalMs])
 
-  // Hooks stay above the empty-list early return (Rules of Hooks).
-  const go = (n: number) => setI(p => (p + n + list.length) % list.length)
   useEffect(() => {
     if (!navEvent || list.length <= 1) return
     const h = (e: Event) => setI(p => (p + ((e as CustomEvent<number>).detail === -1 ? -1 : 1) + list.length) % list.length)
@@ -42,6 +59,8 @@ function RotatingImageCore({ urls, mobileUrls, alt = '', className = '', interva
   }, [navEvent, list.length])
 
   if (list.length === 0) return null
+
+  const go = (n: number) => setI(p => (p + n + list.length) % list.length)
   const onTouchStart = (e: React.TouchEvent) => { startX.current = e.touches[0].clientX }
   const onTouchEnd = (e: React.TouchEvent) => {
     if (startX.current == null) return
@@ -58,47 +77,17 @@ function RotatingImageCore({ urls, mobileUrls, alt = '', className = '', interva
       onTouchEnd={swipe ? onTouchEnd : undefined}
     >
       {list.map((u, idx) => (
-        // <picture> so the browser downloads ONE crop, not both. Rendering a
-        // desktop <img> and a phone <img> and hiding one with CSS still
-        // downloads both — `display:none` doesn't cancel an image request —
-        // which was costing every phone visitor a full desktop hero.
-        <picture key={`${u}-${idx}`}>
-          {mobile[idx] && <source media={MOBILE_MEDIA} srcSet={mobile[idx]} />}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={u}
-            alt={idx === 0 ? alt : ''}
-            aria-hidden={idx !== 0}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === i % list.length ? 'opacity-100' : 'opacity-0'}`}
-          />
-        </picture>
+        // One <img> per slide from the ACTIVE list only — the inactive
+        // breakpoint's photos are never in the DOM, so they don't download.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={`${u}-${idx}`}
+          src={u}
+          alt={idx === 0 ? alt : ''}
+          aria-hidden={idx !== 0}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === i % list.length ? 'opacity-100' : 'opacity-0'}`}
+        />
       ))}
     </div>
   )
-}
-
-/** RotatingImage with an optional separate PHONE gallery. When `mobileUrls`
- *  has images, phones (< sm) get those portrait crops while desktop keeps the
- *  landscape set — no more bad crops of wide heroes on mobile. With no mobile
- *  set, all screens share `urls`.
- *
- *  Both crops are paired inside one <picture> per slide rather than rendered
- *  as two CSS-hidden galleries, so a phone downloads the phone crop only.
- *  The mobile list is matched by index; if it's shorter, later slides fall
- *  back to the desktop crop for those positions. */
-export function RotatingImage({ urls, mobileUrls, alt = '', className = '', intervalMs = 5000, navEvent }: {
-  urls: string[]
-  mobileUrls?: string[]
-  alt?: string
-  className?: string
-  intervalMs?: number
-  navEvent?: string
-}) {
-  const mobile = (mobileUrls ?? []).filter(Boolean)
-  // A phone-only gallery (no desktop set) still needs something in <img>.
-  const web = urls.filter(Boolean)
-  if (web.length === 0 && mobile.length > 0) {
-    return <RotatingImageCore urls={mobile} alt={alt} className={className} intervalMs={intervalMs} navEvent={navEvent} />
-  }
-  return <RotatingImageCore urls={web} mobileUrls={mobile} alt={alt} className={className} intervalMs={intervalMs} navEvent={navEvent} />
 }
