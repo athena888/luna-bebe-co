@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 
 // Cross-fades through a set of images. On web it auto-rotates every few seconds;
 // on touch it's swipeable (drag left/right to advance). Renders absolutely-
@@ -77,15 +78,22 @@ export function RotatingImage({ urls, mobileUrls, alt = '', className = '', inte
       onTouchEnd={swipe ? onTouchEnd : undefined}
     >
       {list.map((u, idx) => (
-        // One <img> per slide from the ACTIVE list only — the inactive
+        // One slide per entry from the ACTIVE list only — the inactive
         // breakpoint's photos are never in the DOM, so they don't download.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        // Served through the image optimizer, not as the raw upload: the raw
+        // 4000px hero made phones shrink it 4x in the browser, which turned
+        // the fine knit texture into a visible moiré grid (Emily 2026-08-27)
+        // and cost a 4MB download. Pre-resized with a proper filter, no grid.
+        <Image
           key={`${u}-${idx}`}
           src={u}
           alt={idx === 0 ? alt : ''}
           aria-hidden={idx !== 0}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === i % list.length ? 'opacity-100' : 'opacity-0'}`}
+          fill
+          sizes="100vw"
+          quality={88}
+          priority={idx === 0}
+          className={`object-cover transition-opacity duration-1000 ${idx === i % list.length ? 'opacity-100' : 'opacity-0'}`}
         />
       ))}
     </div>
