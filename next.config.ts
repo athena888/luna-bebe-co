@@ -33,6 +33,9 @@ const nextConfig: NextConfig = {
     // once; the key product/box images also pass quality={88} explicitly so
     // their URLs change and the 31-day optimizer cache can't serve old 75s.
     qualities: [88],
+    // Intermediate widths between 2048 and 3840 so a phone hero that needs
+    // ~2900px gets 3072, not a 3840 rendition twice the size.
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 2560, 3072, 3840],
     minimumCacheTTL: 2678400, // 31 days
   },
   // OpenAI Ads rejected the extensionless feed URL with "Unable to save the

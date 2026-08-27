@@ -96,7 +96,7 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
         <section className="relative w-full min-h-[68vh] sm:min-h-[92vh] bg-cream-200 overflow-hidden">
           <ParallaxLayer>
             {/* 2s interval (Emily 2026-08-27) — was 5s. */}
-            <RotatingImage urls={galleries.hero} mobileUrls={galleries['hero.mobile']} alt="Petite Lavande — Timeless Moments, Made With Love" className="hero-fade" navEvent="pl:hero-nav" intervalMs={2000} />
+            <RotatingImage urls={galleries.hero} mobileUrls={galleries['hero.mobile']} alt="Petite Lavande — Timeless Moments, Made With Love" className="hero-fade" navEvent="pl:hero-nav" intervalMs={2000} mobileSizes="125vh" />
           </ParallaxLayer>
           <ScrimOverlay scrimKey="home.hero" defaultHex="#181716" defaultOpacity={0.4} variant="gradient-top" />
           {/* pt reserves a safe zone for the overlaid header so the copy never rides under it */}

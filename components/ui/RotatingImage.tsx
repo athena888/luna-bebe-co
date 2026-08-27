@@ -15,7 +15,7 @@ import Image from 'next/image'
 // (Emily's exact report: two mobile uploads, one web photo, no rotation).
 const MOBILE_MEDIA = '(max-width: 639px)'
 
-export function RotatingImage({ urls, mobileUrls, alt = '', className = '', intervalMs = 5000, navEvent }: {
+export function RotatingImage({ urls, mobileUrls, alt = '', className = '', intervalMs = 5000, navEvent, mobileSizes = '100vw' }: {
   urls: string[]
   mobileUrls?: string[]
   alt?: string
@@ -25,6 +25,11 @@ export function RotatingImage({ urls, mobileUrls, alt = '', className = '', inte
    *  arrow buttons live OUTSIDE this layer — the hero stacks scrim + content
    *  above the image, so buttons rendered here would be unclickable. */
   navEvent?: string
+  /** `sizes` hint used on phones. A landscape photo under object-cover in a
+   *  tall portrait box is scaled to the box HEIGHT, so it needs far more
+   *  than 100vw of pixels — the homepage hero passes '125vh' (68vh box ×
+   *  the photo's 16:9) or phones get a 1080px rendition blown up 2.7×. */
+  mobileSizes?: string
 }) {
   const web = urls.filter(Boolean)
   const mobile = (mobileUrls ?? []).filter(Boolean)
@@ -90,7 +95,7 @@ export function RotatingImage({ urls, mobileUrls, alt = '', className = '', inte
           alt={idx === 0 ? alt : ''}
           aria-hidden={idx !== 0}
           fill
-          sizes="100vw"
+          sizes={isMobile ? mobileSizes : '100vw'}
           quality={88}
           priority={idx === 0}
           className={`object-cover transition-opacity duration-1000 ${idx === i % list.length ? 'opacity-100' : 'opacity-0'}`}
