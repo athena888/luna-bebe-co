@@ -250,7 +250,15 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                     .filter(g => g.items.length > 0)
                     .map(g => (
                       <div key={g.cat}>
-                        <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-300 mb-2">{(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[g.cat]}</p>
+                        {/* 2+ pieces in one category is ambiguous ("both, or pick
+                            one?"). Contents are a flat include-list — no substitute
+                            concept — so every piece IS included: say so. */}
+                        <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-300 mb-2">
+                          {(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[g.cat]}
+                          {g.items.length > 1 && (
+                            <span className="text-bark-400/70"> · {isEs ? 'todo incluido' : 'all included'}</span>
+                          )}
+                        </p>
                         <ul className="space-y-2">
                           {g.items.map(c => (
                             <li key={c.item.id} className="border-b border-cream-200 pb-2">
@@ -277,7 +285,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                                 <span className="w-10 h-10 shrink-0 border border-dashed border-cream-300 bg-cream-100" />
                               )}
                               <span className="font-sans text-sm text-bark-600 group-hover:text-espresso transition-colors">
-                                {c.qty > 1 ? `${c.qty} × ` : ''}{c.item.name}
+                                {c.qty > 1 || g.items.length > 1 ? `${c.qty} × ` : ''}{c.item.name}
                                 {/* The heading counts PIECES, this list shows
                                     ITEMS, and a set counts as its pieces — so
                                     "12 pieces" over 10 rows looked like a bug.

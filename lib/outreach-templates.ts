@@ -28,7 +28,7 @@ If {{company}} ever marks those moments for clients, here's a code that's yours 
 Open to it? I'm glad to send a few photos and details.
 
 Warmly,
-Emily Liu, Founder · Petite Lavande`,
+Petite Lavande`,
   },
   {
     key: 'corporate-intro',
@@ -43,7 +43,7 @@ If {{company}} sends gifts for new parents, baby showers, or VIP clients, here's
 Could I send a quick overview?
 
 Warmly,
-Emily Liu, Founder · Petite Lavande`,
+Petite Lavande`,
   },
 ]
 

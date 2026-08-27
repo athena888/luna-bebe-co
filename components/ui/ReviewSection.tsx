@@ -186,8 +186,13 @@ export function ReviewSection({ productId }: { productId: string }) {
   const [consent, setConsent] = useState(false)
   const [consentText, setConsentText] = useState('')
 
+  // True when the visitor arrived from the review-ask email (…?rt=…#reviews).
+  // Those buyers must always see the section — see the visibility gate below.
+  const [invited, setInvited] = useState(false)
+
   useEffect(() => {
     fetch('/api/ugc').then(r => r.json()).then(d => setConsentText(d.consentText || '')).catch(() => {})
+    setInvited(new URLSearchParams(window.location.search).has('rt'))
   }, [])
 
   useEffect(() => {
@@ -248,6 +253,15 @@ export function ReviewSection({ productId }: { productId: string }) {
       setSubmitState('error')
     }
   }
+
+  // Zero approved reviews → render nothing (no heading, no Write a Review, no
+  // loading line): a product with no reviews shouldn't advertise its emptiness.
+  // Kept alive for: review-ask email visitors (?rt= — else the FIRST review
+  // could never be written and the email's #reviews deep link lands on
+  // nothing), an open form, and the post-submit thank-you (the new review is
+  // unapproved, so the list is still empty right after submitting).
+  if (loading) return null
+  if (reviews.length === 0 && !invited && !showForm && submitState !== 'done') return null
 
   const avgRating = reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0
   const inputClass = "w-full px-4 py-3 border border-cream-300 bg-cream-50 font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-bark-400 transition-colors"
