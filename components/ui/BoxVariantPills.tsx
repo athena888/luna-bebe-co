@@ -38,6 +38,14 @@ export function BoxVariantPills({ variants, selectedKey, boxName }: {
   // keeps its own position (its start-scroll effect runs on mount only).
   const navigatedTo = useRef(selectedKey)
 
+  // A pill click (or back/forward) changes the URL variant: the gallery then
+  // jumps to it and announces it. Resync first so that announcement is seen
+  // as "already here" — otherwise it would replace() the same URL again.
+  useEffect(() => {
+    navigatedTo.current = selectedKey
+    setHighlightKey(selectedKey)
+  }, [selectedKey])
+
   useEffect(() => {
     const onGallery = (e: Event) => {
       const key = (e as CustomEvent<{ key?: string }>).detail?.key

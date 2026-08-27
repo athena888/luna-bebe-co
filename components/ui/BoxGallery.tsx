@@ -63,6 +63,19 @@ export function BoxGallery({ images, alt, startKey }: { images: GalleryImage[]; 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // A pill click navigates to ?variant=… and the page re-renders with a new
+  // startKey while this component stays mounted — idx state would otherwise
+  // stay put and the photos never change (the bug Emily saw). Jump to that
+  // variant's first photo. No-op when the visible photo already belongs to
+  // it, which is exactly the case after a swipe-driven replace(), so swipe
+  // and click can never chase each other.
+  useEffect(() => {
+    if (!startKey || images[idx]?.variantKey === startKey) return
+    const first = images.findIndex(i => i.variantKey === startKey)
+    if (first >= 0) goTo(first)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startKey])
+
   // Lightbox: keyboard nav + body scroll lock.
   useEffect(() => {
     if (!open) return
