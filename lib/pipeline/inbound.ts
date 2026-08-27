@@ -134,7 +134,7 @@ const UNSUB_CONFIRM_BODY = (firstName: string) => `Hi ${firstName || 'there'},
 Understood — you're removed from our list and you won't hear from us again. Sorry for the interruption, and all the best.
 
 Warmly,
-Emily Liu, Founder · Petite Lavande`
+Petite Lavande`
 
 /** Suppress a prospect who asked out + queue a confirm-once draft for approval. */
 export async function handleProspectUnsubscribe(fromEmail: string): Promise<boolean> {

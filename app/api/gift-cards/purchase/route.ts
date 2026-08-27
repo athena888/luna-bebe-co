@@ -19,7 +19,8 @@ export async function POST(req: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
+      // No payment_method_types — same as the main checkout: the Stripe
+      // Dashboard's enabled payment methods (wallets included) apply here too.
       line_items: [{
         price_data: {
           currency: 'usd',
