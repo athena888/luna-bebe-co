@@ -5,6 +5,7 @@ import { CollectionsSection } from '@/components/ui/CollectionsSection'
 import { PrebuiltBoxesSection } from '@/components/ui/PrebuiltBoxesSection'
 import { TheCollection } from '@/components/ui/TheCollection'
 import { RotatingImage } from '@/components/ui/RotatingImage'
+import { HeroArrows } from '@/components/ui/HeroArrows'
 import { ScrimOverlay } from '@/components/ui/ScrimOverlay'
 import { ParallaxLayer } from '@/components/ui/ParallaxLayer'
 import { getHomeContent } from '@/lib/home-content'
@@ -94,20 +95,21 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
         {/* Mobile hero trimmed 85vh → 68vh (Emily 2026-08-26: −20%); desktop keeps 92vh. */}
         <section className="relative w-full min-h-[68vh] sm:min-h-[92vh] bg-cream-200 overflow-hidden">
           <ParallaxLayer>
-            <RotatingImage urls={galleries.hero} mobileUrls={galleries['hero.mobile']} alt="Petite Lavande — Timeless Moments, Made With Love" className="hero-fade" />
+            <RotatingImage urls={galleries.hero} mobileUrls={galleries['hero.mobile']} alt="Petite Lavande — Timeless Moments, Made With Love" className="hero-fade" navEvent="pl:hero-nav" />
           </ParallaxLayer>
           <ScrimOverlay scrimKey="home.hero" defaultHex="#181716" defaultOpacity={0.4} variant="gradient-top" />
           {/* pt reserves a safe zone for the overlaid header so the copy never rides under it */}
           <div className="relative z-10 w-full min-h-[68vh] sm:min-h-[92vh] px-6 sm:px-12 pt-36 sm:pt-44 pb-10 sm:pb-14 flex flex-col justify-end items-end">
-            {/* Cream plate behind the hero copy (Emily 2026-08-26: dark plate
-                rejected — "黑色底不好看"): ivory panel + espresso text keeps the
-                copy legible on any photo without the heavy dark block. */}
-            <div className="hero-rise w-full max-w-[320px] sm:max-w-md text-right bg-cream-50/85 backdrop-blur-[2px] p-5 sm:p-7" style={{ animationDelay: '0.35s' }}>
+            {/* No plate (Emily 2026-08-27: both the dark and the cream panel
+                were rejected — text sits straight on the photo like the L&F
+                reference). The drop shadow on the h1 is the only legibility
+                aid, plus whatever scrim the portal sets. */}
+            <div className="hero-rise w-full max-w-[320px] sm:max-w-md text-right" style={{ animationDelay: '0.35s' }}>
               {/* The tagline IS the h1 now. The "We see the mother" headline was
                   removed 2026-08-24; leaving the hero with no h1 at all would cost
                   the homepage its strongest on-page keyword signal. Visual weight
                   is unchanged — only the tag differs. */}
-              <h1 className="font-serif text-espresso text-base sm:text-xl leading-relaxed mb-6">
+              <h1 className="font-serif text-cream-50 drop-shadow-[0_1px_10px_rgba(0,0,0,0.5)] text-base sm:text-xl leading-relaxed mb-6">
                 {s('hero.sub', 'Luxury organic baby shower gift boxes — For mama and baby')}
               </h1>
               <Link
@@ -118,6 +120,7 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
               </Link>
             </div>
           </div>
+          <HeroArrows />
         </section>
 
         {/* ── Launch marquee — runs right below the hero ── */}

@@ -16,9 +16,13 @@ async function getStats() {
   const orders = ordersRes.data ?? []
   const issues = issuesRes.data ?? []
 
-  const totalRevenue = orders.reduce((sum, o) => sum + (o.total_amount ?? 0), 0)
-  const totalOrders = orders.length
-  const pendingOrders = orders.filter((o) => o.status === 'pending' || o.status === 'processing').length
+  // PAID numbers only (Emily 2026-08-27: dashboard must sync with the Orders
+  // page). `pending` rows are unpaid checkout plumbing, never money; refunds
+  // leave the order count but not the revenue.
+  const paid = orders.filter((o) => o.status !== 'pending')
+  const totalRevenue = paid.filter((o) => o.status !== 'refunded').reduce((sum, o) => sum + (o.total_amount ?? 0), 0)
+  const totalOrders = paid.length
+  const pendingOrders = paid.filter((o) => o.status === 'processing').length
   const openIssues = issues.filter((i) => i.status === 'open' || i.status === 'in_progress').length
 
   return { totalRevenue, totalOrders, pendingOrders, openIssues }
@@ -30,7 +34,7 @@ export default async function PortalDashboard() {
   const CARDS = [
     { label: 'Total Revenue', value: formatPrice(stats.totalRevenue), icon: <DollarSign size={22} className="text-gold-400" />, bg: 'bg-gold-100/20' },
     { label: 'Total Orders', value: stats.totalOrders.toString(), icon: <ShoppingBag size={22} className="text-sage-400" />, bg: 'bg-sage-100/20' },
-    { label: 'Pending Orders', value: stats.pendingOrders.toString(), icon: <Clock size={22} className="text-bark-400" />, bg: 'bg-cream-200/40' },
+    { label: 'To Fulfill', value: stats.pendingOrders.toString(), icon: <Clock size={22} className="text-bark-400" />, bg: 'bg-cream-200/40' },
     { label: 'Open Issues', value: stats.openIssues.toString(), icon: <AlertCircle size={22} className="text-rose-400" />, bg: 'bg-rose-100/20' },
   ]
 
