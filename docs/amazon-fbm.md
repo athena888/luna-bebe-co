@@ -1,7 +1,7 @@
 # Amazon 上架計畫 v2 — FBA · 只賣針織毯
 
-**方向(Emily 定案 2026-08-27):** FBA、單一品類 —— 針織嬰兒毯,一個 parent listing + 圖案變體(Winter / Little Lemon / Farmhouse / Little Sheep / Strawberry Fields / Squirrel & Pinecone)。
-(v1 的 FBM 整箱方案作廢;毯子不是自製 → **Handmade 不適用**,走一般 Seller Central。)
+**方向(Emily 定案 2026-08-27):** FBA、單一品項 —— **Fine Knit Pointelle Blanket(素色純棉針織,`garment-fj-055-2`)**,一個 parent listing + 五個顏色變體:**Sage / Pink / Blue / Cream / Oat**。
+(先前寫的六個圖案款是盒裝內容物,撈錯對象,作廢。v1 的 FBM 整箱方案作廢;毯子非自製 → Handmade 不適用,走一般 Seller Central。)
 
 ## 為什麼這個組合是對的
 
@@ -33,24 +33,25 @@
 
 其他設定:Professional 帳號 $39.99/月(跑變體和廣告工具需要)。商標還沒有的話,Brand Registry 先跳過,不擋上架。
 
-## Listing(一個 parent,六個 child)
+## Listing(一個 parent,五個顏色 child)
 
 **Parent Title:**
-> Petite Lavande Knit Baby Blanket – Soft Cotton Nursery Blanket for Newborns, Boys & Girls – Breathable All-Season Crib & Stroller Blanket, Baby Shower Gift (choose pattern)
+> Petite Lavande Organic Cotton Knit Baby Blanket – Soft Pointelle Knit Nursery Blanket for Newborns – Breathable All-Season Crib & Stroller Blanket, Neutral Baby Shower Gift (5 Colors)
 
 **Bullets:**
-1. **HEIRLOOM-SOFT KNIT** – A dense, buttery knit that gets softer with every wash; gentle on newborn skin from day one
-2. **SIX NURSERY-READY PATTERNS** – Winter, Little Lemon, Farmhouse, Little Sheep, Strawberry Fields, and Squirrel & Pinecone — pick the one that fits their nursery
-3. **ALL-SEASON WEIGHT** – Breathable enough for summer strolls, warm enough for winter cribs; generous size for swaddling, tummy time and toddler years
-4. **THE BABY SHOWER GIFT THEY KEEP** – Arrives gift-ready; the blanket every photo gets taken on
+1. **HEIRLOOM-SOFT ORGANIC COTTON** – A dense pointelle knit that gets softer with every wash; gentle on newborn skin from day one
+2. **FIVE QUIET NURSERY COLORS** – Sage, Pink, Blue, Cream and Oat — solid colorways that fit any nursery, no loud prints
+3. **ALL-SEASON WEIGHT** – Breathable for summer strolls, warm for winter cribs; generous size for swaddling, tummy time and toddler years
+4. **THE BABY SHOWER GIFT THEY KEEP** – Woven Petite Lavande label, gift-ready — the blanket every photo gets taken on
 5. **EASY CARE** – Machine wash cold, tumble dry low; keeps its shape and stitch
 
 **後台搜尋字:**
-`knit baby blanket cotton newborn receiving crib stroller nursery neutral boy girl baby shower gift keepsake heirloom soft breathable`
+`organic cotton knit baby blanket newborn receiving crib stroller nursery neutral sage pink blue cream oat baby shower gift keepsake soft breathable`
 
-> 素材/尺寸/克重/成分照實填 —— bullet 裡的 cotton 與機洗宣稱,以實際供應商規格為準修改。
+> ⚠️ **「Organic」宣稱:** 標籤印著 ORGANIC COTTON,Amazon 對 organic 字樣可能要求佐證(GOTS/OCS 供應商證書)。跟站上同一條紀律:拿得出供應商證書就寫 organic,拿不出就把 title/bullet 的 organic 拿掉 — 別讓一個字下架整個 listing。
+> ⚠️ 機洗/尺寸/克重宣稱照供應商規格核實後再貼。
 
-**圖片:** 白底主圖(平鋪 + 一角翻起顯示織紋)、尺寸標註圖、寶寶情境照(現有素材)、六花色合照、織紋特寫。
+**圖片:** 白底主圖(平鋪 + 一角翻起顯示織紋)、尺寸標註圖、五色合照、織紋+布標特寫(現有實拍可用)、寶寶情境照。
 
 ## 步驟順序
 
@@ -59,5 +60,6 @@
 3. 開 Professional 帳號
 4. 建 parent-child listing(文案照上面)
 5. 拍白底主圖
-6. 首批入倉:每花色 **20–30 件**(別多 —— 滯銷有 aged-inventory 附加費;賣穿再補)
-7. 上架前 2 週把六個 child 全部備齊再發布(蜜月期加權只有一次)
+6. 首批入倉:每色 **20–30 件**(別多 —— 滯銷有 aged-inventory 附加費;賣穿再補)
+7. 上架前把五個顏色 child 全部備齊再一次發布(蜜月期加權只有一次)
+8. **標籤補強:** 現在縫的品牌標沒有批號/日期(CPSIA 追蹤標要素)— 讓供應商在洗標加上,或先用包裝印刷/吊牌補上 batch + date
