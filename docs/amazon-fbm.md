@@ -1,76 +1,63 @@
-# Amazon FBM 上架包 — Petite Lavande
+# Amazon 上架計畫 v2 — FBA · 只賣針織毯
 
-**路線(已定):** Handmade 帳號(免 $39.99 月費)→ 申請 **Amazon Custom**(開放買家輸入卡片文字)→ FBM 自出貨 → 先上 2 個 SKU 試水。
+**方向(Emily 定案 2026-08-27):** FBA、單一品類 —— 針織嬰兒毯,一個 parent listing + 圖案變體(Winter / Little Lemon / Farmhouse / Little Sheep / Strawberry Fields / Squirrel & Pinecone)。
+(v1 的 FBM 整箱方案作廢;毯子不是自製 → **Handmade 不適用**,走一般 Seller Central。)
 
-> ⚠️ 價格與內容物以 Portal 為準再貼 — 本文用的是 repo 種子資料,已知 The Petite 線上實際為 $65–95(非種子的 $50)。
+## 為什麼這個組合是對的
 
----
+- 規格統一、輕、可壓縮 → FBA 倉儲/配送費最友善的品型
+- 不需要個人化 → FBA 出貨無損你的賣點
+- **Prime 標** → 自然排名和轉換的最大加成,FBM 給不了
+- 六個花色掛同一個 parent → **評價全家共享**,冷啟動快六倍
+- 「knit baby blanket」搜尋量大,而且是送禮詞
 
-## 開帳設定(一次性)
+## 一單的帳(先看清楚再投)
 
-| 設定 | 值 | 為什麼 |
-|---|---|---|
-| 帳號類型 | Handmade(申請制) | 免月費、符合手工打包定位、可搭 Custom |
-| Handling time | **2 天** | 對齊「24 小時內開始組裝」;遲出貨率紅線 <4% |
-| 出貨方式 | 你現有的 Shippo(USPS/UPS) | 上傳追蹤號 ≥95% 是硬指標 |
-| 退貨 | 接受 30 天退貨 | Amazon 標配,不接受會影響帳號 |
-| GTIN/UPC | Handmade 免;若走一般帳號需申請 GTIN exemption | 你的產品沒有 UPC |
-| 定價 | **與 petitelavande.com 一致** | Amazon 偵測到別處更便宜會壓 listing;15% 佣金當獲客成本吞下 |
-| Custom 欄位 | 文字 1 欄:「Card message (up to 70 characters)」 | 對齊站上卡片 70 字上限,印卡流程不用改 |
+零售 $29.99(站上現價)估算:
 
-⚠️ **合規預警:** New Mom 系列含浴鹽/沐浴品 → Amazon 可能歸類 topical,要求成分表照片(產品標籤上要有 ingredients)。你的 Site Bath Salt Soak 標籤已印成分,拍清楚備用。
+| 項目 | 估算 |
+|---|---|
+| 佣金 15% | −$4.50 |
+| FBA 配送費(large standard, ~1 lb) | 約 −$6.00 |
+| 入倉分倉費 + 倉租攤提 | 約 −$0.80 |
+| **Amazon 拿走** | **≈ $11.30(38%)** |
+| 剩給你(未扣產品成本) | ≈ $18.70 |
 
----
+毯子進貨成本若 $10–12,每單淨賺約 **$7–9** —— 做得起,但不肥。**建議 Amazon 定價 $34.99–36.99**;因為價格一致性,站上同步調到同一價(順便給你自己站多賺)。
 
-## SKU 1 — The Petite(建議首發)
+## ⚠️ 三個上架前的硬門檻(FBM 沒有、FBA 跑不掉)
 
-**Title(≤200 字元):**
-> Petite Lavande Organic Baby Gift Box – Newborn Gift Basket with Knit Toy, Muslin Swaddle & Lavender Sachet – Hand-Packed Baby Shower Gift, Personalized Card Option (4-Piece)
+1. **CPSIA 兒童產品合規 —— 最大的一關。** 嬰兒毯是兒童產品,Amazon 會要 **CPC(Children's Product Certificate)+ 第三方實驗室測試報告**(鉛/鄰苯二甲酸酯、燃燒性 16 CFR 1610)。先問你的毯子供應商有沒有現成報告 —— 有就直接用;沒有,送測一款約 $300–800。**沒這個,listing 隨時被下架。**
+2. **UPC 條碼。** 一般帳號每個變體要一個 GTIN → 上 GS1 買(10 個約 $30/年,六個花色剛好夠)。別買便宜轉售碼,Amazon 會驗 GS1 註冊人。
+3. **FBA 預處理。** 每件透明袋包裝 + 窒息警告標 + FNSKU 條碼貼標(可付費讓 Amazon 代貼,$0.55/件)。
 
-**Bullet points:**
-1. **THOUGHTFULLY CURATED, NEVER FILLER** – Four full-size pieces a newborn will actually use: an organic cotton muslin swaddle, a hand-knit toy, a beechwood rattle keepsake, and a dried lavender sachet
-2. **ORGANIC COTTON, GENTLE MATERIALS** – Baby textiles in soft organic cotton; natural beechwood; no plastic filler, ever
-3. **ARRIVES GIFT-READY** – Nested in a woven seagrass basket with lid, ribbon-tied and sealed by hand — no wrapping needed, ship it straight to the shower or the new parents' door
-4. **ADD A PERSONAL CARD (FREE)** – Use the customization box to add your message (up to 70 characters); we print it on a keepsake card and tuck it inside
-5. **HAND-PACKED IN THE USA** – Assembled to order in our Seattle studio and shipped within 2 business days
+其他設定:Professional 帳號 $39.99/月(跑變體和廣告工具需要)。商標還沒有的話,Brand Registry 先跳過,不擋上架。
 
-**Search terms(後台,≤249 bytes):**
-`baby shower gift basket organic newborn box new baby present gender neutral welcome baby hamper muslin swaddle knit toy keepsake luxury`
+## Listing(一個 parent,六個 child)
 
-**價格:** 對齊站上(目前 $65–95,依 variant)。變體:照站上的 tier/variant 建 Amazon variation。
+**Parent Title:**
+> Petite Lavande Knit Baby Blanket – Soft Cotton Nursery Blanket for Newborns, Boys & Girls – Breathable All-Season Crib & Stroller Blanket, Baby Shower Gift (choose pattern)
 
----
+**Bullets:**
+1. **HEIRLOOM-SOFT KNIT** – A dense, buttery knit that gets softer with every wash; gentle on newborn skin from day one
+2. **SIX NURSERY-READY PATTERNS** – Winter, Little Lemon, Farmhouse, Little Sheep, Strawberry Fields, and Squirrel & Pinecone — pick the one that fits their nursery
+3. **ALL-SEASON WEIGHT** – Breathable enough for summer strolls, warm enough for winter cribs; generous size for swaddling, tummy time and toddler years
+4. **THE BABY SHOWER GIFT THEY KEEP** – Arrives gift-ready; the blanket every photo gets taken on
+5. **EASY CARE** – Machine wash cold, tumble dry low; keeps its shape and stitch
 
-## SKU 2 — New Mom Gift Box(Wellness)
+**後台搜尋字:**
+`knit baby blanket cotton newborn receiving crib stroller nursery neutral boy girl baby shower gift keepsake heirloom soft breathable`
 
-**Title:**
-> Petite Lavande New Mom Gift Box – Postpartum Care Package for Women with Bath Salts, Lavender Eye Pillow & Porcelain Cup – Hand-Packed Self Care Gift Basket (6-Piece)
+> 素材/尺寸/克重/成分照實填 —— bullet 裡的 cotton 與機洗宣稱,以實際供應商規格為準修改。
 
-**Bullet points:**
-1. **FOR HER, NOT JUST THE BABY** – A wellness set that celebrates the mother: botanical bath salts, a lavender eye pillow, a porcelain petite cup, bath melts, a lavender sachet and a dried lavender bouquet
-2. **A REAL MOMENT OF REST** – Everything she needs for ten quiet minutes: warm tea, a dark-room eye pillow, a restorative soak
-3. **ARRIVES GIFT-READY** – Woven seagrass basket with lid, ribbon-tied and hand-sealed — no wrapping needed
-4. **ADD A PERSONAL CARD (FREE)** – Your message (up to 70 characters) printed on a keepsake card
-5. **HAND-PACKED IN THE USA** – Assembled to order in Seattle, shipped within 2 business days
+**圖片:** 白底主圖(平鋪 + 一角翻起顯示織紋)、尺寸標註圖、寶寶情境照(現有素材)、六花色合照、織紋特寫。
 
-**Search terms:**
-`new mom gift basket postpartum care package self care gifts for women after birth mom to be pregnancy gift relaxation spa lavender bath`
+## 步驟順序
 
-**價格:** 對齊站上($135 Wellness / $145 Postpartum,以 Portal 為準)。
-
----
-
-## 圖片清單(兩個 SKU 通用)
-
-1. 主圖:純白底、產品佔 85%(Amazon 硬規定 — 你現有的情境照**不能**當主圖,需要拍一張白底)
-2. 開箱俯視(現有素材可用)
-3. 內容物平鋪 + 標註
-4. 卡片特寫(展示個人化)
-5. 尺寸/比例參考圖
-6. 生活情境照(現有 hero 素材)
-
-## 上架後 30 天
-
-- 開 **Amazon Vine**?Handmade 不適用 — 評價只能靠真單,把站上學到的耐心用上
-- 每週看 Search Query Performance,把實際搜到你的詞補進 title/bullets
-- 蜜月期(前 2–4 週)排名加權最高 — 上架當天就要圖文齊全,不要先上再補
+1. 問供應商要 CPSIA 測試報告(**今天就發訊息,這是最長前置**)
+2. GS1 買 UPC ×10
+3. 開 Professional 帳號
+4. 建 parent-child listing(文案照上面)
+5. 拍白底主圖
+6. 首批入倉:每花色 **20–30 件**(別多 —— 滯銷有 aged-inventory 附加費;賣穿再補)
+7. 上架前 2 週把六個 child 全部備齊再發布(蜜月期加權只有一次)
