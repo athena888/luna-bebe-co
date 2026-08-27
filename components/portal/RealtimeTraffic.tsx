@@ -3,6 +3,30 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Activity, Users, Eye, Loader } from 'lucide-react'
 
+type Funnel = { view_item: number; add_to_cart: number; begin_checkout: number; purchase: number }
+
+/** One funnel row. `live` styles the realtime row apart from the daily one. */
+function FunnelRow({ title, funnel, live = false }: { title: string; funnel: Funnel; live?: boolean }) {
+  return (
+    <div className="mb-4">
+      <p className="font-sans text-[10px] tracking-[0.14em] uppercase text-bark-400 mb-2">{title}</p>
+      <div className="grid grid-cols-4 gap-2">
+        {([
+          ['Viewed', funnel.view_item],
+          ['Added', funnel.add_to_cart],
+          ['Checkout', funnel.begin_checkout],
+          ['Bought', funnel.purchase],
+        ] as const).map(([label, n]) => (
+          <div key={label} className={`rounded-lg border px-3 py-2 text-center ${live ? 'bg-sage-50 border-sage-200' : 'bg-white border-cream-200'}`}>
+            <p className={`font-serif text-xl ${live && n > 0 ? 'text-sage-600' : 'text-bark-600'}`}>{n}</p>
+            <p className="font-sans text-[9px] tracking-[0.12em] uppercase text-bark-400 mt-0.5">{label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 interface Snapshot {
   configured: boolean
   /** false = credentials present but the property can't be read (see `hint`). */
@@ -13,7 +37,8 @@ interface Snapshot {
   todayUsers?: number
   todayPageViews?: number
   topPages?: Array<{ path: string; views: number }>
-  funnel?: { view_item: number; add_to_cart: number; begin_checkout: number; purchase: number }
+  funnel?: Funnel
+  liveFunnel?: Funnel
   error?: string
 }
 
@@ -118,30 +143,15 @@ export function RealtimeTraffic() {
         <Stat icon={<Eye size={18} className="text-bark-400" />} label="Views today" value={data?.todayPageViews ?? 0} />
       </div>
 
-      {/* Today's funnel. Shown even at zero: "12 viewed, 0 added" is the most
-          useful sentence this card can say, and hiding it would read as broken
-          rather than as an honest zero. */}
-      {data?.funnel && (
-        <div className="mb-5">
-          <p className="font-sans text-[10px] tracking-[0.14em] uppercase text-bark-400 mb-2">Today&apos;s funnel</p>
-          <div className="grid grid-cols-4 gap-2">
-            {([
-              ['Viewed', data.funnel.view_item],
-              ['Added', data.funnel.add_to_cart],
-              ['Checkout', data.funnel.begin_checkout],
-              ['Bought', data.funnel.purchase],
-            ] as const).map(([label, n]) => (
-              <div key={label} className="bg-white rounded-lg border border-cream-200 px-3 py-2 text-center">
-                <p className="font-serif text-xl text-bark-600">{n}</p>
-                <p className="font-sans text-[9px] tracking-[0.12em] uppercase text-bark-400 mt-0.5">{label}</p>
-              </div>
-            ))}
-          </div>
-          <p className="font-sans text-[10px] text-bark-300 mt-2">
-            Counts exclude your own browsing — the portal flags this browser as internal.
-          </p>
-        </div>
-      )}
+      {/* Two horizons, because they answer different questions and have very
+          different latency. The live row moves within seconds of a click —
+          that is the one to watch when testing. The daily row lags GA4's
+          processing and is the one to read for how the day is going. */}
+      {data?.liveFunnel && <FunnelRow title="Last 30 minutes · live" funnel={data.liveFunnel} live />}
+      {data?.funnel && <FunnelRow title="Today" funnel={data.funnel} />}
+      <p className="font-sans text-[10px] text-bark-300 mb-5">
+        Excludes your own browsing — the portal flags this browser as internal.
+      </p>
 
       {!!data?.topPages?.length && (
         <div>

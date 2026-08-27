@@ -30,11 +30,34 @@ export interface GaSnapshot {
   todayPageViews: number       // page views today
   topPages: Array<{ path: string; views: number }>
   /** Today's funnel, by GA4 event name. Missing events are 0, not absent. */
-  funnel: { view_item: number; add_to_cart: number; begin_checkout: number; purchase: number }
+  funnel: Funnel
+  /**
+   * The SAME four events over the last 30 minutes, from the Realtime API.
+   * Standard reports lag GA4's processing — usually minutes, sometimes hours —
+   * which makes them useless for "did the click I just made register?". This
+   * row answers that in seconds; the daily row above answers "how did today go".
+   */
+  liveFunnel: Funnel
 }
 
 /** The funnel steps the portal shows, in order. */
 export const FUNNEL_EVENTS = ['view_item', 'add_to_cart', 'begin_checkout', 'purchase'] as const
+
+export type Funnel = { view_item: number; add_to_cart: number; begin_checkout: number; purchase: number }
+
+/** GA4 rows (eventName, eventCount) -> a funnel with explicit zeros. */
+function toFunnel(rows: Array<{ dimensionValues?: Array<{ value?: string | null }> | null; metricValues?: Array<{ value?: string | null }> | null }> | null | undefined): Funnel {
+  const counts = new Map<string, number>()
+  for (const r of rows ?? []) {
+    counts.set(r.dimensionValues?.[0]?.value ?? '', Number(r.metricValues?.[0]?.value ?? 0))
+  }
+  return {
+    view_item: counts.get('view_item') ?? 0,
+    add_to_cart: counts.get('add_to_cart') ?? 0,
+    begin_checkout: counts.get('begin_checkout') ?? 0,
+    purchase: counts.get('purchase') ?? 0,
+  }
+}
 
 /** Sessions per day for the last `days` days, keyed 'YYYYMMDD' (GA4 date
  *  dimension format). Used by the weekly scorecard to compute CVR. */
@@ -96,16 +119,15 @@ export async function getRealtimeSnapshot(): Promise<GaSnapshot> {
     dimensions: [{ name: 'eventName' }],
     metrics: [{ name: 'eventCount' }],
   })
-  const counts = new Map<string, number>()
-  for (const r of events.rows ?? []) {
-    counts.set(r.dimensionValues?.[0]?.value ?? '', Number(r.metricValues?.[0]?.value ?? 0))
-  }
-  const funnel = {
-    view_item: counts.get('view_item') ?? 0,
-    add_to_cart: counts.get('add_to_cart') ?? 0,
-    begin_checkout: counts.get('begin_checkout') ?? 0,
-    purchase: counts.get('purchase') ?? 0,
-  }
+  const funnel = toFunnel(events.rows)
 
-  return { activeUsers, todayUsers, todayPageViews, topPages, funnel }
+  // Same events, last 30 minutes, from the Realtime API — no processing lag.
+  const [liveEvents] = await analytics.runRealtimeReport({
+    property,
+    dimensions: [{ name: 'eventName' }],
+    metrics: [{ name: 'eventCount' }],
+  })
+  const liveFunnel = toFunnel(liveEvents.rows)
+
+  return { activeUsers, todayUsers, todayPageViews, topPages, funnel, liveFunnel }
 }
