@@ -1,0 +1,25 @@
+{
+  "seeds": [
+    {"company": "Pacifica Law Group", "domain": "pacificalawgroup.com", "metro": "Seattle", "industry": "law", "employee_est": 90},
+    {"company": "Limeade", "domain": "limeade.com", "metro": "Seattle", "industry": "tech", "employee_est": 267},
+    {"company": "McKinley Irvin", "domain": "mckinleyirvin.com", "metro": "Seattle", "industry": "law", "employee_est": 100},
+    {"company": "Cascadia Capital", "domain": "cascadiacapital.com", "metro": "Seattle", "industry": "finance", "employee_est": 180},
+    {"company": "Metia", "domain": "metia.com", "metro": "Seattle", "industry": "consulting", "employee_est": 210},
+    {"company": "Sila Solutions Group", "domain": "silasg.com", "metro": "Seattle", "industry": "consulting", "employee_est": 132},
+    {"company": "Wilson Turner Kosmo LLP", "domain": "wilsonturnerkosmo.com", "metro": "San Diego", "industry": "law", "employee_est": 70},
+    {"company": "Seltzer Caplan McMahon Vitek", "domain": "scmv.com", "metro": "San Diego", "industry": "law", "employee_est": 90},
+    {"company": "H.G. Fenton Company", "domain": "hgfenton.com", "metro": "San Diego", "industry": "real_estate", "employee_est": 269},
+    {"company": "TATEEDA GLOBAL", "domain": "tateeda.com", "metro": "San Diego", "industry": "tech", "employee_est": 120},
+    {"company": "Kneron", "domain": "kneron.com", "metro": "San Diego", "industry": "tech", "employee_est": 150},
+    {"company": "ConAm Management Corporation", "domain": "conam.com", "metro": "San Diego", "industry": "real_estate", "employee_est": 130},
+    {"company": "centrexIT", "domain": "centrexit.com", "metro": "San Diego", "industry": "tech", "employee_est": 65}
+  ],
+  "leads": [
+    {"domain": "pacificalawgroup.com", "person_name": "Bethany Brown", "title": "Director of People and Operations", "source_url": "https://www.pacificalawgroup.com/staff/bethany-brown/", "bio_url": "https://www.pacificalawgroup.com/staff/bethany-brown/"},
+    {"domain": "mckinleyirvin.com", "person_name": "Mary Tomblinson", "title": "Director of Human Resources", "source_url": "https://www.linkedin.com/in/marytomblinson/", "bio_url": "https://www.linkedin.com/in/marytomblinson/"},
+    {"domain": "cascadiacapital.com", "person_name": "Lindsey Monteleone", "title": "Chief Human Resources Officer", "source_url": "https://www.cascadiacapital.com/team/lindsey-monteleone/", "bio_url": "https://www.cascadiacapital.com/team/lindsey-monteleone/"},
+    {"domain": "scmv.com", "person_name": "Wendy Whitemore", "title": "Firm Administrator", "source_url": "https://www.linkedin.com/in/wendy-whitemore-8a2118b3/", "bio_url": "https://www.linkedin.com/in/wendy-whitemore-8a2118b3/"},
+    {"domain": "conam.com", "person_name": "Allison Owen", "title": "Sr. Vice President of Human Resources", "source_url": "https://www.conam.com/about-us/team/allison-owen/", "bio_url": "https://www.conam.com/about-us/team/allison-owen/"},
+    {"domain": "hgfenton.com", "person_name": "Jennifer Bornstein", "title": "Vice President of Human Resources", "source_url": "https://hgfenton.com/h-g-fenton-company-promotes-robert-gottlieb-jennifer-bornstein/", "bio_url": "https://hgfenton.com/h-g-fenton-company-promotes-robert-gottlieb-jennifer-bornstein/"}
+  ]
+}
