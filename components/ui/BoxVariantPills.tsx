@@ -73,7 +73,7 @@ export function BoxVariantPills({ variants, selectedKey, boxName }: {
         >
           {v.image && (
             <span className="relative w-9 h-9 shrink-0 overflow-hidden">
-              <Image src={v.image} alt={`${boxName} — ${v.label} option`} fill className="object-cover" />
+              <Image quality={88} src={v.image} alt={`${boxName} — ${v.label} option`} fill className="object-cover" />
             </span>
           )}
           {v.text}

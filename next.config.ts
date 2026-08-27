@@ -25,6 +25,14 @@ const nextConfig: NextConfig = {
     // Serve modern, smaller formats and cache transforms aggressively.
     // (Only applies to <Image> NOT marked `unoptimized`.)
     formats: ['image/avif', 'image/webp'],
+    // Delivery quality (Emily 2026-08-27): the default 75 turned 1200x1600
+    // product photos into ~70KB AVIFs that smoothed knit and fabric texture
+    // away — "every photo looks lower-res". With 88 as the ONLY allowed
+    // quality, every <Image> that omits `quality` is coerced to it (Next
+    // snaps to the closest allowed value), so the whole storefront lifts at
+    // once; the key product/box images also pass quality={88} explicitly so
+    // their URLs change and the 31-day optimizer cache can't serve old 75s.
+    qualities: [88],
     minimumCacheTTL: 2678400, // 31 days
   },
   // OpenAI Ads rejected the extensionless feed URL with "Unable to save the

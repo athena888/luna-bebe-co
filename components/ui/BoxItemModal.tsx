@@ -155,7 +155,7 @@ export function BoxItemModalTrigger({ item, isEs = false, children, className = 
                           style={{ aspectRatio: '3/4' }}
                           aria-label={`Photo ${i + 1}`}
                         >
-                          <Image src={src} alt={`${p.name} — photo ${i + 1}`} fill className="object-cover" sizes="80px" />
+                          <Image quality={88} src={src} alt={`${p.name} — photo ${i + 1}`} fill className="object-cover" sizes="80px" />
                         </button>
                       ))}
                     </div>
@@ -163,7 +163,7 @@ export function BoxItemModalTrigger({ item, isEs = false, children, className = 
                   <div className="order-1 sm:order-2 relative flex-1 bg-cream-50 overflow-hidden touch-pan-y select-none" style={{ aspectRatio: '3/4' }} {...swipe}>
                     {mainSrc ? (
                       <button type="button" onClick={() => setZoom(true)} className="absolute inset-0 cursor-zoom-in group">
-                        <Image src={mainSrc} alt={p.name} fill className="object-cover" sizes="(max-width:1023px) 90vw, 520px" draggable={false} />
+                        <Image quality={88} src={mainSrc} alt={p.name} fill className="object-cover" sizes="(max-width:1023px) 90vw, 520px" draggable={false} />
                         <span className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-cream-50/85 text-bark-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                           <ZoomIn size={13} />
                         </span>
@@ -231,7 +231,7 @@ export function BoxItemModalTrigger({ item, isEs = false, children, className = 
                 </button>
               </div>
               <div className="relative flex-1 min-h-0 touch-pan-y select-none" onClick={e => e.stopPropagation()} {...swipe}>
-                <Image src={mainSrc} alt={p.name} fill className="object-contain" sizes="100vw" draggable={false} priority />
+                <Image quality={88} src={mainSrc} alt={p.name} fill className="object-contain" sizes="100vw" draggable={false} priority />
                 {photos.length > 1 && (
                   <>
                     <button type="button" onClick={() => setIdx((safeIdx - 1 + photos.length) % photos.length)} className="absolute left-2 top-1/2 -translate-y-1/2 text-cream-100/90 hover:text-white bg-bark-800/40 hover:bg-bark-800/70 p-2 transition-colors" aria-label="Previous photo">

@@ -160,7 +160,7 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
                     style={{ aspectRatio: '3/4' }}
                   >
                     {src
-                      ? <Image src={src} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width:1023px) 50vw, 28vw" />
+                      ? <Image quality={88} src={src} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width:1023px) 50vw, 28vw" />
                       : <div className="absolute inset-0 flex items-center justify-center text-7xl"><span className="select-none">{product.imageEmoji}</span></div>}
                     {src && (
                       <span className="absolute bottom-2 right-2 w-7 h-7 bg-cream-50/85 text-bark-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -316,7 +316,7 @@ function MobileGridCard({ product, onOpen }: { product: Product; onOpen: () => v
     <button onClick={onOpen} className="group text-left w-full">
       <div className="relative w-full overflow-hidden" style={{ aspectRatio: '3/4' }}>
         {src ? (
-          <Image src={src} alt={product.name} fill sizes="50vw" className="object-cover"
+          <Image quality={88} src={src} alt={product.name} fill sizes="50vw" className="object-cover"
             onError={() => setPhase(p => p + 1)} />
         ) : (
           <div className="w-full h-full bg-white flex items-center justify-center" style={{ fontSize: 'clamp(3rem,16vw,4rem)' }}>{product.imageEmoji}</div>

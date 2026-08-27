@@ -152,7 +152,7 @@ export function BoxGallery({ images, alt, startKey }: { images: GalleryImage[]; 
         >
           {images.map((img, i) => (
             <button key={i} type="button" onClick={() => { setIdx(i); setOpen(true) }} aria-label={isEs ? 'Ver en pantalla completa' : 'View fullscreen'} className="relative shrink-0 w-full aspect-[3/4] snap-center bg-cream-200">
-              <Image src={img.src} alt={imgAlt(i)} fill className="object-cover" />
+              <Image quality={88} src={img.src} alt={imgAlt(i)} fill className="object-cover" />
             </button>
           ))}
         </div>
@@ -171,7 +171,7 @@ export function BoxGallery({ images, alt, startKey }: { images: GalleryImage[]; 
         <div className="flex flex-col gap-2 w-16 max-h-[80vh] overflow-y-auto scrollbar-hide">
           {images.map((img, i) => (
             <button key={i} type="button" onClick={() => goTo(i)} className={`relative aspect-square shrink-0 border transition-colors ${i === idx ? 'border-espresso' : 'border-cream-300 hover:border-espresso-light'}`}>
-              <Image src={img.src} alt={imgAlt(i)} fill className="object-cover" />
+              <Image quality={88} src={img.src} alt={imgAlt(i)} fill className="object-cover" />
             </button>
           ))}
         </div>
@@ -181,7 +181,7 @@ export function BoxGallery({ images, alt, startKey }: { images: GalleryImage[]; 
           role="button"
           aria-label={isEs ? 'Ver en pantalla completa' : 'View fullscreen'}
         >
-          <Image src={current.src} alt={imgAlt(clamp(idx))} fill className="object-cover transition-transform duration-300 group-hover:scale-105" draggable={false} />
+          <Image quality={88} src={current.src} alt={imgAlt(clamp(idx))} fill className="object-cover transition-transform duration-300 group-hover:scale-105" draggable={false} />
         </div>
       </div>
 
@@ -199,7 +199,7 @@ export function BoxGallery({ images, alt, startKey }: { images: GalleryImage[]; 
             onClick={e => e.stopPropagation()}
             {...swipeHandlers}
           >
-            <Image src={current.src} alt={imgAlt(clamp(idx))} fill className="object-contain" sizes="100vw" draggable={false} priority />
+            <Image quality={88} src={current.src} alt={imgAlt(clamp(idx))} fill className="object-contain" sizes="100vw" draggable={false} priority />
             {idx > 0 && (
               <button type="button" onClick={() => goTo(idx - 1)} aria-label={isEs ? 'Anterior' : 'Previous'} className="absolute left-2 top-1/2 -translate-y-1/2 text-cream-100/90 hover:text-white bg-bark-800/40 hover:bg-bark-800/70 p-2 transition-colors">
                 <ChevronLeft size={26} />

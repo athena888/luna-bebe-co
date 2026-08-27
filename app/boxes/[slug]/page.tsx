@@ -279,7 +279,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                               >
                               {c.item.image ? (
                                 <span className="relative w-10 h-10 shrink-0 overflow-hidden border border-cream-200">
-                                  <Image src={c.item.image} alt={c.item.name} fill className="object-cover" />
+                                  <Image quality={88} src={c.item.image} alt={c.item.name} fill className="object-cover" />
                                 </span>
                               ) : (
                                 <span className="w-10 h-10 shrink-0 border border-dashed border-cream-300 bg-cream-100" />
@@ -367,7 +367,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                   <div key={i}>
                     {s.image && (
                       <div className="relative aspect-square bg-cream-200 mb-3">
-                        <Image src={s.image} alt={s.title} fill className="object-cover" />
+                        <Image quality={88} src={s.image} alt={s.title} fill className="object-cover" />
                       </div>
                     )}
                     <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-1">{i + 1} — {s.title}</p>
@@ -382,7 +382,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
           {story.comparison_image && (
             <section className="mt-16">
               <div className="relative w-full aspect-[3/1] bg-cream-100">
-                <Image src={story.comparison_image} alt={`${box.name} — all ${box.variantLabel.toLowerCase()}s compared at relative scale`} fill className="object-contain" />
+                <Image quality={88} src={story.comparison_image} alt={`${box.name} — all ${box.variantLabel.toLowerCase()}s compared at relative scale`} fill className="object-contain" />
               </div>
             </section>
           )}
@@ -399,7 +399,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                   <Link key={i} href={c.href} className="group block border border-cream-300 hover:border-espresso-light transition-colors">
                     {c.image && (
                       <div className="relative aspect-[4/3] bg-cream-100">
-                        <Image src={c.image} alt={c.label} fill className="object-cover" />
+                        <Image quality={88} src={c.image} alt={c.label} fill className="object-cover" />
                       </div>
                     )}
                     <div className="p-4">

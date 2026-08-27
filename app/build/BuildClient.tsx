@@ -99,7 +99,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
         style={{ aspectRatio: '3/4' }}
       >
         {showImage ? (
-          <Image src={storageSrc} alt={product.name} fill
+          <Image quality={88} src={storageSrc} alt={product.name} fill
             className={`object-cover transition-all duration-500 ${soldOut ? 'grayscale brightness-[0.35]' : ''}`}
             sizes="(max-width: 640px) 60vw, 320px" onError={() => setImgFailed(true)} />
         ) : (
@@ -109,7 +109,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
           </div>
         )}
         {!soldOut && showHoverImage && (
-          <Image src={hoverImage!} alt={product.name} fill
+          <Image quality={88} src={hoverImage!} alt={product.name} fill
             className="object-cover absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
             sizes="(max-width: 640px) 33vw, 25vw" onError={() => setHoverImgFailed(true)} />
         )}
@@ -660,7 +660,7 @@ export default function BuildClient({ initialCatalog }: { initialCatalog?: Recor
                 <div key={product.lineKey} className="flex gap-4 items-start py-1">
                   <div className="w-28 h-32 bg-cream-100 relative shrink-0 overflow-hidden">
                     {src
-                      ? <Image src={src} alt={product.name} fill className="object-cover" sizes="112px" />
+                      ? <Image quality={88} src={src} alt={product.name} fill className="object-cover" sizes="112px" />
                       : <div className="w-full h-full flex items-center justify-center text-3xl">{product.imageEmoji}</div>
                     }
                   </div>
@@ -758,7 +758,7 @@ export default function BuildClient({ initialCatalog }: { initialCatalog?: Recor
                             style={{ aspectRatio: '3/4' }}
                             aria-label={`Photo ${i + 1}`}
                           >
-                            <Image src={src} alt={`${modalProduct.name} — photo ${i + 1}`} fill className="object-cover" sizes="80px" />
+                            <Image quality={88} src={src} alt={`${modalProduct.name} — photo ${i + 1}`} fill className="object-cover" sizes="80px" />
                           </button>
                         ))}
                         {modalVideo && (
@@ -773,7 +773,7 @@ export default function BuildClient({ initialCatalog }: { initialCatalog?: Recor
                     <div className="order-1 sm:order-2 relative flex-1 bg-cream-50 overflow-hidden" style={{ aspectRatio: '3/4' }}>
                       {mainSrc ? (
                         <button type="button" onClick={() => setLightbox(mainSrc)} className="absolute inset-0 cursor-zoom-in group">
-                          <Image src={mainSrc} alt={modalProduct.name} fill className="object-cover" sizes="(max-width:1023px) 90vw, 560px" />
+                          <Image quality={88} src={mainSrc} alt={modalProduct.name} fill className="object-cover" sizes="(max-width:1023px) 90vw, 560px" />
                           <span className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-cream-50/85 text-bark-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                             <ZoomIn size={13} />
                           </span>
