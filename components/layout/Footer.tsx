@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { ArrowRight } from 'lucide-react'
 import { CONTACT_EMAIL } from '@/lib/site-config'
+import { PaymentIcons } from '@/components/ui/PaymentIcons'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { useIsEs } from '@/lib/use-is-es'
 import { localePath, switchLocalePath } from '@/lib/locale-routes'
@@ -229,14 +230,10 @@ export function Footer() {
 
           {/* Legal bar — one centred line; the legal links stay grouped on a single
               line on every screen size */}
-          {/* Accepted payment methods — text pills on purpose (no third-party
-              logo assets). Lists ONLY what Stripe hosted checkout offers today;
-              add Link/BNPL pills only after enabling them in the Dashboard. */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-2" aria-label={isEs ? 'Métodos de pago aceptados' : 'Accepted payment methods'}>
-            <span className="font-sans text-[10px] tracking-[0.2em] uppercase text-bark-400 mr-2">{isEs ? 'Pago seguro' : 'Secure checkout'}</span>
-            {['Visa', 'Mastercard', 'Amex', 'Apple Pay', 'Google Pay'].map(m => (
-              <span key={m} className="font-sans text-[11px] text-bark-500 border border-cream-300 bg-white/60 px-2.5 py-1 whitespace-nowrap">{m}</span>
-            ))}
+          {/* Payment badges (SVG marks — Emily rejected text pills). Only the
+              methods Stripe hosted checkout actually offers. */}
+          <div className="mt-8">
+            <PaymentIcons />
           </div>
 
           <div className="mt-6 pt-6 border-t border-cream-300 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 font-sans text-[13px] font-normal text-espresso">

@@ -8,12 +8,16 @@ import { useEffect, useRef, useState } from 'react'
 // static; respects prefers-reduced-motion (then it just shows the first).
 const MOBILE_MEDIA = '(max-width: 639px)'
 
-function RotatingImageCore({ urls, mobileUrls, alt = '', className = '', intervalMs = 5000 }: {
+function RotatingImageCore({ urls, mobileUrls, alt = '', className = '', intervalMs = 5000, navEvent }: {
   urls: string[]
   mobileUrls?: string[]
   alt?: string
   className?: string
   intervalMs?: number
+  /** CustomEvent name to listen for manual prev/next (detail: -1 | 1). Lets
+   *  arrow buttons live OUTSIDE this layer — the hero stacks scrim + content
+   *  above the image, so buttons rendered here would be unclickable. */
+  navEvent?: string
 }) {
   const list = urls.filter(Boolean)
   const mobile = (mobileUrls ?? []).filter(Boolean)
@@ -28,9 +32,16 @@ function RotatingImageCore({ urls, mobileUrls, alt = '', className = '', interva
     return () => clearTimeout(t)
   }, [i, list.length, intervalMs])
 
-  if (list.length === 0) return null
-
+  // Hooks stay above the empty-list early return (Rules of Hooks).
   const go = (n: number) => setI(p => (p + n + list.length) % list.length)
+  useEffect(() => {
+    if (!navEvent || list.length <= 1) return
+    const h = (e: Event) => setI(p => (p + ((e as CustomEvent<number>).detail === -1 ? -1 : 1) + list.length) % list.length)
+    window.addEventListener(navEvent, h)
+    return () => window.removeEventListener(navEvent, h)
+  }, [navEvent, list.length])
+
+  if (list.length === 0) return null
   const onTouchStart = (e: React.TouchEvent) => { startX.current = e.touches[0].clientX }
   const onTouchEnd = (e: React.TouchEvent) => {
     if (startX.current == null) return
@@ -75,18 +86,19 @@ function RotatingImageCore({ urls, mobileUrls, alt = '', className = '', interva
  *  as two CSS-hidden galleries, so a phone downloads the phone crop only.
  *  The mobile list is matched by index; if it's shorter, later slides fall
  *  back to the desktop crop for those positions. */
-export function RotatingImage({ urls, mobileUrls, alt = '', className = '', intervalMs = 5000 }: {
+export function RotatingImage({ urls, mobileUrls, alt = '', className = '', intervalMs = 5000, navEvent }: {
   urls: string[]
   mobileUrls?: string[]
   alt?: string
   className?: string
   intervalMs?: number
+  navEvent?: string
 }) {
   const mobile = (mobileUrls ?? []).filter(Boolean)
   // A phone-only gallery (no desktop set) still needs something in <img>.
   const web = urls.filter(Boolean)
   if (web.length === 0 && mobile.length > 0) {
-    return <RotatingImageCore urls={mobile} alt={alt} className={className} intervalMs={intervalMs} />
+    return <RotatingImageCore urls={mobile} alt={alt} className={className} intervalMs={intervalMs} navEvent={navEvent} />
   }
-  return <RotatingImageCore urls={web} mobileUrls={mobile} alt={alt} className={className} intervalMs={intervalMs} />
+  return <RotatingImageCore urls={web} mobileUrls={mobile} alt={alt} className={className} intervalMs={intervalMs} navEvent={navEvent} />
 }
