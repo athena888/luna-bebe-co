@@ -99,15 +99,15 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
           <ScrimOverlay scrimKey="home.hero" defaultHex="#181716" defaultOpacity={0.4} variant="gradient-top" />
           {/* pt reserves a safe zone for the overlaid header so the copy never rides under it */}
           <div className="relative z-10 w-full min-h-[68vh] sm:min-h-[92vh] px-6 sm:px-12 pt-36 sm:pt-44 pb-10 sm:pb-14 flex flex-col justify-end items-end">
-            {/* Tinted plate behind the hero copy (Emily 2026-08-26): bare cream
-                text was illegible on light photos, and the scrim is portal-
-                adjustable to 0 — the plate guarantees contrast regardless. */}
-            <div className="hero-rise w-full max-w-[320px] sm:max-w-md text-right bg-bark-700/75 backdrop-blur-[2px] p-5 sm:p-7" style={{ animationDelay: '0.35s' }}>
+            {/* Cream plate behind the hero copy (Emily 2026-08-26: dark plate
+                rejected — "黑色底不好看"): ivory panel + espresso text keeps the
+                copy legible on any photo without the heavy dark block. */}
+            <div className="hero-rise w-full max-w-[320px] sm:max-w-md text-right bg-cream-50/85 backdrop-blur-[2px] p-5 sm:p-7" style={{ animationDelay: '0.35s' }}>
               {/* The tagline IS the h1 now. The "We see the mother" headline was
                   removed 2026-08-24; leaving the hero with no h1 at all would cost
                   the homepage its strongest on-page keyword signal. Visual weight
                   is unchanged — only the tag differs. */}
-              <h1 className="font-serif text-cream-200/90 text-base sm:text-xl leading-relaxed mb-6">
+              <h1 className="font-serif text-espresso text-base sm:text-xl leading-relaxed mb-6">
                 {s('hero.sub', 'Luxury organic baby shower gift boxes — For mama and baby')}
               </h1>
               <Link
