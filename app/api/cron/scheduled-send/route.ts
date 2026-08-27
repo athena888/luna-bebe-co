@@ -80,7 +80,9 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({
     ok: true,
-    pipeline: pipeline ? { sent: pipeline.sent, failed: pipeline.failed, skipped: pipeline.skipped.length, capRemaining: pipeline.capRemaining } : null,
+    // `dry` is the difference between "64 emails went out" and "nothing
+    // happened" — it was omitted, and a dry tick read as a real burst.
+    pipeline: pipeline ? { dry: pipeline.dry, paused: pipeline.paused ?? false, sent: pipeline.sent, failed: pipeline.failed, skipped: pipeline.skipped.length, capRemaining: pipeline.capRemaining } : null,
     processed: summary.length,
     campaigns: summary,
   })

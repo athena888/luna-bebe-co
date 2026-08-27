@@ -172,7 +172,9 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
       // Record WHY a row was failed (bounce_reason is the existing free-text
       // column on sends) — 88 silent failures on 2026-08-27 were undiagnosable
       // without it.
-      if (!dry && terminal) await supabaseAdmin.from('sends').update({ status: 'failed', bounce_reason: `skip: ${why}`.slice(0, 200) }).eq('id', r.id)
+      // dryRun (env EMAIL_DRY_RUN or caller) must not mutate anything: a dry
+      // tick on 2026-08-27 simulated 64 sends yet still FAILED 46 rows for real.
+      if (!dryRun && terminal) await supabaseAdmin.from('sends').update({ status: 'failed', bounce_reason: `skip: ${why}`.slice(0, 200) }).eq('id', r.id)
     }
     const isPress = p.channel === 'press'
 
