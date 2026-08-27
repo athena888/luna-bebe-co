@@ -121,19 +121,12 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
               </Link>
             </div>
           </div>
-          {/* Arrows only when there is actually something to swap to — with a
-              single photo the rotator ignores nav events, so dead buttons
-              would just sit on the image. If the arrows are missing on the
-              live site, the hero gallery has one photo: add more in
-              Portal → Site Images (hero / hero.mobile). */}
-          {(() => {
-            // Mirrors RotatingImage's slide-count rule: desktop list drives the
-            // slides; the mobile list only substitutes crops (it becomes the
-            // slide list ONLY when the desktop list is empty).
-            const web = (galleries.hero ?? []).filter(Boolean).length
-            const mob = (galleries['hero.mobile'] ?? []).filter(Boolean).length
-            return (web > 0 ? web : mob) > 1 && <HeroArrows />
-          })()}
+          {/* HeroArrows self-hides per viewport when that breakpoint's list
+              has fewer than 2 photos (same rule as RotatingImage). */}
+          <HeroArrows
+            webCount={(galleries.hero ?? []).filter(Boolean).length}
+            mobileCount={(galleries['hero.mobile'] ?? []).filter(Boolean).length}
+          />
         </section>
 
         {/* ── Launch marquee — runs right below the hero ── */}

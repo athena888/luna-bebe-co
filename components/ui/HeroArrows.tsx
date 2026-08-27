@@ -1,16 +1,34 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-// Small round prev/next buttons for the homepage hero (Little & Fern-style).
-// They only dispatch a CustomEvent — RotatingImage (which owns the slide
-// state, timer, and swipe) listens via its `navEvent` prop. Kept as separate
-// buttons so they can sit ABOVE the hero's scrim/content stack and stay
-// clickable; RotatingImage's own layer is underneath and can't take clicks.
-export function HeroArrows({ event = 'pl:hero-nav' }: { event?: string }) {
+// Round prev/next buttons pinned to the hero's edges at 50% height. They
+// dispatch a CustomEvent consumed by RotatingImage (`navEvent`) — the image
+// layer sits under the scrim/content stack, so buttons inside it couldn't
+// take clicks. Visibility mirrors RotatingImage's breakpoint rule: phones
+// count the mobile list (when present), desktop the web list — so the arrows
+// only appear when THIS viewport actually has a second photo to swap to.
+const MOBILE_MEDIA = '(max-width: 639px)'
+
+export function HeroArrows({ webCount, mobileCount, event = 'pl:hero-nav' }: {
+  webCount: number
+  mobileCount: number
+  event?: string
+}) {
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia(MOBILE_MEDIA)
+    const apply = () => setIsMobile(mq.matches)
+    apply()
+    mq.addEventListener('change', apply)
+    return () => mq.removeEventListener('change', apply)
+  }, [])
+
+  const count = isMobile && mobileCount > 0 ? mobileCount : webCount > 0 ? webCount : mobileCount
+  if (count <= 1) return null
+
   const fire = (dir: -1 | 1) => window.dispatchEvent(new CustomEvent(event, { detail: dir }))
-  // Edge-centered (Emily 2026-08-27): the bottom-right pair collided with the
-  // hero CTA — one arrow per side at 50% height, like a standard carousel.
   const cls = 'absolute top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-cream-50/90 text-espresso flex items-center justify-center shadow-sm hover:bg-cream-50 transition-colors'
   return (
     <>
