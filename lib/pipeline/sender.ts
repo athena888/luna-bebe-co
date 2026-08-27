@@ -1,4 +1,4 @@
-import { resolveMx } from 'node:dns/promises'
+import { mxVerdict } from './mx.ts'
 import { supabaseAdmin } from '../supabase.ts'
 import { sendEmail } from '../gmail.ts'
 import { withFooter } from '../outreach-templates.ts'
@@ -31,9 +31,6 @@ export interface DrainStats {
 }
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
-async function hasMx(domain: string): Promise<boolean> {
-  try { return (await resolveMx(domain)).length > 0 } catch { return false }
-}
 
 /**
  * Outbound emails already sent today — the cap is global.
@@ -172,7 +169,10 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
     // Send-time re-checks (discovery-time checks are NOT trusted here).
     const skip = async (why: string, terminal = true) => {
       stats.skipped.push({ to: to || p.company, why })
-      if (!dry && terminal) await supabaseAdmin.from('sends').update({ status: 'failed' }).eq('id', r.id)
+      // Record WHY a row was failed (bounce_reason is the existing free-text
+      // column on sends) — 88 silent failures on 2026-08-27 were undiagnosable
+      // without it.
+      if (!dry && terminal) await supabaseAdmin.from('sends').update({ status: 'failed', bounce_reason: `skip: ${why}`.slice(0, 200) }).eq('id', r.id)
     }
     const isPress = p.channel === 'press'
 
@@ -202,7 +202,11 @@ export async function drainPipelineQueue(opts: { dry?: boolean; timeBudgetMs?: n
     // Press sub-cap reached → leave the row QUEUED for tomorrow's drain.
     if (isPress && pressSent >= pressCap) { await skip('press daily cap reached (stays queued)', false); continue }
 
-    if (!(await hasMx(emailDomain(to)))) { await skip('no MX record (would bounce)'); continue }
+    // Three-state MX check: only a positive "does not exist" fails the row;
+    // a resolver timeout/SERVFAIL leaves it queued for the next tick.
+    const mx = await mxVerdict(emailDomain(to))
+    if (mx === 'no') { await skip('no MX record (would bounce)'); continue }
+    if (mx === 'unknown') { await skip('MX lookup failed (stays queued)', false); continue }
 
     // CAN-SPAM footer at send time, never in the draft.
     //
