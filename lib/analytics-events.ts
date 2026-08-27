@@ -178,7 +178,11 @@ export function trackBeginCheckout(items: CartLike[], valueCents?: number): void
   // Google Ads Begin Checkout. Same call site as the GA4 event, so it inherits
   // the once-per-cart guard above and can't fire on a refresh of /checkout.
   adsConversion(ADS_LABEL_BEGIN_CHECKOUT, 'begin_checkout', {
-    value: subtotal(items) / 100,
+    // The box price, exactly as the GA4 event and Meta report it. This line
+    // was missed when box pricing landed and kept sending summed item retail
+    // — a $85 box told Google Ads the checkout was worth $134.92. Any
+    // value-based bidding would have optimised against that.
+    value,
     currency: 'USD',
   })
   fbqTrack('InitiateCheckout', {
