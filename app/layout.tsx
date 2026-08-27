@@ -134,7 +134,13 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         {GA_ID && (
           <>
             <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
-            <Script id="ga4" strategy="afterInteractive">{`
+            {/* beforeInteractive: the gtag()/dataLayer stub, the gate and the
+                kill switch must exist BEFORE React hydrates. As afterInteractive
+                they ran after hydration, so view_item fired by a mounting
+                island found no window.gtag and was silently dropped (page_view
+                survived only because gtag.js sends it itself). Everything in
+                here only queues commands; gtag.js drains the queue in order. */}
+            <Script id="ga4" strategy="beforeInteractive">{`
               // Mirror of lib/analytics-gate.ts — the loader-time gate. GA is
               // configured ONLY on the production storefront, outside /portal,
               // in a browser that is neither flagged internal nor declined the
@@ -178,7 +184,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
         {/* Meta Pixel */}
         {META_PIXEL_ID && (
-          <Script id="meta-pixel" strategy="afterInteractive">{`
+          <Script id="meta-pixel" strategy="beforeInteractive">{`
             // Same gate as GA above (mirror of lib/analytics-gate.ts).
             var __plxAllowed = false;
             try {

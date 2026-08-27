@@ -68,6 +68,15 @@ test('two variants of one product are tracked per line, not collapsed by id', ()
   assert.equal(ev.items[0].quantity, 1)
 })
 
+test('a prebuilt box reports the BOX price as the value, not summed piece retail', () => {
+  const pieces = [item('teether', 1299), item('romper', 4200), item('blanket', 6500)]  // 119.99 retail
+  const ev = cartGrowthEvent([], pieces, 9500)
+  assert.ok(ev)
+  assert.equal(ev.value, 95)
+  assert.equal(ev.items.length, 3)                       // pieces still itemised
+  assert.equal(cartGrowthEvent([], pieces)?.value, 119.99) // no box price → retail sum, as before
+})
+
 // ── begin_checkout ─────────────────────────────────────────────────────────
 
 const memStore = () => {

@@ -92,7 +92,7 @@ export default function CheckoutPage() {
       try {
         const parsed = JSON.parse(storedBox)
         setSelection(parsed)
-        if (Array.isArray(parsed)) trackBeginCheckout(parsed)
+        if (Array.isArray(parsed)) trackBeginCheckout(parsed, readBoxRef()?.price)
       } catch { router.push('/build') }
     } else {
       router.push('/build')

@@ -68,7 +68,8 @@ export function writeCart(items: CartItem[], boxRef?: BoxRef) {
     // or clears it (any other add/edit means the cart is custom again).
     if (boxRef) sessionStorage.setItem(BOX_REF_KEY, JSON.stringify(boxRef))
     else sessionStorage.removeItem(BOX_REF_KEY)
-    trackCartGrowth(prev, items)
+    // A prebuilt box reports the box price as the add_to_cart value.
+    trackCartGrowth(prev, items, boxRef?.price)
     // Let the header cart badge (and anything else) update immediately.
     if (typeof window !== 'undefined') window.dispatchEvent(new Event('pl:cart'))
   } catch { /* ignore */ }
