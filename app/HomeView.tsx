@@ -95,7 +95,8 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
         {/* Mobile hero trimmed 85vh → 68vh (Emily 2026-08-26: −20%); desktop keeps 92vh. */}
         <section className="relative w-full min-h-[68vh] sm:min-h-[92vh] bg-cream-200 overflow-hidden">
           <ParallaxLayer>
-            <RotatingImage urls={galleries.hero} mobileUrls={galleries['hero.mobile']} alt="Petite Lavande — Timeless Moments, Made With Love" className="hero-fade" navEvent="pl:hero-nav" />
+            {/* 2s interval (Emily 2026-08-27) — was 5s. */}
+            <RotatingImage urls={galleries.hero} mobileUrls={galleries['hero.mobile']} alt="Petite Lavande — Timeless Moments, Made With Love" className="hero-fade" navEvent="pl:hero-nav" intervalMs={2000} />
           </ParallaxLayer>
           <ScrimOverlay scrimKey="home.hero" defaultHex="#181716" defaultOpacity={0.4} variant="gradient-top" />
           {/* pt reserves a safe zone for the overlaid header so the copy never rides under it */}
@@ -120,7 +121,19 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
               </Link>
             </div>
           </div>
-          <HeroArrows />
+          {/* Arrows only when there is actually something to swap to — with a
+              single photo the rotator ignores nav events, so dead buttons
+              would just sit on the image. If the arrows are missing on the
+              live site, the hero gallery has one photo: add more in
+              Portal → Site Images (hero / hero.mobile). */}
+          {(() => {
+            // Mirrors RotatingImage's slide-count rule: desktop list drives the
+            // slides; the mobile list only substitutes crops (it becomes the
+            // slide list ONLY when the desktop list is empty).
+            const web = (galleries.hero ?? []).filter(Boolean).length
+            const mob = (galleries['hero.mobile'] ?? []).filter(Boolean).length
+            return (web > 0 ? web : mob) > 1 && <HeroArrows />
+          })()}
         </section>
 
         {/* ── Launch marquee — runs right below the hero ── */}
