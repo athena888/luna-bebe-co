@@ -111,7 +111,7 @@ export function ChatWidget() {
   }
 
   return (
-    <div className="fixed bottom-5 left-5 z-50 flex flex-col items-start gap-3">
+    <div className="pl-chat-dock fixed bottom-5 left-5 z-50 flex flex-col items-start gap-3 transition-[bottom] duration-200">
 
       {/* Chat panel */}
       {open && (

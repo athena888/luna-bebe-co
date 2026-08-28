@@ -7,7 +7,7 @@ import { CATEGORY_LABELS_ES } from '@/lib/products'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { CATEGORY_LABELS, CATEGORY_ORDER, BOX_BASE_PRICE, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
+import { CATEGORY_LABELS, CATEGORY_ORDER, BOX_BASE_PRICE, FREE_SHIPPING_THRESHOLD, freeShippingApplies } from '@/lib/products'
 import type { Product, ProductCategory } from '@/types'
 import { Check, X, Plus, Minus, Leaf, ZoomIn, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react'
 import Image from 'next/image'
@@ -444,6 +444,8 @@ export default function BuildClient({ initialCatalog }: { initialCatalog?: Recor
   const selectedList = useMemo(() => Array.from(selected.values()), [selected])
   const subtotal = useMemo(() => selectedList.reduce((s, p) => s + p.price * (p.qty ?? 1), 0), [selectedList])
   const hasItems = selected.size > 0
+  // Same predicate the bag drawer, checkout and the Stripe session use.
+  const shipsFree = freeShippingApplies(subtotal + BOX_BASE_PRICE, 'standard')
 
   const modalMainSrc = modalProduct
     ? modalProduct.image ?? (SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${modalProduct.id}.jpg` : null)
@@ -613,27 +615,27 @@ export default function BuildClient({ initialCatalog }: { initialCatalog?: Recor
           </button>
         </div>
 
-        {/* Free shipping progress */}
-        {(() => {
+        {/* Free shipping progress — hidden once the box qualifies, exactly as
+            in the global bag drawer: past the bar the footer states the free
+            standard service instead of congratulating and then saying shipping
+            will be calculated later. */}
+        {!shipsFree && (() => {
           const threshold = FREE_SHIPPING_THRESHOLD
           // Count the real box price toward free shipping (items + the box base).
           const towardFree = subtotal + BOX_BASE_PRICE
           const pct = Math.min(towardFree / threshold, 1)
-          const earned = towardFree >= threshold
           const remaining = Math.max(0, threshold - towardFree)
           return (
             <div className="shrink-0 px-6 pt-4 pb-3 border-b border-cream-100">
               <p className="font-sans text-[11px] text-center text-bark-500 mb-3">
-                {earned
-                  ? (isEs ? '¡Felicidades — tu envío es gratis!' : 'Congratulations — you earned free shipping!')
-                  : isEs
-                    ? <>Te faltan <span className="text-bark-600 font-medium">{formatPrice(remaining)}</span> para obtener envío gratis.</>
-                    : <><span className="text-bark-600 font-medium">{formatPrice(remaining)}</span> away from free shipping</>
+                {isEs
+                  ? <>Te faltan <span className="text-bark-600 font-medium">{formatPrice(remaining)}</span> para obtener envío gratis.</>
+                  : <><span className="text-bark-600 font-medium">{formatPrice(remaining)}</span> away from free shipping</>
                 }
               </p>
               <div className="relative h-1.5 rounded-full bg-cream-200 border border-cream-300 mx-1">
                 <div className="absolute left-0 top-0 h-full rounded-full bg-gold-400 transition-all duration-500" style={{ width: `${pct * 100}%` }} />
-                <div className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-7 h-7 rounded-full border flex items-center justify-center text-sm transition-colors duration-300 ${earned ? 'bg-gold-400 border-gold-400' : 'bg-white border-cream-300'}`}>
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-7 h-7 rounded-full border flex items-center justify-center text-sm bg-white border-cream-300">
                   📦
                 </div>
               </div>
@@ -704,7 +706,7 @@ export default function BuildClient({ initialCatalog }: { initialCatalog?: Recor
             <span className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400">{isEs ? 'Subtotal' : 'Subtotal'}</span>
             <span className="font-sans text-base font-medium text-bark-600">{formatPrice(subtotal)}</span>
           </div>
-          <CartFeeNote className="mb-4" />
+          <CartFeeNote freeStandard={hasItems && shipsFree} className="mb-4" />
           <button
             onClick={handleCheckout}
             disabled={!hasItems}

@@ -10,15 +10,17 @@ export function CookieBanner() {
     if (!localStorage.getItem('cookie_consent')) setVisible(true)
   }, [])
 
-  function accept() {
-    localStorage.setItem('cookie_consent', 'accepted')
+  // Anything that also wants the bottom of the screen (the box page's sticky
+  // Add to Cart) waits while this banner is up and reappears on the answer.
+  function answer(value: 'accepted' | 'declined') {
+    localStorage.setItem('cookie_consent', value)
     setVisible(false)
+    window.dispatchEvent(new Event('pl:cookie-consent'))
   }
 
-  function decline() {
-    localStorage.setItem('cookie_consent', 'declined')
-    setVisible(false)
-  }
+  function accept() { answer('accepted') }
+
+  function decline() { answer('declined') }
 
   if (!visible) return null
 

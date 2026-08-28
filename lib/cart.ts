@@ -31,6 +31,13 @@ export interface BoxRef {
   size?: string
   /** Box cover photo, for the single bag line. */
   image?: string | null
+  /** Piece count for THIS variant, as printed on the product page — the one
+   *  number every cart surface shows. It comes from pieceCount() in
+   *  lib/catalog-db, which counts a multi-piece set as its pieces; the bag used
+   *  to count cart LINES instead, so a page saying "10 pieces, hand-packed"
+   *  became "8 pieces included" one tap later. Optional: a box ref written by
+   *  an older session simply falls back to the line count. */
+  pieces?: number
 }
 
 export function readBoxRef(): BoxRef | null {

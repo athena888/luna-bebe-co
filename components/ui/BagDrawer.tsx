@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { X, Minus, Plus } from 'lucide-react'
 import { readCart, writeCart, readBoxRef, type CartItem, type BoxRef } from '@/lib/cart'
-import { BOX_BASE_PRICE, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
+import { BOX_BASE_PRICE, FREE_SHIPPING_THRESHOLD, freeShippingApplies } from '@/lib/products'
 import { useIsEs } from '@/lib/use-is-es'
 import { DeliveryEstimate } from '@/components/ui/DeliveryEstimate'
 import { CartFeeNote } from '@/components/ui/CartFeeNote'
@@ -61,7 +61,9 @@ export function BagDrawer() {
   const threshold = FREE_SHIPPING_THRESHOLD
   const towardFree = subtotal + BOX_BASE_PRICE
   const pct = Math.min(towardFree / threshold, 1)
-  const earned = towardFree >= threshold
+  // Same predicate checkout and the Stripe session use, so the bag can never
+  // promise a shipping price the next screen contradicts.
+  const shipsFree = freeShippingApplies(towardFree, 'standard')
 
   return (
     <>
@@ -81,20 +83,21 @@ export function BagDrawer() {
           </button>
         </div>
 
-        {/* Free shipping progress */}
-        {hasItems && (
+        {/* Free shipping progress — only while there is still progress to make.
+            Once the order qualifies, the bar and its "Congratulations" have
+            nothing left to say, and the plain statement of what shipping IS
+            (free standard, 5–7 days) sits beside the subtotal instead. */}
+        {hasItems && !shipsFree && (
           <div className="shrink-0 px-6 pt-4 pb-3 border-b border-cream-100">
             <p className="font-sans text-[11px] text-center text-bark-500 mb-3">
-              {earned
-                ? (isEs ? '¡Felicidades — tu envío es gratis!' : 'Congratulations — you earned free shipping!')
-                : isEs
-                  ? <>Te faltan <span className="text-bark-600 font-medium">{formatPrice(threshold - towardFree)}</span> para envío gratis</>
-                  : <><span className="text-bark-600 font-medium">{formatPrice(threshold - towardFree)}</span> away from free shipping</>
+              {isEs
+                ? <>Te faltan <span className="text-bark-600 font-medium">{formatPrice(threshold - towardFree)}</span> para envío gratis</>
+                : <><span className="text-bark-600 font-medium">{formatPrice(threshold - towardFree)}</span> away from free shipping</>
               }
             </p>
             <div className="relative h-1.5 rounded-full bg-cream-200 border border-cream-300 mx-1">
               <div className="absolute left-0 top-0 h-full rounded-full bg-gold-400 transition-all duration-500" style={{ width: `${pct * 100}%` }} />
-              <div className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-7 h-7 rounded-full pl-round-full border flex items-center justify-center text-sm transition-colors duration-300 ${earned ? 'bg-gold-400 border-gold-400' : 'bg-white border-cream-300'}`}>
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-7 h-7 rounded-full pl-round-full border flex items-center justify-center text-sm bg-white border-cream-300">
                 📦
               </div>
             </div>
@@ -124,8 +127,12 @@ export function BagDrawer() {
                 {boxRef.size && (
                   <p className="font-sans text-[11px] text-bark-400 mb-1">{isEs ? 'Talla' : 'Size'} {boxRef.size} m</p>
                 )}
+                {/* The PIECE count the product page printed, carried on the box
+                    ref. Counting cart lines here instead is what made a "10
+                    pieces, hand-packed" box read "8 pieces included" one tap
+                    later: a set of two counts as one line and two pieces. */}
                 <p className="font-sans text-[11px] text-bark-400/80 mb-1">
-                  {items.reduce((s, i) => s + (i.qty ?? 1), 0)} {isEs ? 'piezas incluidas' : 'pieces included'}
+                  {boxRef.pieces ?? items.reduce((s, i) => s + (i.qty ?? 1), 0)} {isEs ? 'piezas incluidas' : 'pieces included'}
                 </p>
                 <p className="font-sans text-sm text-bark-500 mb-3">{formatPrice(boxRef.price)}</p>
                 <button
@@ -191,7 +198,7 @@ export function BagDrawer() {
             <span className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400">Subtotal</span>
             <span className="font-sans text-base font-medium text-bark-600">{formatPrice(subtotal)}</span>
           </div>
-          <CartFeeNote className="mb-2" />
+          <CartFeeNote freeStandard={hasItems && shipsFree} className="mb-2" />
           {hasItems && <DeliveryEstimate variant="compact" className="mb-4" />}
           <button
             onClick={() => { setOpen(false); router.push(isEs ? '/es/checkout' : '/checkout') }}

@@ -182,3 +182,17 @@ html { scroll-behavior: smooth; }
     -webkit-overflow-scrolling: touch;
   }
 }
+
+/* ── Phone sticky purchase bar (components/ui/BoxBuyPanel.tsx). The bar sets
+     data-pl-sticky-buy on <body> while it is on screen; these two rules keep
+     it from covering anything — the last screenful of the page gets clearance
+     (safe-area inset included, so it clears the iPhone home indicator and the
+     Android gesture bar), and the chat launcher lifts above the bar. */
+@media (max-width: 767px) {
+  body[data-pl-sticky-buy="1"] {
+    padding-bottom: calc(4.25rem + env(safe-area-inset-bottom));
+  }
+  body[data-pl-sticky-buy="1"] .pl-chat-dock {
+    bottom: calc(5.25rem + env(safe-area-inset-bottom));
+  }
+}

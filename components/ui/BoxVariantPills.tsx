@@ -17,6 +17,11 @@ export interface VariantPill {
   label: string
   /** Display text, e.g. "Strawberry · $74.95" (price preformatted server-side). */
   text: string
+  /** One line under the label saying what this option actually is — a piece
+   *  count when the tiers differ in size, otherwise the variant's own "adds"
+   *  copy. Without it two tiers at different prices read as if the COLOUR were
+   *  what costs more. Server-side and data-derived; never invented here. */
+  sub?: string
   image: string | null
   href: string
 }
@@ -67,7 +72,7 @@ export function BoxVariantPills({ variants, selectedKey, boxName }: {
           key={v.key}
           href={v.href}
           aria-current={v.key === selectedKey ? 'true' : undefined}
-          className={`flex items-center gap-2 font-sans text-[11px] tracking-[0.11em] uppercase border transition-colors ${
+          className={`flex items-center gap-2 min-h-[44px] font-sans text-[11px] tracking-[0.11em] uppercase border transition-colors ${
             v.image ? 'p-1.5 pr-3' : 'px-4 py-2'
           } ${v.key === highlightKey ? 'border-espresso bg-espresso text-cream-50' : 'border-cream-300 text-bark-500 hover:border-espresso-light'}`}
         >
@@ -76,7 +81,14 @@ export function BoxVariantPills({ variants, selectedKey, boxName }: {
               <Image quality={88} src={v.image} alt={`${boxName} — ${v.label} option`} fill className="object-cover" />
             </span>
           )}
-          {v.text}
+          <span className="flex flex-col items-start text-left leading-tight min-w-0">
+            <span>{v.text}</span>
+            {v.sub && (
+              <span className="mt-0.5 font-sans text-[10px] tracking-[0.04em] normal-case opacity-70 max-w-[11rem] line-clamp-2">
+                {v.sub}
+              </span>
+            )}
+          </span>
         </Link>
       ))}
     </div>

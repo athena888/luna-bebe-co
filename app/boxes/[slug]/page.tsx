@@ -16,8 +16,9 @@ import { boxSlotKey } from '@/lib/image-slots'
 import { isShoppingOnly } from '@/lib/catalog-visibility'
 import { SPANISH_ACTIVE, getTranslations } from '@/lib/i18n'
 import { localePath } from '@/lib/locale-routes'
+import { ReviewSummary } from '@/components/ui/ReviewSummary'
 import { getBoxProduct, getItemSizeOptions, pieceCount, piecesPerItem, priceRange } from '@/lib/catalog-db'
-import { CATEGORY_LABELS, CATEGORY_LABELS_ES, formatDollars } from '@/lib/products'
+import { CATEGORY_LABELS, CATEGORY_LABELS_ES, FREE_SHIPPING_THRESHOLD, formatDollars, freeShippingApplies } from '@/lib/products'
 
 // Phase 3 box product page — one data-driven template for every parent
 // product. Variants live in a query param (?tier=/?theme=); canonical strips
@@ -78,6 +79,17 @@ const T = {
     basket: 'Everything arrives nested in a woven seagrass basket with lid, ribbon-tied and sealed by hand.',
     faq: 'Frequently asked questions', prefer: 'Prefer to choose every piece yourself?', build: 'Build your own box',
     options: 'Options',
+    // Above-the-fold value proposition: what this is, in one line, before the
+    // contents list a cold visitor has no reason to read yet.
+    promise: 'A complete baby gift, ready to give.',
+    benefits: {
+      essentials: 'Thoughtfully selected baby essentials',
+      basket: 'Gift-ready woven basket',
+      card: 'Personalized gift card included',
+      shipping: 'Free standard shipping',
+      shippingOver: (over: string) => `Free standard shipping over ${over}`,
+    },
+    pieces: (n: number) => `${n} pieces`,
   },
   es: {
     inside: 'Qué contiene', color: 'el color lo eliges tú',
@@ -85,6 +97,15 @@ const T = {
     basket: 'Todo llega acomodado en una canasta tejida de fibra marina con tapa, atada con listón y sellada a mano.',
     faq: 'Preguntas frecuentes', prefer: '¿Prefieres elegir cada pieza?', build: 'Arma tu propia canastilla',
     options: 'Opciones',
+    promise: 'Un regalo de bebé completo, listo para dar.',
+    benefits: {
+      essentials: 'Esenciales de bebé elegidos con cuidado',
+      basket: 'Canasta tejida lista para regalar',
+      card: 'Tarjeta personalizada incluida',
+      shipping: 'Envío estándar gratis',
+      shippingOver: (over: string) => `Envío estándar gratis desde ${over}`,
+    },
+    pieces: (n: number) => `${n} piezas`,
   },
 } as const
 const VARIANT_LABEL_ES: Record<string, string> = { Tier: 'Nivel', Theme: 'Tema', Set: 'Set' }
@@ -125,6 +146,22 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
   const sizesByItem = await getItemSizeOptions(
     variant.contents.filter(c => (c.item as { has_variants?: boolean }).has_variants).map(c => c.item.id)
   )
+
+  const pieces = pieceCount(variant)
+  // Two tiers at $85 and one at $65 read as if the COLOUR set the price. It
+  // does not — the tiers hold different amounts — so every option card carries
+  // a one-line reason. The reason is DERIVED, never written here: the piece
+  // count when the tiers actually differ in size, otherwise the variant's own
+  // `adds` copy from the catalog. When neither distinguishes them (same count,
+  // no copy), the cards stay as they were rather than saying something untrue.
+  const variantPieces = new Map(box.variants.map(v => [v.key, pieceCount(v)]))
+  const piecesDiffer = new Set(variantPieces.values()).size > 1
+  const variantSub = (v: typeof variant): string | undefined =>
+    piecesDiffer ? t.pieces(variantPieces.get(v.key) ?? pieceCount(v)) : (v.adds || undefined)
+  // This box's own price already clears the free-standard-shipping bar, or it
+  // doesn't and the benefit line says what it would take. One constant
+  // (lib/products), never a hardcoded promise.
+  const shipsFree = freeShippingApplies(variant.price, 'standard')
 
   // Approved reviews (pooled per box, §47) feed the Product JSON-LD:
   // aggregateRating + up to 10 review objects, emitted ONLY when at least one
@@ -211,13 +248,38 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
               />
             </div>
 
-            {/* 2 — Buy panel */}
+            {/* 2 — Buy panel. Phone order is deliberate and is the whole point
+                of this column: name → rating → what it is → price → why it is
+                worth it → the choices → Add to Cart. The contents list, which
+                used to sit between the price and the button, now follows the
+                CTA — a visitor arriving cold from Shopping or Instagram can
+                decide before they ever scroll it. */}
             <div>
               <h1 className="font-serif text-4xl text-espresso">{box.name}</h1>
+
+              {/* Social proof next to the price, not eight scrolls down. Real
+                  average and count, or nothing at all — see ReviewSummary. */}
+              <ReviewSummary productId={`box-${box.slug}`} className="mt-2" />
+
               <p className="font-sans text-[13px] tracking-[0.08em] text-bark-500 mt-2">
-                {pieceCount(variant)} {isEs ? 'piezas, empacadas a mano' : 'pieces, hand-packed'}
+                {pieces} {isEs ? 'piezas, empacadas a mano' : 'pieces, hand-packed'}
               </p>
               <p className="font-sans text-2xl text-espresso mt-4">{formatDollars(variant.price)}</p>
+
+              <p className="font-serif text-lg text-espresso-light mt-5">{t.promise}</p>
+              <ul className="mt-3 space-y-1.5">
+                {[
+                  t.benefits.essentials,
+                  t.benefits.basket,
+                  t.benefits.card,
+                  shipsFree ? t.benefits.shipping : t.benefits.shippingOver(formatDollars(FREE_SHIPPING_THRESHOLD)),
+                ].map(line => (
+                  <li key={line} className="flex items-start gap-2 font-sans text-[13px] leading-snug text-bark-600">
+                    <span aria-hidden="true" className="text-[#7A8E7C] leading-none pt-[3px]">✓</span>
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
 
               {box.variants.length > 1 && (
                 <div className="mt-6">
@@ -229,11 +291,14 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                       key: v.key,
                       label: v.label,
                       text: `${v.label} · ${formatDollars(v.price)}`,
+                      sub: variantSub(v),
                       image: v.images[0] ?? null,
                       href: `${isEs ? '/es/canastillas' : '/boxes'}/${box.slug}?${box.variantParam}=${encodeURIComponent(v.key)}`,
                     }))}
                   />
-                  {variant.adds && <p className="font-sans text-xs text-bark-400 mt-3">{variant.adds}</p>}
+                  {/* When the cards fall back to `adds` for their subtitle this
+                      line would just repeat the selected one. */}
+                  {piecesDiffer && variant.adds && <p className="font-sans text-xs text-bark-400 mt-3">{variant.adds}</p>}
                 </div>
               )}
 
@@ -242,6 +307,33 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                   JSON, so it can be restored by re-rendering
                   story.variant_stories[variant.key] here. */}
 
+              {/* GA4 view_item / Meta ViewContent — boxes fired nothing before,
+                  so the funnel showed no product views for the very products
+                  the ads point at. Id matches the Merchant feed offer id. */}
+              <TrackViewItem
+                id={`box-${box.slug}--${variant.key}`}
+                name={box.variants.length > 1 ? `${box.name} — ${variant.label}` : box.name}
+                price={variant.price}
+                category="Gift Box"
+              />
+
+              <BoxBuyPanel
+                contents={variant.contents.map(c => ({ item: c.item, qty: c.qty, colorChoice: c.colorChoice }))}
+                price={variant.price}
+                boxName={box.name}
+                boxSlug={box.slug}
+                variantKey={variant.key}
+                variantLabel={box.variants.length > 1 ? variant.label : undefined}
+                needsColor={variant.contents.some(c => c.colorChoice)}
+                sizesByItem={sizesByItem}
+                boxImage={variant.images[0] ?? null}
+                pieces={pieces}
+              />
+
+              {/* What's inside — the full contents list, now BELOW the
+                  purchase CTA. Nothing was removed: a visitor who wants the
+                  detail scrolls one screen for it, and one who was sold by
+                  the photo and the price never has to. */}
               <div className="mt-8">
                 <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-3">{t.inside}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-5">
@@ -316,28 +408,6 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                 <p className="font-sans text-sm text-bark-600 mt-4">{t.card}</p>
                 <p className="font-sans text-xs text-bark-400 mt-3">{t.basket}</p>
               </div>
-
-              {/* GA4 view_item / Meta ViewContent — boxes fired nothing before,
-                  so the funnel showed no product views for the very products
-                  the ads point at. Id matches the Merchant feed offer id. */}
-              <TrackViewItem
-                id={`box-${box.slug}--${variant.key}`}
-                name={box.variants.length > 1 ? `${box.name} — ${variant.label}` : box.name}
-                price={variant.price}
-                category="Gift Box"
-              />
-
-              <BoxBuyPanel
-                contents={variant.contents.map(c => ({ item: c.item, qty: c.qty, colorChoice: c.colorChoice }))}
-                price={variant.price}
-                boxName={box.name}
-                boxSlug={box.slug}
-                variantKey={variant.key}
-                variantLabel={box.variants.length > 1 ? variant.label : undefined}
-                needsColor={variant.contents.some(c => c.colorChoice)}
-                sizesByItem={sizesByItem}
-                boxImage={variant.images[0] ?? null}
-              />
 
               <p className="font-sans text-sm text-bark-500 mt-6">
                 <Link href={localePath('/faq', isEs)} className="underline underline-offset-2 hover:text-bark-600">{t.faq}</Link>

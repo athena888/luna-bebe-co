@@ -320,8 +320,11 @@ export default function CheckoutPage() {
                               <span className="tracking-[0.11em] uppercase text-[11px]">{isEs ? 'Talla' : 'Size'}</span> {boxRef.size} m
                             </p>
                           )}
+                          {/* Piece count as the product page printed it, carried
+                              on the box ref (lib/cart.ts). Cart LINES are not
+                              pieces — a set of two is one line. */}
                           <p className="font-sans text-[12px] text-bark-400 mt-1">
-                            {entries.reduce((s, [, i]) => s + (i.qty ?? 1), 0)} {isEs ? 'piezas incluidas' : 'pieces included'}
+                            {boxRef.pieces ?? entries.reduce((s, [, i]) => s + (i.qty ?? 1), 0)} {isEs ? 'piezas incluidas' : 'pieces included'}
                           </p>
                           <button
                             onClick={removeBox}
@@ -561,8 +564,16 @@ export default function CheckoutPage() {
                       </div>
                     )}
                     <div className="flex justify-between">
-                      <span className="text-bark-600">Shipping · {SHIPPING[shippingType].label}</span>
-                      <span className="text-espresso">{shipFree ? (isEs ? 'Gratis' : 'Free') : formatPrice(shippingCost)}</span>
+                      <span className="text-bark-600">
+                        {isEs ? 'Envío' : 'Shipping'} · {SHIPPING[shippingType].label}
+                        {/* The bag promised "FREE Standard Shipping · 5–7
+                            business days"; the summary repeats the window so
+                            the two screens read as one statement. */}
+                        <span className="block text-bark-400 text-[12px]">
+                          {isEs ? SHIPPING[shippingType].days.replace('business days', 'días hábiles') : SHIPPING[shippingType].days}
+                        </span>
+                      </span>
+                      <span className={shipFree ? 'text-[#7A8E7C]' : 'text-espresso'}>{shipFree ? (isEs ? 'Gratis' : 'Free') : formatPrice(shippingCost)}</span>
                     </div>
                   </div>
 
