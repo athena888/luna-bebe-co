@@ -24,7 +24,7 @@ export const FROZEN_TEMPLATES: Record<PitchTrack, FrozenTemplate> = Object.freez
 
 When someone at {company} has a baby, someone — often you — ends up scrambling for a gift that doesn't look like it came from a supermarket, on a deadline.
 
-Petite Lavande makes hand-packed organic gift boxes for exactly this: a knit blanket, handmade keepsakes, and — unusually — a self-care layer for the new mother, not just the baby. Boxes run $65–165, we can add your logo on the ribbon, and a standing account means one email from you and it ships with a handwritten card.
+Petite Lavande makes hand-packed organic gift boxes for exactly this: a knit blanket, handmade keepsakes, and — unusually — a self-care layer for the new mother, not just the baby. Boxes run $65–145, we can add your logo on the ribbon, and a standing account means one email from you and it ships with a handwritten card.
 
 Reply and I'll send a sample box for your team to evaluate — no commitment.
 
@@ -54,7 +54,7 @@ Founder, Petite Lavande`,
 
 If your clients ever ask for a new-baby gift, you know the options are either mass-market baskets or DIY assembly.
 
-Petite Lavande produces hand-packed organic mother-and-baby gift boxes — heirloom knits, handmade keepsakes, postpartum self-care — retailing $65–165, with co-branded ribbon available for your clients' logos. We handle packing and fulfillment; you keep the client relationship.
+Petite Lavande produces hand-packed organic mother-and-baby gift boxes — heirloom knits, handmade keepsakes, postpartum self-care — retailing $65–145, with co-branded ribbon available for your clients' logos. We handle packing and fulfillment; you keep the client relationship.
 
 Reply for a line sheet and a sample box.
 

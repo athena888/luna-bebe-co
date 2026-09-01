@@ -44,7 +44,7 @@ const EMPLOYEE: FrozenTemplateV3[] = [
 
 I'm Emily — I make organic gift boxes for new parents, and People teams send them when someone on the team has a baby. The part that tends to matter: they're built for the mother as much as the baby, so you're not piecing together a gift from three different places.
 
-We ship directly to each parent with your team's card inside. Boxes run $65–165.
+We ship directly to each parent with your team's card inside. Boxes run $65–145.
 
 Would it be useful if I sent over our corporate lookbook and pricing?
 
@@ -136,7 +136,7 @@ const VC: FrozenTemplateV3[] = [
 
 I'm Emily — I make organic gift boxes for new parents, and platform teams send them when a portfolio founder welcomes a baby. They're built for the mother as much as the baby, which tends to be the difference between a gift that gets acknowledged and one that gets remembered.
 
-We ship directly to the founder's home with your note inside. Boxes run $65–165.
+We ship directly to the founder's home with your note inside. Boxes run $65–145.
 
 Would it be useful if I sent over the lookbook and pricing?
 
