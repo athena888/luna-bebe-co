@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import { CONTACT_EMAIL, CANCELLATION_WINDOW_HOURS } from '@/lib/site-config'
+import { BUSINESS_LEGAL_NAME, CONTACT_EMAIL, CANCELLATION_WINDOW_HOURS } from '@/lib/site-config'
+import { FREE_SHIPPING_THRESHOLD, SHIPPING, formatDollars } from '@/lib/products'
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
@@ -15,11 +16,11 @@ export default function TermsPage() {
       <p className="text-bark-400 text-sm mb-10">Last updated: June 2026</p>
 
       <Section title="1. Overview">
-        By placing an order with Petite Lavande &amp; Co. (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;), you agree to these Terms of Service. Please read them carefully before completing your purchase.
+        By placing an order with {BUSINESS_LEGAL_NAME}, trading as Petite Lavande (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;), you agree to these Terms of Service. Please read them carefully before completing your purchase.
       </Section>
 
       <Section title="2. Products">
-        All items in our gift boxes are organic, sustainably sourced, and curated for newborns and new mothers. Product descriptions, ingredients, and imagery are as accurate as possible. Minor variations in handcrafted items are expected and part of their artisan quality.
+        Our gift boxes contain a curated mix of organic-cotton textiles, natural-material baby items, and gifts for new mothers. Materials, ingredients, and certification information are stated on individual product pages where applicable. Product descriptions, ingredients, and imagery are as accurate as possible. Minor variations in handcrafted items are expected and part of their artisan quality.
       </Section>
 
       <Section title="3. Orders & Payment">
@@ -31,7 +32,7 @@ export default function TermsPage() {
       </Section>
 
       <Section title="5. Shipping">
-        We ship within the United States only. Standard shipping takes 5–7 business days; premium rush shipping takes 1–2 business days. Shipping timelines begin after your box is assembled (within 24 hours of your order). We are not responsible for delays caused by carriers.
+        We currently ship within the United States. Orders placed before 1:00 PM Pacific Time, Monday to Friday, are typically dispatched the same business day; later orders, weekends and federal holidays are processed the next business day. Transit time is counted after dispatch: standard shipping is {SHIPPING.standard.days}, {SHIPPING.premium.label.toLowerCase()} is {SHIPPING.premium.days}. Standard shipping is free on orders of {formatDollars(FREE_SHIPPING_THRESHOLD)} or more. Delivery estimates are carrier estimates, not guarantees, and we are not responsible for delays caused by carriers. See our <a href="/legal/shipping" className="text-bark-600 underline underline-offset-2">Shipping Policy</a> for full details.
       </Section>
 
       <Section title="6. Cancellations">
@@ -43,11 +44,11 @@ export default function TermsPage() {
       </Section>
 
       <Section title="8. Intellectual Property">
-        All content on this website — including imagery, copy, and brand design — is the property of Petite Lavande &amp; Co. and may not be reproduced without written permission.
+        All content on this website — including imagery, copy, and brand design — is the property of {BUSINESS_LEGAL_NAME} and may not be reproduced without written permission.
       </Section>
 
       <Section title="9. Limitation of Liability">
-        To the extent permitted by law, Petite Lavande &amp; Co. is not liable for any indirect, incidental, or consequential damages arising from your use of our site or products.
+        To the extent permitted by law, {BUSINESS_LEGAL_NAME} is not liable for any indirect, incidental, or consequential damages arising from your use of our site or products.
       </Section>
 
       <Section title="10. Governing Law">

@@ -30,6 +30,10 @@ export default function ReturnsPage() {
         Because each box is assembled to order, we are unable to accept returns for change of mind once your box has been shipped. If you need to cancel, please contact us within <strong>{CANCELLATION_WINDOW_HOURS} hours</strong> of placing your order.
       </Section>
 
+      <Section title="Exchanges">
+        We do not generally offer exchanges — each box is assembled to order, so there is no stock to swap it against. If an item arrives damaged, defective or incorrect, we reship the correct item or refund it as described above, which covers the cases an exchange normally would.
+      </Section>
+
       <Section title="Return Shipping">
         For damaged or incorrect items, we cover return shipping. For any other approved return, return shipping is the customer&apos;s responsibility.
       </Section>

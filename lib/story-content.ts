@@ -33,7 +33,7 @@ export const DEFAULT_STORY_CONTENT: StoryContent = {
     signature: '— Émilie, Founder',
   },
   values: [
-    { title: 'Purely Organic', body: 'Our cotton garments are organic cotton from GOTS-certified makers, and we choose organic, natural materials across the box wherever we can.' },
+    { title: 'Organic Cotton, Thoughtfully Sourced', body: 'Selected textiles are made with organic cotton, and we choose natural materials across the box wherever we can. Material and certification details are listed on individual product pages where applicable.' },
     { title: 'Artisan-Made', body: "We source from small makers and family studios. The hands that made your gift cared deeply about it — and that's not something you can mass-produce." },
     { title: 'Every Detail', body: 'Hand-sealed boxes, personalized cards, tissue and ribbon — because the unboxing is part of the gift. We believe in the beauty of ceremony.' },
   ],

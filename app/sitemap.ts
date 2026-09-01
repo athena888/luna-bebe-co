@@ -26,6 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/legal/terms`,   lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
     { url: `${base}/legal/privacy`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
     { url: `${base}/legal/returns`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
+    { url: `${base}/legal/shipping`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
   ]
 
   // Search-intent landing pages

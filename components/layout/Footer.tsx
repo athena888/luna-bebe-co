@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { ArrowRight } from 'lucide-react'
-import { CONTACT_EMAIL } from '@/lib/site-config'
+import { BUSINESS_ADDRESS, BUSINESS_LEGAL_NAME, BUSINESS_LOCALITY, BUSINESS_PHONE, CONTACT_EMAIL } from '@/lib/site-config'
 import { PaymentIcons } from '@/components/ui/PaymentIcons'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { useIsEs } from '@/lib/use-is-es'
@@ -236,7 +236,32 @@ export function Footer() {
             <PaymentIcons />
           </div>
 
-          <div className="mt-6 pt-6 border-t border-cream-300 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 font-sans text-[13px] font-normal text-espresso">
+          {/* Business identity — who the customer is actually buying from, in
+              one quiet line. A storefront that never names its operator or
+              says where it is reads as anonymous, which is the single most
+              common Merchant Center "misrepresentation" finding. Address and
+              phone render ONLY when configured (see lib/site-config): an
+              invented one would be worse than none. */}
+          <div className="mt-6 pt-6 border-t border-cream-300 text-center font-sans text-[12px] leading-relaxed text-espresso-light">
+            <p>
+              <span className="text-espresso">{BUSINESS_LEGAL_NAME}</span>
+              <span className="mx-1.5 text-bark-400">·</span>
+              {BUSINESS_LOCALITY}
+            </p>
+            {BUSINESS_ADDRESS && <p>{BUSINESS_ADDRESS}</p>}
+            <p>
+              <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-gold-500 transition-colors">{CONTACT_EMAIL}</a>
+              {BUSINESS_PHONE && (
+                <>
+                  <span className="mx-1.5 text-bark-400">·</span>
+                  <a href={`tel:${BUSINESS_PHONE.replace(/[^+\d]/g, '')}`} className="hover:text-gold-500 transition-colors">{BUSINESS_PHONE}</a>
+                </>
+              )}
+            </p>
+            <p className="mt-1">{isEs ? 'Enviamos dentro de Estados Unidos.' : 'We currently ship within the United States.'}</p>
+          </div>
+
+          <div className="mt-5 pt-5 border-t border-cream-300 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 font-sans text-[13px] font-normal text-espresso">
             <p className="whitespace-nowrap">© {new Date().getFullYear()} Petite Lavande.</p>
             {process.env.NEXT_PUBLIC_SPANISH_ACTIVE === 'true' && (
               <div className="flex border border-cream-300">
@@ -254,6 +279,7 @@ export function Footer() {
               </div>
             )}
             <div className="flex items-center gap-x-5 sm:gap-x-8 whitespace-nowrap">
+              <Link href={localePath('/legal/shipping', isEs)} className="hover:text-gold-500 transition-colors">{isEs ? 'Envíos' : 'Shipping'}</Link>
               <Link href={localePath('/legal/privacy', isEs)} className="hover:text-gold-500 transition-colors">{isEs ? 'Privacidad' : 'Privacy Policy'}</Link>
               <Link href={localePath('/legal/terms', isEs)} className="hover:text-gold-500 transition-colors">{isEs ? 'Términos' : 'Terms of Service'}</Link>
               <Link href={localePath('/legal/returns', isEs)} className="hover:text-gold-500 transition-colors">{isEs ? 'Devoluciones' : 'Returns'}</Link>

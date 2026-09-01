@@ -6,6 +6,38 @@ export const CONTACT_EMAIL = 'hello@petitelavande.com'
 export const BRAND_NAME = 'Petite Lavande'
 export const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
+// ── Business identity ──────────────────────────────────────────────────────
+// Who a customer (or a Merchant Center reviewer) is actually buying from. The
+// BRAND is "Petite Lavande" and stays that way in every piece of marketing;
+// the LEGAL ENTITY belongs anywhere the question is "who operates this store"
+// — Terms, the footer identity line, liability and IP clauses.
+
+/** The registered entity. Use in legal text and the footer identity line —
+ *  never as a substitute for BRAND_NAME in marketing copy. */
+export const BUSINESS_LEGAL_NAME = 'Petite Lavande LLC'
+
+/** Where the business operates from. Safe to publish on its own; it is the
+ *  city, not a street address. */
+export const BUSINESS_LOCALITY = 'Seattle, WA, United States'
+
+// The two below are UNSET until Emily supplies real values, and every surface
+// that renders them is written to show nothing at all when they are empty. A
+// invented street address or phone number on a storefront is precisely the
+// misrepresentation a Merchant review looks for, so there is no default and
+// no placeholder — an empty string renders an empty space, never "123 Main St".
+//
+// NEXT_PUBLIC_ because the footer is a client component: a server-only var
+// would render on the server and vanish in the browser, which is a hydration
+// mismatch, not a fallback. The separate server-side BUSINESS_ADDRESS that
+// lib/outreach/footer.ts uses for CAN-SPAM is left exactly as it is; copy the
+// same value into NEXT_PUBLIC_BUSINESS_ADDRESS to publish it on the site.
+
+/** Full postal address, one line, e.g. "PO Box 1234, Seattle, WA 98101". */
+export const BUSINESS_ADDRESS = (process.env.NEXT_PUBLIC_BUSINESS_ADDRESS || '').trim()
+
+/** Business phone in E.164 or a dialable display form, e.g. "+1 (206) 555-0100". */
+export const BUSINESS_PHONE = (process.env.NEXT_PUBLIC_BUSINESS_PHONE || '').trim()
+
 // ── Policy constants ───────────────────────────────────────────────────────
 // The Returns Policy page is the source of truth for returns; these constants
 // exist so the FAQ, Terms, chat assistant and any future surface can never

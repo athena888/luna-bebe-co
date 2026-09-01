@@ -35,7 +35,7 @@ export const LANDING_PAGES: LandingPage[] = [
     eyebrow: 'For the Shower',
     h1: 'The Best Organic Baby Shower Gifts',
     intro: [
-      'The best baby shower gifts are the ones the family still reaches for months later — soft organic cotton against new skin, a keepsake that outlasts the newborn weeks and something for the mama herself. Every piece here is organic cotton from GOTS-certified makers or botanical care made in small batches.',
+      'The best baby shower gifts are the ones the family still reaches for months later — soft organic cotton against new skin, a keepsake that outlasts the newborn weeks and something for the mama herself. Selected textiles here are made with organic cotton, alongside botanical care made in small batches; material and certification details are listed on individual product pages where applicable.',
       'Choose a ready-made basket or build your own piece by piece. Either way it arrives hand-packed, ribbon-tied and sealed by hand, with a personalized card — gift-ready for the shower table.',
     ],
     categories: ['swaddle', 'garment', 'keepsake', 'mom'],

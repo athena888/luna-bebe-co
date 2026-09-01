@@ -10,7 +10,7 @@ import { ChatWidget } from "@/components/ui/ChatWidget";
 import { UTMCapture } from "@/components/ui/UTMCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { getSiteImage } from "@/lib/site-images";
-import { CONTACT_EMAIL } from "@/lib/site-config";
+import { BUSINESS_ADDRESS, BUSINESS_LEGAL_NAME, BUSINESS_PHONE, CONTACT_EMAIL } from "@/lib/site-config";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { MarketGate } from "@/components/ui/MarketGate";
@@ -107,10 +107,27 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           '@context': 'https://schema.org',
           '@type': 'Organization',
           name: 'Petite Lavande',
+          // The entity behind the brand, and where it operates from. An
+          // anonymous storefront is the commonest misrepresentation finding;
+          // this is the machine-readable half of the footer identity line.
+          legalName: BUSINESS_LEGAL_NAME,
           url: BASE,
           logo: `${BASE}/apple-touch-icon.png`,
-          description: 'Luxury curated organic baby gift boxes.',
+          // Describes the MIX a box actually holds. "Organic baby gift boxes"
+          // claimed the whole box was organic, which no box is.
+          description: 'Curated gift boxes for newborns and new mothers — organic-cotton textiles, natural-material baby items, and gifts for the mother.',
           email: CONTACT_EMAIL,
+          areaServed: 'US',
+          // Rendered only when configured; a fabricated address or phone is
+          // worse than none at all (see lib/site-config).
+          ...(BUSINESS_PHONE ? { telephone: BUSINESS_PHONE } : {}),
+          address: {
+            '@type': 'PostalAddress',
+            addressLocality: 'Seattle',
+            addressRegion: 'WA',
+            addressCountry: 'US',
+            ...(BUSINESS_ADDRESS ? { streetAddress: BUSINESS_ADDRESS } : {}),
+          },
         }} />
         <JsonLd data={{
           '@context': 'https://schema.org',

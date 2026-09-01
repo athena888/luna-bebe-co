@@ -27,7 +27,7 @@ export default function OurCottonPage() {
               we pack is pure and gentle against it — grown without harsh chemicals, and finished without them too.
             </p>
             <p>
-              The makers we work with hold GOTS certification — the Global Organic Textile Standard. In plain
+              The cotton makers we work with hold GOTS certification — the Global Organic Textile Standard. In plain
               language, it means an independent organization traces the cotton from the field to the finished
               garment: how it&apos;s grown, how it&apos;s dyed, and how the people who make it are treated.
               We don&apos;t have to take anyone&apos;s word for it, and neither do you.

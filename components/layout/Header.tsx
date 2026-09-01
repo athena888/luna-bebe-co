@@ -269,7 +269,7 @@ const DEFAULT_PERKS: Perk[] = [
   { label: `Free Shipping Over $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}`, sub: '', es: { label: `Envío gratis desde $${Math.round(FREE_SHIPPING_THRESHOLD / 100)}`, sub: '' } },
   { label: 'Organic Cotton', sub: '', es: { label: 'Algodón orgánico', sub: '' } },
   { label: 'Personalized Card', sub: '', es: { label: 'Tarjeta personalizada', sub: '' } },
-  { label: 'Same-Day Shipping', sub: '', es: { label: 'Envío el mismo día', sub: '' } },
+  { label: 'Same-Day Dispatch', sub: '', es: { label: 'Despacho el mismo día', sub: '' } },
 ]
 export function PerksMarquee() {
   const [perks, setPerks] = useState<Perk[]>(DEFAULT_PERKS)

@@ -36,6 +36,10 @@ export default function DevolucionesPage() {
         Como cada canastilla se arma a pedido, no podemos aceptar devoluciones por cambio de opinión una vez enviada. Si necesitas cancelar, escríbenos dentro de las {CANCELLATION_WINDOW_HOURS} horas de haber hecho tu pedido.
       </Section>
 
+      <Section title="Cambios">
+        Por lo general no hacemos cambios — cada canastilla se arma a pedido, así que no hay inventario contra el cual intercambiarla. Si un artículo llega dañado, defectuoso o incorrecto, te reenviamos el correcto o te devolvemos el dinero como se describe arriba, que cubre los casos que normalmente resolvería un cambio.
+      </Section>
+
       <Section title="Envío de la devolución">
         Si algo llega dañado o con algo que no pediste, nosotros cubrimos el envío de la devolución. Para cualquier otra devolución aprobada, el envío corre por cuenta del cliente.
       </Section>

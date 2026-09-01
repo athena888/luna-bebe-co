@@ -27,7 +27,7 @@ const ES_STORY = {
     body: 'Cada ingrediente, cada material — con su origen conocido. Campos de lavanda de la Provenza. Granjas del Pacífico Noroeste. Pequeños talleres americanos y fuentes europeas éticas. Todo etiquetado. Todo rastreable. Todo elegido como una hija elegiría para su propia madre.',
   },
   values: [
-    { title: 'Puramente orgánico', body: 'Nuestra ropita es de algodón orgánico certificado GOTS, de talleres certificados GOTS, y elegimos materiales orgánicos y naturales en toda la canastilla siempre que podemos.' },
+    { title: 'Algodón orgánico, con origen cuidado', body: 'Algunos textiles están hechos con algodón orgánico, y elegimos materiales naturales en toda la canastilla siempre que podemos. Los detalles de materiales y certificaciones se indican en cada página de producto cuando corresponde.' },
     { title: 'Hecho artesanal', body: 'Traemos nuestros botánicos de Europa y la lavanda de una granja familiar en Sequim, en el Pacífico Noroeste. Las manos que hicieron tu regalo lo cuidaron de verdad — y eso no se puede producir en masa.' },
     { title: 'Cada detalle', body: 'Canastas de fibra natural, tarjetas personalizadas, papel de seda y listón — porque abrir el regalo es parte del regalo. Creemos en la belleza de la ceremonia.' },
   ],

@@ -31,7 +31,7 @@ export default function NuestroAlgodonPage() {
               agresivos y terminada sin ellos también.
             </p>
             <p>
-              Los talleres con los que trabajamos tienen la certificación GOTS. En palabras simples:
+              Los talleres de algodón con los que trabajamos tienen la certificación GOTS. En palabras simples:
               una organización independiente sigue el algodón desde el campo hasta la prenda terminada —
               cómo se cultiva, cómo se tiñe y cómo se trata a las personas que lo confeccionan.
               No hay que creer en la palabra de nadie: está verificado.
