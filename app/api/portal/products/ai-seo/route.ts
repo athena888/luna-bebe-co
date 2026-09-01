@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
+import { RETURNS_SUMMARY, conflictsWithReturnsPolicy } from '@/lib/site-config'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 
@@ -34,7 +35,9 @@ Return STRICT JSON only (no markdown) with this exact shape:
   "faqs": [{"q":"question","a":"answer"}, {"q":"...","a":"..."}, {"q":"...","a":"..."}]
 }
 
-Rules: never invent certifications, materials, sizes, or origin that aren't in the verified specs. NEVER write "GOTS certified", "certified organic", or "100% organic" for a product or the brand — for cotton items just say "organic cotton". FAQs should answer real organic/safety/sizing/gifting questions. Keep titleTag truly <=60 characters.`
+Rules: never invent certifications, materials, sizes, or origin that aren't in the verified specs. NEVER write "GOTS certified", "certified organic", or "100% organic" for a product or the brand — for cotton items just say "organic cotton". FAQs should answer real organic/safety/sizing/gifting questions. Keep titleTag truly <=60 characters.
+
+Returns and refunds: our policy is exactly this — "${RETURNS_SUMMARY}" — and you may not soften or extend it. NEVER promise a return window ("30 days", "returnable within N days"), free returns, a money-back guarantee, or returns of unopened boxes. Google compares these answers against our Merchant Center return policy, which accepts defective products only, and a friendlier invented promise gets the listing disapproved. If a returns question belongs in the FAQs, answer it in the words of the policy above.`
 
     const content: Anthropic.MessageParam['content'] = []
     if (file) {
@@ -52,6 +55,14 @@ Rules: never invent certifications, materials, sizes, or origin that aren't in t
     const text = res.content[0].type === 'text' ? res.content[0].text.trim() : ''
     const clean = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '')
     const data = JSON.parse(clean)
+    // A prompt rule is guidance, not a guarantee. Drop any FAQ that still
+    // promises a return window — an admin saving one would publish it into the
+    // product's FAQPage structured data, where Google reads it.
+    if (Array.isArray(data?.faqs)) {
+      data.faqs = data.faqs.filter(
+        (f: { q?: string; a?: string }) => !conflictsWithReturnsPolicy(`${f?.q ?? ''} ${f?.a ?? ''}`),
+      )
+    }
     return NextResponse.json({ seo: data })
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'SEO generation failed'

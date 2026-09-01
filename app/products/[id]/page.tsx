@@ -3,6 +3,7 @@ import { getCatalogProduct, getProductStock } from '@/lib/products-db'
 import { CATEGORY_LABELS } from '@/lib/products'
 import { JsonLd } from '@/components/ui/JsonLd'
 import { SPANISH_ACTIVE, esProductComplete } from '@/lib/i18n'
+import { conflictsWithReturnsPolicy } from '@/lib/site-config'
 import ProductDetailClient from './ProductDetailClient'
 import { getCatalog } from '@/lib/products-db'
 import type { RelatedItem } from '@/components/ui/RelatedProducts'
@@ -61,6 +62,11 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const { id } = await params
   const p = await getCatalogProduct(id)
   const url = `${BASE}/products/${id}`
+
+  // Stored FAQs, minus any answer that contradicts the returns policy — see
+  // the FAQPage block below for why this is filtered here and nowhere else.
+  const policyFaqs = (Array.isArray(p?.faqs) ? p.faqs : [])
+    .filter(f => f && !conflictsWithReturnsPolicy(`${f.q ?? ''} ${f.a ?? ''}`))
 
   // Availability from live stock, not just the active flag: an active-but-sold-
   // out product should render OutOfStock. Unknown stock (null) → trust `active`.
@@ -152,11 +158,19 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
               { '@type': 'ListItem', position: 3, name: p.name, item: url },
             ],
           }} />
-          {Array.isArray(p.faqs) && p.faqs.length > 0 && (
+          {/* Product FAQs live in the database and reach Google ONLY through
+              this block — nothing renders them on the page. That makes it the
+              one place a stored answer can promise something /legal/returns
+              does not ("returnable within 30 days", "free returns"), and the
+              landing page Google compares against a Merchant return policy of
+              "defective products only". Such an answer is dropped from the
+              structured data rather than published; the row still needs
+              fixing in the portal, and `npm run check:copy` lists them. */}
+          {policyFaqs.length > 0 && (
             <JsonLd data={{
               '@context': 'https://schema.org',
               '@type': 'FAQPage',
-              mainEntity: p.faqs.map(f => ({
+              mainEntity: policyFaqs.map(f => ({
                 '@type': 'Question',
                 name: f.q,
                 acceptedAnswer: { '@type': 'Answer', text: f.a },

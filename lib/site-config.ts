@@ -24,6 +24,48 @@ export const RETURNS_SUMMARY_ES =
   `Puedes cancelar tu pedido dentro de las ${CANCELLATION_WINDOW_HOURS} horas posteriores a la compra. Una vez enviada la canastilla no aceptamos devoluciones por cambio de opinión, porque cada una se arma a mano por pedido. Si algo llega dañado, defectuoso o equivocado, escríbenos a ${CONTACT_EMAIL} y lo resolvemos según nuestra política de devoluciones.`
 
 /**
+ * Does this piece of copy promise something our returns policy does not?
+ *
+ * The constants above cover every answer WE write. They cannot cover copy that
+ * arrives from the database — per-product FAQs, which the portal's AI SEO
+ * generator drafts and an admin saves. Those are published verbatim into the
+ * FAQPage structured data on /products/[id], which is exactly what Google
+ * reads when it checks a Merchant listing against the landing page. One
+ * generated line like "unopened boxes are returnable within 30 days" is enough
+ * to contradict a Merchant return policy of "defective products only" — while
+ * appearing nowhere in this repository, so no code search would ever find it.
+ *
+ * The patterns below flag only the claims we genuinely cannot honour, and are
+ * deliberately narrow so our own correct wording never trips them:
+ * "contact us within 7 days" (damaged goods) and "refunds are processed within
+ * 3–5 business days" (money back, not goods back) both pass.
+ *
+ * Both languages, because a Spanish reader must never get a different policy
+ * from an English one.
+ */
+const RETURNS_CONFLICT_PATTERNS: RegExp[] = [
+  // "returns within 30 days", "returnable within 30 days"
+  /\breturn(?:s|able|ed|ing)?\b[^.!?]{0,40}\bwithin\s+\d+\s*(?:[-–]\s*\d+\s*)?days?\b/i,
+  // "30-day returns", "30 day return policy"
+  /\b\d+[-–\s]?day\b[^.!?]{0,30}\breturn/i,
+  // A condition we never offer — the box either shipped or it did not.
+  /\bunopened\b|\bun-opened\b|\bsin abrir\b|\bno abiertas?\b/i,
+  /\bfree returns?\b|\bdevoluciones\s+grat(?:is|uitas)\b/i,
+  /\bmoney[-\s]back\s+guarantee\b|\bgarant[ií]a\s+de\s+devoluci[oó]n\b/i,
+  // "devoluciones dentro de 30 días" / "30 días para devoluciones"
+  /\bdevoluci[oó]n(?:es)?\b[^.!?]{0,40}\b(?:dentro de|en)\s+\d+\s*d[ií]as\b/i,
+  /\b\d+\s*d[ií]as\b[^.!?]{0,30}\bdevoluci/i,
+]
+
+/** True when `text` promises a return window, a free return, or a condition
+ *  ("unopened") that /legal/returns does not offer. Empty text is fine. */
+export function conflictsWithReturnsPolicy(text: string | null | undefined): boolean {
+  const t = (text ?? '').trim()
+  if (!t) return false
+  return RETURNS_CONFLICT_PATTERNS.some(re => re.test(t))
+}
+
+/**
  * Who owner/admin alerts go to (payment gaps, restock, weekly scorecard).
  * ADMIN_EMAIL may hold SEVERAL comma-separated addresses — Resend needs them
  * as an array, and passing the raw comma string would silently address one
