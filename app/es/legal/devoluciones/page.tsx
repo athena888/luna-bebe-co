@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { CONTACT_EMAIL } from '@/lib/site-config'
+import { CONTACT_EMAIL, CANCELLATION_WINDOW_HOURS, DEFECT_REPORT_WINDOW_DAYS } from '@/lib/site-config'
 
 export const metadata: Metadata = {
   title: 'Devoluciones y Reembolsos',
@@ -29,11 +29,11 @@ export default function DevolucionesPage() {
       </Section>
 
       <Section title="Artículos dañados o incorrectos">
-        Si tu pedido llega dañado o con algo que no pediste, escríbenos dentro de los 7 días con fotos. Te reenviamos lo correcto sin costo o te devolvemos el dinero completo — tú eliges.
+        Si tu pedido llega dañado o con algo que no pediste, escríbenos dentro de los {DEFECT_REPORT_WINDOW_DAYS} días con fotos. Te reenviamos lo correcto sin costo o te devolvemos el dinero completo — tú eliges.
       </Section>
 
       <Section title="Devoluciones por cambio de opinión">
-        Como cada canastilla se arma a pedido, no podemos aceptar devoluciones por cambio de opinión una vez enviada. Si necesitas cancelar, escríbenos dentro de las 24 horas de haber hecho tu pedido.
+        Como cada canastilla se arma a pedido, no podemos aceptar devoluciones por cambio de opinión una vez enviada. Si necesitas cancelar, escríbenos dentro de las {CANCELLATION_WINDOW_HOURS} horas de haber hecho tu pedido.
       </Section>
 
       <Section title="Envío de la devolución">

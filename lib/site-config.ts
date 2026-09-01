@@ -14,14 +14,26 @@ export const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavan
 /** Hours after placement in which an order can still be cancelled. */
 export const CANCELLATION_WINDOW_HOURS = 24
 
-/** One-sentence returns summary, safe to render anywhere. Mirrors
- *  /legal/returns: no change-of-mind returns after shipment; fulfillment
- *  problems are made right. Never promises a return window. */
+/** Days after delivery in which a damaged or incorrect order must be reported.
+ *  A REPORTING window, not a return window — the distinction is the whole
+ *  policy, and conflictsWithReturnsPolicy() below is built to keep it. */
+export const DEFECT_REPORT_WINDOW_DAYS = 7
+
+/** The returns policy in three sentences, safe to render anywhere. Mirrors
+ *  /legal/returns and the Merchant Center return policy ("defective products
+ *  only"): cancel early, no change-of-mind returns after shipment, fulfilment
+ *  problems made right. Never promises a return window.
+ *
+ *  Wording set by Emily (2026-09-01), deliberately short and plain so that a
+ *  shopper, the FAQ, the chat assistant and Google's reviewer all read the
+ *  same three facts in the same order. Edit HERE and every surface follows;
+ *  a fourth version written somewhere else is the failure this file exists to
+ *  prevent (the 2026-08-14 audit found four live at once). */
 export const RETURNS_SUMMARY =
-  `Orders can be cancelled within ${CANCELLATION_WINDOW_HOURS} hours of placing them. Once a box has shipped we can't accept change-of-mind returns, because each one is assembled by hand to order. If anything arrives damaged, defective or incorrect, email ${CONTACT_EMAIL} and we'll put it right under our returns policy.`
+  `You can cancel within ${CANCELLATION_WINDOW_HOURS} hours of ordering. Once an order has shipped, we do not accept returns for change of mind. If your order arrives damaged or incorrect, contact us within ${DEFECT_REPORT_WINDOW_DAYS} days and we'll make it right.`
 
 export const RETURNS_SUMMARY_ES =
-  `Puedes cancelar tu pedido dentro de las ${CANCELLATION_WINDOW_HOURS} horas posteriores a la compra. Una vez enviada la canastilla no aceptamos devoluciones por cambio de opinión, porque cada una se arma a mano por pedido. Si algo llega dañado, defectuoso o equivocado, escríbenos a ${CONTACT_EMAIL} y lo resolvemos según nuestra política de devoluciones.`
+  `Puedes cancelar dentro de las ${CANCELLATION_WINDOW_HOURS} horas posteriores a tu pedido. Una vez enviado el pedido, no aceptamos devoluciones por cambio de opinión. Si tu pedido llega dañado o incorrecto, escríbenos dentro de los ${DEFECT_REPORT_WINDOW_DAYS} días y lo resolvemos.`
 
 /**
  * Does this piece of copy promise something our returns policy does not?

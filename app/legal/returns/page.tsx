@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { CONTACT_EMAIL, CANCELLATION_WINDOW_HOURS } from '@/lib/site-config'
+import { CONTACT_EMAIL, CANCELLATION_WINDOW_HOURS, DEFECT_REPORT_WINDOW_DAYS } from '@/lib/site-config'
 
 export const metadata: Metadata = {
   title: 'Returns & Refund Policy',
@@ -23,7 +23,7 @@ export default function ReturnsPage() {
       </Section>
 
       <Section title="Damaged or Incorrect Items">
-        If your order arrives damaged or contains the wrong items, please contact us within <strong>7 days</strong> of delivery with photos. We will reship the correct items at no cost or issue a full refund — your choice.
+        If your order arrives damaged or contains the wrong items, please contact us within <strong>{DEFECT_REPORT_WINDOW_DAYS} days</strong> of delivery with photos. We will reship the correct items at no cost or issue a full refund — your choice.
       </Section>
 
       <Section title="Change of Mind Returns">
