@@ -19,7 +19,7 @@ export default function TermsPage() {
       </Section>
 
       <Section title="2. Products">
-        All items in our gift boxes are organic, sustainably sourced, and curated for newborns and new mothers. Product descriptions, ingredients, and imagery are as accurate as possible. Minor variations in handcrafted items are expected and part of their artisan quality.
+        Our cotton baby garments and selected textiles are made with organic cotton from certified makers, and we prioritize natural and thoughtfully sourced materials throughout our gift boxes. Every box is curated for newborns and new mothers. Product descriptions, ingredients, and imagery are as accurate as possible. Minor variations in handcrafted items are expected and part of their artisan quality.
       </Section>
 
       <Section title="3. Orders & Payment">
