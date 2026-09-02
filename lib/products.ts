@@ -75,7 +75,7 @@ export const BOX_BASE_PRICE = 0
 export const BOX_PACKAGING_COST = 850
 
 export const SHIPPING = {
-  standard: { label: 'Standard Shipping', price: 995, days: '5–7 business days' },
+  standard: { label: 'Standard Shipping', price: 995, days: 'Delivery time varies by destination' },
   premium: { label: 'Premium Rush Shipping', price: 2800, days: '1–2 business days', badge: 'Arrives Fast' },
   sameday: { label: 'Same-Day Courier', price: 1500, days: 'This evening 5–9 PM · order by 1 PM (after: tomorrow evening)', badge: 'Seattle Area' },
 }
