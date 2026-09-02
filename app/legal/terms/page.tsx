@@ -15,7 +15,7 @@ export default function TermsPage() {
       <p className="text-bark-400 text-sm mb-10">Last updated: June 2026</p>
 
       <Section title="1. Overview">
-        By placing an order with Petite Lavande &amp; Co. (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;), you agree to these Terms of Service. Please read them carefully before completing your purchase.
+        By placing an order with Petite Lavande LLC, doing business as Petite Lavande (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;), you agree to these Terms of Service. Please read them carefully before completing your purchase.
       </Section>
 
       <Section title="2. Products">
@@ -31,7 +31,7 @@ export default function TermsPage() {
       </Section>
 
       <Section title="5. Shipping">
-        We ship within the United States only. Standard shipping takes 5–7 business days; premium rush shipping takes 1–2 business days. Shipping timelines begin after your box is assembled (within 24 hours of your order). We are not responsible for delays caused by carriers.
+        We ship within the United States only. Estimated delivery times vary by destination. Orders typically arrive within 2–6 business days after shipment. Delivery estimates are provided at checkout and may vary by location and carrier. Shipping timelines begin after your box is assembled (within 24 hours of your order). We are not responsible for delays caused by carriers.
       </Section>
 
       <Section title="6. Cancellations">
@@ -43,11 +43,11 @@ export default function TermsPage() {
       </Section>
 
       <Section title="8. Intellectual Property">
-        All content on this website — including imagery, copy, and brand design — is the property of Petite Lavande &amp; Co. and may not be reproduced without written permission.
+        All content on this website — including imagery, copy, and brand design — is the property of Petite Lavande LLC, doing business as Petite Lavande, and may not be reproduced without written permission.
       </Section>
 
       <Section title="9. Limitation of Liability">
-        To the extent permitted by law, Petite Lavande &amp; Co. is not liable for any indirect, incidental, or consequential damages arising from your use of our site or products.
+        To the extent permitted by law, Petite Lavande LLC, doing business as Petite Lavande, is not liable for any indirect, incidental, or consequential damages arising from your use of our site or products.
       </Section>
 
       <Section title="10. Governing Law">
