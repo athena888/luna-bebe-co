@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { getCatalog } from '@/lib/products-db'
 import { LANDING_PAGES } from '@/lib/landing-pages'
+import { OCCASIONS } from '@/lib/gifting'
 import { getJournalPosts } from '@/lib/journal-db'
 
 export const revalidate = 3600
@@ -27,6 +28,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/legal/privacy`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
     { url: `${base}/legal/returns`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
   ]
+
+  // Occasion landing pages — the destinations Meta ads point at. They carry a
+  // commercial layout rather than the informational one /gifts/* uses, so they
+  // are listed at the same priority as the box hub, not as blog content.
+  urls.push({ url: `${base}/occasions`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 })
+  for (const occ of OCCASIONS) {
+    urls.push({ url: `${base}${occ.path}`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 })
+  }
 
   // Search-intent landing pages
   for (const lp of LANDING_PAGES) {

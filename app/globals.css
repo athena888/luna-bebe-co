@@ -49,6 +49,22 @@
   --color-espresso: #4A3B30;
   --color-espresso-light: #6F5B4D;
 
+  /* ── Gifting palette (2026-09 conversion redesign) ────────────────────────
+     The atelier surface the gifting pages are built on. Deliberately warmer
+     and more tactile than the Noralee-derived greys above, which stay in
+     place for every page that hasn't been rebuilt yet — the two sit together
+     because both are warm neutrals at the same value. Lavender is NOT in this
+     list: the brand is named for it, which is exactly why it must stay a rare
+     accent rather than a surface. */
+  --color-parchment: #F5EFE5;
+  --color-oat: #DED1BE;
+  --color-dusty-rose: #CDA8A1;
+  --color-soft-sage: #A8AD91;
+  --color-burgundy: #7C454C;
+  /* Primary text for the gifting pages: deep espresso, never pure black. */
+  --color-ink: #4B3F37;
+  --color-ink-soft: #6B5C51;
+
   /* TWO working faces (2026-08-17). Playfair Display sets headings and serif
      accents; Jost carries body copy and every piece of UI. Pinyon Script is
      the one decorative accent. "Brandon Grotesque" used to head the sans
@@ -182,3 +198,49 @@ html { scroll-behavior: smooth; }
     -webkit-overflow-scrolling: touch;
   }
 }
+
+/* ── Gifting redesign utilities ─────────────────────────────────────────────
+   Kept to the few things Tailwind can't express inline. No animation library,
+   no scroll-driven effects: cold ad traffic is mobile, and decoration that
+   costs a layout shift costs a sale. */
+
+/* Paper grain. A 90-byte inline SVG, so it costs no request and no bytes on
+   the wire beyond the CSS itself. Sits UNDER content at 3% — visible as tooth,
+   never as noise. Skipped entirely when the visitor asks for reduced data. */
+.pl-paper {
+  position: relative;
+  background-color: var(--color-parchment);
+}
+.pl-paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@media (prefers-reduced-data: reduce) {
+  .pl-paper::before { display: none; }
+}
+
+/* A hairline rule in oat, used to separate editorial bands without a box. */
+.pl-rule { border-color: var(--color-oat); }
+
+/* The eyebrow: small caps, wide tracking, one consistent voice across every
+   section so the page reads as one document rather than a stack of blocks. */
+.pl-eyebrow {
+  font-family: "Jost", ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Mobile sticky purchase bar: reserve its height at the bottom of the page so
+   it never covers the last section's content or the footer links. */
+.pl-sticky-pad { padding-bottom: env(safe-area-inset-bottom); }
+
+/* Editorial photo cards crop to a fixed ratio so a grid of them can never
+   shift as images arrive at different intrinsic sizes. */
+.pl-ratio-45 { aspect-ratio: 4 / 5; }
+.pl-ratio-32 { aspect-ratio: 3 / 2; }

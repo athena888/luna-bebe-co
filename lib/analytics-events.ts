@@ -102,6 +102,21 @@ export function trackViewItem(p: CartLike): void {
   fbqTrack('ViewContent', { content_type: 'product', content_ids: [p.id], value: p.price / 100, currency: 'USD' })
 }
 
+/** A merchandised list of products was seen — the three gifts on an occasion
+ *  landing page, say. This is NOT view_item: firing three view_items for one
+ *  page view would inflate product-detail views and wreck the funnel's
+ *  view_item → add_to_cart ratio, which is the number ad spend is judged on.
+ *  GA4 has a first-class event for exactly this; Meta has no list equivalent,
+ *  so the pixel is deliberately left alone here. */
+export function trackViewItemList(listId: string, listName: string, items: CartLike[]): void {
+  if (!items.length) return
+  track('view_item_list', {
+    item_list_id: listId,
+    item_list_name: listName,
+    items: items.map((p, i) => ({ ...toItem(p), index: i, item_list_id: listId, item_list_name: listName })),
+  })
+}
+
 /** Pure diff of one cart write. Returns null unless total quantity GREW —
  *  removals, rewrites of the same cart, hydration and state syncs all diff to
  *  null. Item quantities are the DELTA added by this write (qty 2→3 reports

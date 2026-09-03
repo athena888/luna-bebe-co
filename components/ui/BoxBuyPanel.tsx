@@ -18,7 +18,7 @@ import type { SizeOption } from '@/lib/catalog-db'
 
 export interface BuyContent { item: Product; qty: number; colorChoice: boolean }
 
-export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, variantLabel, needsColor, sizesByItem = {}, boxImage = null }: {
+export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, variantLabel, needsColor, sizesByItem = {}, boxImage = null, ctaLabel }: {
   contents: BuyContent[]
   price: number
   boxName?: string
@@ -29,6 +29,11 @@ export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, var
   sizesByItem?: Record<string, SizeOption[]>
   /** Cover photo for the single bag line. */
   boxImage?: string | null
+  /** Button wording. "Send this gift" reads as what the buyer is doing, which
+   *  converts better on a gifting page than "Add to Cart"; the default keeps
+   *  every other caller unchanged. Purely a label — the click still writes the
+   *  cart, so add_to_cart fires from the same place it always did. */
+  ctaLabel?: string
 }) {
   const router = useRouter()
   const isEs = useIsEs()
@@ -133,7 +138,7 @@ export function BoxBuyPanel({ contents, price, boxName, boxSlug, variantKey, var
         disabled={!canBuy}
         className="w-full sm:w-auto bg-[#7A8E7C] text-white font-sans text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#6d8070] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
-        {isEs ? 'Agregar al carrito' : 'Add to Cart'} — {formatDollars(price)}
+        {ctaLabel ?? (isEs ? 'Agregar al carrito' : 'Add to Cart')} — {formatDollars(price)}
       </button>
 
       <DeliveryEstimate className="mt-3" />

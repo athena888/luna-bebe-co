@@ -10,6 +10,7 @@ import { FREE_SHIPPING_THRESHOLD } from '@/lib/products'
 import { CONTACT_EMAIL } from '@/lib/site-config'
 import { LavenderSprig } from '@/components/ui/LavenderSprig'
 import { BagDrawer } from '@/components/ui/BagDrawer'
+import { OCCASIONS, bestForLabel } from '@/lib/gifting-copy'
 
 // Cart lives in the nav row so it scrolls with the header. On the build page it
 // opens the bag drawer in place; elsewhere it goes to the Shopping Bag.
@@ -126,14 +127,9 @@ const DEFAULT_BOX_PRODUCTS: Array<{ slug: string; name: string }> = [
   { slug: 'new-mom-gift-box', name: 'The Mama Box' },
 ]
 
-// SHOP BY OCCASION column — Emily's exact format (2026-07-29).
-// ONE column (Emily): each box row carries its occasion as a right-hand tag.
-const OCCASION_BY_SLUG: Record<string, { en: string; es: string }> = {
-  'signature-baby-gift-box': { en: 'Baby Shower', es: 'Baby Shower' },
-  'themed-baby-gift-box': { en: 'For Her & Baby', es: 'Para ella y el bebé' },
-  'new-mom-gift-box': { en: 'For Mom', es: 'Para mamá' },
-  'baby-first-christmas-gift-box': { en: 'Christmas Gifts For Little Ones', es: 'Regalos de Navidad para los más pequeños' },
-}
+// Each box row carries its occasion as a right-hand tag (Emily's format,
+// 2026-07-29). The mapping itself now lives in lib/gifting-copy.ts so the nav,
+// the product page and the occasion pages all read one source.
 
 // Kept OUT of the Gift Boxes dropdown (Emily 2026-08-16): the fixed-price
 // starter box exists so Google Shopping has something to list — the /build
@@ -156,12 +152,16 @@ function useBoxProducts() {
   return products
 }
 
-// "Gift Boxes" with the collections dropdown. Every link renders in the
-// initial HTML (hidden with CSS, never conditionally omitted) so crawlers see
-// the full list; the trigger itself links to /boxes so it works without JS.
-function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
-  const isEs = useIsEs()
-  const boxProducts = useBoxProducts()
+// A hover/focus dropdown. Every link renders in the initial HTML (hidden with
+// CSS, never conditionally omitted) so crawlers see the full list; the trigger
+// itself is a real link so it works with no JS.
+function NavDropdown({ label, href, cls, children, id }: {
+  label: string
+  href: string
+  cls: string
+  id: string
+  children: React.ReactNode
+}) {
   const [open, setOpen] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const enter = () => { if (timer.current) clearTimeout(timer.current); timer.current = setTimeout(() => setOpen(true), 150) }
@@ -173,48 +173,70 @@ function BoxesDropdown({ light, cls }: { light: boolean; cls: string }) {
   }, [])
   return (
     <div className="relative" onMouseEnter={enter} onMouseLeave={leave} onFocus={enter} onBlur={leave}>
-      <Link
-        href={localePath('/boxes', isEs)}
-        className={cls}
-        aria-expanded={open}
-        aria-controls="boxes-dropdown"
-        onClick={() => setOpen(false)}
-      >
-        {isEs ? 'Canastillas' : 'Gift Boxes'}
+      <Link href={href} className={cls} aria-expanded={open} aria-controls={id} onClick={() => setOpen(false)}>
+        {label}
       </Link>
       <div
-        id="boxes-dropdown"
+        id={id}
         className={`absolute left-1/2 -translate-x-1/2 top-full pt-3 z-50 transition-opacity duration-150 ${open ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}
       >
-        <div className="bg-cream-white border border-cream-300 shadow-lg px-7 py-6 whitespace-nowrap min-w-[340px]">
-          <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-400 font-bold mb-2.5">{isEs ? 'Nuestras canastillas' : 'Ready-Made Boxes'}</p>
-          {boxProducts.map(p => (
-            <Link key={p.slug} href={localePath(`/boxes/${p.slug}`, isEs)} onClick={() => setOpen(false)}
-              className="block font-sans text-[13px] normal-case tracking-normal text-espresso hover:text-gold-500 transition-colors py-1">
-              {p.name}
-              {OCCASION_BY_SLUG[p.slug] && (
-                <>
-                  <span className="text-cream-300 mx-2">|</span>
-                  {isEs ? OCCASION_BY_SLUG[p.slug].es : OCCASION_BY_SLUG[p.slug].en}
-                </>
-              )}
-            </Link>
-          ))}
-          <Link href={localePath('/corporate', isEs)} onClick={() => setOpen(false)}
-            className="block font-sans text-[13px] normal-case tracking-normal text-espresso hover:text-gold-500 transition-colors py-1">
-            {isEs ? 'Regalos corporativos' : 'Corporate Gifting'}
-          </Link>
-          <Link href={localePath('/build', isEs)} onClick={() => setOpen(false)}
-            className="block font-sans text-[13px] normal-case tracking-normal text-[#7A8E7C] hover:text-espresso transition-colors py-1">
-            {isEs ? 'Arma la tuya' : 'Build Your Own'}
-          </Link>
-          <Link href={localePath('/boxes', isEs)} onClick={() => setOpen(false)}
-            className="self-end font-sans text-[12px] normal-case tracking-normal text-[#7A8E7C] underline underline-offset-2 hover:text-espresso transition-colors">
-            {isEs ? 'Ver todas →' : 'View all boxes →'}
-          </Link>
+        <div className="bg-cream-white border border-cream-300 shadow-lg px-7 py-6 whitespace-nowrap min-w-[300px]" onClick={() => setOpen(false)}>
+          {children}
         </div>
       </div>
     </div>
+  )
+}
+
+const DROP_LINK = 'block font-sans text-[13px] normal-case tracking-normal text-espresso hover:text-gold-500 transition-colors py-1'
+const DROP_QUIET = 'block font-sans text-[13px] normal-case tracking-normal text-[#7A8E7C] hover:text-espresso transition-colors py-1'
+const DROP_HEAD = 'font-sans text-[10px] tracking-[0.18em] uppercase text-bark-400 font-bold mb-2.5'
+
+// SHOP GIFTS — the ready-made boxes, which is what cold traffic should buy.
+// Build Your Own is present but demoted to the quiet line at the bottom: a
+// visitor who has never seen the brand should not be asked to assemble a gift
+// out of ten decisions before they know what it costs.
+function ShopGiftsDropdown({ light, cls }: { light: boolean; cls: string }) {
+  const isEs = useIsEs()
+  const boxProducts = useBoxProducts()
+  return (
+    <NavDropdown id="shop-gifts-dropdown" label={isEs ? 'Canastillas' : 'Shop Gifts'} href={localePath('/boxes', isEs)} cls={cls}>
+      <p className={DROP_HEAD}>{isEs ? 'Nuestras canastillas' : 'Ready to gift'}</p>
+      {boxProducts.map(p => (
+        <Link key={p.slug} href={localePath(`/boxes/${p.slug}`, isEs)} className={DROP_LINK}>
+          {p.name}
+          {bestForLabel(p.slug, isEs) && (
+            <>
+              <span className="text-cream-300 mx-2">|</span>
+              {bestForLabel(p.slug, isEs)}
+            </>
+          )}
+        </Link>
+      ))}
+      <Link href={localePath('/gift-cards', isEs)} className={DROP_LINK}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
+      <Link href={localePath('/corporate', isEs)} className={DROP_LINK}>{isEs ? 'Regalos corporativos' : 'Corporate Gifting'}</Link>
+      <Link href={localePath('/build', isEs)} className={DROP_QUIET}>{isEs ? 'Arma la tuya' : 'Build your own'}</Link>
+      <Link href={localePath('/boxes', isEs)} className="mt-1 block font-sans text-[12px] normal-case tracking-normal text-[#7A8E7C] underline underline-offset-2 hover:text-espresso transition-colors">
+        {isEs ? 'Ver todas →' : 'View all gifts →'}
+      </Link>
+    </NavDropdown>
+  )
+}
+
+// SHOP BY OCCASION — the way a gift is actually chosen. English only: the
+// occasion landing pages have no Spanish twins yet, and a nav item that lands
+// a Spanish visitor on an English page is worse than not offering it.
+function OccasionDropdown({ cls }: { cls: string }) {
+  return (
+    <NavDropdown id="occasion-dropdown" label="Shop by Occasion" href="/occasions" cls={cls}>
+      <p className={DROP_HEAD}>Who are you celebrating?</p>
+      {OCCASIONS.map(o => (
+        <Link key={o.key} href={o.path} className={DROP_LINK}>{o.cardTitle}</Link>
+      ))}
+      <Link href="/occasions" className="mt-1 block font-sans text-[12px] normal-case tracking-normal text-[#7A8E7C] underline underline-offset-2 hover:text-espresso transition-colors">
+        Every moment →
+      </Link>
+    </NavDropdown>
   )
 }
 
@@ -222,13 +244,26 @@ function NavLinks({ light, onClick }: { light: boolean; onClick?: () => void }) 
   const isEs = useIsEs()
   const base = light ? 'text-cream-50/90 hover:text-white' : 'text-espresso hover:text-gold-500'
   const cls = `uppercase font-medium ${base} transition-colors whitespace-nowrap`
+  // Spanish keeps the nav it has: its funnel is the /es mirror, which has no
+  // occasion pages, and pointing it at English routes would be a regression.
+  if (isEs) {
+    return (
+      <>
+        <ShopGiftsDropdown light={light} cls={cls} />
+        <Link href={localePath('/build', isEs)} className={cls} onClick={onClick}>Arma tu canastilla</Link>
+        <Link href={localePath('/gift-cards', isEs)} className={cls} onClick={onClick}>Tarjetas de regalo</Link>
+        <Link href={localePath('/story', isEs)} className={cls} onClick={onClick}>Nuestra historia</Link>
+      </>
+    )
+  }
   return (
     <>
-      {/* Curated first, custom second */}
-      <BoxesDropdown light={light} cls={cls} />
-      <Link href={localePath('/build', isEs)} className={cls} onClick={onClick}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
-      <Link href={localePath('/gift-cards', isEs)} className={cls} onClick={onClick}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
-      <Link href={localePath('/story', isEs)} className={cls} onClick={onClick}>{isEs ? 'Nuestra historia' : 'Stories'}</Link>
+      <ShopGiftsDropdown light={light} cls={cls} />
+      <OccasionDropdown cls={cls} />
+      {/* The differentiator gets its own primary slot — it is the one nav item
+          no other baby-gift brand can copy. */}
+      <Link href="/new-mama-gifts" className={cls} onClick={onClick}>For Mama</Link>
+      <Link href="/story" className={cls} onClick={onClick}>Our Story</Link>
     </>
   )
 }
@@ -237,22 +272,41 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
   const isEs = useIsEs()
   const boxProducts = useBoxProducts()
   const linkCls = 'uppercase text-espresso hover:text-gold-500 transition-colors'
+  const subCls = 'text-bark-500 hover:text-gold-500 transition-colors'
   return (
-    <div className="md:hidden bg-cream-white border-b border-cream-300 px-6 py-8 flex flex-col gap-6 font-playfair text-[15px] tracking-[0.14em]">
-      {/* Boxes — sub-links always expanded (Emily 2026-08-15: no accordion,
-          every tap target visible the moment the menu opens) */}
+    <div className="md:hidden bg-cream-white border-b border-cream-300 px-6 py-8 flex flex-col gap-6 font-playfair text-[15px] tracking-[0.14em] max-h-[75vh] overflow-y-auto">
+      {/* Occasion first on phones: it is the question a gift buyer arrives with,
+          and it is the tap that leads to a page built to convert. Sub-links stay
+          expanded — no accordion, every target visible as the menu opens. */}
+      {!isEs && (
+        <div>
+          <Link href="/occasions" className={linkCls} onClick={onClose}>Shop by Occasion</Link>
+          <div className="mt-3 pl-3 flex flex-col gap-2.5 font-sans text-[13px] tracking-normal normal-case">
+            {OCCASIONS.map(o => (
+              <Link key={o.key} href={o.path} onClick={onClose} className={subCls}>{o.cardTitle}</Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div>
-        <Link href={localePath('/boxes', isEs)} className={linkCls} onClick={onClose}>{isEs ? 'Canastillas' : 'Gift Boxes'}</Link>
+        <Link href={localePath('/boxes', isEs)} className={linkCls} onClick={onClose}>{isEs ? 'Canastillas' : 'Shop Gifts'}</Link>
         <div className="mt-3 pl-3 flex flex-col gap-2.5 font-sans text-[13px] tracking-normal normal-case">
           {boxProducts.map(p => (
-            <Link key={p.slug} href={localePath(`/boxes/${p.slug}`, isEs)} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{p.name}</Link>
+            <Link key={p.slug} href={localePath(`/boxes/${p.slug}`, isEs)} onClick={onClose} className={subCls}>{p.name}</Link>
           ))}
-          <Link href={localePath('/corporate', isEs)} onClick={onClose} className="text-bark-500 hover:text-gold-500 transition-colors">{isEs ? 'Regalos corporativos' : 'Corporate Gifting'}</Link>
+          <Link href={localePath('/gift-cards', isEs)} onClick={onClose} className={subCls}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
+          <Link href={localePath('/corporate', isEs)} onClick={onClose} className={subCls}>{isEs ? 'Regalos corporativos' : 'Corporate Gifting'}</Link>
         </div>
       </div>
-      <Link href={localePath('/build', isEs)} className={linkCls} onClick={onClose}>{isEs ? 'Arma tu canastilla' : 'Build Your Own Box'}</Link>
-      <Link href={localePath('/gift-cards', isEs)} className={linkCls} onClick={onClose}>{isEs ? 'Tarjetas de regalo' : 'Gift Cards'}</Link>
-      <Link href={localePath('/story', isEs)} className={linkCls} onClick={onClose}>{isEs ? 'Nuestra historia' : 'Stories'}</Link>
+
+      {!isEs && <Link href="/new-mama-gifts" className={linkCls} onClick={onClose}>For Mama</Link>}
+      <Link href={localePath('/story', isEs)} className={linkCls} onClick={onClose}>{isEs ? 'Nuestra historia' : 'Our Story'}</Link>
+
+      {/* Secondary — kept, demoted. */}
+      <Link href={localePath('/build', isEs)} className="uppercase text-[#7A6B60] hover:text-espresso transition-colors" onClick={onClose}>
+        {isEs ? 'Arma tu canastilla' : 'Build Your Own'}
+      </Link>
       <Link href={localePath('/account', isEs)} className="uppercase text-[#7A6B60] hover:text-espresso transition-colors" onClick={onClose}>{isEs ? 'Mi cuenta' : 'My Account'}</Link>
     </div>
   )

@@ -29,6 +29,12 @@ function productImage(p: { id: string; image?: string | null }): string | null {
 const inputClass = "w-full px-4 py-3 border border-cream-300 bg-cream-50 font-sans text-sm text-bark-600 placeholder:text-bark-400/40 focus:outline-none focus:border-bark-400 transition-colors"
 const labelClass = "block font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-2"
 
+// The printed card is one portrait face at a clamped type size (see
+// app/portal/inside-card). Past roughly this many characters the message stops
+// fitting the card it is promised on, so the field stops there rather than
+// letting the packer discover the problem.
+const CARD_MESSAGE_MAX = 400
+
 // Garments quick-added from the homepage default to the first box size; the
 // bag line lets buyers flip it — guarded against variant stock below.
 const BOX_GARMENT_SIZES = ['0–3 mo', '3–6 mo']
@@ -81,6 +87,16 @@ export default function CheckoutPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selection])
+
+  // The page has always restored `pl_letter` on mount; nothing ever wrote it.
+  // Persisting on change means a reload, a trip back to the bag, or an
+  // accidental navigation no longer loses a message someone just composed.
+  useEffect(() => {
+    try {
+      if (letter) sessionStorage.setItem('pl_letter', letter)
+      else sessionStorage.removeItem('pl_letter')
+    } catch { /* private mode */ }
+  }, [letter])
 
   useEffect(() => {
     const storedBox = sessionStorage.getItem('pl_box_selection')
@@ -444,6 +460,43 @@ export default function CheckoutPage() {
                       <textarea value={specialNote} onChange={e => setSpecialNote(e.target.value)} rows={3} placeholder={isEs ? 'Alergias, tiempos de entrega, mensaje del regalo, lo que debamos saber…' : 'Allergies, delivery timing, gift message, anything we should know…'} className={inputClass + ' resize-none'} />
                     </div>
                   </div>
+                </div>
+
+                {/* ── The card message ───────────────────────────────────
+                    Every box page promises a personalized card, the order row
+                    has carried a `letter_content` column all along, and the
+                    portal's inside-card view prints exactly what is in it —
+                    but nothing in the storefront ever wrote `pl_letter`, so
+                    there was no field to type it in. Buyers could only put the
+                    message into "special requests", where it reads as a note to
+                    the packer rather than words for the card. This is that
+                    field, wired to the state and the payload that already
+                    existed; no API and no schema changed.
+                    Blank is allowed on purpose: an empty message prints a blank
+                    card, never a house-written message in the buyer's place. */}
+                <div className="bg-white p-6 sm:p-7">
+                  <h2 className="font-playfair text-xl text-espresso mb-2 pb-3 border-b border-cream-200">
+                    {isEs ? 'Tu mensaje en la tarjeta' : 'Your card message'}
+                  </h2>
+                  <p className="font-sans text-sm text-bark-500 mb-4">
+                    {isEs
+                      ? 'Lo escribimos a mano en la tarjeta que va dentro de la canastilla. Si lo dejas en blanco, la tarjeta llega sin mensaje.'
+                      : 'We hand-finish this onto the card that goes inside the basket. Leave it blank and the card arrives without a message.'}
+                  </p>
+                  <textarea
+                    value={letter}
+                    onChange={e => setLetter(e.target.value.slice(0, CARD_MESSAGE_MAX))}
+                    rows={4}
+                    maxLength={CARD_MESSAGE_MAX}
+                    aria-describedby="card-message-count"
+                    placeholder={isEs
+                      ? 'Estamos muy felices por ustedes. No podemos esperar a conocerla. Con cariño, …'
+                      : 'We are so happy for you both. We cannot wait to meet her. With love, …'}
+                    className={inputClass + ' resize-none'}
+                  />
+                  <p id="card-message-count" className="font-sans text-xs text-bark-400 mt-1.5 text-right">
+                    {letter.length}/{CARD_MESSAGE_MAX}
+                  </p>
                 </div>
 
                 {/* Shipping address */}

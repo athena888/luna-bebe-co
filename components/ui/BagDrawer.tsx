@@ -192,7 +192,31 @@ export function BagDrawer() {
             <span className="font-sans text-base font-medium text-bark-600">{formatPrice(subtotal)}</span>
           </div>
           <CartFeeNote className="mb-2" />
-          {hasItems && <DeliveryEstimate variant="compact" className="mb-4" />}
+          {hasItems && <DeliveryEstimate variant="compact" className="mb-3" />}
+
+          {/* Gift confidence, right where the doubt is. Almost nobody here is
+              buying for their own baby, so the two questions at this exact
+              moment are "does my message get in?" and "can it go to her, not
+              me?" — both answered before the button rather than after it.
+              Both describe fields that exist on the checkout page. No upsell:
+              the priority right now is completing this purchase, not raising
+              its average value. */}
+          {hasItems && (
+            <ul className="mb-4 space-y-1.5">
+              {(isEs
+                ? ['Escribe tu mensaje en el siguiente paso — la tarjeta se termina a mano',
+                   'Marca «Es un regalo» para enviarlo directo a ella, sin precios adentro']
+                : ['Write your card message in the next step — we hand-finish the card',
+                   'Tick “This is a gift” to send it straight to her, with no prices inside']
+              ).map(line => (
+                <li key={line} className="flex items-start gap-2 font-sans text-[11px] leading-snug text-bark-500">
+                  <span aria-hidden="true" className="mt-[6px] w-1 h-1 bg-gold-400 shrink-0" />
+                  {line}
+                </li>
+              ))}
+            </ul>
+          )}
+
           <button
             onClick={() => { setOpen(false); router.push(isEs ? '/es/checkout' : '/checkout') }}
             disabled={!hasItems}

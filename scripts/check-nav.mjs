@@ -36,6 +36,24 @@ for (const s of slugs) {
   console.log(`  ${ok ? 'OK  ' : 'DEAD'} ${s}${p ? ` (active=${p.active} visible=${p.visible})` : ' — no such box'}`)
 }
 
+// The "best for" tags rendered beside each nav entry live in
+// lib/gifting-copy.ts and are keyed by slug, so they drift the same way the
+// fallback list does. A stale key is harmless on screen (the tag simply
+// disappears), but it means the header, the product page and the occasion
+// pages have quietly stopped describing a box — worth reporting, not fatal.
+const copy = readFileSync('lib/gifting-copy.ts', 'utf8')
+const bestForBlock = copy.match(/BEST_FOR_BY_SLUG[^=]*=\s*\{([\s\S]*?)\n\}/)
+if (bestForBlock) {
+  const tagged = [...bestForBlock[1].matchAll(/^\s*'([^']+)':/gm)].map(m => m[1])
+  const stale = tagged.filter(s => !live.has(s))
+  const untagged = (data ?? []).filter(p => p.active && p.visible && !tagged.includes(p.slug)).map(p => p.slug)
+  if (stale.length) console.log(`\nBEST_FOR_BY_SLUG keys with no such box: ${stale.join(', ')}`)
+  if (untagged.length) console.log(`published boxes with no "best for" line: ${untagged.join(', ')}`)
+  if (!stale.length && !untagged.length) console.log('\nBEST_FOR_BY_SLUG: every published box has a "best for" line.')
+} else {
+  console.log('\nnote: BEST_FOR_BY_SLUG not found in lib/gifting-copy.ts — skipped.')
+}
+
 // The reverse drift: published boxes the fallback never mentions (fine, but
 // worth seeing — they only appear once the API answers).
 const missing = (data ?? []).filter(p => p.active && p.visible && !slugs.includes(p.slug)).map(p => p.slug)

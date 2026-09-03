@@ -10,6 +10,7 @@ import { BoxGallery } from '@/components/ui/BoxGallery'
 import { BoxVariantPills } from '@/components/ui/BoxVariantPills'
 import { BoxItemModalTrigger } from '@/components/ui/BoxItemModal'
 import { ReviewSection } from '@/components/ui/ReviewSection'
+import { FaqAccordion } from '@/components/ui/FaqAccordion'
 import { SlotBackground } from '@/components/ui/SlotBackground'
 import { TrackViewItem } from '@/components/ui/TrackViewItem'
 import { boxSlotKey } from '@/lib/image-slots'
@@ -17,7 +18,11 @@ import { isShoppingOnly } from '@/lib/catalog-visibility'
 import { SPANISH_ACTIVE, getTranslations } from '@/lib/i18n'
 import { localePath } from '@/lib/locale-routes'
 import { getBoxProduct, getItemSizeOptions, pieceCount, piecesPerItem, priceRange } from '@/lib/catalog-db'
-import { CATEGORY_LABELS, CATEGORY_LABELS_ES, formatDollars } from '@/lib/products'
+import { bestForLabel } from '@/lib/gifting-copy'
+import { MobileStickyPurchaseCTA } from '@/components/gifting/MobileStickyPurchaseCTA'
+import { formatDollars, FREE_SHIPPING_THRESHOLD } from '@/lib/products'
+import { RETURNS_SUMMARY, RETURNS_SUMMARY_ES } from '@/lib/site-config'
+import type { ProductCategory } from '@/types'
 
 // Phase 3 box product page — one data-driven template for every parent
 // product. Variants live in a query param (?tier=/?theme=); canonical strips
@@ -27,6 +32,27 @@ import { CATEGORY_LABELS, CATEGORY_LABELS_ES, formatDollars } from '@/lib/produc
 export const dynamic = 'force-dynamic'
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
+
+// The buy panel's anchor. The mobile sticky bar scrolls back to this rather
+// than duplicating the purchase control, so there is one place where a variant
+// is chosen and one place where add_to_cart fires.
+const BUY_ANCHOR_ID = 'pdp-buy'
+
+// Printed wherever the page mentions the free-shipping bar, from the one
+// constant the cart drawer, checkout and FAQ all read.
+const FREE_SHIPPING_DOLLARS = Math.round(FREE_SHIPPING_THRESHOLD / 100)
+
+// Contents are grouped by WHO a piece is for, not by the warehouse category
+// the item happens to sit in. `bath` is baby bath & skincare in this catalog,
+// so it belongs with the baby pieces; `mom` is the half of the box that makes
+// the brand's whole argument, so it gets a group of its own even when it holds
+// one item. A category that gains no group would simply not render, so the map
+// is exhaustive over ProductCategory by construction.
+const CONTENT_GROUPS = [
+  { key: 'forBaby' as const, categories: ['swaddle', 'garment', 'bath'] as ProductCategory[] },
+  { key: 'forMama' as const, categories: ['mom'] as ProductCategory[] },
+  { key: 'keepsake' as const, categories: ['keepsake'] as ProductCategory[] },
+]
 
 type Params = Promise<{ slug: string }>
 type Search = Promise<Record<string, string | string[] | undefined>>
@@ -73,18 +99,54 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 const T = {
   en: {
-    inside: "What's inside", color: 'your choice of color',
+    inside: 'What she’ll open', color: 'your choice of color',
     card: 'Personalized card — hand-finished for every box, with your message',
     basket: 'Everything arrives nested in a woven seagrass basket with lid, ribbon-tied and sealed by hand.',
     faq: 'Frequently asked questions', prefer: 'Prefer to choose every piece yourself?', build: 'Build your own box',
     options: 'Options',
+    bestFor: 'Best for',
+    pieces: 'pieces, hand-packed',
+    send: 'Send this gift',
+    forBaby: 'For baby', forMama: 'For Mama', keepsake: 'A little keepsake', presentation: 'The presentation',
+    allIncluded: 'all included',
+    whyTitle: 'Why this gift',
+    whyBody: 'Most baby gifts are for the baby. This one pairs beautiful little things for the little one with something chosen for the mother — the one gift she opens that week that is actually hers.',
+    reviews: 'What people said',
+    details: 'Shipping, returns & details',
+    shippingQ: 'When will it arrive?',
+    returnsQ: 'Returns & cancellations',
+    giftQ: 'Can you send it straight to her?',
+    giftA: 'Yes. Tick “This is a gift” at checkout and enter her address — receipts and confirmations still come to you, and nothing showing a price goes in the box.',
+    messageQ: 'How does the card message work?',
+    messageA: 'You write it at checkout. We hand-finish the card and set it into the basket before it ships.',
+    included: 'Personalized gift message included',
+    ready: 'Arrives gift-ready — no wrapping needed',
+    sticky: 'Send this gift',
   },
   es: {
-    inside: 'Qué contiene', color: 'el color lo eliges tú',
+    inside: 'Qué va a abrir', color: 'el color lo eliges tú',
     card: 'Tarjeta personalizada — terminada a mano para cada canastilla, con tu mensaje',
     basket: 'Todo llega acomodado en una canasta tejida de fibra marina con tapa, atada con listón y sellada a mano.',
     faq: 'Preguntas frecuentes', prefer: '¿Prefieres elegir cada pieza?', build: 'Arma tu propia canastilla',
     options: 'Opciones',
+    bestFor: 'Ideal para',
+    pieces: 'piezas, empacadas a mano',
+    send: 'Enviar este regalo',
+    forBaby: 'Para el bebé', forMama: 'Para mamá', keepsake: 'Un recuerdo', presentation: 'La presentación',
+    allIncluded: 'todo incluido',
+    whyTitle: 'Por qué este regalo',
+    whyBody: 'Casi todos los regalos de bebé son para el bebé. Este suma algo elegido para la mamá — lo único que abre esa semana que de verdad es suyo.',
+    reviews: 'Lo que dicen',
+    details: 'Envío, devoluciones y detalles',
+    shippingQ: '¿Cuándo llega?',
+    returnsQ: 'Devoluciones y cancelaciones',
+    giftQ: '¿Lo pueden enviar directamente a ella?',
+    giftA: 'Sí. Marca «Es un regalo» al pagar y escribe su dirección — los recibos y confirmaciones te llegan a ti, y nada con precios va dentro de la canastilla.',
+    messageQ: '¿Cómo funciona el mensaje de la tarjeta?',
+    messageA: 'Lo escribes al pagar. Terminamos la tarjeta a mano y la colocamos en la canastilla antes de enviarla.',
+    included: 'Incluye tu mensaje personalizado',
+    ready: 'Llega listo para regalar — no hay que envolver nada',
+    sticky: 'Enviar este regalo',
   },
 } as const
 const VARIANT_LABEL_ES: Record<string, string> = { Tier: 'Nivel', Theme: 'Tema', Set: 'Set' }
@@ -133,6 +195,11 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
   // exclusion, never star-based). Fail-soft: a DB hiccup drops the fields,
   // never the page.
   let reviewLd: Record<string, unknown> = {}
+  // The star line printed above the CTA. It comes off the SAME approved,
+  // non-incentivized rows the JSON-LD is built from, so the page and the
+  // structured data can never disagree — and it stays null below three
+  // reviews, because an "average" over one opinion is arithmetic, not proof.
+  let ratingSummary: { average: number; count: number } | null = null
   try {
     const { supabaseAdmin } = await import('@/lib/supabase')
     const { data } = await supabaseAdmin
@@ -145,6 +212,7 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
       .filter(r => !r.incentivized && typeof r.rating === 'number' && r.rating >= 1 && r.rating <= 5)
     if (rs.length > 0) {
       const avg = rs.reduce((s, r) => s + r.rating, 0) / rs.length
+      if (rs.length >= 3) ratingSummary = { average: Math.round(avg * 10) / 10, count: rs.length }
       reviewLd = {
         aggregateRating: {
           '@type': 'AggregateRating',
@@ -193,7 +261,9 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
         ],
       }} />
       <Header />
-      <main className="bg-white min-h-screen">
+      {/* pb on phones reserves the sticky purchase bar's height so it can
+          never sit over the last section or the footer links. */}
+      <main className="bg-white min-h-screen pb-24 lg:pb-0">
         {/* Optional per-box background (Portal → Site Images → Box Pages).
             Viewport-anchored so a long page doesn't stretch the photo; the
             scrim keeps the product copy readable and is tunable per box. */}
@@ -213,11 +283,43 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
 
             {/* 2 — Buy panel */}
             <div>
-              <h1 className="font-serif text-4xl text-espresso">{box.name}</h1>
-              <p className="font-sans text-[13px] tracking-[0.08em] text-bark-500 mt-2">
-                {pieceCount(variant)} {isEs ? 'piezas, empacadas a mano' : 'pieces, hand-packed'}
-              </p>
+              {/* Above the fold, in decision order: which moment this is for,
+                  what it is, why it matters, whether anyone else liked it, what
+                  it costs, and one button. The contents inventory moved BELOW
+                  the fold — a gift buyer decides on the gift, then reads what
+                  is in it, never the other way round. */}
+              {bestForLabel(box.slug, isEs) && (
+                <p className="font-sans text-[11px] tracking-[0.18em] uppercase font-semibold text-[#7A8E7C] mb-3">
+                  {t.bestFor}: {bestForLabel(box.slug, isEs)}
+                </p>
+              )}
+
+              <h1 className="font-serif text-4xl text-espresso leading-[1.08]">{box.name}</h1>
+
+              {/* The one-line reason, in the catalog's own words. */}
+              {box.subtitle && (
+                <p className="font-sans text-[15px] leading-relaxed text-bark-600 mt-3 max-w-sm">{box.subtitle}</p>
+              )}
+
+              {ratingSummary && (
+                <p className="flex items-center gap-2 mt-4">
+                  <span className="inline-flex items-center gap-[3px]" role="img" aria-label={`${ratingSummary.average} ${isEs ? 'de 5 estrellas' : 'out of 5 stars'}`}>
+                    {[1, 2, 3, 4, 5].map(n => (
+                      <svg key={n} viewBox="0 0 20 20" className="w-3.5 h-3.5" fill={n <= Math.round(ratingSummary!.average) ? '#CDA8A1' : 'none'} stroke="#CDA8A1" strokeWidth="1.4" aria-hidden="true">
+                        <path d="M10 1.6l2.5 5.3 5.6.8-4.1 4 1 5.7-5-2.7-5 2.7 1-5.7-4.1-4 5.6-.8z" strokeLinejoin="round" />
+                      </svg>
+                    ))}
+                  </span>
+                  <a href="#reviews" className="font-sans text-[12px] text-bark-500 underline underline-offset-2 hover:text-espresso transition-colors">
+                    {ratingSummary.average.toFixed(1)} · {ratingSummary.count} {isEs ? (ratingSummary.count === 1 ? 'reseña' : 'reseñas') : (ratingSummary.count === 1 ? 'review' : 'reviews')}
+                  </a>
+                </p>
+              )}
+
               <p className="font-sans text-2xl text-espresso mt-4">{formatDollars(variant.price)}</p>
+              <p className="font-sans text-[13px] tracking-[0.06em] text-bark-500 mt-1">
+                {pieceCount(variant)} {t.pieces}
+              </p>
 
               {box.variants.length > 1 && (
                 <div className="mt-6">
@@ -237,86 +339,6 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                 </div>
               )}
 
-              {/* The per-variant italic story was removed from the buy column
-                  (Emily 2026-08-17). The copy still lives in the box's `story`
-                  JSON, so it can be restored by re-rendering
-                  story.variant_stories[variant.key] here. */}
-
-              <div className="mt-8">
-                <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mb-3">{t.inside}</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-5">
-                  {(Object.keys(CATEGORY_LABELS) as Array<keyof typeof CATEGORY_LABELS>)
-                    .map(cat => ({ cat, items: variant.contents.filter(c => c.item.category === cat) }))
-                    .filter(g => g.items.length > 0)
-                    .map(g => (
-                      <div key={g.cat}>
-                        {/* 2+ pieces in one category is ambiguous ("both, or pick
-                            one?"). Contents are a flat include-list — no substitute
-                            concept — so every piece IS included: say so. */}
-                        <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-bark-300 mb-2">
-                          {(isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS)[g.cat]}
-                          {g.items.length > 1 && (
-                            <span className="text-bark-400/70"> · {isEs ? 'todo incluido' : 'all included'}</span>
-                          )}
-                        </p>
-                        <ul className="space-y-2">
-                          {g.items.map(c => (
-                            <li key={c.item.id} className="border-b border-cream-200 pb-2">
-                              {/* Whole row opens the same product-details modal
-                                  the Build page uses (gallery, certs, story). */}
-                              <BoxItemModalTrigger
-                                isEs={isEs}
-                                item={{
-                                  id: c.item.id,
-                                  name: c.item.name,
-                                  price: c.item.price,
-                                  category: c.item.category,
-                                  image: c.item.image ?? null,
-                                  imageEmoji: c.item.imageEmoji,
-                                  organic: (c.item as { organic?: boolean }).organic,
-                                }}
-                                className="flex items-center gap-3 w-full text-left group cursor-pointer"
-                              >
-                              {c.item.image ? (
-                                <span className="relative w-10 h-10 shrink-0 overflow-hidden border border-cream-200">
-                                  <Image quality={88} src={c.item.image} alt={c.item.name} fill className="object-cover" />
-                                </span>
-                              ) : (
-                                <span className="w-10 h-10 shrink-0 border border-dashed border-cream-300 bg-cream-100" />
-                              )}
-                              <span className="font-sans text-sm text-bark-600 group-hover:text-espresso transition-colors">
-                                {c.qty > 1 || g.items.length > 1 ? `${c.qty} × ` : ''}{c.item.name}
-                                {/* The heading counts PIECES, this list shows
-                                    ITEMS, and a set counts as its pieces — so
-                                    "12 pieces" over 10 rows looked like a bug.
-                                    Both now read from the same piecesPerItem
-                                    rule, and any multi-piece row says so. */}
-                                {(() => {
-                                  const per = c.pieces ?? piecesPerItem(c.item.id, c.item.name)
-                                  if (c.item.id === 'swaddle-botanical-bath-melt-set') {
-                                    return <span className="text-bark-400"> ({c.pieces ?? 5} {isEs ? 'bombas de baño' : 'bath bombs'})</span>
-                                  }
-                                  return per > 1
-                                    ? <span className="text-bark-400"> ({per} {isEs ? 'piezas' : 'pieces'})</span>
-                                    : null
-                                })()}
-                                {c.colorChoice ? ` — ${t.color}` : ''}
-                                {(c.item as { organic?: boolean }).organic && (
-                                  <span className="ml-2 font-sans text-[11px] tracking-[0.12em] uppercase border border-[#7A8E7C] text-[#7A8E7C] px-1.5 py-0.5 align-middle">{isEs ? 'orgánico' : 'organic'}</span>
-                                )}
-                              </span>
-                              {c.note && <span className="font-sans text-xs text-bark-400">{c.note}</span>}
-                              </BoxItemModalTrigger>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                </div>
-                <p className="font-sans text-sm text-bark-600 mt-4">{t.card}</p>
-                <p className="font-sans text-xs text-bark-400 mt-3">{t.basket}</p>
-              </div>
-
               {/* GA4 view_item / Meta ViewContent — boxes fired nothing before,
                   so the funnel showed no product views for the very products
                   the ads point at. Id matches the Merchant feed offer id. */}
@@ -327,17 +349,37 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
                 category="Gift Box"
               />
 
-              <BoxBuyPanel
-                contents={variant.contents.map(c => ({ item: c.item, qty: c.qty, colorChoice: c.colorChoice }))}
-                price={variant.price}
-                boxName={box.name}
-                boxSlug={box.slug}
-                variantKey={variant.key}
-                variantLabel={box.variants.length > 1 ? variant.label : undefined}
-                needsColor={variant.contents.some(c => c.colorChoice)}
-                sizesByItem={sizesByItem}
-                boxImage={variant.images[0] ?? null}
-              />
+              {/* The one primary action on the page. `id` is also what the
+                  mobile sticky bar scrolls back to, so variant, size and colour
+                  are chosen in exactly one place and add_to_cart fires once. */}
+              <div id={BUY_ANCHOR_ID}>
+                <BoxBuyPanel
+                  contents={variant.contents.map(c => ({ item: c.item, qty: c.qty, colorChoice: c.colorChoice }))}
+                  price={variant.price}
+                  boxName={box.name}
+                  boxSlug={box.slug}
+                  variantKey={variant.key}
+                  variantLabel={box.variants.length > 1 ? variant.label : undefined}
+                  needsColor={variant.contents.some(c => c.colorChoice)}
+                  sizesByItem={sizesByItem}
+                  boxImage={variant.images[0] ?? null}
+                  ctaLabel={t.send}
+                />
+              </div>
+
+              {/* Directly under the button: the two things a gift buyer is
+                  quietly unsure about, answered before either can become a
+                  reason to leave. No delivery promise is made here — the
+                  estimate inside the buy panel prints a date only once it
+                  knows the destination ZIP. */}
+              <ul className="mt-4 space-y-1.5">
+                {[t.included, t.ready].map(line => (
+                  <li key={line} className="flex items-start gap-2 font-sans text-[13px] text-bark-600">
+                    <span aria-hidden="true" className="mt-[7px] w-1 h-1 bg-[#CDA8A1] shrink-0" />
+                    {line}
+                  </li>
+                ))}
+              </ul>
 
               <p className="font-sans text-sm text-bark-500 mt-6">
                 <Link href={localePath('/faq', isEs)} className="underline underline-offset-2 hover:text-bark-600">{t.faq}</Link>
@@ -348,6 +390,107 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
               </p>
             </div>
           </div>
+
+          {/* ── What she'll open ────────────────────────────────────────
+              Grouped by WHO each piece is for, not by warehouse category. A
+              gift buyer's question is "does this include something for her?",
+              and Swaddle & Blanket / Baby Garment / Bath & Skincare does not
+              answer it. The presentation is a group of its own because the
+              basket, the ribbon and the card are part of what is bought. */}
+          <section className="mt-14 pt-12 border-t border-cream-200">
+            <h2 className="font-serif text-2xl sm:text-3xl text-espresso mb-8">{t.inside}</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-10">
+              {CONTENT_GROUPS
+                .map(g => ({
+                  key: g.key,
+                  label: t[g.key],
+                  items: variant.contents.filter(c => g.categories.includes(c.item.category)),
+                }))
+                .filter(g => g.items.length > 0)
+                .map(g => (
+                  <div key={g.key}>
+                    <p className="font-sans text-[11px] tracking-[0.18em] uppercase font-semibold text-[#7A8E7C] mb-3 pb-2 border-b border-cream-200">
+                      {g.label}
+                      {g.items.length > 1 && (
+                        <span className="text-bark-400/70 font-normal"> · {t.allIncluded}</span>
+                      )}
+                    </p>
+                    <ul className="space-y-2.5">
+                      {g.items.map(c => (
+                        <li key={c.item.id}>
+                          {/* The whole row opens the same product-details modal
+                              the Build page uses (gallery, certs, story). */}
+                          <BoxItemModalTrigger
+                            isEs={isEs}
+                            item={{
+                              id: c.item.id,
+                              name: c.item.name,
+                              price: c.item.price,
+                              category: c.item.category,
+                              image: c.item.image ?? null,
+                              imageEmoji: c.item.imageEmoji,
+                              organic: (c.item as { organic?: boolean }).organic,
+                            }}
+                            className="flex items-center gap-3 w-full text-left group cursor-pointer"
+                          >
+                            {c.item.image ? (
+                              <span className="relative w-11 h-11 shrink-0 overflow-hidden border border-cream-200">
+                                <Image quality={88} src={c.item.image} alt="" fill sizes="44px" className="object-cover" />
+                              </span>
+                            ) : (
+                              <span className="w-11 h-11 shrink-0 border border-dashed border-cream-300 bg-cream-100" />
+                            )}
+                            <span className="font-sans text-[13px] leading-snug text-bark-600 group-hover:text-espresso transition-colors">
+                              {c.qty > 1 ? `${c.qty} × ` : ''}{c.item.name}
+                              {/* The heading counts PIECES, this list shows
+                                  ITEMS, and a set counts as its pieces — so
+                                  "12 pieces" over 10 rows looked like a bug.
+                                  Both read from the same piecesPerItem rule. */}
+                              {(() => {
+                                const per = c.pieces ?? piecesPerItem(c.item.id, c.item.name)
+                                if (c.item.id === 'swaddle-botanical-bath-melt-set') {
+                                  return <span className="text-bark-400"> ({c.pieces ?? 5} {isEs ? 'bombas de baño' : 'bath bombs'})</span>
+                                }
+                                return per > 1
+                                  ? <span className="text-bark-400"> ({per} {isEs ? 'piezas' : 'pieces'})</span>
+                                  : null
+                              })()}
+                              {c.colorChoice ? ` — ${t.color}` : ''}
+                              {/* `organic` is a per-ITEM fact from the catalog.
+                                  It is never stated of the box as a whole. */}
+                              {(c.item as { organic?: boolean }).organic && (
+                                <span className="ml-2 font-sans text-[10px] tracking-[0.12em] uppercase border border-[#7A8E7C] text-[#7A8E7C] px-1.5 py-0.5 align-middle">{isEs ? 'orgánico' : 'organic'}</span>
+                              )}
+                              {c.note && <span className="block font-sans text-[11px] text-bark-400 mt-0.5">{c.note}</span>}
+                            </span>
+                          </BoxItemModalTrigger>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+
+              {/* The presentation is part of the gift, so it is listed as part
+                  of the gift rather than buried in fine print. */}
+              <div>
+                <p className="font-sans text-[11px] tracking-[0.18em] uppercase font-semibold text-[#7A8E7C] mb-3 pb-2 border-b border-cream-200">
+                  {t.presentation}
+                </p>
+                <ul className="space-y-2.5 font-sans text-[13px] leading-relaxed text-bark-600">
+                  <li>{t.card}</li>
+                  <li>{t.basket}</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          {/* ── Why this gift ─────────────────────────────────────────────── */}
+          <section className="mt-14 pt-12 border-t border-cream-200">
+            <div className="max-w-2xl">
+              <h2 className="font-serif text-2xl sm:text-3xl text-espresso">{t.whyTitle}</h2>
+              <p className="font-sans text-[15px] leading-relaxed text-bark-600 mt-4">{t.whyBody}</p>
+            </div>
+          </section>
 
           {/* 3 — Story */}
           {(story.paragraphs?.length ?? 0) > 0 && (
@@ -387,8 +530,11 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
             </section>
           )}
 
-          {/* 5 — Reviews, pooled per product across variants */}
-          <ReviewSection productId={`box-${box.slug}`} />
+          {/* 5 — Reviews, pooled per product across variants. The id is what
+              the star line above the CTA links to. */}
+          <div id="reviews" className="scroll-mt-6">
+            <ReviewSection productId={`box-${box.slug}`} />
+          </div>
 
           {/* 6 — Cross-sell, one row, max 3 */}
           {crossSell.length > 0 && (
@@ -412,9 +558,46 @@ export async function BoxProductView({ params, searchParams, locale = 'en' }: { 
             </section>
           )}
 
+          {/* ── Shipping, returns & details ───────────────────────────────
+              Secondary factual information, in accordions, at the bottom —
+              where a shopper who wants it can find it and a shopper who has
+              already decided is not made to scroll past it. Every answer is
+              generated from the same constants the cart and checkout read, so
+              this block cannot drift from what the system actually does. */}
+          <section className="mt-16 pt-12 border-t border-cream-200 max-w-2xl">
+            <h2 className="font-serif text-2xl text-espresso mb-6">{t.details}</h2>
+            <FaqAccordion
+              items={[
+                {
+                  q: t.shippingQ,
+                  a: isEs
+                    ? `Enviamos desde Seattle. Escribe tu código postal arriba y te mostramos la ventana de entrega para esa dirección. Envío gratis a partir de $${FREE_SHIPPING_DOLLARS}.`
+                    : `We ship from Seattle. Enter a ZIP above and we show the delivery window for that address. Free shipping over $${FREE_SHIPPING_DOLLARS}.`,
+                },
+                { q: t.giftQ, a: t.giftA },
+                { q: t.messageQ, a: t.messageA },
+                { q: t.returnsQ, a: isEs ? RETURNS_SUMMARY_ES : RETURNS_SUMMARY },
+              ]}
+            />
+          </section>
+
         </div>
         </SlotBackground>
+
       </main>
+
+      {/* Outside <main> on purpose: globals.css clips main's overflow to kill
+          mobile side-scroll, and a clipped ancestor also clips a fixed-position
+          descendant's paint. The bar appears only once the real buy control has
+          scrolled away, and it does not duplicate that control — it scrolls back
+          to it. Two live purchase buttons on one screen is a competing-button
+          problem, and two add paths is a double-counted add_to_cart. */}
+      <MobileStickyPurchaseCTA
+        targetId={BUY_ANCHOR_ID}
+        label={t.sticky}
+        price={formatDollars(variant.price)}
+        productName={box.variants.length > 1 ? `${box.name} — ${variant.label}` : box.name}
+      />
       <Footer />
     </>
   )
