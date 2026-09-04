@@ -1,0 +1,41 @@
+{
+  "seeds": [
+    {"company": "Medbridge", "domain": "medbridge.com", "metro": "Seattle", "industry": "tech", "employee_est": 300},
+    {"company": "Textio", "domain": "textio.com", "metro": "Seattle", "industry": "tech", "employee_est": 109},
+    {"company": "Possible Finance", "domain": "possiblefinance.com", "metro": "Seattle", "industry": "finance", "employee_est": 140},
+    {"company": "Empirical Wealth Management", "domain": "empirical.net", "metro": "Seattle", "industry": "finance", "employee_est": 90},
+    {"company": "Badgley Phelps Wealth Managers", "domain": "badgley.com", "metro": "Seattle", "industry": "finance", "employee_est": 41},
+    {"company": "Peterson Sullivan LLP", "domain": "petersonsullivan.com", "metro": "Seattle", "industry": "finance", "employee_est": 176},
+    {"company": "Clark Nuber PS", "domain": "clarknuber.com", "metro": "Seattle", "industry": "finance", "employee_est": 300},
+    {"company": "Bordeaux Wealth Advisors", "domain": "bordeauxwealthadvisors.com", "metro": "Seattle", "industry": "finance", "employee_est": 37},
+    {"company": "Stokes Lawrence, P.S.", "domain": "stokeslaw.com", "metro": "Seattle", "industry": "law", "employee_est": 150},
+    {"company": "Ogden Murphy Wallace, PLLC", "domain": "omwlaw.com", "metro": "Seattle", "industry": "law", "employee_est": 113},
+    {"company": "Green Canopy NODE", "domain": "greencanopynode.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 31},
+    {"company": "Eagle Hill Consulting", "domain": "eaglehillconsulting.com", "metro": "Washington DC", "industry": "consulting", "employee_est": 279},
+    {"company": "Avascent", "domain": "avascent.com", "metro": "Washington DC", "industry": "consulting", "employee_est": 165},
+    {"company": "Censeo Consulting Group", "domain": "censeoconsulting.com", "metro": "Washington DC", "industry": "consulting", "employee_est": 89},
+    {"company": "Edgeworth Economics", "domain": "edgewortheconomics.com", "metro": "Washington DC", "industry": "consulting", "employee_est": 84},
+    {"company": "Caribou", "domain": "caribou.com", "metro": "Washington DC", "industry": "finance", "employee_est": 150},
+    {"company": "JBG Smith", "domain": "jbgsmith.com", "metro": "Washington DC", "industry": "real_estate", "employee_est": 645},
+    {"company": "Shulman Rogers", "domain": "shulmanrogers.com", "metro": "Washington DC", "industry": "law", "employee_est": 110},
+    {"company": "Favor TechConsulting, LLC", "domain": "ftc-llc.com", "metro": "Washington DC", "industry": "consulting", "employee_est": 400},
+    {"company": "Foulger-Pratt", "domain": "foulgerpratt.com", "metro": "Washington DC", "industry": "real_estate", "employee_est": 170},
+    {"company": "Upside", "domain": "upside.com", "metro": "Washington DC", "industry": "tech", "employee_est": 405},
+    {"company": "Odin, Feldman & Pittleman, P.C.", "domain": "ofplaw.com", "metro": "Washington DC", "industry": "law", "employee_est": 110},
+    {"company": "BayFirst Solutions", "domain": "bayfirst.com", "metro": "Washington DC", "industry": "tech", "employee_est": 130},
+    {"company": "DDC Public Affairs", "domain": "ddcpublicaffairs.com", "metro": "Washington DC", "industry": "consulting", "employee_est": 110}
+  ],
+  "leads": [
+    {"domain": "empirical.net", "person_name": "Gili Hadari", "title": "Senior Office Manager", "source_url": "https://www.linkedin.com/in/gili-hadari/", "bio_url": "https://www.linkedin.com/in/gili-hadari/"},
+    {"domain": "stokeslaw.com", "person_name": "Joanne Pegues", "title": "Director of Human Resources", "source_url": "https://www.stokeslaw.com/our-team/joanne-pegues/", "bio_url": "https://www.stokeslaw.com/our-team/joanne-pegues/"},
+    {"domain": "badgley.com", "person_name": "David Spratt", "title": "Chief Operating Officer", "source_url": "https://badgley.com/people/david-spratt", "bio_url": "https://badgley.com/people/david-spratt"},
+    {"domain": "bordeauxwealthadvisors.com", "person_name": "Phil Platt", "title": "Chief Operating Officer", "source_url": "https://www.425business.com/news/bordeaux-wealth-advisors-phil-platt-coo/article_5ef86732-06e1-11ee-b101-9bf365beea32.html"},
+    {"domain": "clarknuber.com", "person_name": "Tracy Brown", "title": "Chief Human Resources Officer", "source_url": "https://clarknuber.com/people/tracy-brown/", "bio_url": "https://clarknuber.com/people/tracy-brown/"},
+    {"domain": "greencanopynode.com", "person_name": "Ami Nieto", "title": "HR Director", "source_url": "https://www.greencanopynode.com/ami-nieto", "bio_url": "https://www.greencanopynode.com/ami-nieto"},
+    {"domain": "omwlaw.com", "person_name": "Shari Tipp", "title": "Director of Human Resources", "source_url": "https://theorg.com/org/ogden-murphy-wallace/org-chart/shari-tipp", "bio_url": "https://www.linkedin.com/in/shari-tipp-67160711/"},
+    {"domain": "avascent.com", "person_name": "Mimi Shieh", "title": "Chief Human Resources Officer", "source_url": "https://craft.co/avascent/executives"},
+    {"domain": "edgewortheconomics.com", "person_name": "Linda Dang", "title": "Chief Human Resources Officer", "source_url": "https://www.edgewortheconomics.com/news-5457"},
+    {"domain": "shulmanrogers.com", "person_name": "John Ruyter", "title": "Chief Human Resources Officer", "source_url": "https://www.shulmanrogers.com/people/key-administrative-staff/"},
+    {"domain": "ofplaw.com", "person_name": "Maria Paoletti", "title": "Firm Administrator", "source_url": "https://www.linkedin.com/in/maria-paoletti-43b5426/", "bio_url": "https://www.linkedin.com/in/maria-paoletti-43b5426/"}
+  ]
+}
