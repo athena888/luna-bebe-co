@@ -1,0 +1,42 @@
+{
+  "seeds": [
+    {"company": "Omnidian", "domain": "omnidian.com", "metro": "Seattle", "industry": "tech", "employee_est": 280},
+    {"company": "Unify Consulting", "domain": "unifyconsulting.com", "metro": "Seattle", "industry": "consulting", "employee_est": 452},
+    {"company": "Williams Kastner", "domain": "williamskastner.com", "metro": "Seattle", "industry": "law", "employee_est": 177},
+    {"company": "Indigo Real Estate Services", "domain": "indigorealestate.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 167},
+    {"company": "doxo", "domain": "doxo.com", "metro": "Seattle", "industry": "finance", "employee_est": 106},
+    {"company": "Washington Capital Management", "domain": "wa-cap.com", "metro": "Seattle", "industry": "finance", "employee_est": 99},
+    {"company": "Pacific Program Management", "domain": "pacificpmg.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 180},
+    {"company": "Statsig", "domain": "statsig.com", "metro": "Seattle", "industry": "tech", "employee_est": 169},
+    {"company": "Foster Garvey PC", "domain": "foster.com", "metro": "Seattle", "industry": "law", "employee_est": 300},
+    {"company": "Brighton Jones", "domain": "brightonjones.com", "metro": "Seattle", "industry": "finance", "employee_est": 240},
+    {"company": "SeekOut", "domain": "seekout.com", "metro": "Seattle", "industry": "tech", "employee_est": 192},
+    {"company": "Realogics Sotheby's International Realty", "domain": "rsir.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 277},
+    {"company": "TRM Labs", "domain": "trmlabs.com", "metro": "San Francisco", "industry": "tech", "employee_est": 392},
+    {"company": "Coblentz Patch Duffy & Bass LLP", "domain": "coblentzlaw.com", "metro": "San Francisco", "industry": "law", "employee_est": 164},
+    {"company": "Parallel Advisors", "domain": "paralleladvisors.com", "metro": "San Francisco", "industry": "finance", "employee_est": 137},
+    {"company": "Hamilton Zanze", "domain": "hamiltonzanze.com", "metro": "San Francisco", "industry": "real_estate", "employee_est": 69},
+    {"company": "Veritas Investments", "domain": "veritasinvestments.com", "metro": "San Francisco", "industry": "real_estate", "employee_est": 120},
+    {"company": "TMG Partners", "domain": "tmgpartners.com", "metro": "San Francisco", "industry": "real_estate", "employee_est": 70},
+    {"company": "FT Partners", "domain": "ftpartners.com", "metro": "San Francisco", "industry": "finance", "employee_est": 250},
+    {"company": "VSCO", "domain": "vsco.co", "metro": "San Francisco", "industry": "tech", "employee_est": 191},
+    {"company": "Farella Braun + Martel LLP", "domain": "fbm.com", "metro": "San Francisco", "industry": "law", "employee_est": 280},
+    {"company": "Keystone Strategy", "domain": "keystone.ai", "metro": "San Francisco", "industry": "consulting", "employee_est": 456},
+    {"company": "Francisco Partners", "domain": "franciscopartners.com", "metro": "San Francisco", "industry": "finance", "employee_est": 116},
+    {"company": "GI Partners", "domain": "gipartners.com", "metro": "San Francisco", "industry": "finance", "employee_est": 180},
+    {"company": "Envoy", "domain": "envoy.com", "metro": "San Francisco", "industry": "tech", "employee_est": 291},
+    {"company": "Retool", "domain": "retool.com", "metro": "San Francisco", "industry": "tech", "employee_est": 440}
+  ],
+  "leads": [
+    {"domain": "unifyconsulting.com", "person_name": "Jas Gill", "title": "Director of People Relations", "source_url": "https://www.linkedin.com/in/jas-gill-03a8211/", "bio_url": "https://www.linkedin.com/in/jas-gill-03a8211/"},
+    {"domain": "indigorealestate.com", "person_name": "Shannon Steinbeigle", "title": "Manager, Human Resources & Manager, Office", "source_url": "https://www.linkedin.com/in/shannon-steinbeigle-shrm-cp-1ba2061/", "bio_url": "https://www.linkedin.com/in/shannon-steinbeigle-shrm-cp-1ba2061/"},
+    {"domain": "pacificpmg.com", "person_name": "Jonna Brigham", "title": "Office Manager/HR Manager", "source_url": "https://www.linkedin.com/in/jonna-brigham-a43760142", "bio_url": "https://www.linkedin.com/in/jonna-brigham-a43760142"},
+    {"domain": "foster.com", "person_name": "Traci Metcalf", "title": "Chief People Officer", "source_url": "https://www.foster.com/people/traci-metcalf/", "bio_url": "https://www.foster.com/people/traci-metcalf/"},
+    {"domain": "brightonjones.com", "person_name": "Gina Peronto", "title": "Director of People Operations", "source_url": "https://www.linkedin.com/in/gina-peronto-44a37520/", "bio_url": "https://www.linkedin.com/in/gina-peronto-44a37520/"},
+    {"domain": "seekout.com", "person_name": "Chantelle Yasutake", "title": "People Operations Coordinator", "source_url": "https://www.linkedin.com/in/chantelle-yasutake", "bio_url": "https://www.linkedin.com/in/chantelle-yasutake"},
+    {"domain": "rsir.com", "person_name": "Shelley Cribby", "title": "Office Manager/Director of Broker Care", "source_url": "https://www.linkedin.com/in/shelley-cribby-831b909b", "bio_url": "https://www.linkedin.com/in/shelley-cribby-831b909b"},
+    {"domain": "coblentzlaw.com", "person_name": "Jackie Perry", "title": "Chief Human Resources Officer", "source_url": "https://www.linkedin.com/in/jackie-perry-sphr-bb08133/", "bio_url": "https://www.linkedin.com/in/jackie-perry-sphr-bb08133/"},
+    {"domain": "fbm.com", "person_name": "Ingrid Hester", "title": "Director of Human Resources", "source_url": "https://www.linkedin.com/in/ingridhester/", "bio_url": "https://www.linkedin.com/in/ingridhester/"},
+    {"domain": "retool.com", "person_name": "Erica Galos Alioto", "title": "Chief People Officer", "source_url": "https://www.linkedin.com/in/erica-galos-alioto-9140832/", "bio_url": "https://www.linkedin.com/in/erica-galos-alioto-9140832/"}
+  ]
+}
