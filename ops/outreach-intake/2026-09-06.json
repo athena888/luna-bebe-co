@@ -1,0 +1,29 @@
+{
+  "seeds": [
+    {"company": "Karr Tuttle Campbell", "domain": "karrtuttle.com", "metro": "Seattle", "industry": "law", "employee_est": 100},
+    {"company": "Wyze Labs", "domain": "wyze.com", "metro": "Seattle", "industry": "tech", "employee_est": 250},
+    {"company": "Truveta", "domain": "truveta.com", "metro": "Seattle", "industry": "tech", "employee_est": 400},
+    {"company": "Cercano Management", "domain": "cercanolp.com", "metro": "Seattle", "industry": "finance", "employee_est": 80},
+    {"company": "Urban Renaissance Group", "domain": "urbanrengroup.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 137},
+    {"company": "ColRich", "domain": "colrich.com", "metro": "San Diego", "industry": "real_estate", "employee_est": 90},
+    {"company": "EVOTEK", "domain": "evotek.com", "metro": "San Diego", "industry": "consulting", "employee_est": 220},
+    {"company": "Wildfire Systems", "domain": "wildfire-corp.com", "metro": "San Diego", "industry": "tech", "employee_est": 150},
+    {"company": "GoFormz", "domain": "goformz.com", "metro": "San Diego", "industry": "tech", "employee_est": 65},
+    {"company": "Sudberry Properties", "domain": "sudprop.com", "metro": "San Diego", "industry": "real_estate", "employee_est": 120},
+    {"company": "Classy", "domain": "classy.org", "metro": "San Diego", "industry": "tech", "employee_est": 230},
+    {"company": "VizExplorer", "domain": "vizexplorer.com", "metro": "San Diego", "industry": "tech", "employee_est": 150},
+    {"company": "Turquoise Health", "domain": "turquoise.health", "metro": "San Diego", "industry": "tech", "employee_est": 190},
+    {"company": "Movemedical", "domain": "movemedical.com", "metro": "San Diego", "industry": "tech", "employee_est": 105},
+    {"company": "Foresight Sports", "domain": "foresightsports.com", "metro": "San Diego", "industry": "tech", "employee_est": 165}
+  ],
+  "leads": [
+    {"domain": "karrtuttle.com", "person_name": "Marguerite Sandico", "title": "Director of Human Resources", "source_url": "https://www.linkedin.com/in/marguerite-sandico-7150b4108", "bio_url": "https://www.linkedin.com/in/marguerite-sandico-7150b4108"},
+    {"domain": "truveta.com", "person_name": "Deb Nielsen", "title": "Chief People Officer", "source_url": "https://www.linkedin.com/in/deb-nielsen-a0491b3/", "bio_url": "https://www.linkedin.com/in/deb-nielsen-a0491b3/"},
+    {"domain": "cercanolp.com", "person_name": "Ankita Chopra", "title": "Office Manager", "source_url": "https://theorg.com/org/cercano-management/org-chart/ankita-chopra", "bio_url": "https://www.linkedin.com/in/ankitachopra01/"},
+    {"domain": "urbanrengroup.com", "person_name": "Emily Glastra", "title": "Senior Manager of People and Culture", "source_url": "https://www.linkedin.com/in/urgemilyg/", "bio_url": "https://www.linkedin.com/in/urgemilyg/"},
+    {"domain": "colrich.com", "person_name": "Nicole Rubin", "title": "Director of Human Resources", "source_url": "https://www.linkedin.com/in/nicole-rubin-phr-93899367/", "bio_url": "https://www.linkedin.com/in/nicole-rubin-phr-93899367/"},
+    {"domain": "sudprop.com", "person_name": "Victoria Millay", "title": "Director of Human Resources & Paralegal", "source_url": "https://www.linkedin.com/in/victoria-millay-5240aa18/", "bio_url": "https://www.linkedin.com/in/victoria-millay-5240aa18/"},
+    {"domain": "goformz.com", "person_name": "Emily Porta", "title": "Director of People Operations", "source_url": "https://www.linkedin.com/in/emily-porta-phrca-4a7bab8/", "bio_url": "https://www.linkedin.com/in/emily-porta-phrca-4a7bab8/"},
+    {"domain": "movemedical.com", "person_name": "Cindy Carson", "title": "People Operations Coordinator", "source_url": "https://www.linkedin.com/in/cemcarson/", "bio_url": "https://www.linkedin.com/in/cemcarson/"}
+  ]
+}
