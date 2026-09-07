@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { ExternalLink, ChevronDown, Printer } from 'lucide-react'
 import { ShipButton } from './ShipButton'
+import { ManualTracking } from './ManualTracking'
 import type { Order } from '@/types'
 import Image from 'next/image'
 
@@ -28,6 +29,14 @@ interface ExtendedOrder extends Order {
 export function OrdersTable({ orders: initial }: { orders: ExtendedOrder[] }) {
   const [orders, setOrders] = useState(initial)
   const [expanded, setExpanded] = useState<string | null>(null)
+
+  // Manual entry: update the row in place; a first-time number also flips the
+  // status to shipped (the server sent the shipped email + review scheduling).
+  function handleTracking(orderId: string, trackingNumber: string, trackingUrl: string | null, shipped: boolean) {
+    setOrders(prev => prev.map(o => o.id === orderId
+      ? { ...o, tracking_number: trackingNumber, tracking_url: trackingUrl ?? undefined, ...(shipped ? { status: 'shipped' as const } : {}) }
+      : o))
+  }
 
   function handleShipped(orderId: string, trackingNumber: string, labelUrl: string) {
     setOrders(prev =>
@@ -115,8 +124,13 @@ export function OrdersTable({ orders: initial }: { orders: ExtendedOrder[] }) {
                         {order.shippo_label_url && (
                           <a href={order.shippo_label_url} target="_blank" rel="noopener noreferrer" className="font-sans text-[10px] text-sage-500 underline">label</a>
                         )}
+                        <ManualTracking orderId={order.id} current={order.tracking_number ?? null}
+                          onSaved={(num, url, shipped) => handleTracking(order.id, num, url, shipped)} />
                       </div>
-                    ) : '—'}
+                    ) : (
+                      <ManualTracking orderId={order.id} current={null}
+                        onSaved={(num, url, shipped) => handleTracking(order.id, num, url, shipped)} />
+                    )}
                   </td>
                   <td className="px-4 py-3 font-sans text-xs text-bark-400">{formatDate(order.created_at)}</td>
                   <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
