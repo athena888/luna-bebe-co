@@ -1,0 +1,39 @@
+{
+  "seeds": [
+    {"company": "Stokes Lawrence", "domain": "stokeslaw.com", "metro": "Seattle", "industry": "law", "employee_est": 150},
+    {"company": "Cairncross & Hempelmann", "domain": "cairncross.com", "metro": "Seattle", "industry": "law", "employee_est": 90},
+    {"company": "AIM Consulting", "domain": "aimconsulting.com", "metro": "Seattle", "industry": "consulting", "employee_est": 400},
+    {"company": "AG Consulting Partners", "domain": "agconsultingpartners.com", "metro": "Seattle", "industry": "consulting", "employee_est": 136},
+    {"company": "Logic20/20", "domain": "logic2020.com", "metro": "Seattle", "industry": "consulting", "employee_est": 229},
+    {"company": "NAI Puget Sound Properties", "domain": "nai-psp.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 100},
+    {"company": "The Partners Group", "domain": "thepartnersgroup.com", "metro": "Seattle", "industry": "finance", "employee_est": 200},
+    {"company": "Coldstream Wealth Management", "domain": "coldstream.com", "metro": "Seattle", "industry": "finance", "employee_est": 200},
+    {"company": "Brighton Jones", "domain": "brightonjones.com", "metro": "Seattle", "industry": "finance", "employee_est": 316},
+    {"company": "doxo", "domain": "doxo.com", "metro": "Seattle", "industry": "tech", "employee_est": 85},
+    {"company": "Limeade", "domain": "limeade.com", "metro": "Seattle", "industry": "tech", "employee_est": 267},
+    {"company": "NetMotion Software", "domain": "netmotionsoftware.com", "metro": "Seattle", "industry": "tech", "employee_est": 190},
+    {"company": "Bell Nunnally & Martin", "domain": "bellnunnally.com", "metro": "Dallas", "industry": "law", "employee_est": 123},
+    {"company": "McKool Smith", "domain": "mckoolsmith.com", "metro": "Dallas", "industry": "law", "employee_est": 160},
+    {"company": "Munsch Hardt", "domain": "munsch.com", "metro": "Dallas", "industry": "law", "employee_est": 344},
+    {"company": "Two Roads Consulting", "domain": "tworoadsconsulting.com", "metro": "Dallas", "industry": "consulting", "employee_est": 70},
+    {"company": "Compass Datacenters", "domain": "compassdatacenters.com", "metro": "Dallas", "industry": "real_estate", "employee_est": 283},
+    {"company": "Beaird Harris", "domain": "bh-co.com", "metro": "Dallas", "industry": "finance", "employee_est": 88},
+    {"company": "Lane Gorman Trubitt", "domain": "lgt-cpa.com", "metro": "Dallas", "industry": "finance", "employee_est": 145},
+    {"company": "Texans Credit Union", "domain": "texanscu.org", "metro": "Dallas", "industry": "finance", "employee_est": 350},
+    {"company": "JobTread", "domain": "jobtread.com", "metro": "Dallas", "industry": "tech", "employee_est": 100},
+    {"company": "Koddi", "domain": "koddi.com", "metro": "Dallas", "industry": "tech", "employee_est": 175}
+  ],
+  "leads": [
+    {"domain": "stokeslaw.com", "person_name": "Joanne Pegues", "title": "Director of Human Resources", "source_url": "https://www.stokeslaw.com/staff-hiring", "bio_url": "https://www.stokeslaw.com/our-team/joanne-pegues/"},
+    {"domain": "doxo.com", "person_name": "Sara Gregory", "title": "VP, People", "source_url": "https://www.geekwire.com/2022/tech-moves-amazon-product-vet-joins-iot-startup-amazon-comms-leader-moves-to-lyft-doxo-adds-execs-and-more/", "bio_url": "https://www.linkedin.com/in/sara-h-gregory/"},
+    {"domain": "brightonjones.com", "person_name": "Jeri Andrews", "title": "Chief People Officer", "source_url": "https://www.prnewswire.com/news-releases/brighton-jones-launches-atlanta-office-with-andrew-foray-cfp-as-lead-advisor-302467384.html", "bio_url": "https://www.brightonjones.com/team/jeri-andrews/"},
+    {"domain": "coldstream.com", "person_name": "Tara McDonald", "title": "Director of Human Resources", "source_url": "https://www.coldstream.com/team-members/tara-mcdonald/"},
+    {"domain": "agconsultingpartners.com", "person_name": "Ellie Woodle", "title": "Talent Acquisition Manager", "source_url": "https://rocketreach.co/ag-consulting-partners-inc-hr-department_b5c89217f42e3552"},
+    {"domain": "bellnunnally.com", "person_name": "Michelle Sheppard", "title": "Director, Human Resources", "source_url": "https://www.zoominfo.com/p/Michelle-Sheppard/3606256026"},
+    {"domain": "mckoolsmith.com", "person_name": "Richard Sheard", "title": "Manager, Office Services", "source_url": "https://www.zoominfo.com/p/Richard-Sheard/1827186133"},
+    {"domain": "munsch.com", "person_name": "Audrea Lemons", "title": "Director of Human Resources", "source_url": "https://www.zoominfo.com/p/Audrea-Lemons/3193289870", "bio_url": "https://www.linkedin.com/in/audrea-lemons-phr-a0630a11/"},
+    {"domain": "lgt-cpa.com", "person_name": "Candice King", "title": "Principal and Director of Human Resources", "source_url": "https://www.zoominfo.com/p/Candice-King/260246259", "bio_url": "https://www.linkedin.com/in/candice-king-13501a41/"},
+    {"domain": "texanscu.org", "person_name": "Jenni Short", "title": "Chief People Officer", "source_url": "https://www.texanscu.org/about/leadership"},
+    {"domain": "compassdatacenters.com", "person_name": "Anna Carlton", "title": "Chief Culture Officer", "source_url": "https://www.linkedin.com/in/annasafran/"}
+  ]
+}
