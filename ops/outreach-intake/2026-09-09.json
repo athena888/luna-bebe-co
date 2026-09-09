@@ -1,0 +1,43 @@
+{
+  "seeds": [
+    {"company": "Stokes Lawrence", "domain": "stokeslaw.com", "metro": "Seattle", "industry": "law", "employee_est": 150},
+    {"company": "Freestone Capital Management", "domain": "freestonecapital.com", "metro": "Seattle", "industry": "finance", "employee_est": 98},
+    {"company": "Empirical Wealth Management", "domain": "empirical.net", "metro": "Seattle", "industry": "finance", "employee_est": 65},
+    {"company": "Frazier Healthcare Partners", "domain": "frazierhealthcare.com", "metro": "Seattle", "industry": "finance", "employee_est": 68},
+    {"company": "Brighton Jones", "domain": "brightonjones.com", "metro": "Seattle", "industry": "finance", "employee_est": 269},
+    {"company": "NAI Puget Sound Properties", "domain": "nai-psp.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 100},
+    {"company": "Protingent", "domain": "protingent.com", "metro": "Seattle", "industry": "tech", "employee_est": 60},
+    {"company": "Badgley Phelps Wealth Managers", "domain": "badgley.com", "metro": "Seattle", "industry": "finance", "employee_est": 42},
+    {"company": "Coldstream Wealth Management", "domain": "coldstream.com", "metro": "Seattle", "industry": "finance", "employee_est": 230},
+    {"company": "Hillis Clark Martin & Peterson", "domain": "hcmp.com", "metro": "Seattle", "industry": "law", "employee_est": 90},
+    {"company": "Corr Cronin", "domain": "corrcronin.com", "metro": "Seattle", "industry": "law", "employee_est": 60},
+    {"company": "Foster Garvey", "domain": "foster.com", "metro": "Seattle", "industry": "law", "employee_est": 400},
+    {"company": "Limeade", "domain": "limeade.com", "metro": "Seattle", "industry": "tech", "employee_est": 202},
+    {"company": "Amperity", "domain": "amperity.com", "metro": "Seattle", "industry": "tech", "employee_est": 306},
+    {"company": "Betts Patterson Mines", "domain": "bpmlaw.com", "metro": "Seattle", "industry": "law", "employee_est": 85},
+    {"company": "Swiftly", "domain": "swiftly.com", "metro": "Seattle", "industry": "tech", "employee_est": 180},
+    {"company": "Realogics Sotheby's International Realty", "domain": "rsir.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 300},
+    {"company": "Textio", "domain": "textio.com", "metro": "Seattle", "industry": "tech", "employee_est": 97},
+    {"company": "Paragon Real Estate Advisors", "domain": "paragonrea.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 45},
+    {"company": "Cairncross & Hempelmann", "domain": "cairncross.com", "metro": "Seattle", "industry": "law", "employee_est": 90},
+    {"company": "Parsons Behle & Latimer", "domain": "parsonsbehle.com", "metro": "Salt Lake City", "industry": "law", "employee_est": 380},
+    {"company": "Cicero Group", "domain": "cicerogroup.com", "metro": "Salt Lake City", "industry": "consulting", "employee_est": 123},
+    {"company": "Ray Quinney & Nebeker", "domain": "rqn.com", "metro": "Salt Lake City", "industry": "law", "employee_est": 210},
+    {"company": "Bask Technology", "domain": "bask.com", "metro": "Salt Lake City", "industry": "tech", "employee_est": 202},
+    {"company": "Kirton McConkie", "domain": "kirtonmcconkie.com", "metro": "Salt Lake City", "industry": "law", "employee_est": 320},
+    {"company": "Fabian VanCott", "domain": "fabianvancott.com", "metro": "Salt Lake City", "industry": "law", "employee_est": 70},
+    {"company": "The Boyer Company", "domain": "boyercompany.com", "metro": "Salt Lake City", "industry": "real_estate", "employee_est": 130},
+    {"company": "Albion Financial Group", "domain": "albionfinancial.com", "metro": "Salt Lake City", "industry": "finance", "employee_est": 36},
+    {"company": "Leavitt Partners", "domain": "leavittpartners.com", "metro": "Salt Lake City", "industry": "consulting", "employee_est": 104},
+    {"company": "Owlet", "domain": "owletcare.com", "metro": "Salt Lake City", "industry": "tech", "employee_est": 480},
+    {"company": "Newmark Grubb ACRES", "domain": "ngacres.com", "metro": "Salt Lake City", "industry": "real_estate", "employee_est": 109},
+    {"company": "The Cynosure Group", "domain": "cynosurepartners.com", "metro": "Salt Lake City", "industry": "finance", "employee_est": 120},
+    {"company": "Route", "domain": "route.com", "metro": "Salt Lake City", "industry": "tech", "employee_est": 300},
+    {"company": "Wasatch Global Investors", "domain": "wasatchglobal.com", "metro": "Salt Lake City", "industry": "finance", "employee_est": 150}
+  ],
+  "leads": [
+    {"domain": "hcmp.com", "person_name": "Veronica Sutton", "title": "Director, Human Resources", "source_url": "https://www.hcmp.com/professional-staff"},
+    {"domain": "brightonjones.com", "person_name": "Monica Franzen", "title": "Operations Manager", "source_url": "https://www.brightonjones.com/team/monica-franzen/", "bio_url": "https://www.brightonjones.com/team/monica-franzen/"},
+    {"domain": "frazierhealthcare.com", "person_name": "Renee Olson", "title": "Vice President of Human Resources", "source_url": "https://www.linkedin.com/in/reneerolson/"}
+  ]
+}
