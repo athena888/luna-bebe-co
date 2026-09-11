@@ -7,9 +7,10 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Button } from '@/components/ui/Button'
 import { VatNotice } from '@/components/ui/VatNotice'
-import { CheckCircle, Package, Pen, Truck, Phone } from 'lucide-react'
+import { CheckCircle, Package, Pen, Truck, Mail } from 'lucide-react'
 import { trackPurchase } from '@/lib/analytics-events'
 import { GcrOptIn } from '@/components/ui/GcrOptIn'
+import { CONTACT_EMAIL } from '@/lib/site-config'
 
 const NEXT_STEPS = [
   { icon: <Package size={20} className="text-gold-400" />, title: 'Box Assembly', body: 'Our team begins handpicking and assembling your items within 24 hours of your order.' },
@@ -106,14 +107,14 @@ function ConfirmationInner() {
 
           <div className="bg-bark-600 rounded-2xl p-6 sm:p-8 mb-8 text-left flex flex-col sm:flex-row items-center gap-4">
             <div className="shrink-0 w-12 h-12 rounded-full bg-gold-400/20 flex items-center justify-center">
-              <Phone size={22} className="text-gold-300" />
+              <Mail size={22} className="text-gold-300" />
             </div>
             <div className="flex-1 text-center sm:text-left">
               <p className="font-serif text-lg text-cream-100">Questions about your order?</p>
-              <p className="font-sans text-sm text-cream-300/80 mt-1">Our AI phone assistant is available 24/7. Call us anytime and we&apos;ll make it right.</p>
+              <p className="font-sans text-sm text-cream-300/80 mt-1">Email us any time at {CONTACT_EMAIL} and we&apos;ll make it right.</p>
             </div>
-            <a href="tel:+18005862269" className="shrink-0">
-              <Button variant="gold" size="sm">Call Us</Button>
+            <a href={`mailto:${CONTACT_EMAIL}`} className="shrink-0">
+              <Button variant="gold" size="sm">Email Us</Button>
             </a>
           </div>
 

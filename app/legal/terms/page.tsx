@@ -60,7 +60,7 @@ export default function TermsPage() {
       </Section>
 
       <Section title="11. Business Information">
-        Petite Lavande is operated by Petite Lavande LLC.{ADDRESS ? ` Business mailing address: ${ADDRESS}.` : ''} Customer service: <a href={`mailto:${CONTACT_EMAIL}`} className="text-bark-600 underline underline-offset-2">{CONTACT_EMAIL}</a> or +1 (800) 586-2269 (24/7).
+        Petite Lavande is operated by Petite Lavande LLC.{ADDRESS ? ` Business mailing address: ${ADDRESS}.` : ''} Customer service: <a href={`mailto:${CONTACT_EMAIL}`} className="text-bark-600 underline underline-offset-2">{CONTACT_EMAIL}</a>.
       </Section>
 
       <Section title="12. Contact">
