@@ -5,7 +5,7 @@ import { CONTACT_EMAIL } from '@/lib/site-config'
 
 export const metadata: Metadata = {
   title: 'Devoluciones y Reembolsos',
-  description: 'Política de devoluciones, cambios y reembolsos de Petite Lavande.',
+  description: 'Política de devoluciones y reembolsos de Petite Lavande.',
   alternates: {
     canonical: '/es/legal/devoluciones',
     languages: { en: '/legal/returns', 'es-US': '/es/legal/devoluciones', 'x-default': '/legal/returns' },
@@ -37,7 +37,7 @@ export default function DevolucionesPage() {
       </Section>
 
       <Section title="Envío de la devolución">
-        Si algo llega dañado o con algo que no pediste, nosotros cubrimos el envío de la devolución. Para cualquier otra devolución aprobada, el envío corre por cuenta del cliente.
+        Si algo llega dañado, defectuoso o con algo que no pediste, Petite Lavande cubre el envío de devolución que haga falta. No aceptamos devoluciones por cambio de opinión una vez enviado el pedido.
       </Section>
 
       <Section title="Pedidos de regalo">

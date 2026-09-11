@@ -3,7 +3,7 @@ import { CONTACT_EMAIL, CANCELLATION_WINDOW_HOURS } from '@/lib/site-config'
 
 export const metadata: Metadata = {
   title: 'Returns & Refund Policy',
-  description: 'Petite Lavande return, exchange, and refund policy.',
+  description: 'Petite Lavande return and refund policy.',
   alternates: {
     canonical: '/legal/returns',
     ...(process.env.NEXT_PUBLIC_SPANISH_ACTIVE === 'true' || process.env.SPANISH_ACTIVE === 'true'
@@ -31,7 +31,7 @@ export default function ReturnsPage() {
       </Section>
 
       <Section title="Return Shipping">
-        For damaged or incorrect items, we cover return shipping. For any other approved return, return shipping is the customer&apos;s responsibility.
+        For damaged, defective, or incorrect items, Petite Lavande covers any required return shipping. We do not accept change-of-mind returns once an order has shipped.
       </Section>
 
       <Section title="Gift Orders">
