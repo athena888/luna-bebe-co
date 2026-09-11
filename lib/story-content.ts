@@ -33,7 +33,7 @@ export const DEFAULT_STORY_CONTENT: StoryContent = {
     signature: '— Émilie, Founder',
   },
   values: [
-    { title: 'Purely Organic', body: 'Our cotton garments are organic cotton from GOTS-certified makers, and we choose organic, natural materials across the box wherever we can.' },
+    { title: 'Thoughtfully Sourced Materials', body: 'We choose thoughtful, high-quality materials for each Petite Lavande piece. Our cotton garments and selected textiles use organic cotton where specifically noted, while other products are selected for their materials, craftsmanship, and suitability for gifting.' },
     { title: 'Artisan-Made', body: "We source from small makers and family studios. The hands that made your gift cared deeply about it — and that's not something you can mass-produce." },
     { title: 'Every Detail', body: 'Hand-sealed boxes, personalized cards, tissue and ribbon — because the unboxing is part of the gift. We believe in the beauty of ceremony.' },
   ],

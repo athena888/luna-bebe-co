@@ -7,6 +7,11 @@ export const metadata: Metadata = {
   alternates: { canonical: '/legal/terms' },
 }
 
+// Real configured mailing address only (CAN-SPAM config); absent env renders no address line.
+
+// Real configured mailing address only (CAN-SPAM config); absent env renders no address line.
+const ADDRESS = (process.env.BUSINESS_ADDRESS ?? '').trim()
+
 export default function TermsPage() {
   return (
     <article className="prose prose-sm max-w-none font-sans text-bark-600">
@@ -19,7 +24,7 @@ export default function TermsPage() {
       </Section>
 
       <Section title="2. Products">
-        Our cotton baby garments and selected textiles are made with organic cotton from certified makers, and we prioritize natural and thoughtfully sourced materials throughout our gift boxes. Every box is curated for newborns and new mothers. Product descriptions, ingredients, and imagery are as accurate as possible. Minor variations in handcrafted items are expected and part of their artisan quality.
+        Our cotton baby garments and selected textiles are made with GOTS-certified organic cotton where specifically stated in the product description. Other products may use materials such as wood, silk, natural fibers, or botanical ingredients; material details are listed on individual product pages. Every box is curated for newborns and new mothers. Product descriptions, ingredients, and imagery are as accurate as possible. Minor variations in handcrafted items are expected and part of their artisan quality.
       </Section>
 
       <Section title="3. Orders & Payment">
@@ -54,7 +59,11 @@ export default function TermsPage() {
         These terms are governed by the laws of the United States. Any disputes shall be resolved in the applicable jurisdiction.
       </Section>
 
-      <Section title="11. Contact">
+      <Section title="11. Business Information">
+        Petite Lavande is operated by Petite Lavande LLC.{ADDRESS ? ` Business mailing address: ${ADDRESS}.` : ''} Customer service: <a href={`mailto:${CONTACT_EMAIL}`} className="text-bark-600 underline underline-offset-2">{CONTACT_EMAIL}</a> or +1 (800) 586-2269 (24/7).
+      </Section>
+
+      <Section title="12. Contact">
         Questions about these terms? Email us at <a href={`mailto:${CONTACT_EMAIL}`} className="text-bark-600 underline underline-offset-2">{CONTACT_EMAIL}</a>.
       </Section>
     </article>

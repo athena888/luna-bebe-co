@@ -237,7 +237,7 @@ export function Footer() {
           </div>
 
           <div className="mt-6 pt-6 border-t border-cream-300 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 font-sans text-[13px] font-normal text-espresso">
-            <p className="whitespace-nowrap">© {new Date().getFullYear()} Petite Lavande.</p>
+            <p className="whitespace-nowrap">© {new Date().getFullYear()} Petite Lavande. Operated by Petite Lavande LLC.</p>
             {process.env.NEXT_PUBLIC_SPANISH_ACTIVE === 'true' && (
               <div className="flex border border-cream-300">
                 {isEs ? (

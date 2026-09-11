@@ -14,6 +14,10 @@ export default function PrivacyPage() {
       <h1 className="font-serif text-4xl font-normal text-espresso mb-2">Privacy Policy</h1>
       <p className="text-bark-400 text-sm mb-10">Last updated: June 2026</p>
 
+      <Section title="Who We Are">
+        Petite Lavande is operated by Petite Lavande LLC. This policy describes how we collect, use, and protect your personal information.
+      </Section>
+
       <Section title="1. Information We Collect">
         When you place an order, we collect your name, email address, phone number, shipping address, and payment information. Payment data is processed directly by Stripe and is never stored on our servers. We may also collect usage data (pages visited, time on site) to improve our experience.
       </Section>
