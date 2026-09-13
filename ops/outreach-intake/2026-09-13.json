@@ -1,0 +1,37 @@
+{
+  "seeds": [
+    {"company": "Stokes Lawrence", "domain": "stokeslaw.com", "metro": "Seattle", "industry": "law", "employee_est": 120},
+    {"company": "Medbridge", "domain": "medbridge.com", "metro": "Seattle", "industry": "tech", "employee_est": 350},
+    {"company": "Logic20/20", "domain": "logic2020.com", "metro": "Seattle", "industry": "consulting", "employee_est": 274},
+    {"company": "Seattle Credit Union", "domain": "seattlecu.com", "metro": "Seattle", "industry": "finance", "employee_est": 220},
+    {"company": "Foster Garvey", "domain": "foster.com", "metro": "Seattle", "industry": "law", "employee_est": 300},
+    {"company": "Unico Properties", "domain": "unicoprop.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 180},
+    {"company": "NAI Puget Sound Properties", "domain": "nai-psp.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 80},
+    {"company": "Possible Finance", "domain": "possiblefinance.com", "metro": "Seattle", "industry": "finance", "employee_est": 110},
+    {"company": "Protingent", "domain": "protingent.com", "metro": "Seattle", "industry": "consulting", "employee_est": 90},
+    {"company": "Brighton Jones", "domain": "brightonjones.com", "metro": "Seattle", "industry": "finance", "employee_est": 260},
+    {"company": "Shelf Engine", "domain": "shelfengine.com", "metro": "Seattle", "industry": "tech", "employee_est": 120},
+    {"company": "Ogden Murphy Wallace", "domain": "omwlaw.com", "metro": "Seattle", "industry": "law", "employee_est": 130},
+    {"company": "Hughes Marino", "domain": "hughesmarino.com", "metro": "San Diego", "industry": "real_estate", "employee_est": 154},
+    {"company": "Procopio", "domain": "procopio.com", "metro": "San Diego", "industry": "law", "employee_est": 420},
+    {"company": "Pure Financial Advisors", "domain": "purefinancial.com", "metro": "San Diego", "industry": "finance", "employee_est": 204},
+    {"company": "Higgs Fletcher & Mack", "domain": "higgslaw.com", "metro": "San Diego", "industry": "law", "employee_est": 150},
+    {"company": "California Coast Credit Union", "domain": "calcoastcu.org", "metro": "San Diego", "industry": "finance", "employee_est": 350},
+    {"company": "Procede Software", "domain": "procedesoftware.com", "metro": "San Diego", "industry": "tech", "employee_est": 135},
+    {"company": "Doctible", "domain": "doctible.com", "metro": "San Diego", "industry": "tech", "employee_est": 90},
+    {"company": "IQHQ", "domain": "iqhqreit.com", "metro": "San Diego", "industry": "real_estate", "employee_est": 64}
+  ],
+  "leads": [
+    {"domain": "stokeslaw.com", "person_name": "Joanne Pegues", "title": "Director of Human Resources", "source_url": "https://www.stokeslaw.com/our-team/joanne-pegues/", "bio_url": "https://www.linkedin.com/in/joannepegues"},
+    {"domain": "logic2020.com", "person_name": "Jean Nam", "title": "Director, Human Resources", "source_url": "https://theorg.com/org/logic2020/org-chart/jean-n", "bio_url": "https://www.linkedin.com/in/jeanhnam/"},
+    {"domain": "seattlecu.com", "person_name": "Kelly Earnest", "title": "Chief People Officer", "source_url": "https://theorg.com/org/seattle-credit-union/org-chart/kelly-earnest", "bio_url": "https://www.linkedin.com/in/kelly-earnest-6264156/"},
+    {"domain": "unicoprop.com", "person_name": "Megan Easley", "title": "Vice President, People Operations", "source_url": "https://www.zoominfo.com/p/Megan-Easley/9579372990", "bio_url": "https://www.linkedin.com/in/megan-easley-34248942/"},
+    {"domain": "omwlaw.com", "person_name": "Shari Tipp", "title": "Human Resources Director", "source_url": "https://theorg.com/org/ogden-murphy-wallace/teams/human-resources", "bio_url": "https://www.linkedin.com/in/shari-tipp-67160711/"},
+    {"domain": "shelfengine.com", "person_name": "Dani Mignone", "title": "HR Generalist / People Ops", "source_url": "https://www.linkedin.com/in/danielle-mignone/", "bio_url": "https://www.linkedin.com/in/danielle-mignone/"},
+    {"domain": "protingent.com", "person_name": "Danielle Aguilar", "title": "Senior Manager, Human Resources", "source_url": "https://www.zoominfo.com/p/Danielle-Aguilar/1251647585"},
+    {"domain": "procopio.com", "person_name": "Jaime Steffens", "title": "Human Resources Director", "source_url": "https://www.procopio.com/people/jaime-steffens", "bio_url": "https://www.linkedin.com/in/jaime-steffens-b0523759/"},
+    {"domain": "higgslaw.com", "person_name": "Emilie Luck", "title": "Director of Human Resources", "source_url": "https://www.linkedin.com/in/emilieluck/", "bio_url": "https://www.linkedin.com/in/emilieluck/"},
+    {"domain": "calcoastcu.org", "person_name": "Tim Mulligan", "title": "Chief Human Resources Officer", "source_url": "https://www.zoominfo.com/p/Tim-Mulligan/775882265", "bio_url": "https://www.linkedin.com/in/timmulligan/"},
+    {"domain": "procedesoftware.com", "person_name": "Amy Pottle", "title": "Sr. Human Resources Manager", "source_url": "https://www.linkedin.com/in/amypottle", "bio_url": "https://www.linkedin.com/in/amypottle"}
+  ]
+}
