@@ -36,7 +36,7 @@ export default function TermsPage() {
       </Section>
 
       <Section title="5. Shipping">
-        We ship within the United States only. Estimated delivery times vary by destination. Orders typically arrive within 2–6 business days after shipment. Delivery estimates are provided at checkout and may vary by location and carrier. Shipping timelines begin after your box is assembled (within 24 hours of your order). We are not responsible for delays caused by carriers.
+        We ship within the United States only. Estimated delivery times vary by destination. Orders within the contiguous U.S. typically arrive within 2–6 business days after shipment. Alaska and Hawaii typically take 7–10 business days. Delivery estimates are provided at checkout and may vary by location and carrier. Shipping timelines begin after your box is assembled (within 24 hours of your order). We are not responsible for delays caused by carriers.
       </Section>
 
       <Section title="6. Cancellations">
