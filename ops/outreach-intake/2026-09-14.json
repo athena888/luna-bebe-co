@@ -1,0 +1,43 @@
+{
+  "seeds": [
+    {"company": "Rover.com", "domain": "rover.com", "metro": "Seattle", "industry": "tech", "employee_est": 500},
+    {"company": "Miller Nash", "domain": "millernash.com", "metro": "Seattle", "industry": "law", "employee_est": 400},
+    {"company": "JSH Properties", "domain": "jshproperties.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 100},
+    {"company": "Sound Community Bank", "domain": "soundcb.com", "metro": "Seattle", "industry": "finance", "employee_est": 119},
+    {"company": "Summit Law Group", "domain": "summitlaw.com", "metro": "Seattle", "industry": "law", "employee_est": 90},
+    {"company": "Cascadia Consulting Group", "domain": "cascadiaconsulting.com", "metro": "Seattle", "industry": "consulting", "employee_est": 100},
+    {"company": "Stokes Lawrence", "domain": "stokeslaw.com", "metro": "Seattle", "industry": "law", "employee_est": 120},
+    {"company": "Brighton Jones", "domain": "brightonjones.com", "metro": "Seattle", "industry": "finance", "employee_est": 260},
+    {"company": "NAI Puget Sound Properties", "domain": "nai-psp.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 83},
+    {"company": "Logic20/20", "domain": "logic2020.com", "metro": "Seattle", "industry": "consulting", "employee_est": 274},
+    {"company": "Foster Garvey", "domain": "foster.com", "metro": "Seattle", "industry": "law", "employee_est": 300},
+    {"company": "Protingent", "domain": "protingent.com", "metro": "Seattle", "industry": "consulting", "employee_est": 90},
+    {"company": "Unico Properties", "domain": "unicoprop.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 200},
+    {"company": "Clark Nuber", "domain": "clarknuber.com", "metro": "Seattle", "industry": "finance", "employee_est": 220},
+    {"company": "Keller Rohrback", "domain": "kellerrohrback.com", "metro": "Seattle", "industry": "law", "employee_est": 200},
+    {"company": "Amplify Credit Union", "domain": "goamplify.com", "metro": "Austin", "industry": "finance", "employee_est": 252},
+    {"company": "Endeavor Real Estate Group", "domain": "endeavor-re.com", "metro": "Austin", "industry": "real_estate", "employee_est": 215},
+    {"company": "Civitas Learning", "domain": "civitaslearning.com", "metro": "Austin", "industry": "tech", "employee_est": 139},
+    {"company": "CS Disco", "domain": "csdisco.com", "metro": "Austin", "industry": "tech", "employee_est": 594},
+    {"company": "Scott Douglass & McConnico", "domain": "scottdoug.com", "metro": "Austin", "industry": "law", "employee_est": 35},
+    {"company": "Heritage Title Company of Austin", "domain": "heritagetitleofaustin.com", "metro": "Austin", "industry": "real_estate", "employee_est": 200},
+    {"company": "Bridgepoint Consulting", "domain": "bridgepointconsulting.com", "metro": "Austin", "industry": "consulting", "employee_est": 200},
+    {"company": "AQUILA Commercial", "domain": "aquilacommercial.com", "metro": "Austin", "industry": "real_estate", "employee_est": 70},
+    {"company": "The Kucera Companies", "domain": "kuceraco.com", "metro": "Austin", "industry": "real_estate", "employee_est": 40}
+  ],
+  "leads": [
+    {"domain": "millernash.com", "person_name": "Jennifer Blakeley", "title": "Director of Human Resources", "source_url": "https://www.millernash.com/professionals/jennifer-blakeley-shrm-scp", "bio_url": "https://www.linkedin.com/in/jenniferblakeley/"},
+    {"domain": "soundcb.com", "person_name": "Erin Nicolaus", "title": "SVP, Human Resources & Talent Management", "source_url": "https://theorg.com/org/sound-community-bank/org-chart/erin-nicolaus", "bio_url": "https://theorg.com/org/sound-community-bank/org-chart/erin-nicolaus"},
+    {"domain": "cascadiaconsulting.com", "person_name": "Cindy Ugale", "title": "People Operations Manager", "source_url": "https://cascadiaconsulting.com/dipl-team-member/cindy-ugale/", "bio_url": "https://cascadiaconsulting.com/dipl-team-member/cindy-ugale/"},
+    {"domain": "logic2020.com", "person_name": "Jean Nam", "title": "Director, People Operations", "source_url": "https://theorg.com/org/logic2020/org-chart/jean-n", "bio_url": "https://www.linkedin.com/in/jeanhnam/"},
+    {"domain": "foster.com", "person_name": "Traci Metcalf", "title": "Chief People Officer", "source_url": "https://www.law360.com/pulse/articles/1385772/foster-garvey-hr-chief-named-firm-s-1st-chief-people-officer"},
+    {"domain": "unicoprop.com", "person_name": "Kelli Nikel", "title": "Business Partner, People Operations", "source_url": "https://theorg.com/org/unico-2/org-chart/kelli-nikel", "bio_url": "https://www.linkedin.com/in/kelli-nikel-99b89a94/"},
+    {"domain": "kellerrohrback.com", "person_name": "Patty Peaquin", "title": "Human Resources Manager", "source_url": "https://www.kellerrohrback.com/management", "bio_url": "https://www.linkedin.com/in/patty-peaquin-61214aa"},
+    {"domain": "goamplify.com", "person_name": "Angela Shaw", "title": "SVP of Talent", "source_url": "https://www.goamplify.com/blog/news/angela-shaw/", "bio_url": "https://www.linkedin.com/in/angelalshaw/"},
+    {"domain": "endeavor-re.com", "person_name": "Danielle Leggett", "title": "Vice President, Human Resources", "source_url": "https://www.endeavor-re.com/about/team/danielle-leggett/", "bio_url": "https://www.linkedin.com/in/danielle-leggett-shrm-scp-53a4bb37/"},
+    {"domain": "civitaslearning.com", "person_name": "Andrea Fitzpatrick", "title": "Director of People Operations", "source_url": "https://www.civitaslearning.com/our-team/"},
+    {"domain": "heritagetitleofaustin.com", "person_name": "Wendy Alston", "title": "Human Resources Manager", "source_url": "https://aeroleads.com/in/wendyjonessphr"},
+    {"domain": "csdisco.com", "person_name": "Jignasha Amin Grooms", "title": "Chief Human Resources Officer", "source_url": "https://s28.q4cdn.com/612709996/files/doc_news/Jignasha-Amin-Grooms-Joins-DISCO-as-Chief-Human-Resources-Officer-2022.pdf"},
+    {"domain": "scottdoug.com", "person_name": "Bobby Zamen", "title": "Administrator", "source_url": "https://www.scottdoug.com/administrators/administrator1"}
+  ]
+}
