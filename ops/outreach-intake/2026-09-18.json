@@ -1,0 +1,34 @@
+{
+  "seeds": [
+    {"company": "Stackline", "domain": "stackline.com", "metro": "Seattle", "industry": "tech", "employee_est": 250},
+    {"company": "Coldstream Wealth Management", "domain": "coldstream.com", "metro": "Seattle", "industry": "finance", "employee_est": 230},
+    {"company": "Helsell Fetterman LLP", "domain": "helsell.com", "metro": "Seattle", "industry": "law", "employee_est": 150},
+    {"company": "Gordon Thomas Honeywell LLP", "domain": "gth-law.com", "metro": "Seattle", "industry": "law", "employee_est": 105},
+    {"company": "Sabey Corporation", "domain": "sabey.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 150},
+    {"company": "Wallace Properties, Inc.", "domain": "wallaceproperties.com", "metro": "Seattle", "industry": "real_estate", "employee_est": 72},
+    {"company": "AIM Consulting Group", "domain": "aimconsulting.com", "metro": "Seattle", "industry": "consulting", "employee_est": 120},
+
+    {"company": "The Menkiti Group", "domain": "menkitigroup.com", "metro": "Washington DC", "industry": "real_estate", "employee_est": 150},
+    {"company": "Keel Point, LLC", "domain": "keelpoint.com", "metro": "Washington DC", "industry": "finance", "employee_est": 80},
+    {"company": "Alpha Omega Integration, LLC", "domain": "alphaomega.com", "metro": "Washington DC", "industry": "tech", "employee_est": 425},
+    {"company": "Blu Omega", "domain": "bluomega.com", "metro": "Washington DC", "industry": "tech", "employee_est": 150},
+    {"company": "Fluet", "domain": "fluet.law", "metro": "Washington DC", "industry": "law", "employee_est": 55},
+    {"company": "Vest Financial LLC", "domain": "vestfin.com", "metro": "Washington DC", "industry": "finance", "employee_est": 60},
+    {"company": "Dev Technology Group, Inc.", "domain": "devtechnology.com", "metro": "Washington DC", "industry": "consulting", "employee_est": 260},
+    {"company": "Bregman, Berbert, Schwartz & Gilday, LLC", "domain": "bregmanlaw.com", "metro": "Washington DC", "industry": "law", "employee_est": 60},
+    {"company": "Hoffman & Associates", "domain": "hoffman-dev.com", "metro": "Washington DC", "industry": "real_estate", "employee_est": 55},
+    {"company": "Quadrangle Development Corporation", "domain": "quadrangledevelopment.com", "metro": "Washington DC", "industry": "real_estate", "employee_est": 180},
+    {"company": "ThunderCat Technology, LLC", "domain": "thundercattech.com", "metro": "Washington DC", "industry": "tech", "employee_est": 157}
+  ],
+  "leads": [
+    {"domain": "helsell.com", "person_name": "Mary Farmar", "title": "Human Resources Manager", "source_url": "https://www.helsell.com/join-us/"},
+    {"domain": "gth-law.com", "person_name": "Kristin Gilman", "title": "Director of Human Resources", "source_url": "http://gth-law.com/about/careers/"},
+    {"domain": "sabey.com", "person_name": "Max Schoenrock", "title": "Director of Human Resources", "source_url": "https://rocketreach.co/max-schoenrock-email_48144534"},
+    {"domain": "keelpoint.com", "person_name": "Amanda Ahmed", "title": "COO & Director of Human Resources", "source_url": "https://keelpoint.com/our-team/amanda-l-ahmed/", "bio_url": "https://keelpoint.com/our-team/amanda-l-ahmed/"},
+    {"domain": "alphaomega.com", "person_name": "Tanja Guerra", "title": "Chief Human Resources Officer", "source_url": "https://www.executivebiz.com/articles/tanja-guerra-joins-alpha-omega-as-chief-human-resources-officer"},
+    {"domain": "fluet.law", "person_name": "Haley Dronfield", "title": "Human Resources Manager", "source_url": "https://fluet.law/team/haley-dronfield/", "bio_url": "https://fluet.law/team/haley-dronfield/"},
+    {"domain": "thundercattech.com", "person_name": "Jean Cowen", "title": "Vice President, Human Resources", "source_url": "https://www.thundercattech.com/tcat_team/jean-cowen/", "bio_url": "https://www.thundercattech.com/tcat_team/jean-cowen/"},
+    {"domain": "bregmanlaw.com", "person_name": "Kristen M. D'Angelo", "title": "Office Administrator", "source_url": "https://www.bregmanlaw.com/about/management/", "bio_url": "https://www.bregmanlaw.com/about/management/"},
+    {"domain": "devtechnology.com", "person_name": "Christi Porter", "title": "Vice President, Human Resources", "source_url": "https://devtechnology.com/team/"}
+  ]
+}
