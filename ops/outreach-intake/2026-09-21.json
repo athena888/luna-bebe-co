@@ -1,0 +1,21 @@
+{"seeds":[
+{"company":"Goranson Bain Ausley","domain":"gbfamilylaw.com","metro":"Austin","industry":"law","employee_est":150},
+{"company":"Osano","domain":"osano.com","metro":"Austin","industry":"tech","employee_est":95},
+{"company":"Kizen","domain":"kizen.com","metro":"Austin","industry":"tech","employee_est":88},
+{"company":"DealHub","domain":"dealhub.io","metro":"Austin","industry":"tech","employee_est":300},
+{"company":"ECR (Equitable Commercial Realty)","domain":"ecrtx.com","metro":"Austin","industry":"real_estate","employee_est":220},
+{"company":"STG Design","domain":"stgdesign.com","metro":"Austin","industry":"consulting","employee_est":100},
+{"company":"K Friese + Associates","domain":"kfriese.com","metro":"Austin","industry":"consulting","employee_est":64},
+{"company":"CWD Group","domain":"cwdgroup.com","metro":"Seattle","industry":"real_estate","employee_est":125},
+{"company":"Mithun","domain":"mithun.com","metro":"Seattle","industry":"consulting","employee_est":135},
+{"company":"MotherDuck","domain":"motherduck.com","metro":"Seattle","industry":"tech","employee_est":138},
+{"company":"Carney Badley Spellman","domain":"carneybadleyspellman.com","metro":"Seattle","industry":"law","employee_est":90}
+],"leads":[
+{"domain":"gbfamilylaw.com","person_name":"Gina Lavie","title":"Human Resources Manager","source_url":"https://theorg.com/org/goransonbain-ausley/org-chart/gina-lavie","bio_url":"https://theorg.com/org/goransonbain-ausley/org-chart/gina-lavie"},
+{"domain":"kizen.com","person_name":"Alyssa Goss","title":"Office Manager","source_url":"https://www.linkedin.com/in/alyssa-goss-650843255/","bio_url":"https://www.linkedin.com/in/alyssa-goss-650843255/"},
+{"domain":"stgdesign.com","person_name":"Geoff Maracchini","title":"Senior Principal and VP of Human Resources & Administration","source_url":"https://theorg.com/org/stg-design/org-chart/geoff-maracchini","bio_url":"https://www.linkedin.com/in/geoffmaracchini"},
+{"domain":"kfriese.com","person_name":"Cygi Grammer","title":"Contracts/HR Coordinator","source_url":"https://www.linkedin.com/in/cygi-grammer-2602b0b4/","bio_url":"https://www.linkedin.com/in/cygi-grammer-2602b0b4/"},
+{"domain":"cwdgroup.com","person_name":"Jennifer Schneider Emory","title":"Director of Human Resources","source_url":"https://cwdgroup.com/about-us/our-people/","bio_url":"https://cwdgroup.com/about-us/our-people/"},
+{"domain":"mithun.com","person_name":"Jess Roe","title":"Human Resources Program Manager","source_url":"https://theorg.com/org/mithun/org-chart/jess-roe","bio_url":"https://www.linkedin.com/in/jessica-roe/"},
+{"domain":"motherduck.com","person_name":"Leslie Thomas","title":"Head of People","source_url":"https://theorg.com/org/motherduck/org-chart/leslie-thomas","bio_url":"https://www.linkedin.com/in/lthomaa/"}
+]}
