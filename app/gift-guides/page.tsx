@@ -13,7 +13,7 @@ export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: { absolute: 'Gifting Ideas — Baby & New-Mama Gift Guides | Petite Lavande' },
-  description: 'Find the perfect gift — organic newborn boxes, gender-neutral sets, postpartum care for mama, luxury baby-shower gifts and corporate gifting. One place, filter by occasion.',
+  description: 'Find the perfect gift — newborn boxes, gender-neutral sets, postpartum care for mama, luxury baby-shower gifts and corporate gifting. One place, filter by occasion.',
   alternates: { canonical: `${BASE}/gift-guides` },
   openGraph: { title: 'Gifting Ideas | Petite Lavande', description: 'Every Petite Lavande gift guide in one place — filter by occasion.', url: `${BASE}/gift-guides`, type: 'website' },
 }

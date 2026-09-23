@@ -1,11 +1,14 @@
 import type { Metadata } from 'next'
 import { CONTACT_EMAIL } from '@/lib/site-config'
+import { businessAddress } from '@/lib/business-info'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
   description: 'How Petite Lavande collects, uses, and protects your personal information.',
   alternates: { canonical: '/legal/privacy' },
 }
+
+const ADDRESS = businessAddress()
 
 export default function PrivacyPage() {
   return (
@@ -58,7 +61,7 @@ export default function PrivacyPage() {
       </Section>
 
       <Section title="9. Contact">
-        For privacy-related requests, email <a href={`mailto:${CONTACT_EMAIL}`} className="text-bark-600 underline underline-offset-2">{CONTACT_EMAIL}</a>.
+        For privacy-related requests, email <a href={`mailto:${CONTACT_EMAIL}`} className="text-bark-600 underline underline-offset-2">{CONTACT_EMAIL}</a>. Petite Lavande is operated by Petite Lavande LLC.{ADDRESS ? ` Business mailing address: ${ADDRESS}.` : ''}
       </Section>
     </article>
   )

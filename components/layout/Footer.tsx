@@ -228,8 +228,8 @@ export function Footer() {
 
           </div>
 
-          {/* Legal bar — one centred line; the legal links stay grouped on a single
-              line on every screen size */}
+          {/* Legal bar — centred; the legal links stay grouped together and
+              wrap as a group on small screens */}
           {/* Payment badges (SVG marks — Emily rejected text pills). Only the
               methods Stripe hosted checkout actually offers. */}
           <div className="mt-8">
@@ -253,10 +253,14 @@ export function Footer() {
                 )}
               </div>
             )}
-            <div className="flex items-center gap-x-5 sm:gap-x-8 whitespace-nowrap">
-              <Link href={localePath('/legal/privacy', isEs)} className="hover:text-gold-500 transition-colors">{isEs ? 'Privacidad' : 'Privacy Policy'}</Link>
-              <Link href={localePath('/legal/terms', isEs)} className="hover:text-gold-500 transition-colors">{isEs ? 'Términos' : 'Terms of Service'}</Link>
-              <Link href={localePath('/legal/returns', isEs)} className="hover:text-gold-500 transition-colors">{isEs ? 'Devoluciones' : 'Returns'}</Link>
+            {/* Customer-trust links — five now, so they wrap as a centred
+                group on narrow screens instead of forcing one line. */}
+            <div className="flex flex-wrap items-center justify-center gap-x-5 sm:gap-x-8 gap-y-2">
+              <Link href={localePath('/contact', isEs)} className="whitespace-nowrap hover:text-gold-500 transition-colors">{isEs ? 'Contáctanos' : 'Contact Us'}</Link>
+              <Link href={localePath('/legal/shipping', isEs)} className="whitespace-nowrap hover:text-gold-500 transition-colors">{isEs ? 'Envíos' : 'Shipping Policy'}</Link>
+              <Link href={localePath('/legal/returns', isEs)} className="whitespace-nowrap hover:text-gold-500 transition-colors">{isEs ? 'Devoluciones y reembolsos' : 'Returns & Refunds'}</Link>
+              <Link href={localePath('/legal/privacy', isEs)} className="whitespace-nowrap hover:text-gold-500 transition-colors">{isEs ? 'Privacidad' : 'Privacy Policy'}</Link>
+              <Link href={localePath('/legal/terms', isEs)} className="whitespace-nowrap hover:text-gold-500 transition-colors">{isEs ? 'Términos y condiciones' : 'Terms & Conditions'}</Link>
             </div>
           </div>
 

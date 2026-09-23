@@ -1,4 +1,5 @@
 import { supabaseAdmin } from './supabase.ts'
+import { scrubGots } from './feed-copy.ts'
 import { storeCheckoutEnabled } from './store-flags.ts'
 import { getCatalog, getProductStock, type DbProduct } from './products-db.ts'
 import { getBoxProducts, pieceCount } from './catalog-db.ts'
@@ -138,7 +139,7 @@ export async function collectFeedInputs(): Promise<FeedInput[]> {
       inputs.push({
         itemId: p.id,
         title: p.name,
-        description: p.description ?? '',
+        description: scrubGots(p.description ?? ''),
         url: `${HOST}/products/${p.id}`,
         imageUrl: primary,
         additionalImageUrls: gallery.filter(g => g !== primary).slice(0, 10),

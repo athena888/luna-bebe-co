@@ -18,6 +18,8 @@ export type Locale = 'en' | 'es'
 // /collections/<slug>, /products/<id>.
 const ES_ROUTES: ReadonlyArray<readonly [en: string, es: string]> = [
   ['/legal/returns', '/es/legal/devoluciones'],
+  ['/legal/shipping', '/es/legal/envios'],
+  ['/contact', '/es/contacto'],
   ['/gift-cards', '/es/tarjetas-regalo'],
   ['/our-cotton', '/es/nuestro-algodon'],
   ['/collections', '/es/colecciones'],

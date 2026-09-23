@@ -12,8 +12,6 @@ export const PRODUCT_TAGS = [
   'Artisan Made',
   'Bath Ritual',
   'Bestseller',
-  'Dermatologist Tested',
-  'Eczema Safe',
   'First Memory',
   'For Mama',
   'Gift Favorite',

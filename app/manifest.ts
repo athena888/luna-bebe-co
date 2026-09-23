@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Petite Lavande',
     short_name: 'Petite Lavande',
-    description: 'Luxury curated organic baby gift boxes — built item by item, shipped with love.',
+    description: 'Luxury curated baby gift boxes — built item by item, shipped with love.',
     start_url: '/',
     display: 'standalone',
     orientation: 'portrait',

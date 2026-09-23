@@ -23,7 +23,7 @@ function ContactLine({ className = '', olive = false }: { className?: string; ol
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
-const DESCRIPTION = "Thoughtful organic newborn gift boxes for your employees' growing families. Hand-packed, traceable, delivered. Volume pricing for People & HR teams."
+const DESCRIPTION = "Thoughtful newborn gift boxes for your employees' growing families. Hand-packed, personalized, delivered. Volume pricing for People & HR teams."
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -51,8 +51,8 @@ const POINTS = [
   },
   {
     Icon: Leaf,
-    title: 'Traceable, not generic',
-    body: 'Organic cotton garments, botanical bath goods, and a card that tells the story of every item. We don’t curate. We trace.',
+    title: 'Thoughtful, not generic',
+    body: 'Organic cotton pieces where noted, botanical bath goods, and a card that tells the story of every item.',
   },
   {
     Icon: Phone,
@@ -102,7 +102,7 @@ export default function CorporatePage() {
             </h1>
             <p className="font-playfair text-base sm:text-lg text-espresso-light leading-loose max-w-2xl mx-auto mt-6" style={{ animation: 'slideUp 0.9s ease-out 0.26s both' }}>
               A birth is the biggest week in an employee&rsquo;s life. Most companies send a logo mug. Send something
-              that sees the moment — an organic newborn gift box that cares for the new parent as much as the baby,
+              that sees the moment — a newborn gift box that cares for the new parent as much as the baby,
               hand-packed and delivered to their door.
             </p>
           </section>

@@ -11,7 +11,7 @@ export const revalidate = 300
 
 export const metadata: Metadata = {
   title: { absolute: 'The Journal — Gift Guides & New-Parent Notes | Petite Lavande' },
-  description: 'Gift guides, postpartum notes and new-parent ideas from Petite Lavande — thoughtful reading on organic baby gifts and caring for mom.',
+  description: 'Gift guides, postpartum notes and new-parent ideas from Petite Lavande — thoughtful reading on baby gifts and caring for mom.',
   alternates: { canonical: `${BASE}/journal` },
   openGraph: { title: 'The Journal | Petite Lavande', description: 'Gift guides and new-parent notes from Petite Lavande.', url: `${BASE}/journal`, type: 'website' },
 }
@@ -26,7 +26,7 @@ export default async function JournalIndex() {
           <p className="font-sans text-[11px] tracking-[0.18em] uppercase text-gold-400 mb-3">The Journal</p>
           <h1 className="font-serif text-[2.5rem] sm:text-[3.5rem] text-espresso leading-tight">Gift guides &amp; new-parent notes</h1>
           <p className="font-cormorant text-lg sm:text-xl text-bark-400 mt-3 max-w-2xl mx-auto leading-relaxed">
-            Thoughtful reading on organic baby gifts, postpartum care, and the small details that make a present feel personal.
+            Thoughtful reading on baby gifts, postpartum care, and the small details that make a present feel personal.
           </p>
         </section>
 

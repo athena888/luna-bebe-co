@@ -6,8 +6,8 @@ import { Footer } from '@/components/layout/Footer'
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
 export const metadata: Metadata = {
-  title: 'Our Cotton — Certified Organic',
-  description: 'Why Petite Lavande uses GOTS-certified organic cotton: pure, soft on newborn skin, and traceable from field to finished garment.',
+  title: 'Our Cotton — Organic',
+  description: 'Why selected Petite Lavande baby textiles use organic cotton: pure, soft on newborn skin, and traceable from field to finished garment.',
   alternates: {
     canonical: `${BASE}/our-cotton`,
     languages: { en: `${BASE}/our-cotton`, 'es-US': `${BASE}/es/nuestro-algodon`, 'x-default': `${BASE}/our-cotton` },
@@ -27,17 +27,16 @@ export default function OurCottonPage() {
               we pack is pure and gentle against it — grown without harsh chemicals, and finished without them too.
             </p>
             <p>
-              The makers we work with hold GOTS certification — the Global Organic Textile Standard. In plain
-              language, it means an independent organization traces the cotton from the field to the finished
-              garment: how it&apos;s grown, how it&apos;s dyed, and how the people who make it are treated.
-              We don&apos;t have to take anyone&apos;s word for it, and neither do you.
+              Selected baby textiles are made with organic cotton. Material details for every piece are listed
+              on its product page.
             </p>
             <p>
               Not everything in a box is cotton — wooden rattles, dried lavender, botanical bath melts. For those
               we hold the same line: simple materials, small workshops, made with love.
             </p>
             <p>
-              Look for the badge on any product page — if it&apos;s there, that piece is certified organic cotton.
+              Look for the organic badge on each product page — it shows which pieces are made with organic
+              cotton.
             </p>
           </div>
           <p className="mt-10">

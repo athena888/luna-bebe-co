@@ -50,11 +50,11 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       siteName: "Petite Lavande",
       title: "Petite Lavande — Luxury Curated Baby Gift Boxes",
-      description: "Build a bespoke luxury baby shower gift box. Premium organic items, personalized printed card, unforgettable unboxing.",
+      description: "Build a bespoke luxury baby shower gift box. Thoughtfully chosen pieces, personalized printed card, unforgettable unboxing.",
       url: BASE,
       images: [{ url: ogImage, width: 1200, height: 630, alt: ogAlt }],
     },
-    twitter: { card: "summary_large_image", title: "Petite Lavande", description: "Luxury curated organic baby gift boxes.", images: [ogImage] },
+    twitter: { card: "summary_large_image", title: "Petite Lavande", description: "Luxury curated baby gift boxes for mama and baby.", images: [ogImage] },
     robots: { index: true, follow: true },
     // Site verification, all env-gated (omitted when unset). Rendered
     // server-side, so both the NEXT_PUBLIC_ and plain env names work:
@@ -109,7 +109,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           name: 'Petite Lavande',
           url: BASE,
           logo: `${BASE}/apple-touch-icon.png`,
-          description: 'Luxury curated organic baby gift boxes.',
+          description: 'Luxury curated baby gift boxes for mama and baby.',
           email: CONTACT_EMAIL,
         }} />
         <JsonLd data={{

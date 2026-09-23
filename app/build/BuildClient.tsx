@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { stripGots } from '@/lib/claims'
 import { useIsEs } from '@/lib/use-is-es'
 import { trackAddToCart } from '@/lib/analytics-events'
 import { CATEGORY_LABELS_ES } from '@/lib/products'
@@ -22,31 +23,27 @@ import { CartFeeNote } from '@/components/ui/CartFeeNote'
 
 type ResolvedCert = ProductCert & Partial<CertDef>
 
-// We don't display the official GOTS logo (we're not GOTS-certified ourselves) —
-// GOTS-tagged items show our own "Organic" leaf instead. The GOTS-certified-maker
+// GOTS is not claimed on the site — GOTS-tagged items show only our own
+// "Organic" leaf. The GOTS-certified-maker
 // claim is made in text on the product detail/modal.
 function isGots(c: ResolvedCert): boolean {
   return /gots|global organic textile/i.test(`${c.key ?? ''} ${c.name ?? ''}`)
 }
 function cleanGots(s?: string | null): string {
-  return (s ?? '')
-    .replace(/GOTS[-‑\s]*certified\s*/gi, '')
-    .replace(/\bGOTS\b[-\s]*/gi, '')
-    .replace(/\s{2,}/g, ' ')
-    .trim()
+  return stripGots(s)
 }
 
 const CATEGORY_SUBTITLES: Record<string, string> = {
   swaddle: 'Wrap them in softness from day one.',
   garment: "The first outfit they'll always remember.",
-  bath: 'Pure ingredients, safe from the very first bath.',
+  bath: 'Gentle botanical care for bath time.',
   keepsake: 'A gift that stays long after babyhood ends.',
   mom: 'Because the mama deserves to be celebrated too.',
 }
 const CATEGORY_SUBTITLES_ES: Record<string, string> = {
   swaddle: 'Suavidad desde el primer día.',
   garment: 'El primer conjunto que siempre recordarán.',
-  bath: 'Ingredientes puros, seguros desde el primer baño.',
+  bath: 'Cuidado botánico suave para la hora del baño.',
   keepsake: 'Un regalo que se queda mucho después de la infancia.',
   mom: 'Porque la mamá también merece ser celebrada.',
 }
@@ -125,7 +122,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
         )}
         {!soldOut && !hasHoverMedia && (
           <div className="absolute inset-0 bg-bark-600/75 flex items-end p-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <p className="font-sans text-[11px] text-cream-100 leading-relaxed line-clamp-3">{product.description}</p>
+            <p className="font-sans text-[11px] text-cream-100 leading-relaxed line-clamp-3">{cleanGots(product.description)}</p>
           </div>
         )}
 
@@ -488,13 +485,13 @@ export default function BuildClient({ initialCatalog }: { initialCatalog?: Recor
                 {heroImg && heroImgMobile ? (
                   <>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={heroImgMobile} alt="Build your own organic baby gift box — Petite Lavande keepsake basket" className="absolute inset-0 w-full h-full object-cover sm:hidden" fetchPriority="high" />
+                    <img src={heroImgMobile} alt="Build your own baby gift box — Petite Lavande keepsake basket" className="absolute inset-0 w-full h-full object-cover sm:hidden" fetchPriority="high" />
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={heroImg} alt="Build your own organic baby gift box — Petite Lavande keepsake basket" className="absolute inset-0 w-full h-full object-cover hidden sm:block" />
+                    <img src={heroImg} alt="Build your own baby gift box — Petite Lavande keepsake basket" className="absolute inset-0 w-full h-full object-cover hidden sm:block" />
                   </>
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={(heroImg ?? heroImgMobile)!} alt="Build your own organic baby gift box — Petite Lavande keepsake basket" className="absolute inset-0 w-full h-full object-cover" fetchPriority="high" />
+                  <img src={(heroImg ?? heroImgMobile)!} alt="Build your own baby gift box — Petite Lavande keepsake basket" className="absolute inset-0 w-full h-full object-cover" fetchPriority="high" />
                 )}
               </ParallaxLayer>
               <ScrimOverlay scrimKey="build.header_bg" defaultHex="#181716" defaultOpacity={0.75} variant="gradient-top" />

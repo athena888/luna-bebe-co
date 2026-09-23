@@ -105,7 +105,7 @@ HARD RULES:
 - Sign off exactly:
   Emily Liu, Founder — petitelavande.com
 - If LANGUAGE is "es": write natural, warm US-Spanish (not a literal translation). No gendered greetings; "baby shower" stays in English; "canastilla" for gift box.
-- Never use "GOTS certified" about the brand or boxes. Cotton claims only as "organic cotton".
+- Never mention GOTS. Cotton claims only as "organic cotton" on specific pieces.
 
 Respond with ONLY JSON:
 {"subject_a": "...", "subject_b": "...", "body": "..."}

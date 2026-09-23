@@ -4,9 +4,9 @@ import { getScrims } from '@/lib/scrims'
 import { SPANISH_ACTIVE } from '@/lib/i18n'
 
 export const metadata: Metadata = {
-  title: 'Build Your Own Organic Baby Gift Box',
+  title: 'Build Your Own Baby Gift Box',
   description: 'Curate your own luxury baby gift box — choose soft organic-cotton clothing, gentle botanical care, keepsakes and a mama gift, then add a personalized printed card. Built item by item, finished by hand.',
-  openGraph: { title: 'Build Your Own Organic Baby Gift Box | Petite Lavande', description: 'Choose swaddles, garments, bath & body, keepsakes and mama gifts — then add a personalized printed card.' },
+  openGraph: { title: 'Build Your Own Baby Gift Box | Petite Lavande', description: 'Choose swaddles, garments, bath & body, keepsakes and mama gifts — then add a personalized printed card.' },
   alternates: {
     canonical: '/build',
     // /es/build already points back here; hreflang only counts when both

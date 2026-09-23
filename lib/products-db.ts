@@ -1,5 +1,6 @@
 import { supabaseAdmin } from './supabase.ts'
 import { getAllProducts } from './products.ts'
+import { publicTag } from './claims.ts'
 import { PROTECTED_PRODUCT_IDS } from './prebuilt-boxes.ts'
 import type { ProductCert } from './certifications.ts'
 import type { Product, ProductCategory } from '@/types'
@@ -60,7 +61,7 @@ function rowToProduct(r: ProductRow): DbProduct {
     category: r.category as ProductCategory,
     imageEmoji: r.image_emoji,
     image: r.image ?? undefined,
-    tag: r.tag ?? undefined,
+    tag: publicTag(r.tag),
     ingredients: r.ingredients ?? undefined,
     active: r.active,
     is_custom: r.is_custom,

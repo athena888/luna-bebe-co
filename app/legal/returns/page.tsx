@@ -47,7 +47,7 @@ export default function ReturnsPage() {
       </Section>
 
       <Section title="How to Contact Us">
-        Email <a href={`mailto:${CONTACT_EMAIL}`} className="text-bark-600 underline underline-offset-2">{CONTACT_EMAIL}</a> with your order number and a description of the issue. We aim to respond within 24 hours.
+        Email <a href={`mailto:${CONTACT_EMAIL}`} className="text-bark-600 underline underline-offset-2">{CONTACT_EMAIL}</a> with your order number and a description of the issue. We aim to respond within 24 hours. Business details are on our <a href="/contact" className="text-bark-600 underline underline-offset-2">Contact</a> page.
       </Section>
     </article>
   )

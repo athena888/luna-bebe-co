@@ -21,8 +21,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const esSubtitle = es?.subtitle || box?.subtitle
   const esTitle = box ? `${esName} — Canastilla de Regalo | Petite Lavande` : 'Canastilla de Regalo | Petite Lavande'
   const esDesc = box
-    ? `${esSubtitle || esName} — canastilla orgánica armada a mano por Petite Lavande.`
-    : 'Canastillas de regalo orgánicas armadas a mano.'
+    ? `${esSubtitle || esName} — canastilla armada a mano por Petite Lavande.`
+    : 'Canastillas de regalo armadas a mano.'
   return {
     openGraph: esOpenGraph({
       path: `/es/canastillas/${slug}`,

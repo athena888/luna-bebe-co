@@ -22,19 +22,19 @@ const ES_STORY = {
     paragraphs: ['La estética viene de los viejos apotecarios franceses — papel kraft, tubos de vidrio, sellos prensados a mano, cordel, hierbas secas. Una época en la que los remedios venían con cuidado, y el cuidado venía con belleza.'],
   },
   traced: {
-    eyebrow: 'Con origen conocido',
-    heading: 'No curamos. Rastreamos.',
-    body: 'Cada ingrediente, cada material — con su origen conocido. Campos de lavanda de la Provenza. Granjas del Pacífico Noroeste. Pequeños talleres americanos y fuentes europeas éticas. Todo etiquetado. Todo rastreable. Todo elegido como una hija elegiría para su propia madre.',
+    eyebrow: 'Elegido con cuidado',
+    heading: 'Elegido con cariño.',
+    body: 'Petite Lavande selecciona ingredientes botánicos y detalles inspirados en la lavanda de proveedores de confianza. El origen puede variar según el producto y la temporada. Los detalles de materiales aparecen en cada página de producto. Todo elegido como una hija elegiría para su propia madre.',
   },
   values: [
-    { title: 'Puramente orgánico', body: 'Nuestra ropita es de algodón orgánico certificado GOTS, de talleres certificados GOTS, y elegimos materiales orgánicos y naturales en toda la canastilla siempre que podemos.' },
-    { title: 'Hecho artesanal', body: 'Traemos nuestros botánicos de Europa y la lavanda de una granja familiar en Sequim, en el Pacífico Noroeste. Las manos que hicieron tu regalo lo cuidaron de verdad — y eso no se puede producir en masa.' },
+    { title: 'Materiales elegidos con cuidado', body: 'Elegimos materiales de calidad para cada pieza de Petite Lavande. Ciertos textiles para bebé están hechos con algodón orgánico, cuando así se indica en la página del producto; otros productos se eligen por sus materiales, su hechura y lo bien que funcionan como regalo.' },
+    { title: 'Hecho artesanal', body: 'Trabajamos con pequeños talleres y estudios familiares. Las manos que hicieron tu regalo lo cuidaron de verdad — y eso no se puede producir en masa.' },
     { title: 'Cada detalle', body: 'Canastas de fibra natural, tarjetas personalizadas, papel de seda y listón — porque abrir el regalo es parte del regalo. Creemos en la belleza de la ceremonia.' },
   ],
   founder: {
     eyebrow: 'Una carta de la fundadora',
     signature: '— Emily, fundadora',
-    paragraphs: ['Empecé Petite Lavande porque veía una y otra vez a mamás recientes recibir cosas que parecían pensadas para alguien más. Regalos hermosos, de verdad — pero regalos para la casa, para el cuarto del bebé, para el bebé. La mujer que acababa de hacer lo más valiente de su vida sonreía, daba las gracias y volvía a guardarse en silencio. Un nacimiento es la semana más grande de dos vidas, no de una — y yo quería hacer el regalo que recuerda a las dos. Por eso todo aquí se eligió como una hija elegiría para su propia madre. Despacio, y con un poco de recelo protector. Lavanda de la Provenza, algodón orgánico, pequeños estudios donde las manos de alguien tocaron lo que estás por regalar.'],
+    paragraphs: ['Empecé Petite Lavande porque veía una y otra vez a mamás recientes recibir cosas que parecían pensadas para alguien más. Regalos hermosos, de verdad — pero regalos para la casa, para el cuarto del bebé, para el bebé. La mujer que acababa de hacer lo más valiente de su vida sonreía, daba las gracias y volvía a guardarse en silencio. Un nacimiento es la semana más grande de dos vidas, no de una — y yo quería hacer el regalo que recuerda a las dos. Por eso todo aquí se eligió como una hija elegiría para su propia madre. Despacio, y con un poco de recelo protector. Detalles de lavanda, algodón orgánico en ciertas piezas, pequeños estudios donde las manos de alguien tocaron lo que estás por regalar.'],
   },
   whySimple: {
     eyebrow: 'Por qué tan simple',

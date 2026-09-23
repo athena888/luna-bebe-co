@@ -2,14 +2,19 @@
 // tested without pulling in Supabase (lib/google-feed-tsv.ts imports them).
 // Both scrubs rewrite FEED text only — the website says whatever Emily wants.
 
-// GOTS wording is held out of the FEED until the Transaction Certificate
-// confirms per-product certification (gots_certified, §49).
-// "GOTS-certified organic cotton" must become "certified organic cotton" —
-// the eager first replacement alone produced "certified organic organic".
+// No certification claims in the feed or on the site: GOTS and "certified
+// organic" both become plain "organic" (Merchant Center misrepresentation
+// review, 2026-09). Also used by lib/claims.ts for website copy.
+// "GOTS-certified organic cotton" → "organic cotton"; "100% GOTS Organic
+// Cotton" → "100% Organic Cotton"; "GOTS cotton" → "organic cotton".
 export const scrubGots = (s: string) => s
-  .replace(/GOTS[- ]certified\s+organic\b/gi, 'certified organic')
-  .replace(/GOTS[- ]certified/gi, 'certified organic')
-  .replace(/\bGOTS\b/g, 'certified organic')
+  .replace(/\bGOTS[-‑\s]*certified\s+(organic)\b/gi, '$1')
+  .replace(/\bGOTS\s+(organic)\b/gi, '$1')
+  .replace(/\bcertified\s+(organic)\b/gi, '$1')
+  .replace(/\bGOTS[-‑\s]*certified\b/gi, 'organic')
+  .replace(/\bGOTS\b/g, 'organic')
+  .replace(/\b(organic)\s+organic\b/gi, '$1')
+  .replace(/\s{2,}/g, ' ')
 
 // Google flagged "Personalized advertising: personal hardships" (2026-08-17),
 // limiting visibility in the US: postpartum recovery reads as a health

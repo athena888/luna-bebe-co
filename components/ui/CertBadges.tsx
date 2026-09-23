@@ -8,9 +8,9 @@ import type { ProductCert, CertDef } from '@/lib/certifications'
 // Certs passed here are already resolved (ProductCert merged with CertDef from the API)
 type ResolvedCert = ProductCert & Partial<CertDef>
 
-// We don't display the official GOTS logo (we're not GOTS-certified ourselves).
-// A GOTS cert is shown as our own "Organic" leaf badge — still clickable so the
-// customer can view the manufacturer's scope certificate.
+// GOTS is not claimed on the site. A GOTS cert attached in the admin is shown
+// only as our plain (non-clickable) "Organic" leaf badge — never by name and
+// never with its certificate.
 export function isGots(c: ResolvedCert): boolean {
   return /gots|global organic textile/i.test(`${c.key ?? ''} ${c.name ?? ''}`)
 }
@@ -36,15 +36,14 @@ export function CertBadges({ certs, organic }: { certs: ResolvedCert[]; organic?
   const [openIdx, setOpenIdx] = useState<number | null>(null)
   const [docRevealed, setDocRevealed] = useState(false)
 
-  const active = certs.filter(c => c.name)
-  // Organic flagged but no GOTS cert attached → show a plain (non-clickable) badge.
-  const organicOnly = !!organic && !active.some(isGots)
+  const active = certs.filter(c => c.name && !isGots(c))
+  // Organic flagged (or a GOTS cert attached) → plain, non-clickable badge.
+  const organicOnly = !!organic || certs.some(c => c.name && isGots(c))
   if (active.length === 0 && !organicOnly) return null
 
   const opened = openIdx !== null ? active[openIdx] : null
   const hasTabs = active.length > 1
   const showDoc = !hasTabs || docRevealed
-  const openedGots = !!opened && isGots(opened)
 
   function openModal(idx: number) { setDocRevealed(false); setOpenIdx(idx) }
   function selectTab(idx: number) { setDocRevealed(true); setOpenIdx(idx) }
@@ -90,8 +89,8 @@ export function CertBadges({ certs, organic }: { certs: ResolvedCert[]; organic?
           <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-3 border-b border-cream-200">
               <div className="flex items-center gap-2">
-                {openedGots ? <Leaf size={16} className="text-sage-500" /> : <ShieldCheck size={16} className="text-gold-400" />}
-                <span className="font-sans text-sm font-medium text-bark-600">{openedGots ? 'Organic Cotton' : 'Verified Certifications'}</span>
+                <ShieldCheck size={16} className="text-gold-400" />
+                <span className="font-sans text-sm font-medium text-bark-600">Verified Certifications</span>
               </div>
               <button onClick={() => setOpenIdx(null)} className="text-bark-400 hover:text-bark-600 transition-colors"><X size={18} /></button>
             </div>
@@ -117,7 +116,7 @@ export function CertBadges({ certs, organic }: { certs: ResolvedCert[]; organic?
                 <div className="mb-3 border border-cream-200 overflow-hidden bg-cream-50">
                   {opened.certificateUrl.endsWith('.pdf') ? (
                     <a href={opened.certificateUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-4 font-sans text-sm text-gold-500 hover:text-gold-600 transition-colors">
-                      <ShieldCheck size={16} /> View {openedGots ? 'scope certificate' : 'certificate'} PDF →
+                      <ShieldCheck size={16} /> View certificate PDF →
                     </a>
                   ) : (
                     <a href={opened.certificateUrl} target="_blank" rel="noopener noreferrer">
@@ -134,9 +133,8 @@ export function CertBadges({ certs, organic }: { certs: ResolvedCert[]; organic?
 
               <div className="flex items-center gap-3 mb-2">
                 <CertIcon c={opened} size={22} />
-                <h3 className="font-serif text-lg text-bark-600">{openedGots ? 'Organic cotton from a GOTS-certified maker' : (opened.full_name || opened.name)}</h3>
+                <h3 className="font-serif text-lg text-bark-600">{opened.full_name || opened.name}</h3>
               </div>
-              {openedGots && <p className="font-sans text-xs text-bark-500 mb-2">From a GOTS-certified manufacturer. Their scope certificate is shown above.</p>}
               {opened.region && <p className="font-sans text-[11px] tracking-[0.11em] uppercase text-bark-400 mb-3">{opened.region}</p>}
               {opened.blurb && <p className="font-sans text-sm text-bark-600 leading-relaxed">{opened.blurb}</p>}
               {opened.valid_until && <p className="font-sans text-[11px] text-bark-400/70 mt-3">Valid until {opened.valid_until}</p>}

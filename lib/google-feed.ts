@@ -1,5 +1,5 @@
 import { getCatalog, getProductStock, type DbProduct } from './products-db.ts'
-import { scrubHardship } from './feed-copy.ts'
+import { scrubGots, scrubHardship } from './feed-copy.ts'
 
 // Google Merchant Center feed (US-PRIMARY, USD). One source of truth: the
 // same getCatalog the sitemap and product pages use. In-house assembled
@@ -124,8 +124,8 @@ export function feedXml(items: FeedItem[]): string {
   const rows = items.map(i => `
   <item>
     <g:id>${i.id}</g:id>
-    <g:title>${cdata(scrubHardship(i.title))}</g:title>
-    <g:description>${cdata(scrubHardship(i.description))}</g:description>
+    <g:title>${cdata(scrubHardship(scrubGots(i.title)))}</g:title>
+    <g:description>${cdata(scrubHardship(scrubGots(i.description)))}</g:description>
     <g:link>${i.link}</g:link>
     <g:image_link>${i.imageLink}</g:image_link>
     <g:availability>${i.availability}</g:availability>

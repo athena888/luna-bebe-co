@@ -183,9 +183,9 @@ const SEGMENTS_ACTIVE = process.env.SEGMENTS_ACTIVE === 'true'
 type CopySegment = 'parent_to_be' | 'grandparent' | 'friend_coworker' | 'corporate' | 'unknown'
 
 const WELCOME2_OPENERS: Partial<Record<CopySegment, string>> = {
-  parent_to_be: `Every item that will touch your baby's skin is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender. The printed card in each box tells the story of every piece.`,
-  grandparent: `A grandbaby changes everything. Every item in the box you send is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender — and the printed card inside tells the story of every piece.`,
-  friend_coworker: `The best gift for a new parent is the one they'd never think to buy themselves. Every item is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender — and the printed card inside tells its story.`,
+  parent_to_be: `Every item that will touch your baby's skin is chosen with care — selected baby textiles made with organic cotton, botanical bath goods, lavender-inspired details, with sourcing varying by product and season. The printed card in each box tells the story of every piece.`,
+  grandparent: `A grandbaby changes everything. Every item in the box you send is chosen with care — selected baby textiles made with organic cotton, botanical bath goods, lavender-inspired details — and the printed card inside tells the story of every piece.`,
+  friend_coworker: `The best gift for a new parent is the one they'd never think to buy themselves. Every item is chosen with care — selected baby textiles made with organic cotton, botanical bath goods, lavender-inspired details — and the printed card inside tells its story.`,
 }
 
 const WINBACK_OPENERS: Partial<Record<CopySegment, string>> = {
@@ -201,10 +201,10 @@ function pickOpener(variants: Partial<Record<CopySegment, string>>, fallback: st
 export async function sendWelcomeSeries2Email({ customerEmail, segment, locale = 'en' }: { customerEmail: string; segment?: CopySegment; locale?: EmailLocale }) {
   const es = locale === 'es'
   const opener = es
-    ? `Cada pieza de una canastilla Petite Lavande tiene su origen conocido — ropita de algodón orgánico de talleres certificados GOTS, cuidado botánico, lavanda de la Provenza. La tarjeta de cada canastilla cuenta la historia de cada pieza, para que quien recibe tu regalo sepa exactamente qué toca la piel de su bebé.`
+    ? `Cada pieza de una canastilla Petite Lavande se elige con cuidado — ciertos textiles para bebé de algodón orgánico, cuidado botánico y detalles inspirados en la lavanda, de proveedores de confianza; el origen puede variar según el producto y la temporada. La tarjeta de cada canastilla cuenta la historia de cada pieza, para que quien recibe tu regalo sepa exactamente qué toca la piel de su bebé.`
     : pickOpener(
         WELCOME2_OPENERS,
-        `Every item in a Petite Lavande box is traced to its source — organic cotton garments from GOTS-certified makers, botanical bath goods, Provence lavender. The printed card in each box tells the story of every item, so the person you're gifting knows exactly what's touching their baby's skin.`,
+        `Every item in a Petite Lavande box is chosen with care — selected baby textiles made with organic cotton, botanical bath goods, and lavender-inspired details from trusted sources, with sourcing varying by product and season. The printed card in each box tells the story of every item, so the person you're gifting knows exactly what's touching their baby's skin.`,
         segment
       )
   return sendEmail({
@@ -216,7 +216,7 @@ export async function sendWelcomeSeries2Email({ customerEmail, segment, locale =
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#ffffff;color:#3d2c1e;">
         ${brandHeader}
         <div style="background:#7A8E7C;padding:34px 32px;margin:0 4px 24px;">
-          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${es ? 'No curamos. Rastreamos.' : `We don't curate. We trace.`}</h1>
+          <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#ffffff;text-align:center;margin:0 0 22px;">${es ? 'Elegido con cariño.' : 'Chosen with care.'}</h1>
           <p style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#ffffff;margin:0 0 16px;">
             ${opener}
           </p>

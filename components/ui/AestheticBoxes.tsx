@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
 import { Leaf, X, ZoomIn, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react'
 import { CertBadges } from '@/components/ui/CertBadges'
+import { stripGots } from '@/lib/claims'
 import type { ResolvedBox, BoxItem } from '@/lib/prebuilt-boxes-db'
 import { BOX_BASE_PRICE, formatDollars } from '@/lib/products'
 import { writeCart, type CartItem } from '@/lib/cart'
@@ -254,8 +255,8 @@ function ProductPreviewModal({ item, onClose }: { item: BoxItem; onClose: () => 
     return () => document.removeEventListener('keydown', onKey)
   }, [lightbox, n])
   const certs = data?.product?.certifications ?? []
-  const description = data?.product?.description
-  const ingredients = data?.product?.ingredients
+  const description = stripGots(data?.product?.description)
+  const ingredients = stripGots(data?.product?.ingredients)
 
   return (
     <>

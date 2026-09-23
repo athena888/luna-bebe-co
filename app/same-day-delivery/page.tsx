@@ -16,7 +16,7 @@ const CITIES = ['Seattle', 'Bellevue', 'Kirkland', 'Redmond', 'Mercer Island', '
 
 const FAQS = [
   { q: 'What is the same-day cutoff?', a: 'Order by 1:00 PM Pacific and your box is hand-packed and delivered the same evening between 5–9 PM. Orders after 1 PM arrive the following evening.' },
-  { q: 'How much is delivery, and where do you go?', a: `Same-day courier delivery is a flat $15 across ${CITIES.slice(0, 4).join(', ')} and nearby Eastside cities. Everywhere else in the US, we ship nationwide in 2–5 business days.` },
+  { q: 'How much is delivery, and where do you go?', a: `Same-day courier delivery is a flat $15 across ${CITIES.slice(0, 4).join(', ')} and nearby Eastside cities. Everywhere else in the US, standard shipping typically takes 2–6 business days after shipment (7–10 to Alaska and Hawaii) — see our Shipping Policy.` },
   { q: 'Can you deliver to a hospital?', a: 'Yes — we deliver to maternity units across Seattle. Add the hospital name, unit or room, and the family name in the delivery notes at checkout, and our courier hands it to the front desk for the family.' },
   { q: 'Is the gift message really handwritten?', a: 'Every box includes a personalized card, hand-finished with your message — written out for you, never a printed slip tossed in the box.' },
   { q: 'What if the recipient is not home?', a: 'Our courier will leave the box in a safe covered spot and text a photo, or — if you prefer — we\'ll call ahead to arrange a time. Tell us in the delivery notes at checkout.' },
@@ -24,11 +24,11 @@ const FAQS = [
 
 export const metadata: Metadata = {
   title: { absolute: 'Same-Day Baby Gift Delivery Seattle | Petite Lavande' },
-  description: 'Same day baby gift delivery in Seattle & the Eastside — organic newborn and postpartum gift boxes, hand-packed with a hand-finished card and couriered this evening. Order by 1 PM.',
+  description: 'Same day baby gift delivery in Seattle & the Eastside — newborn and postpartum gift boxes, hand-packed with a hand-finished card and couriered this evening. Order by 1 PM.',
   alternates: { canonical: `${BASE}/same-day-delivery` },
   openGraph: {
     title: 'Same-Day Baby Gift Delivery in Seattle',
-    description: 'Order by 1 PM — a hand-packed organic baby gift box, delivered this evening across Seattle and the Eastside.',
+    description: 'Order by 1 PM — a hand-packed baby gift box, delivered this evening across Seattle and the Eastside.',
     url: `${BASE}/same-day-delivery`,
     type: 'website',
   },
@@ -45,7 +45,7 @@ export default async function SameDayDeliveryPage() {
         '@type': 'Service',
         name: 'Same-Day Baby Gift Delivery',
         serviceType: 'Same-day gift delivery',
-        description: 'Same-day courier delivery of organic newborn and postpartum gift boxes across Seattle and the Eastside. Order by 1 PM for evening delivery.',
+        description: 'Same-day courier delivery of newborn and postpartum gift boxes across Seattle and the Eastside. Order by 1 PM for evening delivery.',
         areaServed: CITIES.map(c => ({ '@type': 'City', name: c })),
         provider: {
           '@type': 'LocalBusiness',
@@ -65,7 +65,7 @@ export default async function SameDayDeliveryPage() {
             The baby arrived today. So can the gift.
           </h1>
           <p className="font-playfair text-base sm:text-lg text-espresso-light leading-loose max-w-xl mx-auto mt-6">
-            French countryside–inspired organic newborn and postpartum gift boxes — hand-packed in Seattle
+            French countryside–inspired newborn and postpartum gift boxes — hand-packed in Seattle
             and couriered to their door (or hospital room) this evening.
           </p>
           <div className="mt-6 flex flex-col items-center gap-5">
@@ -137,7 +137,7 @@ export default async function SameDayDeliveryPage() {
             ))}
           </ul>
           <p className="font-sans text-xs text-bark-400 mt-6">
-            Outside the Seattle area? We ship nationwide — 2–5 business days.
+            Outside the Seattle area? We ship nationwide — typically 2–6 business days after shipment (7–10 to Alaska and Hawaii). See our <a href="/legal/shipping" className="underline underline-offset-2">Shipping Policy</a>.
           </p>
         </section>
 

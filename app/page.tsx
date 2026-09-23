@@ -4,7 +4,7 @@ import HomeView from './HomeView'
 export const metadata: Metadata = {
   // `absolute` so the "| Petite Lavande" template isn't appended (avoids the
   // brand name appearing twice in the homepage title).
-  title: { absolute: 'Petite Lavande — Luxury Organic Baby & New-Mama Gift Boxes' },
+  title: { absolute: 'Petite Lavande — Luxury Baby & New-Mama Gift Boxes' },
   description: 'French-inspired newborn & postpartum gift boxes — organic cotton, hand-packed with care. Thoughtful luxury for new mothers and babies.',
   keywords: ['organic baby gift box', 'luxury baby gift', 'newborn gift box', 'postpartum gift', 'new mama gift'],
   alternates: {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     ...(process.env.NEXT_PUBLIC_SPANISH_ACTIVE === 'true' || process.env.SPANISH_ACTIVE === 'true'
       ? { languages: { en: '/', 'es-US': '/es', 'x-default': '/' } } : {}),
   },
-  openGraph: { title: 'Petite Lavande — Luxury Organic Baby Gifts', description: 'Organic newborn & postpartum gift boxes — built item by item, finished by hand, shipped with love.' },
+  openGraph: { title: 'Petite Lavande — Luxury Baby Gifts', description: 'Newborn & postpartum gift boxes — built item by item, finished by hand, shipped with love.' },
 }
 
 // Revalidate bestsellers periodically so they reflect real sales

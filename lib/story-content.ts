@@ -27,10 +27,10 @@ export const DEFAULT_STORY_CONTENT: StoryContent = {
     paragraphs: [
       "When my daughter was born, I found myself surrounded by well-meaning gifts — synthetic fabrics in shrieking plastic packaging, items that felt like they were designed for a big-box store, not for a baby I'd carry in my heart forever.",
       'I wanted something different. Something that felt like it was made with intention — organic, artisan, beautiful. Something the mother would open and feel, for a moment, that she was being celebrated too. I couldn’t find it. So I built it.',
-      'Petite Lavande started at my kitchen table, sourcing directly from makers who share our values: no shortcuts, no synthetics, no compromises on what touches a newborn’s skin. Every item in every box is something I would give my own child.',
+      'Petite Lavande started at my kitchen table, sourcing directly from makers who share our values: no shortcuts and real care for what touches a newborn’s skin. Every item in every box is something I would give my own child.',
       'We seal every box with our signature seal, wrap every letter by hand, and ship every order with the care it deserves. Because a birth is not just a delivery — it’s a beginning. And beginnings deserve to be luminous.',
     ],
-    signature: '— Émilie, Founder',
+    signature: '— Emily, Founder',
   },
   values: [
     { title: 'Thoughtfully Sourced Materials', body: 'We choose thoughtful, high-quality materials for each Petite Lavande piece. Our cotton garments and selected textiles use organic cotton where specifically noted, while other products are selected for their materials, craftsmanship, and suitability for gifting.' },
@@ -38,9 +38,9 @@ export const DEFAULT_STORY_CONTENT: StoryContent = {
     { title: 'Every Detail', body: 'Hand-sealed boxes, personalized cards, tissue and ribbon — because the unboxing is part of the gift. We believe in the beauty of ceremony.' },
   ],
   traced: {
-    eyebrow: 'Traced to the Source',
-    heading: "We don't curate. We trace.",
-    body: 'Every ingredient, every material — traced to its origin. Provence lavender fields. Pacific Northwest farms. Small American makers, ethical European sources. Everything tagged. Everything traceable. Everything chosen the way a daughter would choose for her own mother.',
+    eyebrow: 'Thoughtfully Sourced',
+    heading: 'Chosen with care.',
+    body: 'Petite Lavande selects botanical ingredients and lavender-inspired details from trusted sources, with sourcing varying by product and season. Material details are listed on each product page. Everything is chosen the way a daughter would choose for her own mother.',
   },
   whySimple: {
     eyebrow: 'Why Simple',
@@ -51,7 +51,7 @@ export const DEFAULT_STORY_CONTENT: StoryContent = {
     eyebrow: 'French Apothecary Soul, PNW Heart',
     paragraphs: [
       'The aesthetic comes from old French apothecaries — kraft paper, glass tubes, hand-pressed seals, twine, dried herbs. A time when remedies came with care, and care came with beauty.',
-      'The ingredients come from two worlds — Provence lavender fields, Pacific Northwest farms, small American makers, ethical European sources.',
+      'Petite Lavande selects botanical ingredients and lavender-inspired details from trusted sources, with sourcing varying by product and season.',
     ],
     tagline: 'A gift that feels both somewhere far away and grown close to home.',
   },
