@@ -27,11 +27,8 @@ export default function OurCottonPage() {
               we pack is pure and gentle against it — grown without harsh chemicals, and finished without them too.
             </p>
             <p>
-              Selected baby textiles are made with organic cotton sourced from certified manufacturers. Where a
-              product&apos;s maker holds GOTS certification — the Global Organic Textile Standard — the product page
-              links to their certificate. In plain language, GOTS means an independent organization traces the
-              cotton from the field to the finished garment: how it&apos;s grown, how it&apos;s dyed, and how the
-              people who make it are treated.
+              Selected baby textiles are made with organic cotton. Material details for every piece are listed
+              on its product page.
             </p>
             <p>
               Not everything in a box is cotton — wooden rattles, dried lavender, botanical bath melts. For those
@@ -39,7 +36,7 @@ export default function OurCottonPage() {
             </p>
             <p>
               Look for the organic badge on each product page — it shows which pieces are made with organic
-              cotton. Where the badge links to a GOTS certificate, that piece comes from a GOTS-certified maker.
+              cotton.
             </p>
           </div>
           <p className="mt-10">

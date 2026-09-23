@@ -32,8 +32,7 @@ function formatPrice(cents: number) {
   return `$${(cents / 100).toFixed(2)}`
 }
 
-// Strip blanket GOTS wording from owner/AI copy so the only GOTS claim shown is
-// the scoped, substantiated line below. "100% GOTS Organic Cotton" → "100%
+// Strip GOTS wording from owner/AI copy — GOTS is not claimed on the site. "100% GOTS Organic Cotton" → "100%
 // Organic Cotton"; "GOTS-certified cotton" → "cotton".
 function clean(s?: string | null): string {
   return (s ?? '')
@@ -389,12 +388,12 @@ export default function ProductDetailClient({ related, locale = 'en', initialPro
                   </div>
                 )}
 
-                {/* Scoped GOTS claim — shown when the GOTS cert is attached */}
+                {/* Organic-cotton line — shown when the owner attached the cotton cert (GOTS itself is never named) */}
                 {hasGotsCert(product as unknown as { certifications?: Array<{ key?: string; name?: string }> }) && (
                   <div className="border-t border-cream-300">
                     <div className="py-3.5 flex items-start gap-2">
                       <span className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
-                      <span className="font-sans text-xs text-bark-400">Organic cotton from a GOTS-certified manufacturer.</span>
+                      <span className="font-sans text-xs text-bark-400">Made with organic cotton.</span>
                     </div>
                   </div>
                 )}

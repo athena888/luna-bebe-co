@@ -13,7 +13,7 @@ import { useIsEs } from '@/lib/use-is-es'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 
-// Strip blanket GOTS wording so the scoped cotton claim is the only GOTS mention.
+// Strip GOTS wording from owner/AI copy — GOTS is not claimed on the site.
 function clean(s?: string | null): string {
   return (s ?? '').replace(/GOTS[-‑\s]*certified\s*/gi, '').replace(/\bGOTS\b[-\s]*/gi, '').replace(/\s{2,}/g, ' ').trim()
 }
@@ -219,7 +219,7 @@ function ProductModal({ product, onClose }: { product: Product; onClose: () => v
             {certs.some(isGots) && (
               <div className="border-t border-cream-300 py-3.5 flex items-start gap-2">
                 <span className="font-sans text-[11px] tracking-[0.14em] uppercase text-bark-400 mt-0.5 shrink-0">Cotton</span>
-                <span className="font-sans text-xs text-bark-400"><span className="text-bark-600">Organic cotton</span> from a GOTS-certified manufacturer.</span>
+                <span className="font-sans text-xs text-bark-400">Made with <span className="text-bark-600">organic cotton</span>.</span>
               </div>
             )}
 

@@ -22,8 +22,8 @@ import { CartFeeNote } from '@/components/ui/CartFeeNote'
 
 type ResolvedCert = ProductCert & Partial<CertDef>
 
-// We don't display the official GOTS logo (we're not GOTS-certified ourselves) —
-// GOTS-tagged items show our own "Organic" leaf instead. The GOTS-certified-maker
+// GOTS is not claimed on the site — GOTS-tagged items show only our own
+// "Organic" leaf. The GOTS-certified-maker
 // claim is made in text on the product detail/modal.
 function isGots(c: ResolvedCert): boolean {
   return /gots|global organic textile/i.test(`${c.key ?? ''} ${c.name ?? ''}`)
@@ -125,7 +125,7 @@ const ProductCard = memo(function ProductCard({ product, selected, onToggle, onO
         )}
         {!soldOut && !hasHoverMedia && (
           <div className="absolute inset-0 bg-bark-600/75 flex items-end p-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <p className="font-sans text-[11px] text-cream-100 leading-relaxed line-clamp-3">{product.description}</p>
+            <p className="font-sans text-[11px] text-cream-100 leading-relaxed line-clamp-3">{cleanGots(product.description)}</p>
           </div>
         )}
 

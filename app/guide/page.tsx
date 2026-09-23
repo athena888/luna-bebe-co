@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { stripGots } from '@/lib/claims'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
@@ -197,9 +198,9 @@ export default function GuidePage() {
                 </div>
                 <h3 className="font-serif text-2xl text-espresso mb-1">{modalProduct.name}</h3>
                 <p className="font-sans text-lg text-bark-500 mb-4">${(modalProduct.price / 100).toFixed(0)}</p>
-                {modalProduct.description && <p className="font-sans text-sm text-bark-600 leading-relaxed mb-4">{modalProduct.description}</p>}
+                {modalProduct.description && <p className="font-sans text-sm text-bark-600 leading-relaxed mb-4">{stripGots(modalProduct.description)}</p>}
                 {modalProduct.ingredients && (
-                  <p className="font-sans text-xs text-bark-400 mb-5"><span className="font-medium">Materials:</span> {modalProduct.ingredients}</p>
+                  <p className="font-sans text-xs text-bark-400 mb-5"><span className="font-medium">Materials:</span> {stripGots(modalProduct.ingredients)}</p>
                 )}
                 <a
                   href={`/products/${modalProduct.id}`}

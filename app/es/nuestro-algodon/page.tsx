@@ -31,11 +31,8 @@ export default function NuestroAlgodonPage() {
               agresivos y terminada sin ellos también.
             </p>
             <p>
-              Ciertos textiles para bebé están hechos con algodón orgánico de fabricantes certificados.
-              Cuando el fabricante de un producto tiene la certificación GOTS — el Estándar Textil Orgánico
-              Global —, la página del producto enlaza a su certificado. En palabras simples, GOTS significa que
-              una organización independiente sigue el algodón desde el campo hasta la prenda terminada —
-              cómo se cultiva, cómo se tiñe y cómo se trata a las personas que lo confeccionan.
+              Ciertos textiles para bebé están hechos con algodón orgánico. Los detalles de materiales de
+              cada pieza aparecen en su página de producto.
             </p>
             <p>
               No todo en una canastilla es algodón — hay sonajas de madera, lavanda seca, jabones
@@ -44,8 +41,7 @@ export default function NuestroAlgodonPage() {
             </p>
             <p>
               Busca la insignia de orgánico en cada página de producto — muestra qué piezas están hechas
-              con algodón orgánico. Cuando la insignia enlaza a un certificado GOTS, esa pieza viene de un
-              fabricante con certificación GOTS.
+              con algodón orgánico.
             </p>
           </div>
           <p className="mt-10">

@@ -23,7 +23,7 @@ export default function TermsPage() {
       </Section>
 
       <Section title="2. Products">
-        Our cotton baby garments and selected textiles are made with GOTS-certified organic cotton where specifically stated in the product description. Other products may use materials such as wood, silk, natural fibers, or botanical ingredients; material details are listed on individual product pages. Every box is curated for newborns and new mothers. Product descriptions, ingredients, and imagery are as accurate as possible. Minor variations in handcrafted items are expected and part of their artisan quality.
+        Our cotton baby garments and selected textiles are made with organic cotton where specifically stated in the product description. Other products may use materials such as wood, silk, natural fibers, or botanical ingredients; material details are listed on individual product pages. Every box is curated for newborns and new mothers. Product descriptions, ingredients, and imagery are as accurate as possible. Minor variations in handcrafted items are expected and part of their artisan quality.
       </Section>
 
       <Section title="3. Orders & Payment">

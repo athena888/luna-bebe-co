@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { JsonLd } from '@/components/ui/JsonLd'
+import { stripGots } from '@/lib/claims'
 import ProductDetailClient from '@/app/products/[id]/ProductDetailClient'
 import { getCatalog, getCatalogProduct, getProductStock } from '@/lib/products-db'
 import { getTranslations, ES_PRODUCT_REQUIRED } from '@/lib/i18n'
@@ -37,7 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     // Skip the "| Petite Lavande" template suffix when the name already
     // carries the brand (same doubled-title fix as the EN page).
     title: /petite lavande/i.test(p.name) ? { absolute: p.name } : p.name,
-    description: (es.description ?? p.description ?? '').slice(0, 155),
+    description: stripGots(es.description ?? p.description).slice(0, 155),
     ...(translated ? {} : { robots: { index: false, follow: true } }),
     alternates: {
       canonical: `/es/productos/${id}`,
@@ -54,7 +55,7 @@ export default async function EsProductPage({ params }: { params: Promise<{ id: 
   const es = (await getTranslations('product', [id])).get(id) ?? {}
   const stock = await getProductStock(id, p.has_variants)
   const inStock = stock == null ? true : stock > 0
-  const description = es.description ?? p.description ?? ''
+  const description = stripGots(es.description ?? p.description)
 
   let related: RelatedItem[] = []
   try {
