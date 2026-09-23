@@ -53,7 +53,7 @@ export default function DevolucionesPage() {
       </Section>
 
       <Section title="Cómo contactarnos">
-        Escríbenos a <a href={`mailto:${CONTACT_EMAIL}`} className="text-bark-600 underline underline-offset-2">{CONTACT_EMAIL}</a> con tu número de pedido y cuéntanos qué pasó. Respondemos dentro de 24 horas.
+        Escríbenos a <a href={`mailto:${CONTACT_EMAIL}`} className="text-bark-600 underline underline-offset-2">{CONTACT_EMAIL}</a> con tu número de pedido y cuéntanos qué pasó. Respondemos dentro de 24 horas. Los datos de la empresa están en nuestra página de <a href="/es/contacto" className="text-bark-600 underline underline-offset-2">contacto</a>.
       </Section>
     </article>
       </main>

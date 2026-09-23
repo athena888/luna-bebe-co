@@ -64,10 +64,10 @@ export const DEFAULT_HOME_CONTENT: HomeContent = {
   why: {
     eyebrow: 'Why Petite Lavande',
     title: 'What makes it special',
-    intro: 'Anyone can send a gift. We help you send a moment — built around the mother as much as the baby, traced to its source, and finished by hand with the kind of care only love remembers.',
+    intro: 'Anyone can send a gift. We help you send a moment — built around the mother as much as the baby, chosen with care, and finished by hand with the kind of care only love remembers.',
     es: {
       title: 'Lo que lo hace especial',
-      intro: 'Cualquiera puede enviar un regalo. Nosotros te ayudamos a enviar un momento — pensado tanto para la mamá como para el bebé, con cada pieza de origen conocido y terminado a mano con ese cuidado que solo el cariño sabe dar.',
+      intro: 'Cualquiera puede enviar un regalo. Nosotros te ayudamos a enviar un momento — pensado tanto para la mamá como para el bebé, elegido con cariño y terminado a mano con ese cuidado que solo el cariño sabe dar.',
     },
     features: [
       {

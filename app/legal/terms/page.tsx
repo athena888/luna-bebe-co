@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { CONTACT_EMAIL, CANCELLATION_WINDOW_HOURS } from '@/lib/site-config'
+import { businessAddress } from '@/lib/business-info'
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
@@ -8,9 +9,7 @@ export const metadata: Metadata = {
 }
 
 // Real configured mailing address only (CAN-SPAM config); absent env renders no address line.
-
-// Real configured mailing address only (CAN-SPAM config); absent env renders no address line.
-const ADDRESS = (process.env.BUSINESS_ADDRESS ?? '').trim()
+const ADDRESS = businessAddress()
 
 export default function TermsPage() {
   return (
@@ -36,7 +35,7 @@ export default function TermsPage() {
       </Section>
 
       <Section title="5. Shipping">
-        We ship within the United States only. Estimated delivery times vary by destination. Orders within the contiguous U.S. typically arrive within 2–6 business days after shipment. Alaska and Hawaii typically take 7–10 business days. Delivery estimates are provided at checkout and may vary by location and carrier. Shipping timelines begin after your box is assembled (within 24 hours of your order). We are not responsible for delays caused by carriers.
+        We ship within the United States only. Estimated delivery times vary by destination. Orders within the contiguous U.S. typically arrive within 2–6 business days after shipment. Alaska and Hawaii typically take 7–10 business days. Delivery estimates are provided at checkout and may vary by location and carrier. Orders placed before 1:00 PM Pacific, Monday to Friday, typically ship the same business day; later orders ship the next business day. We are not responsible for delays caused by carriers. See our <a href="/legal/shipping" className="text-bark-600 underline underline-offset-2">Shipping Policy</a> for full details.
       </Section>
 
       <Section title="6. Cancellations">

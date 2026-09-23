@@ -7,7 +7,7 @@ const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
 export const metadata: Metadata = {
   title: 'Our Cotton — Certified Organic',
-  description: 'Why Petite Lavande uses GOTS-certified organic cotton: pure, soft on newborn skin, and traceable from field to finished garment.',
+  description: 'Why selected Petite Lavande baby textiles use certified organic cotton: pure, soft on newborn skin, and traceable from field to finished garment.',
   alternates: {
     canonical: `${BASE}/our-cotton`,
     languages: { en: `${BASE}/our-cotton`, 'es-US': `${BASE}/es/nuestro-algodon`, 'x-default': `${BASE}/our-cotton` },
@@ -27,17 +27,19 @@ export default function OurCottonPage() {
               we pack is pure and gentle against it — grown without harsh chemicals, and finished without them too.
             </p>
             <p>
-              The makers we work with hold GOTS certification — the Global Organic Textile Standard. In plain
-              language, it means an independent organization traces the cotton from the field to the finished
-              garment: how it&apos;s grown, how it&apos;s dyed, and how the people who make it are treated.
-              We don&apos;t have to take anyone&apos;s word for it, and neither do you.
+              Selected baby textiles are made with organic cotton sourced from certified manufacturers. Where a
+              product&apos;s maker holds GOTS certification — the Global Organic Textile Standard — the product page
+              links to their certificate. In plain language, GOTS means an independent organization traces the
+              cotton from the field to the finished garment: how it&apos;s grown, how it&apos;s dyed, and how the
+              people who make it are treated.
             </p>
             <p>
               Not everything in a box is cotton — wooden rattles, dried lavender, botanical bath melts. For those
               we hold the same line: simple materials, small workshops, made with love.
             </p>
             <p>
-              Look for the badge on any product page — if it&apos;s there, that piece is certified organic cotton.
+              Look for the organic badge on each product page — it shows which pieces are made with organic
+              cotton. Where the badge links to a GOTS certificate, that piece comes from a GOTS-certified maker.
             </p>
           </div>
           <p className="mt-10">

@@ -66,7 +66,7 @@ async function getCollectionsData(locale: 'en' | 'es' = 'en') {
 // Sections whose text lives in the DB fall back to English until their
 // translations are seeded — identical layout either way.
 const ES: Record<string, string> = {
-  'hero.sub': 'Canastillas de baby shower orgánicas de lujo — para mamá y bebé',  // 'baby shower' stays in English per es-US glossary
+  'hero.sub': 'Canastillas de baby shower de lujo para mamá y bebé',  // 'baby shower' stays in English per es-US glossary
   'hero.cta': 'Ver las canastillas',
   'cat.eyebrow': 'Sets curados para cada nuevo comienzo — o arma la tuya desde cero.',
   'cat.title': 'Compra por categoría',
@@ -111,7 +111,7 @@ export default async function HomeView({ locale = 'en' }: { locale?: 'en' | 'es'
                   the homepage its strongest on-page keyword signal. Visual weight
                   is unchanged — only the tag differs. */}
               <h1 className="font-serif text-cream-50 drop-shadow-[0_1px_10px_rgba(0,0,0,0.5)] text-base sm:text-xl leading-relaxed mb-6">
-                {s('hero.sub', 'Luxury organic baby shower gift boxes — For mama and baby')}
+                {s('hero.sub', 'Luxury Baby Shower Gift Boxes — For Mama and Baby')}
               </h1>
               <Link
                 href={isEs ? '/es/canastillas' : '/boxes'}

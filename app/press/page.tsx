@@ -30,7 +30,7 @@ export default async function PressPage() {
     getConfig<PressConfig>('press').catch(() => null),
   ])
   const oneLiner = press?.brand_one_liner
-    || 'Organic newborn & postpartum gift boxes, finished by hand in Seattle — every material traced to source.'
+    || 'Newborn & postpartum gift boxes, finished by hand in Seattle — with organic cotton pieces where noted.'
   // Two-sentence boilerplate for editors to lift verbatim (config-overridable).
   const boilerplate = press?.boilerplate
     || 'Petite Lavande makes French-countryside-inspired gift boxes for newborns and new mothers — organic cotton garments, hand-knit blankets, and own-designed crochet dolls, hand-packed in woven seagrass baskets. Every box includes gifts for the mother, not just the baby.'

@@ -26,6 +26,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/legal/terms`,   lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
     { url: `${base}/legal/privacy`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
     { url: `${base}/legal/returns`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
+    { url: `${base}/legal/shipping`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
+    { url: `${base}/contact`,       lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
   ]
 
   // Search-intent landing pages
@@ -58,6 +60,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (SPANISH_ACTIVE) {
       urls.push({ url: `${base}/es`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 })
       urls.push({ url: `${base}/es/legal/devoluciones`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 })
+      urls.push({ url: `${base}/es/legal/envios`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 })
+      urls.push({ url: `${base}/es/contacto`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 })
       urls.push({ url: `${base}/es/historia`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 })
       urls.push({ url: `${base}/es/faq`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 })
       urls.push({ url: `${base}/es/canastillas`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 })

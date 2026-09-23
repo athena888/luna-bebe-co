@@ -39,14 +39,14 @@ function cleanGots(s?: string | null): string {
 const CATEGORY_SUBTITLES: Record<string, string> = {
   swaddle: 'Wrap them in softness from day one.',
   garment: "The first outfit they'll always remember.",
-  bath: 'Pure ingredients, safe from the very first bath.',
+  bath: 'Gentle botanical care for bath time.',
   keepsake: 'A gift that stays long after babyhood ends.',
   mom: 'Because the mama deserves to be celebrated too.',
 }
 const CATEGORY_SUBTITLES_ES: Record<string, string> = {
   swaddle: 'Suavidad desde el primer día.',
   garment: 'El primer conjunto que siempre recordarán.',
-  bath: 'Ingredientes puros, seguros desde el primer baño.',
+  bath: 'Cuidado botánico suave para la hora del baño.',
   keepsake: 'Un regalo que se queda mucho después de la infancia.',
   mom: 'Porque la mamá también merece ser celebrada.',
 }

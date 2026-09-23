@@ -8,8 +8,8 @@ const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
 export const metadata: Metadata = {
   title: 'Nuestro algodón — orgánico certificado',
-  description: 'Cada set de regalo bebé orgánico se hace con algodón orgánico certificado: puro y suave para la piel del bebé, trazable del campo a la prenda.',
-  openGraph: esOpenGraph({ path: '/es/nuestro-algodon', title: 'Nuestro algodón — orgánico certificado | Petite Lavande', description: 'Cada set de regalo bebé orgánico se hace con algodón orgánico certificado: puro y suave para la piel del bebé, trazable del campo a la prenda.' }),
+  description: 'Ciertos textiles para bebé de Petite Lavande se hacen con algodón orgánico certificado: puro y suave para la piel del bebé, trazable del campo a la prenda.',
+  openGraph: esOpenGraph({ path: '/es/nuestro-algodon', title: 'Nuestro algodón — orgánico certificado | Petite Lavande', description: 'Ciertos textiles para bebé de Petite Lavande se hacen con algodón orgánico certificado: puro y suave para la piel del bebé, trazable del campo a la prenda.' }),
   alternates: {
     canonical: `${BASE}/es/nuestro-algodon`,
     languages: { en: `${BASE}/our-cotton`, 'es-US': `${BASE}/es/nuestro-algodon`, 'x-default': `${BASE}/our-cotton` },
@@ -31,10 +31,11 @@ export default function NuestroAlgodonPage() {
               agresivos y terminada sin ellos también.
             </p>
             <p>
-              Los talleres con los que trabajamos tienen la certificación GOTS. En palabras simples:
+              Ciertos textiles para bebé están hechos con algodón orgánico de fabricantes certificados.
+              Cuando el fabricante de un producto tiene la certificación GOTS — el Estándar Textil Orgánico
+              Global —, la página del producto enlaza a su certificado. En palabras simples, GOTS significa que
               una organización independiente sigue el algodón desde el campo hasta la prenda terminada —
               cómo se cultiva, cómo se tiñe y cómo se trata a las personas que lo confeccionan.
-              No hay que creer en la palabra de nadie: está verificado.
             </p>
             <p>
               No todo en una canastilla es algodón — hay sonajas de madera, lavanda seca, jabones
@@ -42,8 +43,9 @@ export default function NuestroAlgodonPage() {
               talleres pequeños, hecho con amor.
             </p>
             <p>
-              Busca la insignia en cualquier página de producto — si está ahí, esa pieza es de
-              algodón orgánico certificado.
+              Busca la insignia de orgánico en cada página de producto — muestra qué piezas están hechas
+              con algodón orgánico. Cuando la insignia enlaza a un certificado GOTS, esa pieza viene de un
+              fabricante con certificación GOTS.
             </p>
           </div>
           <p className="mt-10">
