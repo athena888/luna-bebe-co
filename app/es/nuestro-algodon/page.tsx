@@ -7,9 +7,9 @@ import { esOpenGraph } from '@/lib/es-meta'
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
 export const metadata: Metadata = {
-  title: 'Nuestro algodón — orgánico certificado',
-  description: 'Ciertos textiles para bebé de Petite Lavande se hacen con algodón orgánico certificado: puro y suave para la piel del bebé, trazable del campo a la prenda.',
-  openGraph: esOpenGraph({ path: '/es/nuestro-algodon', title: 'Nuestro algodón — orgánico certificado | Petite Lavande', description: 'Ciertos textiles para bebé de Petite Lavande se hacen con algodón orgánico certificado: puro y suave para la piel del bebé, trazable del campo a la prenda.' }),
+  title: 'Nuestro algodón — orgánico',
+  description: 'Ciertos textiles para bebé de Petite Lavande se hacen con algodón orgánico: puro y suave para la piel del bebé, trazable del campo a la prenda.',
+  openGraph: esOpenGraph({ path: '/es/nuestro-algodon', title: 'Nuestro algodón — orgánico | Petite Lavande', description: 'Ciertos textiles para bebé de Petite Lavande se hacen con algodón orgánico: puro y suave para la piel del bebé, trazable del campo a la prenda.' }),
   alternates: {
     canonical: `${BASE}/es/nuestro-algodon`,
     languages: { en: `${BASE}/our-cotton`, 'es-US': `${BASE}/es/nuestro-algodon`, 'x-default': `${BASE}/our-cotton` },

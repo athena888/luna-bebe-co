@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { stripGots } from '@/lib/claims'
 import { useParams, useRouter } from 'next/navigation'
 import { useIsEs } from '@/lib/use-is-es'
 import { localePath } from '@/lib/locale-routes'
@@ -35,11 +36,7 @@ function formatPrice(cents: number) {
 // Strip GOTS wording from owner/AI copy — GOTS is not claimed on the site. "100% GOTS Organic Cotton" → "100%
 // Organic Cotton"; "GOTS-certified cotton" → "cotton".
 function clean(s?: string | null): string {
-  return (s ?? '')
-    .replace(/GOTS[-‑\s]*certified\s*/gi, '')
-    .replace(/\bGOTS\b[-\s]*/gi, '')
-    .replace(/\s{2,}/g, ' ')
-    .trim()
+  return stripGots(s)
 }
 // The GOTS-cotton claim shows only when the GOTS certification is attached to
 // the product (controlled in the admin Certifications section).

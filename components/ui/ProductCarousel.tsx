@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
+import { stripGots } from '@/lib/claims'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight, X, ShoppingBag, Leaf, ZoomIn } from 'lucide-react'
@@ -15,7 +16,7 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 
 // Strip GOTS wording from owner/AI copy — GOTS is not claimed on the site.
 function clean(s?: string | null): string {
-  return (s ?? '').replace(/GOTS[-‑\s]*certified\s*/gi, '').replace(/\bGOTS\b[-\s]*/gi, '').replace(/\s{2,}/g, ' ').trim()
+  return stripGots(s)
 }
 const CLONES = 3
 

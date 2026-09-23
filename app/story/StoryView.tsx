@@ -27,7 +27,7 @@ const ES_STORY = {
     body: 'Petite Lavande selecciona ingredientes botánicos y detalles inspirados en la lavanda de proveedores de confianza. El origen puede variar según el producto y la temporada. Los detalles de materiales aparecen en cada página de producto. Todo elegido como una hija elegiría para su propia madre.',
   },
   values: [
-    { title: 'Materiales elegidos con cuidado', body: 'Elegimos materiales de calidad para cada pieza de Petite Lavande. Ciertos textiles para bebé están hechos con algodón orgánico de fabricantes certificados, cuando así se indica en la página del producto; otros productos se eligen por sus materiales, su hechura y lo bien que funcionan como regalo.' },
+    { title: 'Materiales elegidos con cuidado', body: 'Elegimos materiales de calidad para cada pieza de Petite Lavande. Ciertos textiles para bebé están hechos con algodón orgánico, cuando así se indica en la página del producto; otros productos se eligen por sus materiales, su hechura y lo bien que funcionan como regalo.' },
     { title: 'Hecho artesanal', body: 'Trabajamos con pequeños talleres y estudios familiares. Las manos que hicieron tu regalo lo cuidaron de verdad — y eso no se puede producir en masa.' },
     { title: 'Cada detalle', body: 'Canastas de fibra natural, tarjetas personalizadas, papel de seda y listón — porque abrir el regalo es parte del regalo. Creemos en la belleza de la ceremonia.' },
   ],

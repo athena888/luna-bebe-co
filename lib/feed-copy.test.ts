@@ -48,13 +48,17 @@ test('scrub is idempotent — running it twice changes nothing further', () => {
   }
 })
 
-test('GOTS scrub still behaves (no "certified organic organic")', () => {
-  assert.equal(scrubGots('GOTS-certified organic cotton'), 'certified organic cotton')
-  assert.equal(scrubGots('GOTS certified'), 'certified organic')
-  assert.equal(scrubGots('Made with GOTS cotton'), 'Made with certified organic cotton')
+test('certification scrub leaves plain "organic" (no GOTS, no "certified")', () => {
+  assert.equal(scrubGots('GOTS-certified organic cotton'), 'organic cotton')
+  assert.equal(scrubGots('GOTS certified'), 'organic')
+  assert.equal(scrubGots('Made with GOTS cotton'), 'Made with organic cotton')
+  assert.equal(scrubGots('100% GOTS Organic Cotton'), '100% Organic Cotton')
+  assert.equal(scrubGots('Hand-sewn in certified organic cotton.'), 'Hand-sewn in organic cotton.')
+  assert.equal(scrubGots('Certified Organic Herbs & Botanicals'), 'Organic Herbs & Botanicals')
+  assert.equal(scrubGots('GOTS-certified cotton'), 'organic cotton')
 })
 
 test('the two scrubs compose without fighting each other', () => {
   const out = scrubHardship(scrubGots('GOTS-certified organic postpartum recovery set'))
-  assert.equal(out, 'certified organic new mom Care set')
+  assert.equal(out, 'organic new mom Care set')
 })

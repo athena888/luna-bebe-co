@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { stripGots } from '@/lib/claims'
 import Image from 'next/image'
 import { X, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react'
 import { CertBadges } from '@/components/ui/CertBadges'
@@ -22,11 +23,7 @@ function formatPrice(cents: number) { return `$${(cents / 100).toFixed(2)}` }
 // Same rule as the Build page and product pages: GOTS wording is stripped
 // from owner/AI copy — GOTS is not claimed on the site.
 function cleanGots(s?: string | null): string {
-  return (s ?? '')
-    .replace(/GOTS[-‑\s]*certified\s*/gi, '')
-    .replace(/\bGOTS\b[-\s]*/gi, '')
-    .replace(/\s{2,}/g, ' ')
-    .trim()
+  return stripGots(s)
 }
 
 type Item = Pick<Product, 'id' | 'name' | 'price' | 'category'> & {

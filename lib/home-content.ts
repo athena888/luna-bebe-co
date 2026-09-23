@@ -91,7 +91,7 @@ export const DEFAULT_HOME_CONTENT: HomeContent = {
     body: 'A botanical lavender bouquet and wellness rituals to soften the long days, each chosen the way a daughter would choose for her own mother.',
     items: [
       'Bath soaks & calming rituals for mama',
-      'Organic cotton from certified makers',
+      'Organic cotton on selected pieces',
       'Premium baby essentials & heirloom toys',
       'Hand-packed with a personalized card',
     ],
@@ -100,7 +100,7 @@ export const DEFAULT_HOME_CONTENT: HomeContent = {
       body: 'Un ramo de lavanda y rituales de bienestar para suavizar los días largos, elegidos como los elegiría una hija para su propia madre.',
       items: [
         'Baños y rituales de calma para mamá',
-        'Algodón orgánico de talleres certificados',
+        'Algodón orgánico en ciertas piezas',
         'Esenciales premium y juguetes de recuerdo',
         'Armada a mano con tarjeta personalizada',
       ],

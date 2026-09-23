@@ -6,8 +6,8 @@ import { Footer } from '@/components/layout/Footer'
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
 export const metadata: Metadata = {
-  title: 'Our Cotton — Certified Organic',
-  description: 'Why selected Petite Lavande baby textiles use certified organic cotton: pure, soft on newborn skin, and traceable from field to finished garment.',
+  title: 'Our Cotton — Organic',
+  description: 'Why selected Petite Lavande baby textiles use organic cotton: pure, soft on newborn skin, and traceable from field to finished garment.',
   alternates: {
     canonical: `${BASE}/our-cotton`,
     languages: { en: `${BASE}/our-cotton`, 'es-US': `${BASE}/es/nuestro-algodon`, 'x-default': `${BASE}/our-cotton` },

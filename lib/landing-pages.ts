@@ -35,7 +35,7 @@ export const LANDING_PAGES: LandingPage[] = [
     eyebrow: 'For the Shower',
     h1: 'The Best Organic Baby Shower Gifts',
     intro: [
-      'The best baby shower gifts are the ones the family still reaches for months later — soft organic cotton against new skin, a keepsake that outlasts the newborn weeks and something for the mama herself. Selected baby textiles are made with organic cotton sourced from certified manufacturers, and material details are listed on each product page.',
+      'The best baby shower gifts are the ones the family still reaches for months later — soft organic cotton against new skin, a keepsake that outlasts the newborn weeks and something for the mama herself. Selected baby textiles are made with organic cotton, and material details are listed on each product page.',
       'Choose a ready-made basket or build your own piece by piece. Either way it arrives hand-packed, ribbon-tied and sealed by hand, with a personalized card — gift-ready for the shower table.',
     ],
     categories: ['swaddle', 'garment', 'keepsake', 'mom'],
@@ -63,7 +63,7 @@ export const LANDING_PAGES: LandingPage[] = [
     eyebrow: 'For the Newborn',
     h1: 'The Organic Newborn Gift Box',
     intro: [
-      'A new baby deserves the gentlest start — and the people welcoming them deserve a gift that feels as considered as the moment. Our newborn gift box is built around soft, breathable pieces, with selected baby textiles made in organic cotton from certified manufacturers — material details are listed on each product page.',
+      'A new baby deserves the gentlest start — and the people welcoming them deserve a gift that feels as considered as the moment. Our newborn gift box is built around soft, breathable pieces, with selected baby textiles made with organic cotton — material details are listed on each product page.',
       'Every box is assembled by hand and finished the way you would for someone you love: a botanical lavender bouquet, a keepsake to remember the first days by, and a personalized card printed just for them. You can build your own box item by item, or choose a ready-made set we have already curated for newborns. Either way it arrives sealed by hand and tied with a natural linen ribbon — gift-ready the moment it lands on the doorstep.',
     ],
     categories: ['swaddle', 'garment', 'bath', 'keepsake'],
@@ -105,7 +105,7 @@ export const LANDING_PAGES: LandingPage[] = [
     eyebrow: 'Organic Clothing',
     h1: 'The Organic Baby Clothes Gift Set',
     intro: [
-      'Baby clothes are the gift everyone remembers — especially when they are this soft. Our baby clothes gift set brings together swaddles, rompers, bibs and gentle layers that feel as good as they look — with selected pieces made in organic cotton from certified manufacturers, as noted on each product page.',
+      'Baby clothes are the gift everyone remembers — especially when they are this soft. Our baby clothes gift set brings together swaddles, rompers, bibs and gentle layers that feel as good as they look — with selected pieces made with organic cotton, as noted on each product page.',
       'Choose the pieces yourself with our build-your-own tool, mixing sizes and soft natural colours, or start from a ready-made clothing edition we have already styled. Each set is folded and packed by hand, then finished with dried lavender, a signature seal and a linen ribbon — with a personalized card printed for the occasion. Whether it is a baby shower, a welcome-home gift, or a first birthday, an organic clothing set is the kind of present parents reach for again and again.',
     ],
     categories: ['garment', 'swaddle'],
@@ -214,7 +214,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: 'The Newborn Gift Set',
     intro: [
       'A newborn gift set should do two things: be genuinely useful in the first months, and feel nothing like a supply run. The difference is in the materials and the way it arrives.',
-      'Ours starts with what touches new skin — swaddles and soft garments, with selected pieces in organic cotton from certified manufacturers, in calm natural tones that suit any nursery. Add a gentle botanical bath piece, or a keepsake like our linen bunny, and the set becomes something parents photograph rather than shelve. Every set is folded and packed by hand, sealed by hand, scented with dried lavender, and finished with a personalized card. Build your own from {PRICE_LOW}, or choose a ready-made edition up to {PRICE_HIGH}.',
+      'Ours starts with what touches new skin — swaddles and soft garments, with selected pieces made with organic cotton, in calm natural tones that suit any nursery. Add a gentle botanical bath piece, or a keepsake like our linen bunny, and the set becomes something parents photograph rather than shelve. Every set is folded and packed by hand, sealed by hand, scented with dried lavender, and finished with a personalized card. Build your own from {PRICE_LOW}, or choose a ready-made edition up to {PRICE_HIGH}.',
     ],
     categories: ['swaddle', 'garment', 'keepsake', 'bath'],
     highlights: ['Organic cotton pieces, where noted', 'Calm, nursery-neutral tones', 'Keepsakes worth keeping', 'Hand-folded & gift-ready'],
@@ -227,7 +227,7 @@ export const LANDING_PAGES: LandingPage[] = [
     },
     faqs: [
       { q: 'What should a newborn gift set include?', a: 'A swaddle or two, one or two soft organic cotton garments (ideally sized 3–6 months rather than newborn), something gentle for bath time, and a single keepsake. Useful first, beautiful always.' },
-      { q: 'Why does organic cotton matter for newborns?', a: 'Newborn skin is thinner and more permeable than adult skin. Certified organic cotton is grown and processed to a strict standard. Where a product is made with organic cotton, it is noted on its product page.' },
+      { q: 'Why does organic cotton matter for newborns?', a: 'Newborn skin is thinner and more permeable than adult skin. Organic cotton is grown without synthetic pesticides. Where a product is made with organic cotton, it is noted on its product page.' },
       { q: 'What sizes should I choose?', a: 'Parents are usually oversupplied in newborn sizes. Choosing 3–6 months means your gift gets worn — a small choice that doubles its usefulness.' },
       { q: 'Is this a good group or family gift?', a: 'Yes — a larger curated set works well when several people contribute, and the personalized card can carry everyone’s names.' },
       { q: 'How is the set presented?', a: 'Hand-folded in a rigid keepsake box with dried lavender, a signature seal, and ribbon, plus your message printed on a card. It arrives ready to give — no wrapping needed.' },

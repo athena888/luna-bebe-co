@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { stripGots } from '@/lib/claims'
 import { useIsEs } from '@/lib/use-is-es'
 import { trackAddToCart } from '@/lib/analytics-events'
 import { CATEGORY_LABELS_ES } from '@/lib/products'
@@ -29,11 +30,7 @@ function isGots(c: ResolvedCert): boolean {
   return /gots|global organic textile/i.test(`${c.key ?? ''} ${c.name ?? ''}`)
 }
 function cleanGots(s?: string | null): string {
-  return (s ?? '')
-    .replace(/GOTS[-‑\s]*certified\s*/gi, '')
-    .replace(/\bGOTS\b[-\s]*/gi, '')
-    .replace(/\s{2,}/g, ' ')
-    .trim()
+  return stripGots(s)
 }
 
 const CATEGORY_SUBTITLES: Record<string, string> = {
