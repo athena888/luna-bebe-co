@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const url = `${BASE}/products/${id}`
   // Prefer the owner/AI SEO title + meta; fall back to product data.
   // seo_title is a complete tag → use absolute so the "| Petite Lavande" template doesn't double up.
-  const description = stripGots(p.seo_description || p.description || `${p.name} — a premium organic baby gift from Petite Lavande.`).slice(0, 155)
+  const description = stripGots(p.seo_description || p.description || `${p.name} — a premium baby gift from Petite Lavande.`).slice(0, 155)
   const img = productImage(p)
   // Only claim a Spanish alternate once that page is actually translated —
   // otherwise /es/productos/<id> serves English copy and the pair is a

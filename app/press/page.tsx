@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic'
 
 export const metadata = {
   title: 'Press Kit',
-  description: 'Press assets, line sheet, and brand information for Petite Lavande — organic newborn & postpartum gift boxes, finished by hand in Seattle.',
+  description: 'Press assets, line sheet, and brand information for Petite Lavande — newborn & postpartum gift boxes, finished by hand in Seattle.',
   alternates: { canonical: '/press' },
 }
 

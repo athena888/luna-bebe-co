@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const priceText = low === high ? `$${low / 100}` : `$${low / 100}–$${high / 100}`
   return {
     title: `${box.name} — Baby Gift Box (${priceText})`,
-    description: `${box.subtitle || box.name} — hand-packed organic gift box from Petite Lavande. ${box.variants.length} ${box.variantLabel.toLowerCase() || 'option'}${box.variants.length !== 1 ? 's' : ''}, ${priceText}.`,
+    description: `${box.subtitle || box.name} — hand-packed gift box from Petite Lavande. ${box.variants.length} ${box.variantLabel.toLowerCase() || 'option'}${box.variants.length !== 1 ? 's' : ''}, ${priceText}.`,
     alternates: {
       canonical: `${BASE}/boxes/${slug}`,
       // The /es twin declared this pair but the English side did not, and

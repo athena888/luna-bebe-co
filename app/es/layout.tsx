@@ -7,7 +7,7 @@ import { SPANISH_ACTIVE } from '@/lib/i18n'
 // This layout only gates the subtree behind the flag and sets metadata.
 
 export const metadata: Metadata = {
-  title: { default: 'Petite Lavande — Canastillas de Regalo Orgánicas', template: '%s | Petite Lavande' },
+  title: { default: 'Petite Lavande — Canastillas de Regalo de Lujo', template: '%s | Petite Lavande' },
 }
 
 export default function EsLayout({ children }: { children: React.ReactNode }) {

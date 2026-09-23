@@ -485,13 +485,13 @@ export default function BuildClient({ initialCatalog }: { initialCatalog?: Recor
                 {heroImg && heroImgMobile ? (
                   <>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={heroImgMobile} alt="Build your own organic baby gift box — Petite Lavande keepsake basket" className="absolute inset-0 w-full h-full object-cover sm:hidden" fetchPriority="high" />
+                    <img src={heroImgMobile} alt="Build your own baby gift box — Petite Lavande keepsake basket" className="absolute inset-0 w-full h-full object-cover sm:hidden" fetchPriority="high" />
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={heroImg} alt="Build your own organic baby gift box — Petite Lavande keepsake basket" className="absolute inset-0 w-full h-full object-cover hidden sm:block" />
+                    <img src={heroImg} alt="Build your own baby gift box — Petite Lavande keepsake basket" className="absolute inset-0 w-full h-full object-cover hidden sm:block" />
                   </>
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={(heroImg ?? heroImgMobile)!} alt="Build your own organic baby gift box — Petite Lavande keepsake basket" className="absolute inset-0 w-full h-full object-cover" fetchPriority="high" />
+                  <img src={(heroImg ?? heroImgMobile)!} alt="Build your own baby gift box — Petite Lavande keepsake basket" className="absolute inset-0 w-full h-full object-cover" fetchPriority="high" />
                 )}
               </ParallaxLayer>
               <ScrimOverlay scrimKey="build.header_bg" defaultHex="#181716" defaultOpacity={0.75} variant="gradient-top" />

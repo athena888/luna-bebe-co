@@ -30,10 +30,10 @@ export const LANDING_PAGES: LandingPage[] = [
   {
     slug: 'organic-baby-shower-gifts',
     keyword: 'organic baby shower gifts',
-    title: 'The Best Organic Baby Shower Gifts | Petite Lavande',
-    metaDescription: 'Organic baby shower gifts that feel considered — organic cotton keepsakes, botanical care for the mama, hand-packed in a ribbon-tied basket.',
+    title: 'The Best Baby Shower Gifts with Organic Cotton | Petite Lavande',
+    metaDescription: 'Baby shower gifts that feel considered — organic cotton keepsakes, botanical care for the mama, hand-packed in a ribbon-tied basket.',
     eyebrow: 'For the Shower',
-    h1: 'The Best Organic Baby Shower Gifts',
+    h1: 'The Best Baby Shower Gifts, with Organic Cotton',
     intro: [
       'The best baby shower gifts are the ones the family still reaches for months later — soft organic cotton against new skin, a keepsake that outlasts the newborn weeks and something for the mama herself. Selected baby textiles are made with organic cotton, and material details are listed on each product page.',
       'Choose a ready-made basket or build your own piece by piece. Either way it arrives hand-packed, ribbon-tied and sealed by hand, with a personalized card — gift-ready for the shower table.',
@@ -58,10 +58,10 @@ export const LANDING_PAGES: LandingPage[] = [
   {
     slug: 'organic-newborn-gift-box',
     keyword: 'organic newborn gift box',
-    title: 'Organic Newborn Gift Box | Petite Lavande',
-    metaDescription: 'A luxury organic newborn gift box — organic cotton clothing, gentle botanical care, and a personalized card. Build your own or shop ready-made.',
+    title: 'Newborn Gift Box with Organic Cotton | Petite Lavande',
+    metaDescription: 'A luxury newborn gift box — organic cotton clothing, gentle botanical care, and a personalized card. Build your own or shop ready-made.',
     eyebrow: 'For the Newborn',
-    h1: 'The Organic Newborn Gift Box',
+    h1: 'The Newborn Gift Box, with Organic Cotton',
     intro: [
       'A new baby deserves the gentlest start — and the people welcoming them deserve a gift that feels as considered as the moment. Our newborn gift box is built around soft, breathable pieces, with selected baby textiles made with organic cotton — material details are listed on each product page.',
       'Every box is assembled by hand and finished the way you would for someone you love: a botanical lavender bouquet, a keepsake to remember the first days by, and a personalized card printed just for them. You can build your own box item by item, or choose a ready-made set we have already curated for newborns. Either way it arrives sealed by hand and tied with a natural linen ribbon — gift-ready the moment it lands on the doorstep.',
@@ -100,10 +100,10 @@ export const LANDING_PAGES: LandingPage[] = [
   {
     slug: 'organic-baby-clothes-gift-set',
     keyword: 'organic baby clothes gift set',
-    title: 'Organic Baby Clothes Gift Set | Petite Lavande',
-    metaDescription: 'An organic baby clothes gift set in organic cotton — swaddles, rompers and soft layers, gift-wrapped by hand. Build your own or shop ready-made.',
+    title: 'Organic Cotton Baby Clothes Gift Set | Petite Lavande',
+    metaDescription: 'A baby clothes gift set with organic cotton pieces — swaddles, rompers and soft layers, gift-wrapped by hand. Build your own or shop ready-made.',
     eyebrow: 'Organic Clothing',
-    h1: 'The Organic Baby Clothes Gift Set',
+    h1: 'The Organic Cotton Baby Clothes Gift Set',
     intro: [
       'Baby clothes are the gift everyone remembers — especially when they are this soft. Our baby clothes gift set brings together swaddles, rompers, bibs and gentle layers that feel as good as they look — with selected pieces made with organic cotton, as noted on each product page.',
       'Choose the pieces yourself with our build-your-own tool, mixing sizes and soft natural colours, or start from a ready-made clothing edition we have already styled. Each set is folded and packed by hand, then finished with dried lavender, a signature seal and a linen ribbon — with a personalized card printed for the occasion. Whether it is a baby shower, a welcome-home gift, or a first birthday, an organic clothing set is the kind of present parents reach for again and again.',
@@ -129,7 +129,7 @@ export const LANDING_PAGES: LandingPage[] = [
     slug: 'luxury-baby-shower-gift',
     keyword: 'luxury baby shower gift',
     title: 'Luxury Baby Shower Gift | Petite Lavande',
-    metaDescription: 'A luxury baby shower gift that stands out — curated organic pieces, a botanical bouquet, and a personalized card, finished by hand. Build your own or shop ready-made.',
+    metaDescription: 'A luxury baby shower gift that stands out — curated pieces, a botanical bouquet, and a personalized card, finished by hand. Build your own or shop ready-made.',
     eyebrow: 'The Show-Stopper',
     h1: 'The Luxury Baby Shower Gift',
     intro: [
@@ -145,7 +145,7 @@ export const LANDING_PAGES: LandingPage[] = [
     slug: 'baby-shower-gift-for-mom',
     keyword: 'baby shower gift for mom',
     title: 'Baby Shower Gift for Mom | Petite Lavande',
-    metaDescription: 'A baby shower gift made for the mom-to-be — botanical bath comforts, soft organic pieces, and a personalized card. Boxes from {PRICE_LOW}, finished by hand.',
+    metaDescription: 'A baby shower gift made for the mom-to-be — botanical bath comforts, soft organic cotton pieces, and a personalized card. Boxes from {PRICE_LOW}, finished by hand.',
     eyebrow: 'For the Mom-to-Be',
     h1: 'The Baby Shower Gift for Mom',
     intro: [

@@ -24,11 +24,11 @@ const FAQS = [
 
 export const metadata: Metadata = {
   title: { absolute: 'Same-Day Baby Gift Delivery Seattle | Petite Lavande' },
-  description: 'Same day baby gift delivery in Seattle & the Eastside — organic newborn and postpartum gift boxes, hand-packed with a hand-finished card and couriered this evening. Order by 1 PM.',
+  description: 'Same day baby gift delivery in Seattle & the Eastside — newborn and postpartum gift boxes, hand-packed with a hand-finished card and couriered this evening. Order by 1 PM.',
   alternates: { canonical: `${BASE}/same-day-delivery` },
   openGraph: {
     title: 'Same-Day Baby Gift Delivery in Seattle',
-    description: 'Order by 1 PM — a hand-packed organic baby gift box, delivered this evening across Seattle and the Eastside.',
+    description: 'Order by 1 PM — a hand-packed baby gift box, delivered this evening across Seattle and the Eastside.',
     url: `${BASE}/same-day-delivery`,
     type: 'website',
   },
@@ -45,7 +45,7 @@ export default async function SameDayDeliveryPage() {
         '@type': 'Service',
         name: 'Same-Day Baby Gift Delivery',
         serviceType: 'Same-day gift delivery',
-        description: 'Same-day courier delivery of organic newborn and postpartum gift boxes across Seattle and the Eastside. Order by 1 PM for evening delivery.',
+        description: 'Same-day courier delivery of newborn and postpartum gift boxes across Seattle and the Eastside. Order by 1 PM for evening delivery.',
         areaServed: CITIES.map(c => ({ '@type': 'City', name: c })),
         provider: {
           '@type': 'LocalBusiness',

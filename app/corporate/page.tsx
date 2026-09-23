@@ -23,7 +23,7 @@ function ContactLine({ className = '', olive = false }: { className?: string; ol
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://petitelavande.com'
 
-const DESCRIPTION = "Thoughtful organic newborn gift boxes for your employees' growing families. Hand-packed, traceable, delivered. Volume pricing for People & HR teams."
+const DESCRIPTION = "Thoughtful newborn gift boxes for your employees' growing families. Hand-packed, personalized, delivered. Volume pricing for People & HR teams."
 
 export async function generateMetadata(): Promise<Metadata> {
   return {

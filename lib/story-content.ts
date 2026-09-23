@@ -30,7 +30,7 @@ export const DEFAULT_STORY_CONTENT: StoryContent = {
       'Petite Lavande started at my kitchen table, sourcing directly from makers who share our values: no shortcuts and real care for what touches a newborn’s skin. Every item in every box is something I would give my own child.',
       'We seal every box with our signature seal, wrap every letter by hand, and ship every order with the care it deserves. Because a birth is not just a delivery — it’s a beginning. And beginnings deserve to be luminous.',
     ],
-    signature: '— Émilie, Founder',
+    signature: '— Emily, Founder',
   },
   values: [
     { title: 'Thoughtfully Sourced Materials', body: 'We choose thoughtful, high-quality materials for each Petite Lavande piece. Our cotton garments and selected textiles use organic cotton where specifically noted, while other products are selected for their materials, craftsmanship, and suitability for gifting.' },
